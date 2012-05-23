@@ -30,9 +30,30 @@ describe Orthos::Easy do
   end
 
   describe "#prepare" do
+  end
+
+  describe "#set_options" do
+    let(:url) { "http://localhost:3001/" }
+
+    context "when option" do
+      it "sets curl option" do
+        easy.url = url
+        Orthos::Curl.expects(:set_option).with(:url, url, easy.handle)
+        easy.set_options
+      end
+    end
+
+    context "when no option" do
+      it "sets nothing" do
+        Orthos::Curl.expects(:set_option).never
+        easy.set_options
+      end
+    end
+  end
+
+  describe "#set_callbacks" do
     before do
-      Orthos::Curl.expects(:set_option).with(:writefunction, easy.body_write_callback, easy.handle)
-      Orthos::Curl.expects(:set_option).with(:headerfunction, easy.header_write_callback, easy.handle)
+      Orthos::Curl.expects(:set_option).twice
     end
 
     it "sets write- and headerfunction" do
@@ -48,14 +69,23 @@ describe Orthos::Easy do
       easy.prepare
       easy.instance_variable_get(:@response_header).should eq("")
     end
+  end
 
-    context "when option" do
-      let(:url) { "http://localhost:3001/" }
+  describe "#set_headers" do
+    context "when no headers" do
+      it "sets nothing" do
+        Orthos::Curl.expects(:set_option).never
+        easy.set_headers
+      end
+    end
 
-      it "sets curl option" do
-        easy.url = url
-        Orthos::Curl.expects(:set_option).with(:url, url, easy.handle)
-        easy.prepare
+    context "when headers" do
+      let(:headers) { { 'User-Agent' => 'Orthos' } }
+      before { easy.headers = headers }
+
+      it "sets header" do
+        Orthos::Curl.expects(:set_option)
+        easy.set_headers
       end
     end
   end
@@ -74,6 +104,7 @@ describe Orthos::Easy do
     let(:max_redirs) { nil }
     let(:user_pwd) { nil }
     let(:http_auth) { nil }
+    let(:headers) { nil }
 
     before do
       easy.url = url
@@ -83,6 +114,8 @@ describe Orthos::Easy do
       easy.max_redirs = max_redirs
       easy.user_pwd = user_pwd
       easy.http_auth = http_auth
+      easy.headers = headers
+
       easy.prepare
       easy.perform
     end
@@ -151,6 +184,14 @@ describe Orthos::Easy do
               easy.response_code.should eq(302)
             end
           end
+        end
+      end
+
+      context "when user agent" do
+        let(:headers) { { 'User-Agent' => 'Orthos' } }
+
+        it "sets" do
+          easy.response_body.should include('"HTTP_USER_AGENT":"Orthos"')
         end
       end
     end
