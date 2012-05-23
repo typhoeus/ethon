@@ -4,7 +4,7 @@ module Orthos
     def self.included(base)
       base.extend ClassMethods
       base.const_set(:AVAILABLE_OPTIONS, [
-        :post, :put, :http_get, :nobody,
+        :http_post, :put, :http_get, :nobody, :upload, :custom_request,
         :ca_info, :ca_path, :connect_timeout,
         :follow_location, :http_auth, :interface,
         :max_redirs, :no_signal, :postfield_size, :copy_postfields, :proxy,
