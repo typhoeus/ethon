@@ -1,5 +1,14 @@
 module Orthos
   module Callbacks
+    def set_callbacks
+      if @body_write_callback.nil?
+        Curl.set_option(:writefunction, body_write_callback, handle)
+        Curl.set_option(:headerfunction, header_write_callback, handle)
+      end
+      @response_body = ""
+      @response_header = ""
+    end
+
     def body_write_callback
       @body_write_callback ||= proc {|stream, size, num, object|
         @response_body << stream.read_string(size * num)

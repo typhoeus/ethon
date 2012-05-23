@@ -7,25 +7,31 @@ module Orthos
     include Orthos::Callbacks
 
     OPTIONS = [
-      :action, :http_auth, :ca_info, :ca_path, :connect_timeout,
-      :follow_location, :interface, :key_passwd,
-      :max_redirs, :no_signal, :post_data, :proxy,
-      :proxy_auth, :proxy_type, :request, :timeout, :ssl_cert,
+      :post, :put, :http_get, :nobody,
+      :ca_info, :ca_path, :connect_timeout,
+      :follow_location, :http_auth, :interface,
+      :max_redirs, :no_signal, :postfield_size, :copy_postfields, :proxy,
+      :proxy_auth, :proxy_type, :timeout, :ssl_cert,
       :ssl_cert_type, :ssl_key, :ssl_key_type, :ssl_version,
-      :upload_data, :url, :user_agent, :user_pwd,
-      :verify_peer, :verify_host
+      :url, :user_agent, :user_pwd, :verbose
     ]
 
     BOOL_OPTIONS = [
-      :follow_location, :no_signal, :verify_peer, :verify_host
+      :follow_location, :no_signal, :verify_peer, :verify_host,
+      :verbose, :http_get, :http_post, :nobody, :upload
+    ]
+
+    INT_OPTIONS = [
+      :connect_timeout, :max_redirs, :postfield_size, :timeout
     ]
 
     ENUM_OPTIONS = {
-      :http_auth => :auth
+      :http_auth => Curl::Auth
    }
 
-    attr_accessor *OPTIONS, :headers
-    attr_reader :response_body, :response_header, :return_code
+    attr_accessor *OPTIONS
+    attr_reader :response_body, :response_header, :return_code, :action
+    attr_writer :headers
 
     class << self
       def finalizer(easy)
@@ -39,6 +45,25 @@ module Orthos
     def initialize
       Curl.init
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
+    end
+
+    def action=(action)
+      case action
+      when :get
+        http_get = true
+      when :post
+        http_post = true
+      when :put
+        upload = true
+      when :head
+        nobody = true
+      else
+        custom_request = action.to_s.upcase
+      end
+    end
+
+    def headers
+      @headers ||= {}
     end
 
     def handle
@@ -65,21 +90,10 @@ module Orthos
       end
     end
 
-    def set_callbacks
-      if @body_write_callback.nil?
-        Curl.set_option(:writefunction, body_write_callback, handle)
-        Curl.set_option(:headerfunction, header_write_callback, handle)
-      end
-      @response_body = ""
-      @response_header = ""
-    end
-
     def set_headers
-      unless headers.nil? || headers.empty?
-        @header_list = nil
-        headers.each {|key, value| @header_list = Curl.slist_append(@header_list, "#{key}: #{value}") }
-        Curl.set_option(:httpheader, @header_list, handle)
-      end
+      @header_list = nil
+      headers.each {|k, v| @header_list = Curl.slist_append(@header_list, "#{k}: #{v}") }
+      Curl.set_option(:httpheader, @header_list, handle)
     end
 
     def value_for(option)
@@ -89,7 +103,9 @@ module Orthos
       if BOOL_OPTIONS.include?(option)
         value ? 1 : 0
       elsif ENUM_OPTIONS.key?(option)
-        Curl.const_get(ENUM_OPTIONS[option].to_s.camelize)[value]
+        ENUM_OPTIONS[option][value]
+      elsif INT_OPTIONS.include?(option)
+        value.to_i
       else
         value
       end

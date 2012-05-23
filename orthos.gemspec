@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = '[none]'
 
   s.add_dependency('ffi', ['~> 1.0'])
-  s.add_dependency('activesupport', ['~> 3.2'])
 
   s.add_development_dependency('sinatra', ['~> 1.3'])
   s.add_development_dependency('json', ['~> 1.7'])

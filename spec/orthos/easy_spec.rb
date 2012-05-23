@@ -5,15 +5,19 @@ describe Orthos::Easy do
   let(:easy) { Orthos::Easy.new }
   let(:value) { "fubar" }
 
-  describe "accessors" do
+  describe "options" do
     let(:options) { Orthos::Easy::OPTIONS }
 
-    it "has read accessors for all OPTIONS" do
+    it "have read accessors" do
       options.all? { |o| easy.respond_to?(o) }.should be_true
     end
 
-    it "has write accessors for all OPTIONS" do
+    it "have write accessors" do
       options.all? { |o| easy.respond_to?("#{o}=") }.should be_true
+    end
+
+    it "can be set" do
+      options.each { |o| easy.method("#{o}=").call("fu"); easy.prepare }
     end
   end
 
@@ -57,36 +61,27 @@ describe Orthos::Easy do
     end
 
     it "sets write- and headerfunction" do
-      easy.prepare
+      easy.set_callbacks
     end
 
     it "resets @response_body" do
-      easy.prepare
+      easy.set_callbacks
       easy.instance_variable_get(:@response_body).should eq("")
     end
 
     it "resets @response_header" do
-      easy.prepare
+      easy.set_callbacks
       easy.instance_variable_get(:@response_header).should eq("")
     end
   end
 
   describe "#set_headers" do
-    context "when no headers" do
-      it "sets nothing" do
-        Orthos::Curl.expects(:set_option).never
-        easy.set_headers
-      end
-    end
+    let(:headers) { { 'User-Agent' => 'Orthos' } }
+    before { easy.headers = headers }
 
-    context "when headers" do
-      let(:headers) { { 'User-Agent' => 'Orthos' } }
-      before { easy.headers = headers }
-
-      it "sets header" do
-        Orthos::Curl.expects(:set_option)
-        easy.set_headers
-      end
+    it "sets header" do
+      Orthos::Curl.expects(:set_option)
+      easy.set_headers
     end
   end
 
@@ -133,11 +128,11 @@ describe Orthos::Easy do
       end
 
       it "sets response body" do
-        easy.response_body.should be_present
+        easy.response_body.should be
       end
 
       it "sets response header" do
-        easy.response_header.should be_present
+        easy.response_header.should be
       end
 
       context "when request timed out" do
@@ -219,7 +214,7 @@ describe Orthos::Easy do
         context "when valid user_pwd" do
           let(:user_pwd) { "username:password" }
 
-          it "authenticates" do
+          it "returns 200" do
             easy.response_code.should eq(200)
           end
         end
@@ -230,7 +225,7 @@ describe Orthos::Easy do
         let(:http_auth) { :ntlm }
 
         context "when no user_pwd" do
-          it "has correct header" do
+          it "returns 401" do
             easy.response_code.should eq(401)
           end
         end
