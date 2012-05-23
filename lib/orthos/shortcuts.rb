@@ -3,15 +3,15 @@ module Orthos
     def action=(action)
       case action
       when :get
-        http_get = true
+        self.http_get = true
       when :post
-        http_post = true
+        self.http_post = true
       when :put
-        upload = true
+        self.upload = true
       when :head
-        nobody = true
+        self.nobody = true
       else
-        custom_request = action.to_s.upcase
+        self.custom_request = action.to_s.upcase
       end
     end
   end

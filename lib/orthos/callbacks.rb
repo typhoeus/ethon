@@ -1,7 +1,7 @@
 module Orthos
   module Callbacks
     def set_callbacks
-      if @body_write_callback.nil?
+      unless defined?(@body_write_callback)
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
       end

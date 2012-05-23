@@ -433,7 +433,11 @@ module Orthos
     attach_function :slist_append, :curl_slist_append, [:pointer, :string], :pointer
     attach_function :slist_free_all, :curl_slist_free_all, [:pointer], :void
 
-    ffi_lib (windows? ? 'ws2_32' :  ::FFI::Library::LIBC)
+    if windows?
+      ffi_lib 'ws2_32'
+    else
+      ffi_lib ::FFI::Library::LIBC
+    end
     @blocking = true
     attach_function :select, [:int, FDSet.ptr, FDSet.ptr, FDSet.ptr, Timeval.ptr], :int
 
