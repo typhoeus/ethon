@@ -6,36 +6,73 @@ require 'benchmark'
 Benchmark.bm do |bm|
 
   [100_000].each do |i|
-    puts "[ #{i} ]"
+    puts "[ #{i} Creations]"
 
-    bm.report("Easy.new    ") do
-      i.times { Orthos::Easy.new }
+    bm.report("String.new   ") do
+      i.times { String.new }
     end
 
-    bm.report("String.new  ") do
-      i.times { String.new }
+    bm.report("Easy.new     ") do
+      i.times { Orthos::Easy.new }
     end
   end
 
   GC.start
 
   [1000].each do |i|
-    puts "[ #{i} ]"
+    puts "[ #{i} Requests]"
 
-    bm.report("Easy.perform") do
+    bm.report("net/http     ") do
+      uri = URI.parse("http://localhost:3001/")
+      i.times { Net::HTTP.get_response(uri) }
+    end
+
+    bm.report("open         ") do
+      i.times { open "http://localhost:3001/" }
+    end
+
+    bm.report("Easy.perform ") do
       easy = Orthos::Easy.new
       easy.url = "http://localhost:3001/"
       easy.prepare
       i.times { easy.perform }
     end
+  end
 
-    bm.report("open        ") do
-      i.times { open "http://localhost:3001/" }
-    end
+  GC.start
 
-    bm.report("net/http    ") do
-      uri = URI.parse("http://localhost:3001/")
-      i.times { Net::HTTP.get_response(uri) }
+  puts "[ 4 delayed Requests ]"
+
+  bm.report("net/http     ") do
+    3.times do |i|
+      uri = URI.parse("http://localhost:300#{i}/?delay=1")
+      Net::HTTP.get_response(uri)
     end
+  end
+
+  bm.report("open         ") do
+    3.times do |i|
+      open("http://localhost:300#{i}/?delay=1")
+    end
+  end
+
+  bm.report("Easy.perform ") do
+    easy = Orthos::Easy.new
+    3.times do |i|
+      easy.url = "http://localhost:300#{i}/?delay=1"
+      easy.prepare
+      easy.perform
+    end
+  end
+
+  bm.report("Multi.perform") do
+    multi = Orthos::Multi.new
+    3.times do |i|
+      easy = Orthos::Easy.new
+      easy.url = "http://localhost:300#{i}/?delay=1"
+      easy.prepare
+      multi.add(easy)
+    end
+    multi.perform
   end
 end
