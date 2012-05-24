@@ -14,7 +14,8 @@ module Orthos
     include Orthos::Shortcuts
     include Orthos::Operations
 
-    attr_reader :response_body, :response_header, :return_code
+    attr_reader :response_body, :response_header
+    attr_accessor :return_code
 
     class << self
       def finalizer(easy)
