@@ -44,41 +44,45 @@ module Orthos
     end
 
     def perform
-      while easy_handles.size > 0
+      while easy_handles.size > 0 && (!defined?(@running_count) || running_count > 0)
         run
-        while running_count > 0
-          code = Curl.multi_timeout(handle, @timeout)
-          # raise RuntimeError.new(
-          #   "an error occured getting the timeout: #{code}: #{Curl.multi_strerror(code)}"
-          # ) if code != :ok
-          timeout = @timeout.read_long
-          if timeout == 0
-            run
-            next
-          elsif timeout < 0
-            timeout = 1
-          end
+        timeout = get_timeout
+        next if timeout == 0
+        timeout = 1 if timeout < 0
+        reset_fds
+        set_fds(timeout)
+      end
+    end
 
-          @fd_read.clear
-          @fd_write.clear
-          @fd_excep.clear
-          code = Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
-          # raise RuntimeError.new(
-          #   "an error occured getting the fdset: #{code}: #{Curl.multi_strerror(code)}"
-          # ) if code != :ok
-          max_fd = @max_fd.read_int
-          if max_fd == -1
-            sleep(0.001)
-          else
-            @timeval[:sec] = timeout / 1000
-            @timeval[:usec] = (timeout * 1000) % 1000000
-            code = Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
-            # raise RuntimeError.new(
-            #   "error on thread select: #{::FFI.errno}"
-            # ) if code < 0
-          end
-          run
-        end
+    def get_timeout
+      code = Curl.multi_timeout(handle, @timeout)
+      # raise RuntimeError.new(
+      #   "an error occured getting the timeout: #{code}: #{Curl.multi_strerror(code)}"
+      # ) if code != :ok
+      @timeout.read_long
+    end
+
+    def reset_fds
+      @fd_read.clear
+      @fd_write.clear
+      @fd_excep.clear
+    end
+
+    def set_fds(timeout)
+      code = Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
+      # raise RuntimeError.new(
+      #   "an error occured getting the fdset: #{code}: #{Curl.multi_strerror(code)}"
+      # ) if code != :ok
+      max_fd = @max_fd.read_int
+      if max_fd == -1
+        sleep(0.001)
+      else
+        @timeval[:sec] = timeout / 1000
+        @timeval[:usec] = (timeout * 1000) % 1000000
+        code = Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
+        # raise RuntimeError.new(
+        #   "error on thread select: #{::FFI.errno}"
+        # ) if code < 0
       end
     end
 
