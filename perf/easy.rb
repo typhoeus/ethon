@@ -1,5 +1,6 @@
 require 'orthos'
 require 'open-uri'
+require 'patron'
 require "net/http"
 require 'benchmark'
 
@@ -29,6 +30,22 @@ Benchmark.bm do |bm|
 
     bm.report("open              ") do
       i.times { open "http://localhost:3001/" }
+    end
+
+    bm.report("patron            ") do
+      sess = Patron::Session.new
+      i.times do
+        sess.base_url = "http://localhost:3001"
+        sess.get("/")
+      end
+    end
+
+    bm.report("patron reuse      ") do
+      sess = Patron::Session.new
+      sess.base_url = "http://localhost:3001"
+      i.times do
+        sess.get("/")
+      end
     end
 
     bm.report("Easy.perform      ") do
@@ -62,6 +79,14 @@ Benchmark.bm do |bm|
   bm.report("open              ") do
     3.times do |i|
       open("http://localhost:300#{i}/?delay=1")
+    end
+  end
+
+  bm.report("patron            ") do
+    sess = Patron::Session.new
+    3.times do |i|
+      sess.base_url = "http://localhost:300#{i}/?delay=1"
+      sess.get("/")
     end
   end
 
