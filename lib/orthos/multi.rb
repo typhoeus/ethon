@@ -29,7 +29,7 @@ module Orthos
 
     def add(easy)
       return nil if easy_handles.include?(easy)
-      code = Curl.multi_add_handle(handle, easy.handle)
+      Curl.multi_add_handle(handle, easy.handle)
       easy_handles << easy
     end
 
@@ -40,7 +40,7 @@ module Orthos
     end
 
     def running_count
-      @running_count
+      @running_count ||= nil
     end
 
     def perform
@@ -55,7 +55,7 @@ module Orthos
     end
 
     def get_timeout
-      code = Curl.multi_timeout(handle, @timeout)
+      Curl.multi_timeout(handle, @timeout)
       # raise RuntimeError.new(
       #   "an error occured getting the timeout: #{code}: #{Curl.multi_strerror(code)}"
       # ) if code != :ok
@@ -69,7 +69,7 @@ module Orthos
     end
 
     def set_fds(timeout)
-      code = Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
+      Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
       # raise RuntimeError.new(
       #   "an error occured getting the fdset: #{code}: #{Curl.multi_strerror(code)}"
       # ) if code != :ok
@@ -79,7 +79,7 @@ module Orthos
       else
         @timeval[:sec] = timeout / 1000
         @timeval[:usec] = (timeout * 1000) % 1000000
-        code = Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
+        Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
         # raise RuntimeError.new(
         #   "error on thread select: #{::FFI.errno}"
         # ) if code < 0
@@ -88,9 +88,11 @@ module Orthos
 
     def check
       msgs_left = ::FFI::MemoryPointer.new(:int)
-      while not (msg = Curl.multi_info_read(handle, msgs_left)).null?
+      while true
+        msg = Curl.multi_info_read(handle, msgs_left)
+        break if msg.null?
         next if msg[:code] != :done
-        easy = easy_handles.find{ |easy| easy.handle == msg[:easy_handle] }
+        easy = easy_handles.find{ |e| e.handle == msg[:easy_handle] }
         easy.return_code = msg[:data][:code]
         delete(easy)
       end
