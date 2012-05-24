@@ -143,10 +143,10 @@ describe Orthos::Multi do
       end
     end
 
-    context "when 100 easy handles" do
+    context "when four easy handles" do
       let(:easies) do
         ary = []
-        100.times do
+        4.times do
           ary << another_easy = Orthos::Easy.new
           another_easy.url = "http://localhost:3001/"
           another_easy.prepare
@@ -160,9 +160,7 @@ describe Orthos::Multi do
       end
 
       it "sets response codes" do
-        p easies.map(&:response_code).sort.inspect
-        p easies.size
-        # easies.all?{ |e| e.response_code == 200 }.should be_true
+        easies.all?{ |e| e.response_code == 200 }.should be_true
       end
     end
   end
