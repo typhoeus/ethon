@@ -28,7 +28,7 @@ Benchmark.bm do |bm|
       i.times { Net::HTTP.get_response(uri) }
     end
 
-    bm.report("open              ") do
+    bm.report("open-uri          ") do
       i.times { open "http://localhost:3001/" }
     end
 
@@ -76,7 +76,7 @@ Benchmark.bm do |bm|
     end
   end
 
-  bm.report("open              ") do
+  bm.report("open-uri          ") do
     3.times do |i|
       open("http://localhost:300#{i}/?delay=1")
     end
