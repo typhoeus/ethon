@@ -2,8 +2,8 @@ require 'orthos/informations'
 require 'orthos/callbacks'
 require 'orthos/header'
 require 'orthos/options'
-require 'orthos/shortcuts'
-require 'orthos/operations'
+require 'orthos/shortcuts/http'
+require 'orthos/operations/easy'
 
 module Orthos
   class Easy
@@ -11,8 +11,8 @@ module Orthos
     include Orthos::Callbacks
     include Orthos::Options
     include Orthos::Header
-    include Orthos::Shortcuts
-    include Orthos::Operations
+    include Orthos::Shortcuts::Http
+    include Orthos::Operations::Easy
 
     attr_reader :response_body, :response_header
     attr_accessor :return_code

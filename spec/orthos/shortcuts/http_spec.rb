@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Orthos::Shortcuts do
+describe Orthos::Shortcuts::Http do
   let(:easy) { Orthos::Easy.new }
 
   describe "#action=" do
