@@ -6,9 +6,9 @@ module Orthos
       base.const_set(:AVAILABLE_OPTIONS, [
         :http_post, :put, :http_get, :nobody, :upload, :custom_request,
         :ca_info, :ca_path, :connect_timeout,
-        :follow_location, :http_auth, :interface,
+        :follow_location, :http_auth, :infile_size, :interface,
         :max_redirs, :no_signal, :postfield_size, :copy_postfields, :proxy,
-        :proxy_auth, :proxy_type, :timeout, :ssl_cert,
+        :proxy_auth, :proxy_type, :timeout, :read_data, :ssl_cert,
         :ssl_cert_type, :ssl_key, :ssl_key_type, :ssl_version,
         :url, :user_agent, :user_pwd, :verbose
       ])
@@ -32,7 +32,7 @@ module Orthos
       end
 
       def int_options
-        [ :connect_timeout, :max_redirs, :postfield_size, :timeout ]
+        [ :connect_timeout, :infile_size, :max_redirs, :postfield_size, :timeout ]
       end
     end
 
