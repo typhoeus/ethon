@@ -13,7 +13,7 @@ module Orthos
           unless options[:params]
             self.url = url
           else
-            query = build_query_string_from_hash(options[:params])
+            query = build_query_string_from_hash(options[:params], true)
             self.url = "#{url}?#{query}"
           end
         when :post
@@ -22,7 +22,7 @@ module Orthos
             self.postfield_size = 0
             self.copy_postfields = ""
           else
-            query = build_query_string_from_hash(options[:params])
+            query = build_query_string_from_hash(options[:params], false)
             self.postfield_size = query.bytesize
             self.copy_postfields = query
           end
@@ -35,7 +35,7 @@ module Orthos
           unless options[:params]
             self.url = url
           else
-            query = build_query_string_from_hash(options[:params])
+            query = build_query_string_from_hash(options[:params], true)
             self.url = "#{url}?#{query}"
           end
         end

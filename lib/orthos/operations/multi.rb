@@ -10,12 +10,15 @@ module Orthos
         @max_fd = ::FFI::MemoryPointer.new(:int)
       end
 
+      def ongoing?
+        easy_handles.size > 0 && (!defined?(@running_count) || running_count > 0)
+      end
+
       def perform
-        while easy_handles.size > 0 && (!defined?(@running_count) || running_count > 0)
+        while ongoing?
           run
           timeout = get_timeout
           next if timeout == 0
-          timeout = 1 if timeout < 0
           reset_fds
           set_fds(timeout)
         end
@@ -26,7 +29,9 @@ module Orthos
         # raise RuntimeError.new(
         #   "an error occured getting the timeout: #{code}: #{Curl.multi_strerror(code)}"
         # ) if code != :ok
-        @timeout.read_long
+        timeout = @timeout.read_long
+        timeout = 1 if timeout < 0
+        timeout
       end
 
       def reset_fds

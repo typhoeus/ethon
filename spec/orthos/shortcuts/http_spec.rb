@@ -20,10 +20,10 @@ describe Orthos::Shortcuts::Http do
       end
 
       context "when params" do
-        let(:options) { { :params => {:a => 1} } }
+        let(:options) { { :params => {:a => "1&"} } }
 
-        it "attaches to url" do
-          easy.url.should eq("#{url}?a=1")
+        it "attaches escaped to url" do
+          easy.url.should eq("#{url}?a=1%26")
         end
 
         context "when requesting" do
@@ -37,7 +37,7 @@ describe Orthos::Shortcuts::Http do
           end
 
           it "requests parameterized url" do
-            easy.response_body.should include('"REQUEST_URI":"http://localhost:3001/?a=1"')
+            easy.response_body.should include('"REQUEST_URI":"http://localhost:3001/?a=1%26"')
           end
         end
       end
@@ -65,15 +65,15 @@ describe Orthos::Shortcuts::Http do
       end
 
       context "when params" do
-        let(:options) { { :params => { :a => 1 }  } }
+        let(:options) { { :params => {:a => "1&"} } }
 
         context "when no file" do
           it "sets postfield_size" do
-            easy.postfield_size.should eq(3)
+            easy.postfield_size.should eq(4)
           end
 
           it "sets copy_postfields" do
-            easy.copy_postfields.should eq("a=1")
+            easy.copy_postfields.should eq("a=1&")
           end
 
           context "when requesting" do
@@ -86,8 +86,8 @@ describe Orthos::Shortcuts::Http do
               easy.response_body.should include('"REQUEST_METHOD":"POST"')
             end
 
-            it "submits a body" do
-              easy.response_body.should include('"body":"a=1"')
+            it "submits an unescaped body" do
+              easy.response_body.should include('"body":"a=1&"')
             end
           end
         end
@@ -134,10 +134,10 @@ describe Orthos::Shortcuts::Http do
       end
 
       context "when params" do
-        let(:options) { { :params => {:a => 1} } }
+        let(:options) { { :params => {:a => "1&"} } }
 
-        it "attaches to url" do
-          easy.url.should eq("#{url}?a=1")
+        it "attaches escaped to url" do
+          easy.url.should eq("#{url}?a=1%26")
         end
 
         context "when requesting" do
