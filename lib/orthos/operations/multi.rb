@@ -25,10 +25,8 @@ module Orthos
       end
 
       def get_timeout
-        Curl.multi_timeout(handle, @timeout)
-        # raise RuntimeError.new(
-        #   "an error occured getting the timeout: #{code}: #{Curl.multi_strerror(code)}"
-        # ) if code != :ok
+        code = Curl.multi_timeout(handle, @timeout)
+        raise Errors::MultiTimeout.new(code) unless code == :ok
         timeout = @timeout.read_long
         timeout = 1 if timeout < 0
         timeout
@@ -41,20 +39,16 @@ module Orthos
       end
 
       def set_fds(timeout)
-        Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
-        # raise RuntimeError.new(
-        #   "an error occured getting the fdset: #{code}: #{Curl.multi_strerror(code)}"
-        # ) if code != :ok
+        code = Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
+        raise Errors::MultiFdset.new(code) unless code == :ok
         max_fd = @max_fd.read_int
         if max_fd == -1
           sleep(0.001)
         else
           @timeval[:sec] = timeout / 1000
           @timeval[:usec] = (timeout * 1000) % 1000000
-          Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
-          # raise RuntimeError.new(
-          #   "error on thread select: #{::FFI.errno}"
-          # ) if code < 0
+          code = Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
+          raise Errors::Select.new(::FFI.errno) if code < 0
         end
       end
 
