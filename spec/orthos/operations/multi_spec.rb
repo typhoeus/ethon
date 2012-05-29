@@ -43,14 +43,6 @@ describe Orthos::Operations::Multi do
     end
   end
 
-  describe "#run" do
-    it
-  end
-
-  describe "#trigger" do
-    it
-  end
-
   describe "#get_timeout" do
     context "when code ok" do
       let(:timeout) { 1 }
@@ -186,5 +178,25 @@ describe Orthos::Operations::Multi do
         easies.all?{ |e| e.response_code == 200 }.should be_true
       end
     end
+  end
+
+  describe "#init_vars" do
+    it { pending("untested") }
+  end
+
+  describe "#reset_fds" do
+    it { pending("untested") }
+  end
+
+  describe "#check" do
+    it { pending("untested") }
+  end
+
+  describe "#run" do
+    it { pending("untested") }
+  end
+
+  describe "#trigger" do
+    it { pending("untested") }
   end
 end
