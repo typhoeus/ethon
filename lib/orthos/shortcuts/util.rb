@@ -1,4 +1,6 @@
 require 'cgi'
+require 'mime/types'
+require 'tempfile'
 
 module Orthos
   module Shortcuts
@@ -8,16 +10,31 @@ module Orthos
         recursive = Proc.new do |h, prefix|
           h.each_pair do |k,v|
             key = prefix == '' ? k : "#{prefix}[#{k}]"
-            v = CGI::escape(v.to_s) if escape_values
-            v.is_a?(Hash) ? recursive.call(v, key) : pairs << "#{key}=#{v}"
+            v = CGI::escape(v.to_s) if escape
+            case v
+            when Hash
+              recursive.call(v, key)
+            when Array
+              v.each { |x| pairs << [key, x]  }
+            when File, Tempfile
+              pairs << [key, file_infos(v)]
+            else
+              pairs << [key, v]
+            end
           end
         end
         recursive.call(hash, '')
         pairs
       end
 
-      def build_query_string_from_hash(hash, escape_values=false)
-        build_query_pairs_from_hash(hash, escape_values).join('&')
+      def file_infos(file)
+        filename = File.basename(file.path)
+        types = MIME::Types.type_for(filename)
+        [
+          filename,
+          types.empty? ? 'application/octet-stream' : types[0].to_s,
+          File.expand_path(file.path)
+        ]
       end
     end
   end

@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = '[none]'
 
   s.add_dependency('ffi', ['~> 1.0'])
+  s.add_dependency('mime-types', ['~> 1.18'])
 
   s.add_development_dependency('sinatra', ['~> 1.3'])
   s.add_development_dependency('rake', ['~> 0.9'])

@@ -2,6 +2,8 @@ require 'orthos/informations'
 require 'orthos/callbacks'
 require 'orthos/header'
 require 'orthos/options'
+require 'orthos/params'
+require 'orthos/form'
 require 'orthos/shortcuts/http'
 require 'orthos/operations/easy'
 

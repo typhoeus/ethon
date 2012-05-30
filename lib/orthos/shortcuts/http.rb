@@ -7,24 +7,26 @@ module Orthos
 
       def http_request(url, action, options = {})
         reset_http_request
+        params = Params.new(options[:params])
+        body = Form.new(options[:body])
         case action
         when :get
           self.http_get = true
           unless options[:params]
             self.url = url
           else
-            query = build_query_string_from_hash(options[:params], true)
-            self.url = "#{url}?#{query}"
+            params.escape = true
+            self.url = "#{url}?#{params.to_s}"
           end
         when :post
           self.url = url
-          unless options[:params]
+          if params.empty?
             self.postfield_size = 0
             self.copy_postfields = ""
           else
-            query = build_query_string_from_hash(options[:params], false)
-            self.postfield_size = query.bytesize
-            self.copy_postfields = query
+            params.escape = false
+            self.postfield_size = params.to_s.bytesize
+            self.copy_postfields = params.to_s
           end
         when :put
           self.url = url
@@ -32,11 +34,11 @@ module Orthos
           self.infile_size = 0
         when :head
           self.nobody = true
-          unless options[:params]
+          if params.empty?
             self.url = url
           else
-            query = build_query_string_from_hash(options[:params], true)
-            self.url = "#{url}?#{query}"
+            params.escape = true
+            self.url = "#{url}?#{params.to_s}"
           end
         end
       end
