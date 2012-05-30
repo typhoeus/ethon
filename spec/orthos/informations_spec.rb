@@ -69,6 +69,12 @@ describe Orthos::Informations do
     end
   end
 
+  describe "#redirect_count" do
+    it "returns 0" do
+      easy.redirect_count.should eq(0)
+    end
+  end
+
   describe "#supports_zlib?" do
     it "returns true" do
       easy.supports_zlib?.should be_true

@@ -40,6 +40,10 @@ module Orthos
       Curl.get_info_long(:response_code, handle)
     end
 
+    def redirect_count
+      Curl.get_info_long(:redirect_count, handle)
+    end
+
     def supports_zlib?
       !!(Curl.version.match(/zlib/))
     end
