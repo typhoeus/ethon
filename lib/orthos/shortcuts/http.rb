@@ -3,30 +3,36 @@ require 'orthos/shortcuts/util'
 module Orthos
   module Shortcuts
     module Http
-      include Orthos::Shortcuts::Util
-
       def http_request(url, action, options = {})
         reset_http_request
         params = Params.new(options[:params])
-        body = Form.new(options[:body])
+        form = Form.new(options[:body])
         case action
         when :get
           self.http_get = true
-          unless options[:params]
+          if params.empty?
             self.url = url
           else
             params.escape = true
             self.url = "#{url}?#{params.to_s}"
           end
         when :post
-          self.url = url
-          if params.empty?
+          if params.empty? && form.empty?
+            self.url = url
             self.postfield_size = 0
             self.copy_postfields = ""
-          else
-            params.escape = false
-            self.postfield_size = params.to_s.bytesize
-            self.copy_postfields = params.to_s
+          end
+          if !params.empty?
+            params.escape = true
+            self.url = "#{url}?#{params.to_s}"
+            self.postfield_size = 0
+            self.copy_postfields = ""
+          end
+          if !form.empty?
+            self.url = url
+            form.escape = false
+            form.materialize
+            self.http_post = form.first.read_pointer
           end
         when :put
           self.url = url

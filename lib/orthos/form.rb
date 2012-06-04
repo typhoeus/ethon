@@ -22,7 +22,6 @@ module Orthos
       @last ||= FFI::MemoryPointer.new(:pointer)
     end
 
-    # TODO: escaped or not?? triggers memoization.
     def multipart?
       query_pairs.any?{|pair| [File, Tempfile].include?(pair.last.class) }
     end
@@ -35,34 +34,32 @@ module Orthos
       @params.empty?
     end
 
+    def materialize
+      query_pairs.each { |pair| form_add(pair.first.to_s, pair.last) }
+    end
+
     private
 
-
-    # def process!
-    #   # add params
-    #   traversal[:params].each { |p| formadd_param(p[0], p[1]) }
-    #   # add files
-    #   traversal[:files].each { |file_args| formadd_file(*file_args) }
-    # end
-
-
-    # def formadd_param(name, contents)
-    #   Curl.formadd(@first, @last,
-    #     :form_option, :copyname, :pointer, name,
-    #     :form_option, :namelength, :long, Utils.bytesize(name),
-    #     :form_option, :copycontents, :pointer, contents,
-    #     :form_option, :contentslength, :long, Utils.bytesize(contents),
-    #     :form_option, :end)
-    # end
-
-    # def formadd_file(name, filename, contenttype, file)
-    #   Curl.formadd(@first, @last,
-    #     :form_option, :copyname, :pointer, name,
-    #     :form_option, :namelength, :long, Utils.bytesize(name),
-    #     :form_option, :file, :string, file,
-    #     :form_option, :filename, :string, filename,
-    #     :form_option, :contenttype, :string, contenttype,
-    #     :form_option, :end)
-    # end
+    def form_add(name, content)
+      case content
+      when Array
+        Curl.formadd(first, last,
+          :form_option, :copyname, :pointer, name,
+          :form_option, :namelength, :long, name.bytesize,
+          :form_option, :file, :string, content[2],
+          :form_option, :filename, :string, content[0],
+          :form_option, :contenttype, :string, content[1],
+          :form_option, :end
+        )
+      else
+        Curl.formadd(first, last,
+          :form_option, :copyname, :pointer, name,
+          :form_option, :namelength, :long, name.bytesize,
+          :form_option, :copycontents, :pointer, content,
+          :form_option, :contentslength, :long, content.bytesize,
+          :form_option, :end
+        )
+      end
+    end
   end
 end

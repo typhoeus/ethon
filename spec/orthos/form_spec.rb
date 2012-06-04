@@ -39,7 +39,7 @@ describe Orthos::Form do
     end
 
     context "when query_pairs contains file" do
-      let(:file) { File.new("fubar", "w+") }
+      let(:file) { File.new("Rakefile", "r") }
       let(:pairs) { [['a', '1'], ['b', file]] }
 
       it "returns false" do
@@ -57,4 +57,25 @@ describe Orthos::Form do
     end
   end
 
+  describe "#materialize" do
+    before { params.instance_variable_set(:@query_pairs, pairs) }
+
+    context "when query_pairs contains string values" do
+      let(:pairs) { [['a', '1']] }
+
+      it "adds params to form" do
+        Orthos::Curl.expects(:formadd)
+        params.materialize
+      end
+    end
+
+    context "when query_pairs contains file" do
+      let(:pairs) { [['a', ["file", "type", "path/file"]]] }
+
+      it "adds file to form" do
+        Orthos::Curl.expects(:formadd)
+        params.materialize
+      end
+    end
+  end
 end

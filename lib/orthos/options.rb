@@ -23,7 +23,7 @@ module Orthos
       def bool_options
         [
           :follow_location, :no_signal, :verify_peer, :verify_host,
-          :verbose, :http_get, :http_post, :nobody, :upload
+          :verbose, :http_get, :nobody, :upload
         ]
       end
 
