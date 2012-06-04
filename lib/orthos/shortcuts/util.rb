@@ -17,7 +17,7 @@ module Orthos
             when Array
               v.each { |x| pairs << [key, x]  }
             when File, Tempfile
-              pairs << [key, file_infos(v)]
+              pairs << [key, file_info(v)]
             else
               pairs << [key, v]
             end
@@ -27,7 +27,7 @@ module Orthos
         pairs
       end
 
-      def file_infos(file)
+      def file_info(file)
         filename = File.basename(file.path)
         types = MIME::Types.type_for(filename)
         [

@@ -40,10 +40,11 @@ describe Orthos::Shortcuts::Util do
 
     context "when params contains file" do
       let(:file) { Tempfile.new("fubar") }
+      let(:file_info) { params.method(:file_info).call(file) }
       let(:hash) { {:a => 1, :b => file} }
 
       it "transforms correct" do
-        pairs.should eq([[:a, 1], [:b, 2], [:b, 3]])
+        pairs.should eq([[:a, 1], [:b, file_info]])
       end
     end
   end
