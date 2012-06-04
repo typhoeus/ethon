@@ -1,6 +1,7 @@
 require 'orthos'
 require 'open-uri'
 require 'patron'
+require 'curb'
 require "net/http"
 require 'benchmark'
 
@@ -45,6 +46,13 @@ Benchmark.bm do |bm|
       sess.base_url = "http://localhost:3001"
       i.times do
         sess.get("/")
+      end
+    end
+
+    bm.report("curb reuse        ") do
+      easy = Curl::Easy.new("http://localhost:3001")
+      i.times do
+        easy.perform
       end
     end
 
