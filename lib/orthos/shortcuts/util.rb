@@ -10,7 +10,6 @@ module Orthos
         recursive = Proc.new do |h, prefix|
           h.each_pair do |k,v|
             key = prefix == '' ? k : "#{prefix}[#{k}]"
-            v = CGI::escape(v.to_s) if escape
             case v
             when Hash
               recursive.call(v, key)
@@ -19,6 +18,7 @@ module Orthos
             when File, Tempfile
               pairs << [key, file_info(v)]
             else
+              v = CGI::escape(v.to_s) if escape
               pairs << [key, v]
             end
           end
