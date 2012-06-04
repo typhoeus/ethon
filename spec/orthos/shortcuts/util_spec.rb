@@ -8,7 +8,7 @@ describe Orthos::Shortcuts::Util do
   describe "#build_query_pairs_from_hash" do
     let(:pairs) { params.method(:build_query_pairs_from_hash).call(hash, escape) }
 
-    context "when @params is empty" do
+    context "when params is empty" do
       it "returns empty array" do
         pairs.should eq([])
       end
