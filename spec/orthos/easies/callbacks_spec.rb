@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Orthos::Callbacks do
+describe Orthos::Easies::Callbacks do
   let(:easy) { Orthos::Easy.new }
 
   describe "#set_callbacks" do

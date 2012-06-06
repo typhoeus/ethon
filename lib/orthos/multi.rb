@@ -1,10 +1,10 @@
-require 'orthos/stack'
-require 'orthos/operations/multi'
+require 'orthos/multies/stack'
+require 'orthos/multies/operations'
 
 module Orthos
   class Multi
-    include Orthos::Stack
-    include Orthos::Operations::Multi
+    include Orthos::Multies::Stack
+    include Orthos::Multies::Operations
 
     class << self
       def finalizer(multi)

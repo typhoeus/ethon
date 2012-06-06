@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Orthos::Params do
+describe Orthos::Easies::Params do
   let(:hash) { {} }
-  let(:params) { Orthos::Params.new(hash) }
+  let(:params) { Orthos::Easies::Params.new(hash) }
 
   describe "#to_s" do
     context "when query_pairs empty" do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Orthos::Operations::Multi do
+describe Orthos::Multies::Operations do
   let(:multi) { Orthos::Multi.new }
   let(:easy) { Orthos::Easy.new }
 

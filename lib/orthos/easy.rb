@@ -1,20 +1,21 @@
-require 'orthos/informations'
-require 'orthos/callbacks'
-require 'orthos/header'
-require 'orthos/options'
-require 'orthos/params'
-require 'orthos/form'
-require 'orthos/shortcuts/http'
-require 'orthos/operations/easy'
+require 'orthos/easies/informations'
+require 'orthos/easies/callbacks'
+require 'orthos/easies/options'
+require 'orthos/easies/header'
+require 'orthos/easies/util'
+require 'orthos/easies/params'
+require 'orthos/easies/form'
+require 'orthos/easies/http'
+require 'orthos/easies/operations'
 
 module Orthos
   class Easy
-    include Orthos::Informations
-    include Orthos::Callbacks
-    include Orthos::Options
-    include Orthos::Header
-    include Orthos::Shortcuts::Http
-    include Orthos::Operations::Easy
+    include Orthos::Easies::Informations
+    include Orthos::Easies::Callbacks
+    include Orthos::Easies::Options
+    include Orthos::Easies::Header
+    include Orthos::Easies::Http
+    include Orthos::Easies::Operations
 
     attr_reader :response_body, :response_header
     attr_accessor :return_code

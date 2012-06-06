@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Orthos::Header do
+describe Orthos::Easies::Header do
   let(:easy) { Orthos::Easy.new }
 
   describe "#set_headers" do

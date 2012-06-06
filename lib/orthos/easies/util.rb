@@ -3,7 +3,7 @@ require 'mime/types'
 require 'tempfile'
 
 module Orthos
-  module Shortcuts
+  module Easies
     module Util
       def build_query_pairs_from_hash(hash, escape_values=false)
         pairs = []

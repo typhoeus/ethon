@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Orthos::Options do
+describe Orthos::Easies::Options do
   let(:easy) { Orthos::Easy.new }
 
   describe "options" do

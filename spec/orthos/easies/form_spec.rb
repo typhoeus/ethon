@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Orthos::Form do
+describe Orthos::Easies::Form do
   let(:hash) { {} }
-  let(:params) { Orthos::Form.new(hash) }
+  let(:params) { Orthos::Easies::Form.new(hash) }
 
   describe ".new" do
     it "defines finalizer" do

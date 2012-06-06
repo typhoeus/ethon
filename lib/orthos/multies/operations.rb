@@ -1,6 +1,6 @@
 module Orthos
-  module Operations
-    module Multi
+  module Multies
+    module Operations
       def init_vars
         @timeout = ::FFI::MemoryPointer.new(:long)
         @timeval = Curl::Timeval.new

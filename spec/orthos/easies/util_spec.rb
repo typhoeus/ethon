@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Orthos::Shortcuts::Util do
+describe Orthos::Easies::Util do
   let(:hash) { {} }
   let(:escape) { false }
-  let(:params) { Orthos::Params.new(hash) }
+  let(:params) { Orthos::Easies::Params.new(hash) }
 
   describe "#build_query_pairs_from_hash" do
     let(:pairs) { params.method(:build_query_pairs_from_hash).call(hash, escape) }

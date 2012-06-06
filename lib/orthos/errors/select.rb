@@ -1,6 +1,6 @@
 module Orthos
   module Errors
-    class Select < StandardError
+    class Select < OrthosError
       def initialize(errno)
         super("An error occured on select: #{errno}")
       end

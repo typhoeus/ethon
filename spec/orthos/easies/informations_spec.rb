@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Orthos::Informations do
+describe Orthos::Easies::Informations do
   let(:easy) { Orthos::Easy.new }
 
   before do

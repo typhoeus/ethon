@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Orthos::Operations::Easy do
+describe Orthos::Easies::Operations do
   let(:easy) { Orthos::Easy.new }
 
   describe "#perform" do

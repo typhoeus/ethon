@@ -1,7 +1,5 @@
-require 'orthos/shortcuts/util'
-
 module Orthos
-  module Shortcuts
+  module Easies
     module Http
       def http_request(url, action, options = {})
         reset_http_request
