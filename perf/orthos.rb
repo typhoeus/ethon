@@ -1,4 +1,4 @@
-require 'orthos'
+require 'ethon'
 require 'open-uri'
 require 'patron'
 require 'curb'
@@ -15,7 +15,7 @@ Benchmark.bm do |bm|
     end
 
     bm.report("Easy.new          ") do
-      i.times { Orthos::Easy.new }
+      i.times { Ethon::Easy.new }
     end
   end
 
@@ -57,7 +57,7 @@ Benchmark.bm do |bm|
     end
 
     bm.report("Easy.perform      ") do
-      easy = Orthos::Easy.new
+      easy = Ethon::Easy.new
       i.times do
         easy.url = "http://localhost:3001/"
         easy.prepare
@@ -66,7 +66,7 @@ Benchmark.bm do |bm|
     end
 
     bm.report("Easy.perform reuse") do
-      easy = Orthos::Easy.new
+      easy = Ethon::Easy.new
       easy.url = "http://localhost:3001/"
       easy.prepare
       i.times { easy.perform }
@@ -99,7 +99,7 @@ Benchmark.bm do |bm|
   end
 
   bm.report("Easy.perform      ") do
-    easy = Orthos::Easy.new
+    easy = Ethon::Easy.new
     3.times do |i|
       easy.url = "http://localhost:300#{i}/?delay=1"
       easy.prepare
@@ -108,9 +108,9 @@ Benchmark.bm do |bm|
   end
 
   bm.report("Multi.perform     ") do
-    multi = Orthos::Multi.new
+    multi = Ethon::Multi.new
     3.times do |i|
-      easy = Orthos::Easy.new
+      easy = Ethon::Easy.new
       easy.url = "http://localhost:300#{i}/?delay=1"
       easy.prepare
       multi.add(easy)
