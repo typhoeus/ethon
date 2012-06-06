@@ -13,6 +13,23 @@ describe Orthos::Easy do
       ObjectSpace.expects(:define_finalizer)
       easy
     end
+
+    context "when options are empty" do
+      it "sets nothing" do
+        easy.instance_variables.all? { |ivar| ivar == nil }.should be_true
+      end
+    end
+
+    context "when options not empty" do
+      context "when verbose is set" do
+        let(:options) { { :verbose => true } }
+        let(:easy) { Orthos::Easy.new(options) }
+
+        it "sets verbose" do
+          easy.verbose.should be_true
+        end
+      end
+    end
   end
 
   describe "#handle" do

@@ -29,9 +29,13 @@ module Orthos
       end
     end
 
-    def initialize
+    def initialize(options = {})
       Curl.init
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
+
+      options.each_pair do |key, value|
+        method("#{key}=").call(value)
+      end
     end
 
     def handle
