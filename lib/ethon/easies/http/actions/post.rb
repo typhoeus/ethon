@@ -4,23 +4,29 @@ module Ethon
       module Actions
         class Post < Action
           def setup(easy)
-            if params.empty? && form.empty?
-              easy.url = url
-              easy.postfield_size = 0
-              easy.copy_postfields = ""
-            end
-            if !params.empty?
-              params.escape = true
-              easy.url = "#{url}?#{params.to_s}"
-              easy.postfield_size = 0
-              easy.copy_postfields = ""
-            end
-            if !form.empty?
-              easy.url = url
-              form.escape = false
-              form.materialize
-              easy.http_post = form.first.read_pointer
-            end
+            set_nothing(easy) if params.empty? && form.empty?
+            set_params(easy) unless params.empty?
+            set_form(easy) unless form.empty?
+          end
+
+          def set_nothing(easy)
+            easy.url = url
+            easy.postfieldsize = 0
+            easy.copypostfields = ""
+          end
+
+          def set_params(easy)
+            params.escape = true
+            easy.url = "#{url}?#{params.to_s}"
+            easy.postfieldsize = 0
+            easy.copypostfields = ""
+          end
+
+          def set_form(easy)
+            easy.url = url
+            form.escape = false
+            form.materialize
+            easy.httppost = form.first.read_pointer
           end
         end
       end

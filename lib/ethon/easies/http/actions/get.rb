@@ -4,7 +4,7 @@ module Ethon
       module Actions
         class Get < Action
           def setup(easy)
-            easy.http_get = true
+            easy.httpget = true
             if params.empty?
               easy.url = url
             else

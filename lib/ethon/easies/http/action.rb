@@ -11,14 +11,14 @@ module Ethon
 
           def reset(easy)
             easy.url = nil
-            easy.http_get = nil
-            easy.http_post = nil
+            easy.httpget = nil
+            easy.httppost = nil
             easy.upload = nil
             easy.nobody = nil
-            easy.custom_request = nil
-            easy.postfield_size = nil
-            easy.copy_postfields = nil
-            easy.infile_size = nil
+            easy.customrequest = nil
+            easy.postfieldsize = nil
+            easy.copypostfields = nil
+            easy.infilesize = nil
           end
         end
 

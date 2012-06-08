@@ -16,11 +16,11 @@ describe Ethon::Easies::Operations do
     before do
       easy.url = url
       easy.timeout = timeout
-      easy.connect_timeout = connect_timeout
-      easy.follow_location = follow_location
-      easy.max_redirs = max_redirs
-      easy.user_pwd = user_pwd
-      easy.http_auth = http_auth
+      easy.connecttimeout = connect_timeout
+      easy.followlocation = follow_location
+      easy.maxredirs = max_redirs
+      easy.userpwd = user_pwd
+      easy.httpauth = http_auth
       easy.headers = headers
 
       easy.prepare

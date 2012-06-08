@@ -6,7 +6,7 @@ module Ethon
           def setup(easy)
             easy.url = url
             easy.upload = true
-            easy.infile_size = 0
+            easy.infilesize = 0
           end
         end
       end

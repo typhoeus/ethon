@@ -19,7 +19,7 @@ describe Ethon::Easies::Http::Actions::Put do
     end
 
     it "sets infile_size" do
-      easy.infile_size.should eq(0)
+      easy.infilesize.should eq(0)
     end
 
     it "makes a put request" do
@@ -29,5 +29,9 @@ describe Ethon::Easies::Http::Actions::Put do
     end
 
     context "when params"
+
+    context "when body"
+
+    context "when params and body"
   end
 end

@@ -7,12 +7,12 @@ describe Ethon::Easies::Http::Action do
     let(:action)  { Ethon::Easies::Http::Action }
     before { action.reset(easy) }
 
-    it "unsets http_get" do
-      easy.http_get.should be_nil
+    it "unsets httpget" do
+      easy.httpget.should be_nil
     end
 
-    it "unsets http_post" do
-      easy.http_post.should be_nil
+    it "unsets httppost" do
+      easy.httppost.should be_nil
     end
 
     it "unsets upload" do
@@ -24,7 +24,7 @@ describe Ethon::Easies::Http::Action do
     end
 
     it "unsets custom_request" do
-      easy.custom_request.should be_nil
+      easy.customrequest.should be_nil
     end
   end
 end

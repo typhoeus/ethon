@@ -15,11 +15,11 @@ describe Ethon::Easies::Http::Actions::Post do
     end
 
     it "sets postfield_size" do
-      easy.postfield_size.should eq(0)
+      easy.postfieldsize.should eq(0)
     end
 
     it "sets copy_postfields" do
-      easy.copy_postfields.should eq("")
+      easy.copypostfields.should eq("")
     end
 
     it "makes a post request" do
@@ -36,11 +36,11 @@ describe Ethon::Easies::Http::Actions::Post do
       end
 
       it "sets postfield_size" do
-        easy.postfield_size.should eq(0)
+        easy.postfieldsize.should eq(0)
       end
 
       it "sets copy_postfields" do
-        easy.copy_postfields.should eq("")
+        easy.copypostfields.should eq("")
       end
 
       context "when requesting" do
@@ -64,33 +64,39 @@ describe Ethon::Easies::Http::Actions::Post do
     end
 
     context "when body" do
-      let(:form) { {:a => "1&"} }
+      context "when multipart" do
+        let(:form) { {:a => "1&"} }
 
-      it "sets http_post" do
-        easy.http_post.should be
+        it "sets httppost" do
+          easy.httppost.should be
+        end
+
+        context "when requesting" do
+          before do
+            easy.prepare
+            easy.perform
+          end
+
+          it "is a post" do
+            easy.response_body.should include('"REQUEST_METHOD":"POST"')
+          end
+
+          it "uses multipart/form-data content type" do
+            easy.response_body.should include('"CONTENT_TYPE":"multipart/form-data')
+          end
+
+          it "submits a body" do
+            easy.response_body.should match('"body":".+"')
+          end
+
+          it "submits the data" do
+            easy.response_body.should include('"rack.request.form_hash":{"a":"1&"}')
+          end
+        end
       end
 
-      context "when requesting" do
-        before do
-          easy.prepare
-          easy.perform
-        end
-
-        it "is a post" do
-          easy.response_body.should include('"REQUEST_METHOD":"POST"')
-        end
-
-        it "uses multipart/form-data content type" do
-          easy.response_body.should include('"CONTENT_TYPE":"multipart/form-data')
-        end
-
-        it "submits a body" do
-          easy.response_body.should match('"body":".+"')
-        end
-
-        it "submits the data" do
-          easy.response_body.should include('"rack.request.form_hash":{"a":"1&"}')
-        end
+      context "when not multipart" do
+        it "works"
       end
     end
 

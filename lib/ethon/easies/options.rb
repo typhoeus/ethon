@@ -4,13 +4,13 @@ module Ethon
       def self.included(base)
         base.extend ClassMethods
         base.const_set(:AVAILABLE_OPTIONS, [
-          :http_post, :put, :http_get, :nobody, :upload, :custom_request,
-          :ca_info, :ca_path, :connect_timeout,
-          :follow_location, :http_auth, :infile_size, :interface,
-          :max_redirs, :no_signal, :postfield_size, :copy_postfields, :proxy,
-          :proxy_auth, :proxy_type, :timeout, :read_data, :ssl_cert,
-          :ssl_cert_type, :ssl_key, :ssl_key_type, :ssl_version,
-          :url, :user_agent, :user_pwd, :verbose
+          :httppost, :put, :httpget, :nobody, :upload, :customrequest,
+          :cainfo, :capath, :connecttimeout,
+          :followlocation, :httpauth, :infilesize, :interface,
+          :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
+          :proxyauth, :proxytype, :timeout, :readdata, :sslcert, :ssl_verifypeer, :ssl_verifyhost,
+          :sslcerttype, :sslkey, :sslkeytype, :sslversion,
+          :url, :useragent, :userpwd, :verbose
         ])
         base.send(:attr_accessor, *Ethon::Easy::AVAILABLE_OPTIONS)
       end
@@ -22,17 +22,17 @@ module Ethon
 
         def bool_options
           [
-            :follow_location, :no_signal, :verify_peer, :verify_host,
-            :verbose, :http_get, :nobody, :upload
+            :followlocation, :nosignal, :ssl_verifypeer, :ssl_verifyhost,
+            :verbose, :httpget, :nobody, :upload
           ]
         end
 
         def enum_options
-          { :http_auth => Curl::Auth }
+          { :httpauth => Curl::Auth }
         end
 
         def int_options
-          [ :connect_timeout, :infile_size, :max_redirs, :postfield_size, :timeout ]
+          [ :connecttimeout, :infilesize, :maxredirs, :postfieldsize, :timeout ]
         end
       end
 
@@ -41,8 +41,7 @@ module Ethon
           value = value_for(option)
           next if value.nil?
 
-          curl_option = option.to_s.tr('_', '').to_sym
-          Curl.set_option(curl_option, value, handle)
+          Curl.set_option(option, value, handle)
         end
       end
 

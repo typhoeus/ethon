@@ -10,8 +10,8 @@ describe Ethon::Easies::Http::Actions::Get do
   describe "#setup" do
     before { get.setup(easy) }
 
-    it "sets http_get" do
-      easy.http_get.should be
+    it "sets httpget" do
+      easy.httpget.should be
     end
 
     it "sets url" do
