@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version      = Ethon::VERSION
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Hans Hasselberg"]
-  s.email        = "me@hans.io"
+  s.email        = ["me@hans.io"]
   s.homepage     = "https://github.com/typhoeus/ethon"
   s.summary      = "Libcurl wrapper."
   s.description  = %q{Fu}
@@ -30,5 +30,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('spoon') if RUBY_PLATFORM == "java"
 
   s.files        = Dir.glob("lib/**/*") + %w(CHANGELOG.md Gemfile LICENSE README.md Rakefile)
-  s.require_path = lib
+  s.require_path = 'lib'
 end
