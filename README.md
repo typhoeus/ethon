@@ -3,15 +3,15 @@
 In the greek mythology Ethon is a gigantic eagle the son of Typhoeus and Echidna. So much for the history.
 In the modern world Ethon is a very basic libcurl wrapper using ffi.
 
+## Caution
+
+This is __alpha__!
+
 ## Installation
 
 With bundler:
 
-    gem "ethon"
-
-Withou bundler:
-
-    gem install ethon
+    gem "ethon", :git => "https://github.com/typhoeus/ethon.git", :branch => "master"
 
 ## Usage
 
@@ -57,6 +57,16 @@ In order to make life easier there are some helpers for doing http requests:
 
 This really handy when doing requests since you don't have to care about setting
 everything up correct.
+
+## Testing
+
+Before you can run the specs you need to start the testserver in another terminal first:
+
+    bundle exec ruby spec/support/test_server.rb
+
+To run the specs:
+
+    rake
 
 ##  LICENSE
 
