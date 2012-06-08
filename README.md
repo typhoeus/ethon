@@ -1,4 +1,4 @@
-#  Ethon
+#  Ethon [![Build Status](https://secure.travis-ci.org/typhoeus/ethon.png?branch=master)](http://travis-ci.org/typhoeus/ethon)
 
 In the greek mythology Ethon is a gigantic eagle the son of Typhoeus and Echidna. So much for the history.
 In the modern world Ethon is a very basic libcurl wrapper using ffi.
