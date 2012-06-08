@@ -24,11 +24,15 @@ module Ethon
       end
 
       def multipart?
-        query_pairs.any?{|pair| [File, Tempfile].include?(pair.last.class) }
+        query_pairs.any?{|pair| pair.last.is_a?(Array)}
       end
 
       def query_pairs
         @query_pairs ||= build_query_pairs_from_hash(@params, escape)
+      end
+
+      def to_s
+        query_pairs.map{|pair| pair.join("=")}.join('&')
       end
 
       def empty?

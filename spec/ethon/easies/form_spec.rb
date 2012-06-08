@@ -39,19 +39,9 @@ describe Ethon::Easies::Form do
     end
 
     context "when query_pairs contains file" do
-      let(:file) { File.new("Rakefile", "r") }
-      let(:pairs) { [['a', '1'], ['b', file]] }
+      let(:pairs) { [['a', '1'], ['b', ['path', 'encoding', 'abs_path']]] }
 
-      it "returns false" do
-        params.multipart?.should be_true
-      end
-    end
-
-    context "when query_pairs contains tempfile" do
-      let(:file) { Tempfile.new("fubar") }
-      let(:pairs) { [['a', '1'], ['b', file]] }
-
-      it "returns false" do
+      it "returns true" do
         params.multipart?.should be_true
       end
     end

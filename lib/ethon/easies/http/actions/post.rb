@@ -23,10 +23,14 @@ module Ethon
           end
 
           def set_form(easy)
-            easy.url = url
-            form.escape = false
-            form.materialize
-            easy.httppost = form.first.read_pointer
+            easy.url ||= url
+            if form.multipart?
+              form.materialize
+              easy.httppost = form.first.read_pointer
+            else
+              easy.copypostfields = form.to_s
+              easy.postfieldsize = easy.copypostfields.bytesize
+            end
           end
         end
       end

@@ -65,7 +65,7 @@ describe Ethon::Easies::Http::Actions::Post do
 
     context "when body" do
       context "when multipart" do
-        let(:form) { {:a => "1&"} }
+        let(:form) { {:a => File.open(__FILE__, 'r')} }
 
         it "sets httppost" do
           easy.httppost.should be
@@ -90,13 +90,44 @@ describe Ethon::Easies::Http::Actions::Post do
           end
 
           it "submits the data" do
-            easy.response_body.should include('"rack.request.form_hash":{"a":"1&"}')
+            easy.response_body.should include('"rack.request.form_hash":{"a":{"filename":"post_spec.rb"')
           end
         end
       end
 
       context "when not multipart" do
-        it "works"
+        let(:form) { {:a => "1"} }
+
+        it "sets copypostfields" do
+          easy.copypostfields.should_not be_empty
+        end
+
+        it "sets postfieldsize" do
+          easy.postfieldsize.should_not be_zero
+        end
+
+        context "when requesting" do
+          before do
+            easy.prepare
+            easy.perform
+          end
+
+          it "is a post" do
+            easy.response_body.should include('"REQUEST_METHOD":"POST"')
+          end
+
+          it "uses multipart/form-data content type" do
+            easy.response_body.should include('"CONTENT_TYPE":"application/x-www-form-urlencoded')
+          end
+
+          it "submits a body" do
+            easy.response_body.should match('"body":".+"')
+          end
+
+          it "submits the data" do
+            easy.response_body.should include('"rack.request.form_hash":{"a":"1"}')
+          end
+        end
       end
     end
 
