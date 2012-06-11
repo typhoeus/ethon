@@ -1,6 +1,13 @@
 module Ethon
-  module Multies
+  module Multies # :nodoc
+
+    # This module contains logic to run a multi.
     module Operations
+
+      # Initialize variables.
+      #
+      # @example Initialize variables.
+      #   multi.init_vars
       def init_vars
         @timeout = ::FFI::MemoryPointer.new(:long)
         @timeval = Curl::Timeval.new
@@ -10,10 +17,20 @@ module Ethon
         @max_fd = ::FFI::MemoryPointer.new(:int)
       end
 
+      # Return wether the multi still requests or not.
+      #
+      # @example Return if ongoing.
+      #   multi.ongoing?
+      #
+      # @return [ Boolean ] True if ongoing, else false.
       def ongoing?
         easy_handles.size > 0 && (!defined?(@running_count) || running_count > 0)
       end
 
+      # Perform multi.
+      #
+      # @example Perform multi.
+      #   multi.perform
       def perform
         while ongoing?
           run
@@ -24,6 +41,10 @@ module Ethon
         end
       end
 
+      # Get timeout.
+      #
+      # @example Get timeout.
+      #   multi.get_timeout
       def get_timeout
         code = Curl.multi_timeout(handle, @timeout)
         raise Errors::MultiTimeout.new(code) unless code == :ok
@@ -32,12 +53,20 @@ module Ethon
         timeout
       end
 
+      # Reset file describtors.
+      #
+      # @example Reset fds.
+      #   multi.reset_fds
       def reset_fds
         @fd_read.clear
         @fd_write.clear
         @fd_excep.clear
       end
 
+      # Set fds.
+      #
+      # @example Set fds.
+      #   multi.set_fds
       def set_fds(timeout)
         code = Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
         raise Errors::MultiFdset.new(code) unless code == :ok
@@ -52,6 +81,10 @@ module Ethon
         end
       end
 
+      # Check.
+      #
+      # @example Check.
+      #   multi.check
       def check
         msgs_left = ::FFI::MemoryPointer.new(:int)
         while true
@@ -64,11 +97,19 @@ module Ethon
         end
       end
 
+      # Run.
+      #
+      # @example Run
+      #   multi.run
       def run
         begin code = trigger end while code == :call_multi_perform
         check
       end
 
+      # Trigger.
+      #
+      # @example Trigger.
+      #   multi.trigger
       def trigger
         running_count = FFI::MemoryPointer.new(:int)
         code = Curl.multi_perform(handle, running_count)
@@ -76,6 +117,12 @@ module Ethon
         code
       end
 
+      # Return number of running requests.
+      #
+      # @example Return count.
+      #   multi.running_count
+      #
+      # @return [ Integer ] Number running requests.
       def running_count
         @running_count ||= nil
       end
