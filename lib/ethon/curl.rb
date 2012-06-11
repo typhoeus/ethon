@@ -445,8 +445,25 @@ module Ethon
     @@init_mutex = Mutex.new
 
     class << self
+      # This function sets up the program environment that libcurl needs.
+      # Think of it as an extension of the library loader.
+      #
+      # This function must be called at least once within a program (a program is all the
+      # code that shares a memory space) before the program calls any other function in libcurl.
+      # The environment it sets up is constant for the life of the program and is the same for
+      # every program, so multiple calls have the same effect as one call.
+      #
+      # The flags option is a bit pattern that tells libcurl exactly what features to init,
+      # as described below. Set the desired bits by ORing the values together. In normal
+      # operation, you must specify CURL_GLOBAL_ALL. Don't use any other value unless
+      # you are familiar with it and mean to control internal operations of libcurl.
+      #
+      # This function is not thread safe. You must not call it when any other thread in
+      # the program (i.e. a thread sharing the same memory) is running. This doesn't just
+      # mean no other thread that is using libcurl. Because curl_global_init() calls
+      # functions of other libraries that are similarly thread unsafe, it could conflict with
+      # any other thread that uses these other libraries.
       def init
-        # ensure curl lib is initialised. not thread-safe so must be wrapped in a mutex
         @@init_mutex.synchronize {
           if not @@initialized
             raise RuntimeError.new('curl failed to initialise') if Curl.global_init(GLOBAL_ALL) != 0
@@ -455,6 +472,7 @@ module Ethon
         }
       end
 
+      # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle)
         case value
         when String
@@ -468,6 +486,15 @@ module Ethon
         end
       end
 
+      # Return info as string.
+      #
+      # @example Return info.
+      #   Curl.get_info_string(:primary_ip, easy)
+      #
+      # @param [ Symbol ] options The option name.
+      # @param [ ::FFI::Pointer ] handle The easy handle.
+      #
+      # @return [ String ] The info.
       def get_info_string(option, handle)
         if easy_getinfo(handle, option, string_ptr) == :ok
           string_ptr.read_pointer.read_string
@@ -475,6 +502,15 @@ module Ethon
         end
       end
 
+      # Return info as integer.
+      #
+      # @example Return info.
+      #   Curl.get_info_long(:response_code, easy)
+      #
+      # @param [ Symbol ] options The option name.
+      # @param [ ::FFI::Pointer ] handle The easy handle.
+      #
+      # @return [ Integer ] The info.
       def get_info_long(option, handle)
         if easy_getinfo(handle, option, long_ptr) == :ok
           long_ptr.read_long
@@ -482,6 +518,15 @@ module Ethon
         end
       end
 
+      # Return info as float.
+      #
+      # @example Return info.
+      #   Curl.get_info_double(:response_code, easy)
+      #
+      # @param [ Symbol ] options The option name.
+      # @param [ ::FFI::Pointer ] handle The easy handle.
+      #
+      # @return [ Float ] The info.
       def get_info_double(option, handle)
         if easy_getinfo(handle, option, double_ptr) == :ok
           double_ptr.read_double
@@ -489,18 +534,35 @@ module Ethon
         end
       end
 
+      # Return a string pointer.
+      #
+      # @example Return a string pointer.
+      #   Curl.string_ptr
+      #
+      # @return [ ::FFI::Pointer ] The string pointer.
       def string_ptr
         @string_ptr ||= ::FFI::MemoryPointer.new(:pointer)
       end
 
+      # Return a long pointer.
+      #
+      # @example Return a long pointer.
+      #   Curl.long_ptr
+      #
+      # @return [ ::FFI::Pointer ] The long pointer.
       def long_ptr
         @long_ptr ||= ::FFI::MemoryPointer.new(:long)
       end
 
+      # Return a double pointer.
+      #
+      # @example Return a double pointer.
+      #   Curl.double_ptr
+      #
+      # @return [ ::FFI::Pointer ] The double pointer.
       def double_ptr
         @double_ptr ||= ::FFI::MemoryPointer.new(:double)
       end
     end
-
   end
 end
