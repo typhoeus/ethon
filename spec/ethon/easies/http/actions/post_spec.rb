@@ -132,7 +132,23 @@ describe Ethon::Easies::Http::Actions::Post do
     end
 
     context "when params and body" do
-      it "sets both"
+      let(:form) { {:a => "1"} }
+      let(:params) { {:b => "2"} }
+
+      context "when requesting" do
+        before do
+          easy.prepare
+          easy.perform
+        end
+
+        it "url contains params" do
+          easy.response_body.should include('"REQUEST_URI":"http://localhost:3001/?b=2"')
+        end
+
+        it "body contains form" do
+          easy.response_body.should include('"body":"a=1"')
+        end
+      end
     end
   end
 end
