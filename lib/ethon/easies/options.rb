@@ -4,6 +4,8 @@ module Ethon
     # This module contains the logic and knowledge about the
     # available options on easy.
     module Options
+
+      # :nodoc:
       def self.included(base)
         base.extend ClassMethods
         base.const_set(:AVAILABLE_OPTIONS, [
@@ -18,7 +20,7 @@ module Ethon
         base.send(:attr_accessor, *Ethon::Easy::AVAILABLE_OPTIONS)
       end
 
-      module ClassMethods
+      module ClassMethods # :nodoc:
 
         # Return the available options.
         #
