@@ -3,6 +3,7 @@ require 'rbconfig'
 require 'thread'
 
 module Ethon
+  # :nodoc:
   module Curl
     # this does not implement the full curl lib. just what is needed for typhoeus
 
@@ -12,13 +13,19 @@ module Ethon
 
     extend ::FFI::Library
 
+    # :nodoc:
     VERSION_NOW = 3
 
+    # :nodoc:
     GLOBAL_SSL     = 0x01
+    # :nodoc:
     GLOBAL_WIN32   = 0x02
+    # :nodoc:
     GLOBAL_ALL     = (GLOBAL_SSL | GLOBAL_WIN32)
+    # :nodoc:
     GLOBAL_DEFAULT = GLOBAL_ALL
 
+    # :nodoc:
     EasyCode = enum :easy_code, [
       :ok,
       :unsupported_protocol,
@@ -111,6 +118,7 @@ module Ethon
       :chunk_failed,
       :last]
 
+    # :nodoc:
     MultiCode = enum :multi_code, [
       :call_multi_perform, -1,
       :ok,
@@ -122,12 +130,14 @@ module Ethon
       :unknown_option,
       :last]
 
+    # :nodoc:
     OptionType = enum [
       :long,           0,
       :object_point,   10000,
       :function_point, 20000,
       :off_t,          30000]
 
+    # :nodoc:
     Option = enum :option, [
       :file,                         OptionType[:object_point]   + 1,
       :writedata,                    OptionType[:object_point]   + 1,
@@ -270,12 +280,14 @@ module Ethon
       :http_content_decoding,        OptionType[:long]           + 158,
       :copypostfields,               OptionType[:object_point]   + 165]
 
+    # :nodoc:
     InfoType = enum [
       :string, 0x100000,
       :long,   0x200000,
       :double, 0x300000,
       :slist,  0x400000]
 
+    # :nodoc:
     Info = enum :info, [
       :effective_url,           InfoType[:string] + 1,
       :response_code,           InfoType[:long]   + 2,
@@ -321,6 +333,7 @@ module Ethon
       :local_port,              InfoType[:long]   + 42,
       :last, 42]
 
+    # :nodoc:
     FormOption = enum :form_option, [
       :none,
       :copyname,
@@ -344,6 +357,7 @@ module Ethon
       :stream,
       :last]
 
+    # :nodoc:
     Auth = enum [
       :basic,        0x01,
       :digest,       0x02,
@@ -352,6 +366,7 @@ module Ethon
       :digest_ie,    0x10,
       :auto,         0x1f] # all options or'd together
 
+    # :nodoc:
     Proxy = enum [
       :http,     0,
       :http_1_0, 1,
@@ -359,25 +374,30 @@ module Ethon
       :socks5,   5,
       :socks4a,  6]
 
+    # :nodoc:
     SSLVersion = enum [
       :default, 0,
       :tlsv1,   1,
       :sslv2,   2,
       :sslv3,   3]
 
+    # :nodoc:
     MsgCode = enum :msg_code, [:none, :done, :last]
 
+    # :nodoc:
     class MsgData < ::FFI::Union
       layout :whatever, :pointer,
              :code, :easy_code
     end
 
+    # :nodoc:
     class Msg < ::FFI::Struct
       layout :code, :msg_code,
              :easy_handle, :pointer,
              :data, MsgData
     end
 
+    # :nodoc:
     class FDSet < ::FFI::Struct
       # XXX how does this work on non-windows? how can curl know the new size...
       FD_SETSIZE = 524288 # set a higher maximum number of fds. this has never applied to windows, so just use the default there
@@ -390,10 +410,12 @@ module Ethon
       else
         layout :fds_bits, [:long, FD_SETSIZE / ::FFI::Type::LONG.size]
 
+        # :nodoc:
         def clear; super; end
       end
     end
 
+    # :nodoc:
     class Timeval < ::FFI::Struct
       layout :sec, :time_t,
              :usec, :suseconds_t
@@ -491,7 +513,7 @@ module Ethon
       # @example Return info.
       #   Curl.get_info_string(:primary_ip, easy)
       #
-      # @param [ Symbol ] options The option name.
+      # @param [ Symbol ] option The option name.
       # @param [ ::FFI::Pointer ] handle The easy handle.
       #
       # @return [ String ] The info.
@@ -507,7 +529,7 @@ module Ethon
       # @example Return info.
       #   Curl.get_info_long(:response_code, easy)
       #
-      # @param [ Symbol ] options The option name.
+      # @param [ Symbol ] option The option name.
       # @param [ ::FFI::Pointer ] handle The easy handle.
       #
       # @return [ Integer ] The info.
@@ -523,7 +545,7 @@ module Ethon
       # @example Return info.
       #   Curl.get_info_double(:response_code, easy)
       #
-      # @param [ Symbol ] options The option name.
+      # @param [ Symbol ] option The option name.
       # @param [ ::FFI::Pointer ] handle The easy handle.
       #
       # @return [ Float ] The info.
