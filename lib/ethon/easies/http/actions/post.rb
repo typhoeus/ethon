@@ -1,7 +1,7 @@
 module Ethon
   module Easies
     module Http
-      module Actions
+      module Actions # :nodoc:
 
         # This class knows everything about making POST requests.
         class Post < Action
