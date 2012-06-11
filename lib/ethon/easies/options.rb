@@ -1,5 +1,8 @@
 module Ethon
   module Easies
+
+    # This module contains the logic and knowledge about the
+    # available options on easy.
     module Options
       def self.included(base)
         base.extend ClassMethods
@@ -16,10 +19,23 @@ module Ethon
       end
 
       module ClassMethods
+
+        # Return the available options.
+        #
+        # @example Return the available options.
+        #   easy.available_options
+        #
+        # @return [ Array ]  The available options.
         def available_options
           Ethon::Easy::AVAILABLE_OPTIONS
         end
 
+        # Return the options which need to set as 0 or 1 for easy.
+        #
+        # @example Return the bool options.
+        #   easy.bool_options
+        #
+        # @return [ Array ] The bool options.
         def bool_options
           [
             :followlocation, :nosignal, :ssl_verifypeer, :ssl_verifyhost,
@@ -27,15 +43,31 @@ module Ethon
           ]
         end
 
+        # Return the options which are an enum for easy.
+        #
+        # @example Return the enum options.
+        #   easy.enum_options
+        #
+        # @return [ Hash ] The enum options.
         def enum_options
           { :httpauth => Curl::Auth }
         end
 
+        # Return the options which need to set as an integer for easy.
+        #
+        # @example Return the int options.
+        #   easy.int_options
+        #
+        # @return [ Array ] The int options.
         def int_options
           [ :connecttimeout, :infilesize, :maxredirs, :postfieldsize, :timeout ]
         end
       end
 
+      # Set specified options on easy handle.
+      #
+      # @example Set options.
+      #   easy.set_options
       def set_options
         self.class.available_options.each do |option|
           value = value_for(option)
@@ -45,6 +77,13 @@ module Ethon
         end
       end
 
+      # Return the value to set to easy handle. It is converted with the help
+      # of bool_options, enum_options and int_options.
+      #
+      # @example Return casted the value.
+      #   easy.value_for(:verbose)
+      #
+      # @return [ Object ] The casted value.
       def value_for(option)
         value = method(option).call
         return nil if value.nil?
