@@ -13,12 +13,23 @@ describe Ethon::Easies::Header do
     end
 
     context "when requesting" do
-      it "sends header" do
+      before do
         easy.set_headers
         easy.url = "http://localhost:3001"
         easy.prepare
         easy.perform
+      end
+
+      it "sends header" do
         easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
+      end
+
+      context "when header value contains null byte" do
+        let(:headers) { { 'User-Agent' => "Ethon\0" } }
+
+        it "escapes" do
+          easy.response_body.should include('"HTTP_USER_AGENT":"Ethon\\\\0"')
+        end
       end
     end
   end
