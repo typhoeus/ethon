@@ -24,6 +24,13 @@ module Ethon
     attr_accessor :return_code
 
     class << self
+
+      # Free libcurl representation from an easy handle.
+      #
+      # @example Free easy handle.
+      #   Easy.finalizer(easy)
+      #
+      # @param [ Easy ] easy The easy to free.
       def finalizer(easy)
         proc {
           Curl.slist_free_all(easy.header_list) if easy.header_list
