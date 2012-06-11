@@ -3,8 +3,12 @@ require 'mime/types'
 require 'tempfile'
 
 module Ethon
-  module Easies
+  module Easies # :nodoc:
+
+    # This module contains small helpers.
     module Util
+
+      # Return query pairs from hash.
       def build_query_pairs_from_hash(hash, escape_values=false)
         pairs = []
         recursive = Proc.new do |h, prefix|
@@ -27,6 +31,7 @@ module Ethon
         pairs
       end
 
+      # Return file info for a file.
       def file_info(file)
         filename = File.basename(file.path)
         types = MIME::Types.type_for(filename)
