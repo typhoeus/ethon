@@ -5,8 +5,6 @@ require 'thread'
 module Ethon
   # :nodoc:
   module Curl
-    # this does not implement the full curl lib. just what is needed for typhoeus
-
     def Curl.windows?
       !(RbConfig::CONFIG['host_os'] !~ /mingw|mswin|bccwin/)
     end
