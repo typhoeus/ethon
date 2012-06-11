@@ -73,7 +73,6 @@ describe Ethon::Easies::Http::Actions::Put do
         end
 
         it "submits a body" do
-          print easy.response_body
           easy.response_body.should include("a=1")
         end
       end

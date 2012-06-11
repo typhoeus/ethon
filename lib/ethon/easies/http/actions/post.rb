@@ -24,7 +24,7 @@ module Ethon
           # @example Setup.
           #   post.set_nothing(easy)
           #
-          # @parms [ Easy ] easy The easy to setup.
+          # @param [ Easy ] easy The easy to setup.
           def set_nothing(easy)
             easy.url = url
             easy.postfieldsize = 0
@@ -36,7 +36,7 @@ module Ethon
           # @example Setup.
           #   post.set_params(easy)
           #
-          # @parms [ Easy ] easy The easy to setup.
+          # @param [ Easy ] easy The easy to setup.
           def set_params(easy)
             params.escape = true
             easy.url = "#{url}?#{params.to_s}"
@@ -50,7 +50,7 @@ module Ethon
           # @example Setup.
           #   post.set_form(easy)
           #
-          # @parms [ Easy ] easy The easy to setup.
+          # @param [ Easy ] easy The easy to setup.
           def set_form(easy)
             easy.url ||= url
             if form.multipart?

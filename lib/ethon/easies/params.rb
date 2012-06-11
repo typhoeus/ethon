@@ -13,7 +13,7 @@ module Ethon
       # @example Create a new Params.
       #   Params.new({})
       #
-      # @params [ Hash ] params The params to use.
+      # @param [ Hash ] params The params to use.
       #
       # @return [ Params ] A new Params.
       def initialize(params)
