@@ -49,7 +49,7 @@ module Ethon
       # @example Return the app connect time.
       #   easy.app_connect_time
       #
-      # @result [ Float ] The app connect time.
+      # @return [ Float ] The app connect time.
       def app_connect_time
         Curl.get_info_double(:appconnect_time, handle)
       end
@@ -64,7 +64,7 @@ module Ethon
       # @example Return the pre transfer time.
       #   easy.pretransfer_time
       #
-      # @result [ Float ] The pre transfer time.
+      # @return [ Float ] The pre transfer time.
       def pretransfer_time
         Curl.get_info_double(:pretransfer_time, handle)
       end
