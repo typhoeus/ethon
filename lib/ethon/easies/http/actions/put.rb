@@ -23,6 +23,10 @@ module Ethon
           end
 
           def set_upload(easy)
+            easy.url ||= url
+            easy.upload = true
+            easy.infilesize = form.to_s.bytesize
+            easy.set_read_callback(form.to_s)
           end
         end
       end

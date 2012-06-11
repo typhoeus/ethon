@@ -13,7 +13,7 @@ module Ethon
           :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
           :proxyauth, :proxytype, :timeout, :readdata, :sslcert, :ssl_verifypeer, :ssl_verifyhost,
           :sslcerttype, :sslkey, :sslkeytype, :sslversion,
-          :url, :useragent, :userpwd, :verbose
+          :url, :useragent, :userpwd, :verbose, :readfunction
         ])
         base.send(:attr_accessor, *Ethon::Easy::AVAILABLE_OPTIONS)
       end

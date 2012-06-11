@@ -24,17 +24,23 @@ module Ethon
         }
       end
 
-      def read_callback
-        @read_callback ||= proc {|stream, size, num, object|
+      def set_read_callback(body)
+        @request_body_read = 0
+        @read_callback = proc {|stream, size, num, object|
           size = size * num
-          left = Utils.bytesize(@request_body) - @request_body_read
+          left = body.bytesize - @request_body_read
           size = left if size > left
           if size > 0
-            stream.write_string(Utils.byteslice(@request_body, @request_body_read, size), size)
+            stream.write_string(body.byteslice(@request_body_read, size), size)
             @request_body_read += size
           end
           size
         }
+        self.readfunction = read_callback
+      end
+
+      def read_callback
+        @read_callback
       end
     end
   end

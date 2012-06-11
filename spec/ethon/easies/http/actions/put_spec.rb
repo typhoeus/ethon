@@ -15,11 +15,11 @@ describe Ethon::Easies::Http::Actions::Put do
     end
 
     it "sets upload" do
-      easy.upload.should be
+      easy.upload.should be_true
     end
 
-    it "sets infile_size" do
-      easy.infilesize.should eq(0)
+    it "sets infilesize" do
+      easy.infilesize.should be_zero
     end
 
     it "makes a put request" do
@@ -45,10 +45,39 @@ describe Ethon::Easies::Http::Actions::Put do
           easy.response_body.should include('"REQUEST_METHOD":"PUT"')
         end
       end
-
     end
 
-    context "when body"
+    context "when body" do
+      let(:form) { {:a => "1"} }
+
+      it "sets infilesize" do
+        easy.infilesize.should_not be_zero
+      end
+
+      it "sets readfunction" do
+        easy.readfunction.should_not be_nil
+      end
+
+      it "sets upload" do
+        easy.upload.should be_true
+      end
+
+      context "when requesting" do
+        before do
+          easy.prepare
+          easy.perform
+        end
+
+        it "makes a put request" do
+          easy.response_body.should include('"REQUEST_METHOD":"PUT"')
+        end
+
+        it "submits a body" do
+          print easy.response_body
+          easy.response_body.should include("a=1")
+        end
+      end
+    end
 
     context "when params and body"
   end
