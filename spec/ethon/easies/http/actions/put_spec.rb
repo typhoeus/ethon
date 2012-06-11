@@ -28,7 +28,25 @@ describe Ethon::Easies::Http::Actions::Put do
       easy.response_body.should include('"REQUEST_METHOD":"PUT"')
     end
 
-    context "when params"
+    context "when params" do
+      let(:params) { {:a => "1&"} }
+
+      it "attaches escaped to url" do
+        easy.url.should eq("#{url}?a=1%26")
+      end
+
+      context "when requesting" do
+        before do
+          easy.prepare
+          easy.perform
+        end
+
+        it "makes a put request" do
+          easy.response_body.should include('"REQUEST_METHOD":"PUT"')
+        end
+      end
+
+    end
 
     context "when body"
 

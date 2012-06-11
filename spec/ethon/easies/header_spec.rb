@@ -11,5 +11,15 @@ describe Ethon::Easies::Header do
       Ethon::Curl.expects(:set_option)
       easy.set_headers
     end
+
+    context "when requesting" do
+      it "sends header" do
+        easy.set_headers
+        easy.url = "http://localhost:3001"
+        easy.prepare
+        easy.perform
+        easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
+      end
+    end
   end
 end
