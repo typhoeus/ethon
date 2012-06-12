@@ -25,8 +25,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency("mocha", ["~> 0.10"])
   s.add_development_dependency("rspec", ["~> 2.10"])
   s.add_development_dependency("guard-rspec", ["~> 0.6"])
-  s.add_development_dependency("patron", ["~> 0.4"])
-  s.add_development_dependency("curb", ["~> 0.8.0"])
+  s.add_development_dependency("patron", ["~> 0.4"]) if RUBY_PLATFORM != "java"
+  s.add_development_dependency("curb", ["~> 0.8.0"]) if RUBY_PLATFORM != "java"
   s.add_development_dependency('spoon') if RUBY_PLATFORM == "java"
 
   s.files        = Dir.glob("lib/**/*") + %w(CHANGELOG.md Gemfile LICENSE README.md Rakefile)
