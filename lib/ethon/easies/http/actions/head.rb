@@ -5,22 +5,15 @@ module Ethon
 
         # This class knows everything about making HEAD requests.
         class Head < Action
-
-          # Setup everything what is necessary for a proper
-          # HEAD request.
-          #
-          # @example Setup.
-          #   head.setup(easy)
-          #
-          # @param [ Easy ] easy The easy to setup.
-          def setup(easy)
+          def set_nothing(easy)
             easy.nobody = true
-            if params.empty?
-              easy.url = url
-            else
-              params.escape = true
-              easy.url = "#{url}?#{params.to_s}"
-            end
+            easy.url = url
+          end
+
+          def set_params(easy)
+            easy.nobody = true
+            params.escape = true
+            easy.url = "#{url}?#{params.to_s}"
           end
         end
       end

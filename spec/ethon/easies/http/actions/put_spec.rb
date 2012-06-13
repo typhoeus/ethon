@@ -10,22 +10,26 @@ describe Ethon::Easies::Http::Actions::Put do
   describe "#setup" do
     before { put.setup(easy) }
 
-    it "sets url" do
-      easy.url.should eq(url)
-    end
+    context "when nothing" do
+      it "sets url" do
+        easy.url.should eq(url)
+      end
 
-    it "sets upload" do
-      easy.upload.should be_true
-    end
+      it "sets upload" do
+        easy.upload.should be_true
+      end
 
-    it "sets infilesize" do
-      easy.infilesize.should be_zero
-    end
+      it "sets infilesize" do
+        easy.infilesize.should be_zero
+      end
 
-    it "makes a put request" do
-      easy.prepare
-      easy.perform
-      easy.response_body.should include('"REQUEST_METHOD":"PUT"')
+      context "when requesting" do
+        it "makes a put request" do
+          easy.prepare
+          easy.perform
+          easy.response_body.should include('"REQUEST_METHOD":"PUT"')
+        end
+      end
     end
 
     context "when params" do
@@ -33,6 +37,14 @@ describe Ethon::Easies::Http::Actions::Put do
 
       it "attaches escaped to url" do
         easy.url.should eq("#{url}?a=1%26")
+      end
+
+      it "sets upload" do
+        easy.upload.should be_true
+      end
+
+      it "sets infilesize" do
+        easy.infilesize.should be_zero
       end
 
       context "when requesting" do

@@ -12,6 +12,7 @@ module Ethon
           end
 
           def set_params(easy)
+            easy.httpget = true
             params.escape = true
             easy.url = "#{url}?#{params.to_s}"
           end

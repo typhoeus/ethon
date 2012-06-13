@@ -10,16 +10,22 @@ describe Ethon::Easies::Http::Actions::Get do
   describe "#setup" do
     before { get.setup(easy) }
 
-    it "sets httpget" do
-      easy.httpget.should be
-    end
+    context "when nothing" do
+      it "sets httpget" do
+        easy.httpget.should be
+      end
 
-    it "sets url" do
-      easy.url.should eq(url)
+      it "sets url" do
+        easy.url.should eq(url)
+      end
     end
 
     context "when params" do
       let(:params) { {:a => "1&"} }
+
+      it "sets httpget" do
+        easy.httpget.should be
+      end
 
       it "attaches escaped to url" do
         easy.url.should eq("#{url}?a=1%26")

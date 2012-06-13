@@ -10,22 +10,24 @@ describe Ethon::Easies::Http::Actions::Post do
   describe "#setup" do
     before { post.setup(easy) }
 
-    it "sets url" do
-      easy.url.should eq(url)
-    end
+    context "when nothing" do
+      it "sets url" do
+        easy.url.should eq(url)
+      end
 
-    it "sets postfield_size" do
-      easy.postfieldsize.should eq(0)
-    end
+      it "sets postfield_size" do
+        easy.postfieldsize.should eq(0)
+      end
 
-    it "sets copy_postfields" do
-      easy.copypostfields.should eq("")
-    end
+      it "sets copy_postfields" do
+        easy.copypostfields.should eq("")
+      end
 
-    it "makes a post request" do
-      easy.prepare
-      easy.perform
-      easy.response_body.should include('"REQUEST_METHOD":"POST"')
+      it "makes a post request" do
+        easy.prepare
+        easy.perform
+        easy.response_body.should include('"REQUEST_METHOD":"POST"')
+      end
     end
 
     context "when params" do
