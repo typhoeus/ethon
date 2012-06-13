@@ -6,21 +6,14 @@ module Ethon
         # This class knows everything about making GET requests.
         class Get < Action
 
-          # Setup everything what is necessary for a proper
-          # GET request.
-          #
-          # @example Setup.
-          #   get.setup(easy)
-          #
-          # @param [ Easy ] easy The easy to setup.
-          def setup(easy)
+          def set_nothing(easy)
             easy.httpget = true
-            if params.empty?
-              easy.url = url
-            else
-              params.escape = true
-              easy.url = "#{url}?#{params.to_s}"
-            end
+            easy.url = url
+          end
+
+          def set_params(easy)
+            params.escape = true
+            easy.url = "#{url}?#{params.to_s}"
           end
         end
       end

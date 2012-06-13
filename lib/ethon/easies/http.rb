@@ -3,6 +3,7 @@ require 'ethon/easies/http/actions/get'
 require 'ethon/easies/http/actions/head'
 require 'ethon/easies/http/actions/post'
 require 'ethon/easies/http/actions/put'
+require 'ethon/easies/http/actions/delete'
 
 module Ethon
   module Easies

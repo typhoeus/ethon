@@ -6,19 +6,6 @@ module Ethon
         # This class knows everything about making POST requests.
         class Post < Action
 
-          # Setup everything what is necessary for a proper
-          # POST request.
-          #
-          # @example setup.
-          #   post.setup(easy)
-          #
-          # @param [ easy ] easy the easy to setup.
-          def setup(easy)
-            set_nothing(easy) if params.empty? && form.empty?
-            set_params(easy) unless params.empty?
-            set_form(easy) unless form.empty?
-          end
-
           # Set things up when neither params nor body is provided.
           #
           # @example Setup.

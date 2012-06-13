@@ -53,6 +53,57 @@ module Ethon
           @params = Params.new(options[:params])
           @form = Form.new(options[:body])
         end
+
+        # Setup everything what is necessary for a proper
+        # request.
+        #
+        # @example setup.
+        #   action.setup(easy)
+        #
+        # @param [ easy ] easy the easy to setup.
+        def setup(easy)
+          set_nothing(easy) if params.empty? && form.empty?
+          set_params(easy) unless params.empty?
+          set_form(easy) unless form.empty?
+          set_customs(easy)
+        end
+
+        # Setup request as if there were no params and form.
+        #
+        # @example Setup nothing.
+        #   action.set_nothing(easy)
+        #
+        # @param [ Easy ] easy The easy to setup.
+        def set_nothing(easy)
+        end
+
+        # Setup request as with params.
+        #
+        # @example Setup nothing.
+        #   action.set_params(easy)
+        #
+        # @param [ Easy ] easy The easy to setup.
+        def set_params(easy)
+        end
+
+        # Setup request as with form.
+        #
+        # @example Setup nothing.
+        #   action.set_form(easy)
+        #
+        # @param [ Easy ] easy The easy to setup.
+        def set_form(easy)
+        end
+
+        # Setup custom things eg. override the i
+        # action for delete.
+        #
+        # @example Setup custom things.
+        #   action.set_customs(easy)
+        #
+        # @param [ Easy ] easy The easy to setup.
+        def set_customs(easy)
+        end
       end
     end
   end
