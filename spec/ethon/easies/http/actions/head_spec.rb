@@ -21,14 +21,14 @@ describe Ethon::Easies::Http::Actions::Head do
     end
 
     context "when params" do
-      let(:params) { {:a => "1&"} }
+      let(:params) { {:a => "1&b=2"} }
 
       it "sets nobody" do
         easy.nobody.should be
       end
 
       it "attaches escaped to url" do
-        easy.url.should eq("#{url}?a=1%26")
+        easy.url.should eq("#{url}?a=1%26b%3D2")
       end
 
       context "when requesting" do
@@ -39,6 +39,10 @@ describe Ethon::Easies::Http::Actions::Head do
 
         it "has no body" do
           easy.response_body.should be_empty
+        end
+
+        it "requests parameterized url" do
+          easy.effective_url.should eq("http://localhost:3001/?a=1%26b%3D2")
         end
       end
     end

@@ -41,6 +41,7 @@ module Ethon
           def set_form(easy)
             easy.url ||= url
             easy.upload = true
+            form.escape = true
             easy.infilesize = form.to_s.bytesize
             easy.set_read_callback(form.to_s)
           end

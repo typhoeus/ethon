@@ -9,7 +9,7 @@ module Ethon
     module Util
 
       # Return query pairs from hash.
-      def build_query_pairs_from_hash(hash, escape_values=false)
+      def build_query_pairs_from_hash(hash)
         pairs = []
         recursive = Proc.new do |h, prefix|
           h.each_pair do |k,v|
@@ -22,7 +22,6 @@ module Ethon
             when File, Tempfile
               pairs << [key, file_info(v)]
             else
-              v = CGI::escape(v.to_s) if escape
               pairs << [key, v]
             end
           end

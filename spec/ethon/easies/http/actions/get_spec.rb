@@ -21,14 +21,14 @@ describe Ethon::Easies::Http::Actions::Get do
     end
 
     context "when params" do
-      let(:params) { {:a => "1&"} }
+      let(:params) { {:a => "1&b=2"} }
 
       it "sets httpget" do
         easy.httpget.should be
       end
 
       it "attaches escaped to url" do
-        easy.url.should eq("#{url}?a=1%26")
+        easy.url.should eq("#{url}?a=1%26b%3D2")
       end
 
       context "when requesting" do
@@ -42,7 +42,7 @@ describe Ethon::Easies::Http::Actions::Get do
         end
 
         it "requests parameterized url" do
-          easy.response_body.should include('"REQUEST_URI":"http://localhost:3001/?a=1%26"')
+          easy.effective_url.should eq("http://localhost:3001/?a=1%26b%3D2")
         end
       end
     end

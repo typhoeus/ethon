@@ -98,10 +98,10 @@ describe Ethon::Easies::Http::Actions::Post do
       end
 
       context "when not multipart" do
-        let(:form) { {:a => "1"} }
+        let(:form) { {:a => "1&b=2"} }
 
-        it "sets copypostfields" do
-          easy.copypostfields.should_not be_empty
+        it "sets escaped copypostfields" do
+          easy.copypostfields.should eq("a=1%26b%3D2")
         end
 
         it "sets postfieldsize" do
@@ -123,11 +123,11 @@ describe Ethon::Easies::Http::Actions::Post do
           end
 
           it "submits a body" do
-            easy.response_body.should match('"body":".+"')
+            easy.response_body.should match('"body":"a=1%26b%3D2"')
           end
 
           it "submits the data" do
-            easy.response_body.should include('"rack.request.form_hash":{"a":"1"}')
+            easy.response_body.should include('"rack.request.form_hash":{"a":"1&b=2"}')
           end
         end
       end

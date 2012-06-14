@@ -2,11 +2,10 @@ require 'spec_helper'
 
 describe Ethon::Easies::Util do
   let(:hash) { {} }
-  let(:escape) { false }
   let(:params) { Ethon::Easies::Params.new(hash) }
 
   describe "#build_query_pairs_from_hash" do
-    let(:pairs) { params.method(:build_query_pairs_from_hash).call(hash, escape) }
+    let(:pairs) { params.method(:build_query_pairs_from_hash).call(hash) }
 
     context "when params is empty" do
       it "returns empty array" do

@@ -1,4 +1,5 @@
 require 'ethon/easies/util'
+require 'cgi'
 
 module Ethon
   module Easies
@@ -71,7 +72,7 @@ module Ethon
       #
       # @return [ Array ] The query pairs.
       def query_pairs
-        @query_pairs ||= build_query_pairs_from_hash(@params, escape)
+        @query_pairs ||= build_query_pairs_from_hash(@params)
       end
 
       # Return the string representation of the form. This makes only
@@ -82,7 +83,7 @@ module Ethon
       #
       # @return [ String ] The string representation.
       def to_s
-        query_pairs.map{|pair| pair.join("=")}.join('&')
+        query_pairs.map{|pair| pair.map{|e| escape ? CGI::escape(e.to_s) : e }.join("=")}.join('&')
       end
 
       # Return wether there are elements in the form or not.

@@ -60,7 +60,7 @@ describe Ethon::Easies::Http::Actions::Put do
     end
 
     context "when body" do
-      let(:form) { {:a => "1"} }
+      let(:form) { {:a => "1&b=2"} }
 
       it "sets infilesize" do
         easy.infilesize.should_not be_zero
@@ -85,7 +85,7 @@ describe Ethon::Easies::Http::Actions::Put do
         end
 
         it "submits a body" do
-          easy.response_body.should include("a=1")
+          easy.response_body.should include('"body":"a=1%26b%3D2"')
         end
       end
     end

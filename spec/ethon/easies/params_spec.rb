@@ -14,10 +14,23 @@ describe Ethon::Easies::Params do
     end
 
     context "when query_pairs not empty" do
-      before { params.instance_variable_set(:@query_pairs, [[:a, 1], [:b, 2]]) }
+      context "when escape" do
+        before do
+          params.escape = true
+          params.instance_variable_set(:@query_pairs, [[:a, "1&b=2"]])
+        end
 
-      it "returns concatenated query string" do
-        params.to_s.should eq("a=1&b=2")
+        it "returns concatenated escaped query string" do
+          params.to_s.should eq("a=1%26b%3D2")
+        end
+      end
+
+      context "when no escape" do
+        before { params.instance_variable_set(:@query_pairs, [[:a, 1], [:b, 2]]) }
+
+        it "returns concatenated query string" do
+          params.to_s.should eq("a=1&b=2")
+        end
       end
     end
   end

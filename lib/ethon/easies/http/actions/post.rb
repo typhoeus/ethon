@@ -6,7 +6,7 @@ module Ethon
         # This class knows everything about making POST requests.
         class Post < Action
 
-          # Set things up when neither params nor body is provided.
+          # Set url, postfieldsize and copypostfields.
           #
           # @example Setup.
           #   post.set_nothing(easy)
@@ -18,7 +18,7 @@ module Ethon
             easy.copypostfields = ""
           end
 
-          # Set things up when params is provided.
+          # Set url with escaped params, postfieldsize and copypostfields.
           #
           # @example Setup.
           #   post.set_params(easy)
@@ -41,9 +41,11 @@ module Ethon
           def set_form(easy)
             easy.url ||= url
             if form.multipart?
+              form.escape = false
               form.materialize
               easy.httppost = form.first.read_pointer
             else
+              form.escape = true
               easy.copypostfields = form.to_s
               easy.postfieldsize = easy.copypostfields.bytesize
             end
