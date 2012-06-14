@@ -60,16 +60,6 @@ In order to make life easier there are some helpers for doing http requests:
 This really handy when doing requests since you don't have to care about setting
 everything up correct.
 
-## Testing
-
-Before you can run the specs you need to start the testserver in another terminal first:
-
-    bundle exec ruby spec/support/test_server.rb
-
-To run the specs:
-
-    rake
-
 ##  LICENSE
 
 (The MIT License)
