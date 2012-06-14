@@ -1,7 +1,3 @@
-require 'ffi'
-require 'rbconfig'
-require 'thread'
-
 module Ethon
   # :nodoc:
   module Curl

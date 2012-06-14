@@ -1,7 +1,3 @@
-require 'cgi'
-require 'mime/types'
-require 'tempfile'
-
 module Ethon
   module Easies # :nodoc:
 
