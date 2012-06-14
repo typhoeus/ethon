@@ -14,7 +14,6 @@ module Ethon
         #
         # @param [ Easy ] easy The easy to setup.
         def set_customs(easy)
-          super
           easy.nobody = true
         end
       end

@@ -50,5 +50,20 @@ describe Ethon::Easies::Http::Head do
         end
       end
     end
+
+    context "when body" do
+      let(:form) { {:a => 1} }
+
+      context "when requesting" do
+        before do
+          easy.prepare
+          easy.perform
+        end
+
+        it "returns ok" do
+          easy.return_code.should eq(:ok)
+        end
+      end
+    end
   end
 end
