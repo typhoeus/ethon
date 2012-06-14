@@ -59,7 +59,7 @@ describe Ethon::Easies::Informations do
 
   describe "#primary_ip" do
     it "returns localhost" do
-      easy.primary_ip.should eq('127.0.0.1')
+      easy.primary_ip.should match(/::1|127\.0\.0\.1/)
     end
   end
 
