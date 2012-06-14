@@ -11,11 +11,6 @@ describe Ethon::Easies::Http do
     let(:get) { mock(:setup) }
     let(:get_class) { Ethon::Easies::Http::Actions::Get }
 
-    it "resets easy" do
-      Ethon::Easies::Http::Action.expects(:reset).with(easy)
-      easy.http_request(url, action_name, options)
-    end
-
     it "fabricates action" do
       Ethon::Easies::Http::Action.expects(:fabricate).with(action_name).returns(get_class)
       easy.http_request(url, action_name, options)
