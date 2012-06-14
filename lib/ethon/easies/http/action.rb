@@ -19,24 +19,6 @@ module Ethon
           def fabricate(action_name)
             eval("Actions::#{action_name.capitalize}")
           end
-
-          # Resets every attribute possibly set by an action.
-          #
-          # @example Reset attributes,
-          #   Action.reset(easy)
-          #
-          # @param [ Easy ] easy The easy to reset.
-          def reset(easy)
-            easy.url = nil
-            easy.httpget = nil
-            easy.httppost = nil
-            easy.upload = nil
-            easy.nobody = nil
-            easy.customrequest = nil
-            easy.postfieldsize = nil
-            easy.copypostfields = nil
-            easy.infilesize = nil
-          end
         end
 
         # Create a new action.

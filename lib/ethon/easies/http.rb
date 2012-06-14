@@ -20,7 +20,6 @@ module Ethon
       # @param [ String ] action_name The http action name.
       # @param [ Hash ] options The options hash.
       def http_request(url, action_name, options = {})
-        Action.reset(self)
         Action.fabricate(action_name).new(url, options).setup(self)
       end
     end
