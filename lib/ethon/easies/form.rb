@@ -1,5 +1,4 @@
 require 'ethon/easies/util'
-require 'cgi'
 
 module Ethon
   module Easies
