@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ethon::Easies::Http::Actions::Patch do
+describe Ethon::Easies::Http::Patch do
   let(:easy) { Ethon::Easy.new }
   let(:url) { "http://localhost:3001/" }
   let(:params) { nil }

@@ -1,24 +1,23 @@
+require 'ethon/easies/http/putable'
+require 'ethon/easies/http/postable'
+
 module Ethon
   module Easies
     module Http
-      # This class represents a Http Action and is a factory
+      # This module represents a Http Action and is a factory
       # for more real actions like GET, HEAD, POST and PUT.
-      class Action
-        attr_reader :url, :params, :form
+      module Actionable
 
-        class << self
+        def url
+          @url
+        end
 
-          # Return the corresponding action class.
-          #
-          # @example Return the action.
-          #   Action.fabricate(:get)
-          #
-          # @param [ String ] action_name The action name.
-          #
-          # @return [ Class ] The action class.
-          def fabricate(action_name)
-            eval("Actions::#{action_name.capitalize}")
-          end
+        def params
+          @params
+        end
+
+        def form
+          @form
         end
 
         # Create a new action.
