@@ -79,6 +79,10 @@ describe Ethon::Easies::Http::Actions::Post do
             easy.perform
           end
 
+          it "returns ok" do
+            easy.return_code.should eq(:ok)
+          end
+
           it "is a post" do
             easy.response_body.should include('"REQUEST_METHOD":"POST"')
           end
@@ -112,6 +116,10 @@ describe Ethon::Easies::Http::Actions::Post do
           before do
             easy.prepare
             easy.perform
+          end
+
+          it "returns ok" do
+            easy.return_code.should eq(:ok)
           end
 
           it "is a post" do

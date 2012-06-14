@@ -1,9 +1,11 @@
 require 'ethon/easies/http/action'
+require 'ethon/easies/http/actions/post'
 require 'ethon/easies/http/actions/get'
 require 'ethon/easies/http/actions/head'
-require 'ethon/easies/http/actions/post'
 require 'ethon/easies/http/actions/put'
 require 'ethon/easies/http/actions/delete'
+require 'ethon/easies/http/actions/patch'
+require 'ethon/easies/http/actions/options'
 
 module Ethon
   module Easies

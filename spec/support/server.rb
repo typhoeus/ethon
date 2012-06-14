@@ -95,3 +95,11 @@ end
 delete '/**' do
   request.env.merge!(:body => request.body.read).to_json
 end
+
+patch '/**' do
+  request.env.merge!(:body => request.body.read).to_json
+end
+
+options '/**' do
+  request.env.merge!(:body => request.body.read).to_json
+end

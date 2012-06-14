@@ -37,6 +37,10 @@ describe Ethon::Easies::Http::Actions::Head do
           easy.perform
         end
 
+        it "returns ok" do
+          easy.return_code.should eq(:ok)
+        end
+
         it "has no body" do
           easy.response_body.should be_empty
         end

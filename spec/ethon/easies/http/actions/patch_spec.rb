@@ -1,17 +1,17 @@
 require 'spec_helper'
 
-describe Ethon::Easies::Http::Actions::Get do
+describe Ethon::Easies::Http::Actions::Patch do
   let(:easy) { Ethon::Easy.new }
   let(:url) { "http://localhost:3001/" }
   let(:params) { nil }
   let(:form) { nil }
-  let(:get) { described_class.new(url, {:params => params, :body => form}) }
+  let(:patch) { described_class.new(url, {:params => params, :body => form}) }
 
   describe "#setup" do
-    before { get.setup(easy) }
+    before { patch.setup(easy) }
 
     it "sets customrequest" do
-      easy.customrequest.should eq("GET")
+      easy.customrequest.should eq("PATCH")
     end
 
     it "sets url" do
@@ -30,8 +30,8 @@ describe Ethon::Easies::Http::Actions::Get do
         easy.return_code.should eq(:ok)
       end
 
-      it "is a get request" do
-        easy.response_body.should include('"REQUEST_METHOD":"GET"')
+      it "is a patch request" do
+        easy.response_body.should include('"REQUEST_METHOD":"PATCH"')
       end
 
       it "requests parameterized url" do

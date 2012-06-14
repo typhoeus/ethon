@@ -4,7 +4,7 @@ module Ethon
       module Actions
 
         # This class knows everything about making GET requests.
-        class Get < Post
+        class Options < Post
 
           # Setup url with escaped params and httpget.
           #
@@ -13,7 +13,7 @@ module Ethon
           #
           # @param [ Easy ] easy The easy to setup.
           def set_customs(easy)
-            easy.customrequest = "GET"
+            easy.customrequest = "OPTIONS"
           end
         end
       end

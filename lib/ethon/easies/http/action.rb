@@ -57,6 +57,7 @@ module Ethon
         #
         # @param [ Easy ] easy The easy to setup.
         def set_nothing(easy)
+          easy.url = url
         end
 
         # Setup request as with params.
@@ -66,6 +67,8 @@ module Ethon
         #
         # @param [ Easy ] easy The easy to setup.
         def set_params(easy)
+          params.escape = true
+          easy.url = "#{url}?#{params.to_s}"
         end
 
         # Setup request as with form.
