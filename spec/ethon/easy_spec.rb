@@ -37,4 +37,43 @@ describe Ethon::Easy do
       easy.handle.should be_a(FFI::Pointer)
     end
   end
+
+  describe "#reset" do
+    let(:resettables) { easy.instance_variables - [:@handle, :@header_list] }
+
+    before do
+      easy.class.available_options.each do |option|
+        easy.method("#{option}=").call(1)
+      end
+    end
+
+    it "sets instance variables to nil" do
+      Ethon::Curl.expects(:easy_cleanup).with(easy.handle)
+      easy.reset
+      resettables.map{|ivar| easy.instance_variable_get(ivar) }.any?.should be_false
+    end
+
+    it "cleans up curl handle" do
+      Ethon::Curl.expects(:easy_cleanup).with(easy.handle)
+      easy.reset
+    end
+
+    context "when headers" do
+      it "frees header list" do
+        easy.instance_variable_set(:@header_list, 1)
+        Ethon::Curl.expects(:easy_cleanup).with(easy.handle)
+        Ethon::Curl.expects(:slist_free_all)
+        easy.reset
+      end
+    end
+
+    context "when no headers" do
+      it "doesn't free header list" do
+        easy.instance_variable_set(:@header_list, nil)
+        Ethon::Curl.expects(:easy_cleanup).with(easy.handle)
+        Ethon::Curl.expects(:slist_free_all).never
+        easy.reset
+      end
+    end
+  end
 end

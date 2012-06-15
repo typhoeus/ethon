@@ -57,6 +57,18 @@ module Ethon
       end
     end
 
+    # Reset easy. This means resetting all options, instance variables
+    # and the libcurl handle.
+    #
+    # @example Reset.
+    #   easy.reset
+    def reset
+      (instance_variables - [:@handle, :@header_list]).each do |ivar|
+        instance_variable_set(ivar, nil)
+      end
+      self.class.finalizer(self).call
+    end
+
     # Returns a  pointer to the curl easy handle.
     #
     # @example Return the handle.
@@ -65,6 +77,9 @@ module Ethon
     # @return [ FFI::Pointer ] A pointer to the curl easy handle.
     def handle
       @handle ||= Curl.easy_init
+    end
+
+    def to_hash
     end
   end
 end

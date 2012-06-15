@@ -24,6 +24,16 @@ module Ethon
         @headers = headers
       end
 
+      # Return header_list.
+      #
+      # @example Return header_list.
+      #   easy.header_list
+      #
+      # @return [ FFI::Pointer ] The header list.
+      def header_list
+        @header_list
+      end
+
       # Set previously defined headers in libcurl.
       #
       # @example Set headers in libcurl.
