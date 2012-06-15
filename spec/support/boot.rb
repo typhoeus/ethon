@@ -51,7 +51,7 @@ class Boot
           if response.is_a?(Net::HTTPSuccess)
             up += 1
           end
-        rescue SystemCallError => error
+        rescue SystemCallError
         end
       end
       up == PORTS.size
@@ -70,7 +70,7 @@ class Boot
           end
         end
       end
-    rescue Timeout::Error => error
+    rescue Timeout::Error
       abort "Servers never started!"
     end
   end
