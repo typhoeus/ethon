@@ -32,6 +32,29 @@ describe Ethon::Easy do
     end
   end
 
+  describe "#set_attributes" do
+    context "when options are empty" do
+      it "sets nothing" do
+        easy.instance_variables.all? { |ivar| ivar == nil }.should be_true
+      end
+    end
+
+    context "when options aren't empty" do
+      context "when valid key" do
+        it "sets" do
+          easy.set_attributes({:verbose => true})
+          easy.verbose.should be_true
+        end
+      end
+
+      context "when invalid key" do
+        it "fails silent" do
+          easy.set_attributes({:fubar => 1})
+        end
+      end
+    end
+  end
+
   describe "#handle" do
     it "returns a pointer" do
       easy.handle.should be_a(FFI::Pointer)

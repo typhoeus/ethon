@@ -51,9 +51,18 @@ module Ethon
     def initialize(options = {})
       Curl.init
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
+      set_attributes(options)
+    end
 
+    # Set given options.
+    #
+    # @example Set options.
+    #   easy.set_attributes(options)
+    #
+    # @param [ Hash ] options The options.
+    def set_attributes(options)
       options.each_pair do |key, value|
-        method("#{key}=").call(value)
+        method("#{key}=").call(value) if respond_to?("#{key}=")
       end
     end
 

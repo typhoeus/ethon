@@ -12,12 +12,16 @@ module Ethon
           @url
         end
 
+        def options
+          @options
+        end
+
         def params
-          @params
+          @params ||= Params.new(options[:params])
         end
 
         def form
-          @form
+          @form ||= Form.new(options[:body])
         end
 
         # Create a new action.
@@ -31,8 +35,7 @@ module Ethon
         # @return [ Action ] A new action.
         def initialize(url, options)
           @url = url
-          @params = Params.new(options[:params])
-          @form = Form.new(options[:body])
+          @options = options
         end
 
         # Setup everything what is necessary for a proper
@@ -47,6 +50,7 @@ module Ethon
           set_params(easy) unless params.empty?
           set_form(easy) unless form.empty?
           set_customs(easy)
+          easy.set_attributes(options)
         end
 
         # Setup request as if there were no params and form.
