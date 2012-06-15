@@ -9,27 +9,27 @@ describe Ethon::Easies::Informations do
     easy.perform
   end
 
-  describe "#auth_methods" do
+  describe "#httpauth_avail" do
     it "returns" do
-      easy.auth_methods.should be
+      easy.httpauth_avail.should be
     end
   end
 
-  describe "#total_time_taken" do
+  describe "#total_time" do
     it "returns float" do
-      easy.total_time_taken.should be_a(Float)
+      easy.total_time.should be_a(Float)
     end
   end
 
-  describe "#start_transfer_time" do
+  describe "#starttransfer_time" do
     it "returns float" do
-      easy.start_transfer_time.should be_a(Float)
+      easy.starttransfer_time.should be_a(Float)
     end
   end
 
-  describe "#app_connect_time" do
+  describe "#appconnect_time" do
     it "returns float" do
-      easy.app_connect_time.should be_a(Float)
+      easy.appconnect_time.should be_a(Float)
     end
   end
 
@@ -45,9 +45,9 @@ describe Ethon::Easies::Informations do
     end
   end
 
-  describe "#name_lookup_time" do
+  describe "#namelookup_time" do
     it "returns float" do
-      easy.name_lookup_time.should be_a(Float)
+      easy.namelookup_time.should be_a(Float)
     end
   end
 

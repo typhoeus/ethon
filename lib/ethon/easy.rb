@@ -80,6 +80,14 @@ module Ethon
     end
 
     def to_hash
+      hash = {}
+      hash[:return_code] = return_code
+      hash[:response_header] = response_header
+      hash[:response_body] = response_body
+      Easies::Informations::AVAILABLE_INFORMATIONS.keys.each do |info|
+        hash[info] = method(info).call
+      end
+      hash
     end
   end
 end

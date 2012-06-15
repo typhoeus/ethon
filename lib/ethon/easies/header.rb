@@ -31,7 +31,7 @@ module Ethon
       #
       # @return [ FFI::Pointer ] The header list.
       def header_list
-        @header_list
+        @header_list ||= nil
       end
 
       # Set previously defined headers in libcurl.

@@ -76,4 +76,17 @@ describe Ethon::Easy do
       end
     end
   end
+
+  describe "#to_hash" do
+    [
+      :return_code, :response_code, :response_header, :response_body,
+      :total_time, :starttransfer_time, :appconnect_time,
+      :pretransfer_time, :connect_time, :namelookup_time,
+      :effective_url, :primary_ip, :redirect_count
+    ].each do |name|
+      it "contains #{name}" do
+        easy.to_hash.should include(name)
+      end
+    end
+  end
 end
