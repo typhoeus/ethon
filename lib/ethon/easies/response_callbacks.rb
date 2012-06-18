@@ -2,6 +2,7 @@ module Ethon
   module Easies
     module ResponseCallbacks
       def trigger_callbacks
+        complete
         success if success?
         failure if failure?
       end
@@ -61,6 +62,23 @@ module Ethon
       #   easy.on_failure = block
       def on_failure(&block)
         @failure = block
+      end
+
+      # Execute preset complete callback.
+      #
+      # @example Execute complete callback.
+      #   easy.complete
+      def complete
+        return if !defined?(@complete) || @complete.nil?
+        @complete.call(self)
+      end
+
+      # Set complete callback.
+      #
+      # @example Set complete callback.
+      #   easy.on_complete = block
+      def on_complete(&block)
+        @complete = block
       end
     end
   end

@@ -4,6 +4,7 @@ describe Ethon::Easies::ResponseCallbacks do
   let(:easy) { Ethon::Easy.new }
 
   describe "#trigger_callbacks" do
+    it
   end
 
   describe "#success?" do
@@ -53,7 +54,7 @@ describe Ethon::Easies::ResponseCallbacks do
     end
   end
 
-  [:success, :failure].each do |name|
+  [:success, :failure, :complete].each do |name|
     describe "#on_#{name}=" do
       it "assigns value" do
         eval "easy.on_#{name} {}"
