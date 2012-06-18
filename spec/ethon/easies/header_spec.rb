@@ -33,4 +33,12 @@ describe Ethon::Easies::Header do
       end
     end
   end
+
+  describe "#compose_headers" do
+    context "when value is a symbol" do
+      it "doesn't fail" do
+        expect{ easy.compose_header('a', :b) }.to_not raise_error
+      end
+    end
+  end
 end
