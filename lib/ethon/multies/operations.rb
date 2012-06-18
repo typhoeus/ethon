@@ -94,7 +94,7 @@ module Ethon
           easy = easy_handles.find{ |e| e.handle == msg[:easy_handle] }
           easy.return_code = msg[:data][:code]
           delete(easy)
-          easy.trigger_callbacks
+          easy.complete
         end
       end
 

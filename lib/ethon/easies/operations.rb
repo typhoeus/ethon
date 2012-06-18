@@ -12,7 +12,7 @@ module Ethon
       # @return [ Integer ] The return code.
       def perform
         @return_code = Curl.easy_perform(handle)
-        trigger_callbacks
+        complete
         @return_code
       end
 
