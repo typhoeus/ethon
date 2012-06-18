@@ -7,6 +7,7 @@ require 'ethon/easies/params'
 require 'ethon/easies/form'
 require 'ethon/easies/http'
 require 'ethon/easies/operations'
+require 'ethon/easies/response_callbacks'
 
 module Ethon
 
@@ -19,6 +20,7 @@ module Ethon
     include Ethon::Easies::Header
     include Ethon::Easies::Http
     include Ethon::Easies::Operations
+    include Ethon::Easies::ResponseCallbacks
 
     attr_reader :response_body, :response_header
     attr_accessor :return_code
