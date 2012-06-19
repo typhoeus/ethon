@@ -24,7 +24,7 @@ module Ethon
       #
       # @return [ Boolean ] True if ongoing, else false.
       def ongoing?
-        easy_handles.size > 0 && (!defined?(@running_count) || running_count > 0)
+        easy_handles.size > 0 || (!defined?(@running_count) || running_count > 0)
       end
 
       # Perform multi.

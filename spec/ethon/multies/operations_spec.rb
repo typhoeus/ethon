@@ -180,6 +180,46 @@ describe Ethon::Multies::Operations do
     end
   end
 
+  describe "#ongoing?" do
+    context "when easy_handles" do
+      before { multi.easy_handles << 1 }
+
+      context "when running_count not greater 0" do
+        before { multi.instance_variable_set(:@running_count, 0) }
+
+        it "returns true" do
+          multi.ongoing?.should be_true
+        end
+      end
+
+      context "when running_count greater 0" do
+        before { multi.instance_variable_set(:@running_count, 1) }
+
+        it "returns true" do
+          multi.ongoing?.should be_true
+        end
+      end
+    end
+
+    context "when no easy_handles" do
+      context "when running_count not greater 0" do
+        before { multi.instance_variable_set(:@running_count, 0) }
+
+        it "returns false" do
+          multi.ongoing?.should be_false
+        end
+      end
+
+      context "when running_count greater 0" do
+        before { multi.instance_variable_set(:@running_count, 1) }
+
+        it "returns true" do
+          multi.ongoing?.should be_true
+        end
+      end
+    end
+  end
+
   describe "#init_vars" do
     it { pending("untested") }
   end
