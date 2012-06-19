@@ -59,5 +59,14 @@ describe Ethon::Multies::Stack do
         multi.easy_handles.should include(easy)
       end
     end
+
+    context "when multi_remove_handle fails" do
+      before { multi.add(easy) }
+
+      it "raises multi remove error" do
+        Ethon::Curl.expects(:multi_remove_handle).returns(:bad_easy_handle)
+        expect{ multi.delete(easy) }.to raise_error(Ethon::Errors::MultiRemove)
+      end
+    end
   end
 end

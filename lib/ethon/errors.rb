@@ -2,6 +2,7 @@ require 'ethon/errors/ethon_error'
 require 'ethon/errors/multi_timeout'
 require 'ethon/errors/multi_fdset'
 require 'ethon/errors/multi_add'
+require 'ethon/errors/multi_remove'
 require 'ethon/errors/select'
 
 module Ethon

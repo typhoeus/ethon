@@ -34,7 +34,8 @@ module Ethon
       # @param [ Easy ] easy The easy to delete.
       def delete(easy)
         if easy_handles.delete(easy)
-          Curl.multi_remove_handle(handle, easy.handle)
+          code = Curl.multi_remove_handle(handle, easy.handle)
+          raise Errors::MultiRemove.new(code, handle) unless code == :ok
         end
       end
     end
