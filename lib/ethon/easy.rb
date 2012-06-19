@@ -70,23 +70,12 @@ module Ethon
 
     # Reset easy. This means resetting all options and instance variables.
     #
-    # @example Soft reset.
-    #   easy.soft_reset
-    def soft_reset
+    # @example Reset.
+    #   easy.reset
+    def reset
       (instance_variables - [:@handle, :@header_list]).each do |ivar|
         instance_variable_set(ivar, nil)
       end
-    end
-
-    # Reset easy. This means invoking a soft_reset, cleaning up the
-    # easy handle and deleting the reference to it.
-    #
-    # @example Soft reset.
-    #   easy.soft_reset
-    def hard_reset
-      soft_reset
-      self.class.finalizer(self).call
-      @handle = nil
     end
 
     # Returns a  pointer to the curl easy handle.
