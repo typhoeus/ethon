@@ -12,10 +12,8 @@ module Ethon
       # @example Set callbacks.
       #   easy.set_callbacks
       def set_callbacks
-        unless defined?(@body_write_callback)
-          Curl.set_option(:writefunction, body_write_callback, handle)
-          Curl.set_option(:headerfunction, header_write_callback, handle)
-        end
+        Curl.set_option(:writefunction, body_write_callback, handle)
+        Curl.set_option(:headerfunction, header_write_callback, handle)
         @response_body = ""
         @response_header = ""
       end
