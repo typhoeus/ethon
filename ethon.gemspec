@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email        = ["me@hans.io"]
   s.homepage     = "https://github.com/typhoeus/ethon"
   s.summary      = "Libcurl wrapper."
-  s.description  = %q{Fu}
+  s.description  = "Very lightweight libcurl wrapper."
 
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = '[none]'
