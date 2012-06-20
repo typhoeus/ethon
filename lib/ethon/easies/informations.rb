@@ -6,6 +6,8 @@ module Ethon
     # for more information.
     module Informations
 
+      # Holds available informations and their type, which is needed to
+      # request the informations from libcurl.
       AVAILABLE_INFORMATIONS = {
         # Return the available http auth methods.
         :httpauth_avail => :long,
