@@ -69,6 +69,7 @@ module Ethon
     end
 
     # Reset easy. This means resetting all options and instance variables.
+    # Also the easy handle is resetted.
     #
     # @example Reset.
     #   easy.reset
