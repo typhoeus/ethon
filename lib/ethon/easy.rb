@@ -76,6 +76,7 @@ module Ethon
       (instance_variables - [:@handle, :@header_list]).each do |ivar|
         instance_variable_set(ivar, nil)
       end
+      Curl.easy_reset(handle)
     end
 
     # Returns a  pointer to the curl easy handle.

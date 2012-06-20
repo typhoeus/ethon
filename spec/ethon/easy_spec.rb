@@ -74,6 +74,11 @@ describe Ethon::Easy do
       easy.reset
       resettables.map{|ivar| easy.instance_variable_get(ivar) }.any?.should be_false
     end
+
+    it "resets easy handle" do
+      Ethon::Curl.expects(:easy_reset).with(easy.handle)
+      easy.reset
+    end
   end
 
   describe "#to_hash" do
