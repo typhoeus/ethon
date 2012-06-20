@@ -96,6 +96,8 @@ module Ethon
           self.class.enum_options[option][value]
         elsif self.class.int_options.include?(option)
           value.to_i
+        elsif value.is_a?(::String)
+          Util.escape_zero_byte(value)
         else
           value
         end

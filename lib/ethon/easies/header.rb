@@ -58,7 +58,7 @@ module Ethon
       #
       # @return [ String ] The composed header.
       def compose_header(key, value)
-        "#{key}:#{value.to_s.gsub(0.chr, '\\\0')}"
+        Util.escape_zero_byte("#{key}:#{value}")
       end
     end
   end

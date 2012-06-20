@@ -16,9 +16,9 @@ module Ethon
             when Array
               v.each { |x| pairs << [key, x]  }
             when File, Tempfile
-              pairs << [key, file_info(v)]
+              pairs << [Util.escape_zero_byte(key), file_info(v)]
             else
-              pairs << [key, v]
+              pairs << [Util.escape_zero_byte(key), Util.escape_zero_byte(v)]
             end
           end
         end
@@ -35,6 +35,11 @@ module Ethon
           types.empty? ? 'application/octet-stream' : types[0].to_s,
           File.expand_path(file.path)
         ]
+      end
+
+      def self.escape_zero_byte(value)
+        return value unless value.to_s.include?(0.chr)
+        value.to_s.gsub(0.chr, '\\\0')
       end
     end
   end

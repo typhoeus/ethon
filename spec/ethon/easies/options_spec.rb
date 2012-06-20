@@ -28,6 +28,15 @@ describe Ethon::Easies::Options do
         Ethon::Curl.expects(:set_option).with(:url, url, easy.handle)
         easy.set_options
       end
+
+      context "when options contains a null byte" do
+        let(:url) { "http://localhost:3001/\0" }
+
+        it "doesn't fail" do
+          easy.url = url
+          easy.set_options
+        end
+      end
     end
 
     context "when no option" do

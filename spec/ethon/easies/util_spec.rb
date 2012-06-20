@@ -46,5 +46,21 @@ describe Ethon::Easies::Util do
         pairs.should eq([[:a, 1], [:b, file_info]])
       end
     end
+
+    context "when params key contains a null byte" do
+      let(:hash) { {:a => "1\0" } }
+
+      it "escapes" do
+        pairs.should eq([[:a, "1\\0"]])
+      end
+    end
+
+    context "when params value contains a null byte" do
+      let(:hash) { {"a\0" => 1 } }
+
+      it "escapes" do
+        pairs.should eq([["a\\0", 1]])
+      end
+    end
   end
 end
