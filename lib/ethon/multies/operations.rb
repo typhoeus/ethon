@@ -45,6 +45,8 @@ module Ethon
       #
       # @example Get timeout.
       #   multi.get_timeout
+      #
+      # @raise [Ethon::Errors::MultiTimeout] when getting the timeout failed.
       def get_timeout
         code = Curl.multi_timeout(handle, @timeout)
         raise Errors::MultiTimeout.new(code) unless code == :ok
@@ -67,6 +69,9 @@ module Ethon
       #
       # @example Set fds.
       #   multi.set_fds
+      #
+      # @raise [Ethon::Errors::MultiFdset] when setting the file descriptors failed.
+      # @raise [Ethon::Errors::Select] when select failed.
       def set_fds(timeout)
         code = Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
         raise Errors::MultiFdset.new(code) unless code == :ok

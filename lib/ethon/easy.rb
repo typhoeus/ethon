@@ -131,6 +131,8 @@ module Ethon
     #   easy.set_attributes(options)
     #
     # @param [ Hash ] options The options.
+    #
+    # @see initialize
     def set_attributes(options)
       options.each_pair do |key, value|
         method("#{key}=").call(value) if respond_to?("#{key}=")
