@@ -7,13 +7,14 @@ module Ethon
         include Ethon::Easies::Http::Actionable
         include Ethon::Easies::Http::Postable
 
-        # Setup customrequest in order to make a delete.
+        # Setup easy to make a DELETE request.
         #
         # @example Setup customrequest.
         #   delete.setup(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        def set_customs(easy)
+        def setup(easy)
+          super
           easy.customrequest = "DELETE"
         end
       end

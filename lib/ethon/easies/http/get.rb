@@ -7,13 +7,14 @@ module Ethon
         include Ethon::Easies::Http::Actionable
         include Ethon::Easies::Http::Postable
 
-        # Setup url with escaped params and httpget.
+        # Setup easy to make a GET request.
         #
         # @example Setup.
         #   get.set_params(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        def set_customs(easy)
+        def setup(easy)
+          super
           easy.customrequest = "GET"
         end
       end

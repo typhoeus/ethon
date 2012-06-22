@@ -6,7 +6,14 @@ module Ethon
         include Ethon::Easies::Http::Actionable
         include Ethon::Easies::Http::Postable
 
-        def set_customs(easy)
+        # Setup easy to make a POST request.
+        #
+        # @example Setup.
+        #   post.setup(easy)
+        #
+        # @param [ Easy ] easy The easy to setup.
+        def setup(easy)
+          super
           if form.empty?
             easy.postfieldsize = 0
             easy.copypostfields = ""

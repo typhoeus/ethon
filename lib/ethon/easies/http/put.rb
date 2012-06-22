@@ -7,7 +7,14 @@ module Ethon
         include Ethon::Easies::Http::Actionable
         include Ethon::Easies::Http::Putable
 
-        def set_customs(easy)
+        # Setup easy to make a PUT request.
+        #
+        # @example Setup.
+        #   put.setup(easy)
+        #
+        # @param [ Easy ] easy The easy to setup.
+        def setup(easy)
+          super
           if form.empty?
             easy.upload = true
             easy.infilesize = 0

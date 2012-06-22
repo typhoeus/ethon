@@ -38,8 +38,7 @@ module Ethon
           @options = options
         end
 
-        # Setup everything what is necessary for a proper
-        # request.
+        # Setup everything necessary for a proper request.
         #
         # @example setup.
         #   action.setup(easy)
@@ -49,7 +48,6 @@ module Ethon
           set_nothing(easy) if params.empty? && form.empty?
           set_params(easy) unless params.empty?
           set_form(easy) unless form.empty?
-          set_customs(easy)
           easy.set_attributes(options)
         end
 
@@ -63,7 +61,7 @@ module Ethon
           easy.url = url
         end
 
-        # Setup request as with params.
+        # Setup request with params.
         #
         # @example Setup nothing.
         #   action.set_params(easy)
@@ -74,23 +72,13 @@ module Ethon
           easy.url = "#{url}?#{params.to_s}"
         end
 
-        # Setup request as with form.
+        # Setup request with form.
         #
         # @example Setup nothing.
         #   action.set_form(easy)
         #
         # @param [ Easy ] easy The easy to setup.
         def set_form(easy)
-        end
-
-        # Setup custom things eg. override the i
-        # action for delete.
-        #
-        # @example Setup custom things.
-        #   action.set_customs(easy)
-        #
-        # @param [ Easy ] easy The easy to setup.
-        def set_customs(easy)
         end
       end
     end

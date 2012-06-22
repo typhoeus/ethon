@@ -7,13 +7,14 @@ module Ethon
         include Ethon::Easies::Http::Actionable
         include Ethon::Easies::Http::Postable
 
-        # Setup url with escaped params and nobody.
+        # Setup easy to make a HEAD request.
         #
         # @example Setup.
         #   get.set_params(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        def set_customs(easy)
+        def setup(easy)
+          super
           easy.nobody = true
         end
       end

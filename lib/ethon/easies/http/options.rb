@@ -2,18 +2,19 @@ module Ethon
   module Easies
     module Http
 
-      # This class knows everything about making GET requests.
+      # This class knows everything about making OPTIONS requests.
       class Options
         include Ethon::Easies::Http::Actionable
         include Ethon::Easies::Http::Postable
 
-        # Setup url with escaped params and httpget.
+        # Setup easy to make a OPTIONS request.
         #
         # @example Setup.
-        #   get.set_params(easy)
+        #   options.setup(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        def set_customs(easy)
+        def setup(easy)
+          super
           easy.customrequest = "OPTIONS"
         end
       end
