@@ -40,7 +40,7 @@ module Ethon
         # @return [ Array ] The bool options.
         def bool_options
           [
-            :followlocation, :nosignal, :ssl_verifypeer, :ssl_verifyhost,
+            :followlocation, :nosignal, :ssl_verifypeer,
             :verbose, :httpget, :nobody, :upload
           ]
         end
@@ -62,7 +62,10 @@ module Ethon
         #
         # @return [ Array ] The int options.
         def int_options
-          [ :connecttimeout, :infilesize, :maxredirs, :postfieldsize, :timeout ]
+          [
+            :connecttimeout, :infilesize, :maxredirs,
+            :postfieldsize, :ssl_verifyhost, :timeout
+          ]
         end
       end
 
