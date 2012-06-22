@@ -1,6 +1,8 @@
 module Ethon
   module Easies
     module Http
+
+      # This module contains logic about setting up a PUT body.
       module Putable
         # Set things up when form is provided.
         # Deals with multipart forms.

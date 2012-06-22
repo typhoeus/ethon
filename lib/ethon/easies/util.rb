@@ -4,8 +4,16 @@ module Ethon
     # This module contains small helpers.
     module Util
 
-      # Return query pairs from hash.
-      def build_query_pairs_from_hash(hash)
+      # Return query pairs build from a hash.
+      #
+      # @example Build query pairs.
+      #   action.build_query_pairs({:a => 1, :b => 2})
+      #   #=> [[:a, 1], [:b, 2]]
+      #
+      # @param [ Hash ] hash The hash to go through.
+      #
+      # @return [ Array ] The array of query pairs.
+      def build_query_pairs(hash)
         pairs = []
         recursive = Proc.new do |h, prefix|
           h.each_pair do |k,v|
@@ -27,6 +35,13 @@ module Ethon
       end
 
       # Return file info for a file.
+      #
+      # @example Return file info.
+      #   action.file_info(File.open('fubar', 'r'))
+      #
+      # @param [ File ] file The file to handle.
+      #
+      # @return [ Array ] Array of informations.
       def file_info(file)
         filename = File.basename(file.path)
         types = MIME::Types.type_for(filename)
@@ -37,6 +52,16 @@ module Ethon
         ]
       end
 
+      # Escapes zero bytes in strings.
+      #
+      # @example Escape zero bytes.
+      #   Util.escape_zero_byte("1\0")
+      #   #=> "1\\0"
+      #
+      # @param [ Object ] value The value to escape.
+      #
+      # @return [ String, Object ] Escaped String if
+      #   zero byte found, original object if not.
       def self.escape_zero_byte(value)
         return value unless value.to_s.include?(0.chr)
         value.to_s.gsub(0.chr, '\\\0')

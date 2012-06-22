@@ -8,22 +8,6 @@ module Ethon
       # for more real actions like GET, HEAD, POST and PUT.
       module Actionable
 
-        def url
-          @url
-        end
-
-        def options
-          @options
-        end
-
-        def params
-          @params ||= Params.new(options[:params])
-        end
-
-        def form
-          @form ||= Form.new(options[:body])
-        end
-
         # Create a new action.
         #
         # @example Create a new action.
@@ -36,6 +20,46 @@ module Ethon
         def initialize(url, options)
           @url = url
           @options = options
+        end
+
+        # Return the url.
+        #
+        # @example Return url.
+        #   action.url
+        #
+        # @return [ String ] The url.
+        def url
+          @url
+        end
+
+        # Return the options hash.
+        #
+        # @example Return options.
+        #   action.options
+        #
+        # @return [ Hash ] The options.
+        def options
+          @options
+        end
+
+        # Return the params.
+        #
+        # @example Return params.
+        #   action.params
+        #
+        # @return [ Params ] The params.
+        def params
+          @params ||= Params.new(options[:params])
+        end
+
+        # Return the form.
+        #
+        # @example Return form.
+        #   action.form
+        #
+        # @return [ Form ] The form.
+        def form
+          @form ||= Form.new(options[:body])
         end
 
         # Setup everything necessary for a proper request.

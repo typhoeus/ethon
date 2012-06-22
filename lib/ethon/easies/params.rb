@@ -37,7 +37,7 @@ module Ethon
       #
       # @return [ Array ] The query pairs.
       def query_pairs
-        @query_pairs ||= build_query_pairs_from_hash(@params)
+        @query_pairs ||= build_query_pairs(@params)
       end
 
       # Return wether there are elements in the params or not.

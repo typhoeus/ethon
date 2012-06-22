@@ -161,6 +161,10 @@ module Ethon
       @handle ||= Curl.easy_init
     end
 
+    # Returns the informations available through libcurl as
+    # a hash.
+    #
+    # @return [ Hash ] The informations hash.
     def to_hash
       hash = {}
       hash[:return_code] = return_code

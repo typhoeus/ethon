@@ -4,8 +4,8 @@ describe Ethon::Easies::Util do
   let(:hash) { {} }
   let(:params) { Ethon::Easies::Params.new(hash) }
 
-  describe "#build_query_pairs_from_hash" do
-    let(:pairs) { params.method(:build_query_pairs_from_hash).call(hash) }
+  describe "#build_query_pairs" do
+    let(:pairs) { params.method(:build_query_pairs).call(hash) }
 
     context "when params is empty" do
       it "returns empty array" do

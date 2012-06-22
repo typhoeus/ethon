@@ -1,6 +1,8 @@
 module Ethon
   module Easies
     module Http
+
+      # This module contains logic for setting up a [multipart] POST body.
       module Postable
         # Set things up when form is provided.
         # Deals with multipart forms.

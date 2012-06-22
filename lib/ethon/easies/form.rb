@@ -71,7 +71,7 @@ module Ethon
       #
       # @return [ Array ] The query pairs.
       def query_pairs
-        @query_pairs ||= build_query_pairs_from_hash(@params)
+        @query_pairs ||= build_query_pairs(@params)
       end
 
       # Return the string representation of the form. This makes only
