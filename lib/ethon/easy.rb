@@ -49,6 +49,75 @@ module Ethon
     #
     # @param [ Hash ] options The options to set.
     #
+    # @option options :cainfo [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCAINFO.
+    # @option options :capath [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCAPATH.
+    # @option options :connecttimeout [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT.
+    # @option options :copypostfields [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCOPYPOSTFIELDS.
+    # @option options :customrequest [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCUSTOMREQUEST.
+    # @option options :followlocation [Boolean] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTFOLLOWLOCATION.
+    # @option options :httpauth [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTHTTPAUTH.
+    # @option options :httpget [Boolean] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTHTTPGET.
+    # @option options :httppost [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTHTTPPOST.
+    # @option options :infilesize [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTINFILESIZE.
+    # @option options :interface [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTINTERFACE.
+    # @option options :maxredirs [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTMAXREDIRS.
+    # @option options :nobody [Boolean] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTNOBODY.
+    # @option options :nosignal [Boolean] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTNOSIGNAL.
+    # @option options :postfieldsize [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPOSTFIELDSIZE.
+    # @option options :proxy [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPROXY.
+    # @option options :proxyauth [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPROXYAUTH.
+    # @option options :proxytype [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPROXYTYPE.
+    # @option options :put [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPUT.
+    # @option options :readdata [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTREADDATA.
+    # @option options :readfunction [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTREADFUNCTION.
+    # @option options :ssl_verifyhost [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTSSLVERIFYHOST.
+    # @option options :ssl_verifypeer [Boolean] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTSSLVERIFYPEER.
+    # @option options :sslcert [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTSSLCERT.
+    # @option options :sslcerttype [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTSSLCERTTYPE.
+    # @option options :sslkey [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTSSLKEY.
+    # @option options :sslkeytype [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTSSLKEYTYPE.
+    # @option options :sslversion [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTSSLVERSION.
+    # @option options :timeout [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT.
+    # @option options :upload [Boolean] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTUPLOAD.
+    # @option options :url [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTURL.
+    # @option options :useragent [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTUSERAGENT.
+    # @option options :userpwd [String] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTUSERPWD.
+    # @option options :verbose [Boolean] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTVERBOSE.
+    #
     # @return [ Easy ] A new Easy.
     def initialize(options = {})
       Curl.init
