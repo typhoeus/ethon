@@ -1,5 +1,6 @@
 module Ethon
-  # :nodoc:
+
+  # FFI Wrapper module for Curl. Holds constants and required initializers.
   module Curl
     # :nodoc:
     def Curl.windows?
@@ -11,16 +12,17 @@ module Ethon
     # :nodoc:
     VERSION_NOW = 3
 
-    # :nodoc:
+    # Flag. Initialize SSL.
     GLOBAL_SSL     = 0x01
-    # :nodoc:
+    # Flag. Initialize win32 socket libraries.
     GLOBAL_WIN32   = 0x02
-    # :nodoc:
+    # Flag. Initialize everything possible.
     GLOBAL_ALL     = (GLOBAL_SSL | GLOBAL_WIN32)
-    # :nodoc:
+    # Flag. Initialize everything by default.
     GLOBAL_DEFAULT = GLOBAL_ALL
 
-    # :nodoc:
+    # Libcurl error codes, refer
+    # https://github.com/bagder/curl/blob/master/include/curl/curl.h for details
     EasyCode = enum :easy_code, [
       :ok,
       :unsupported_protocol,
@@ -113,7 +115,8 @@ module Ethon
       :chunk_failed,
       :last]
 
-    # :nodoc:
+    # Curl-Multi socket error codes, refer
+    # https://github.com/bagder/curl/blob/master/include/curl/multi.h for details
     MultiCode = enum :multi_code, [
       :call_multi_perform, -1,
       :ok,
@@ -132,7 +135,8 @@ module Ethon
       :function_point, 20000,
       :off_t,          30000]
 
-    # :nodoc:
+    # Curl options, refer
+    # https://github.com/bagder/curl/blob/master/src/tool_cfgable.h for details
     Option = enum :option, [
       :file,                         OptionType[:object_point]   + 1,
       :writedata,                    OptionType[:object_point]   + 1,
@@ -282,7 +286,8 @@ module Ethon
       :double, 0x300000,
       :slist,  0x400000]
 
-    # :nodoc:
+    # Info details, refer
+    # https://github.com/bagder/curl/blob/master/src/tool_writeout.c#L66 for details
     Info = enum :info, [
       :effective_url,           InfoType[:string] + 1,
       :response_code,           InfoType[:long]   + 2,
@@ -328,7 +333,8 @@ module Ethon
       :local_port,              InfoType[:long]   + 42,
       :last, 42]
 
-    # :nodoc:
+    # Form options, used by FormAdd for temporary storage, refer
+    # https://github.com/bagder/curl/blob/master/lib/formdata.h#L51 for details
     FormOption = enum :form_option, [
       :none,
       :copyname,
