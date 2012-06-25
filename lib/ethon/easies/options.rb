@@ -9,8 +9,8 @@ module Ethon
       def self.included(base)
         base.extend ClassMethods
         base.const_set(:AVAILABLE_OPTIONS, [
-          :httppost, :put, :httpget, :nobody, :upload, :customrequest,
-          :cainfo, :capath, :connecttimeout,
+          :dns_cache_timeout, :httppost, :put, :httpget, :nobody, :upload,
+          :customrequest, :cainfo, :capath, :connecttimeout,
           :followlocation, :httpauth, :infilesize, :interface,
           :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
           :proxyauth, :proxytype, :timeout, :readdata, :sslcert, :ssl_verifypeer, :ssl_verifyhost,
@@ -63,7 +63,7 @@ module Ethon
         # @return [ Array ] The int options.
         def int_options
           [
-            :connecttimeout, :infilesize, :maxredirs,
+            :connecttimeout, :dns_cache_timeout, :infilesize, :maxredirs,
             :postfieldsize, :ssl_verifyhost, :timeout
           ]
         end

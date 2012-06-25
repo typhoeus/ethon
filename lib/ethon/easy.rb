@@ -59,6 +59,8 @@ module Ethon
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCOPYPOSTFIELDS.
     # @option options :customrequest [String] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCUSTOMREQUEST.
+    # @option options :dns_cache_timeout [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTDNSCACHETIMEOUT.
     # @option options :followlocation [Boolean] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTFOLLOWLOCATION.
     # @option options :httpauth [String] See
