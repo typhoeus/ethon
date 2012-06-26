@@ -4,6 +4,10 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.1.0...master)
 
+Enhancements:
+
+* GET requests are using custom requests only when there is a request body
+
 ## 0.1.0
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.0.2...v0.1.0)
