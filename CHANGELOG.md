@@ -2,12 +2,19 @@
 
 ## 0.0.3
 
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.0.2...master)
+
 Enhancements:
 
 * Documentation
   ( [Alex P](https://github.com/ifesdjeen), [\#13](https://github.com/typhoeus/ethon/issues/13) )
+* New libcurl option dns_cache_timeout
+  ( [Chris Heald](https://github.com/cheald), [\#192](https://github.com/typhoeus/typhoeus/pull/192) )
 
 Bugfixes:
+
+* Libcurl option ssl_verifyhost takes an integer.
+* Add space between header key and value.
 
 ## 0.0.2
 
