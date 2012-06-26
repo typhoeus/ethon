@@ -22,7 +22,6 @@ module Ethon
     include Ethon::Easies::Operations
     include Ethon::Easies::ResponseCallbacks
 
-    attr_reader :response_body, :response_header
     attr_accessor :return_code
 
     class << self

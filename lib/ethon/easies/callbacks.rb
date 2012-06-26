@@ -5,6 +5,10 @@ module Ethon
     # which are needed to interact with libcurl.
     module Callbacks
 
+      def self.included(base)
+        base.send(:attr_accessor, *[:response_body, :response_header])
+      end
+
       # Set writefunction and headerfunction callback.
       # They are called by libcurl in order to provide the header and
       # the body from the request.
