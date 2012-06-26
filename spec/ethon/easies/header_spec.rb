@@ -20,7 +20,7 @@ describe Ethon::Easies::Header do
         easy.perform
       end
 
-      it "sends header" do
+      it "sends" do
         easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
       end
 
@@ -31,12 +31,32 @@ describe Ethon::Easies::Header do
           easy.response_body.should include('"HTTP_USER_AGENT":"Ethon\\\\0"')
         end
       end
+
+      context "when header value has leading whitespace" do
+        let(:headers) { { 'User-Agent' => " Ethon" } }
+
+        it "removes" do
+          easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
+        end
+      end
+
+      context "when header value has traiing whitespace" do
+        let(:headers) { { 'User-Agent' => "Ethon " } }
+
+        it "removes" do
+          easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
+        end
+      end
     end
   end
 
-  describe "#compose_headers" do
+  describe "#compose_header" do
+    it "has space in between" do
+      easy.compose_header('a', 'b').should eq('a: b')
+    end
+
     context "when value is a symbol" do
-      it "doesn't fail" do
+      it "works" do
         expect{ easy.compose_header('a', :b) }.to_not raise_error
       end
     end
