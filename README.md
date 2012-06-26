@@ -9,7 +9,11 @@ In the modern world Ethon is a very basic libcurl wrapper using ffi.
 
 With bundler:
 
-    gem "ethon", :git => "https://github.com/typhoeus/ethon.git", :branch => "master"
+    gem "ethon"
+
+With rubygems:
+
+    gem install ethon
 
 ## Usage
 
