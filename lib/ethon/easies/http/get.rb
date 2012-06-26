@@ -15,7 +15,7 @@ module Ethon
         # @param [ Easy ] easy The easy to setup.
         def setup(easy)
           super
-          easy.customrequest = "GET"
+          easy.customrequest = "GET" unless form.empty?
         end
       end
     end
