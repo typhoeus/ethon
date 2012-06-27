@@ -221,11 +221,45 @@ describe Ethon::Multies::Operations do
   end
 
   describe "#init_vars" do
-    it { pending("untested") }
+    it "sets @timeout" do
+      multi.instance_variable_get(:@timeout).should be_a(FFI::MemoryPointer)
+    end
+
+    it "sets @timeval" do
+      multi.instance_variable_get(:@timeval).should be_a(Ethon::Curl::Timeval)
+    end
+
+    it "sets @fd_read" do
+      multi.instance_variable_get(:@fd_read).should be_a(Ethon::Curl::FDSet)
+    end
+
+    it "sets @fd_write" do
+      multi.instance_variable_get(:@fd_write).should be_a(Ethon::Curl::FDSet)
+    end
+
+    it "sets @fd_excep" do
+      multi.instance_variable_get(:@fd_excep).should be_a(Ethon::Curl::FDSet)
+    end
+
+    it "sets @max_fd" do
+      multi.instance_variable_get(:@max_fd).should be_a(FFI::MemoryPointer)
+    end
   end
 
   describe "#reset_fds" do
-    it { pending("untested") }
+    after { multi.reset_fds }
+
+    it "resets @fd_read" do
+      multi.instance_variable_get(:@fd_read).expects(:clear)
+    end
+
+    it "resets @fd_write" do
+      multi.instance_variable_get(:@fd_write).expects(:clear)
+    end
+
+    it "resets @fd_excep" do
+      multi.instance_variable_get(:@fd_excep).expects(:clear)
+    end
   end
 
   describe "#check" do
@@ -237,6 +271,20 @@ describe Ethon::Multies::Operations do
   end
 
   describe "#trigger" do
-    it { pending("untested") }
+    it "calls multi perform" do
+      Ethon::Curl.expects(:multi_perform)
+      multi.trigger
+    end
+
+    it "sets running count" do
+      multi.instance_variable_set(:@running_count, nil)
+      multi.trigger
+      multi.instance_variable_get(:@running_count).should_not be_nil
+    end
+
+    it "returns multi perform code" do
+      Ethon::Curl.expects(:multi_perform).returns(:ok)
+      multi.trigger.should eq(:ok)
+    end
   end
 end
