@@ -490,7 +490,7 @@ module Ethon
       def init
         @@init_mutex.synchronize {
           if not @@initialized
-            raise RuntimeError.new('curl failed to initialise') if Curl.global_init(GLOBAL_ALL) != 0
+            raise Errors::GlobalInit.new if Curl.global_init(GLOBAL_ALL) != 0
             @@initialized = true
           end
         }
