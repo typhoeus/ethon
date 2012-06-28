@@ -5,6 +5,7 @@ module Ethon
     # which are needed to interact with libcurl.
     module Callbacks
 
+      # :nodoc:
       def self.included(base)
         base.send(:attr_accessor, *[:response_body, :response_header])
       end

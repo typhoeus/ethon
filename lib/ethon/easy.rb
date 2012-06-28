@@ -13,6 +13,24 @@ module Ethon
 
   # This is the class representing the libcurl easy interface
   # See http://curl.haxx.se/libcurl/c/libcurl-easy.html for more informations.
+  #
+  # @example You can access the libcurl easy interface through this class, every request is based on it. The simplest setup looks like that:
+  #
+  #   e = Ethon::Easy.new(url: "www.example.com")
+  #   e.prepare
+  #   e.perform
+  #   #=> :ok
+  #
+  # @example You can the reuse this Easy for the next request:
+  #
+  #   e.reset # reset easy handle
+  #   e.url = "www.google.com"
+  #   e.followlocation = true
+  #   e.prepare
+  #   e.perform
+  #   #=> :ok
+  #
+  # @see initialize
   class Easy
     include Ethon::Easies::Informations
     include Ethon::Easies::Callbacks

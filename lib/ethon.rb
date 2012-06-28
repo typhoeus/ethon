@@ -12,7 +12,11 @@ require 'ethon/easy'
 require 'ethon/multi'
 require 'ethon/version'
 
-# The toplevel namespace which includes everything
-# belonging to ethon.
+# Ethon is a very simple libcurl.
+# It provides direct access to libcurl functionality
+# as well as some helpers for doing http requests.
+#
+# Ethon was extracted from Typhoeus. If you want to
+# see how others use Ethon look at the Typhoeus code.
 module Ethon
 end
