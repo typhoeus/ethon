@@ -61,4 +61,20 @@ describe Ethon::Easies::Header do
       end
     end
   end
+
+  describe "#header_list" do
+    context "when no set_headers" do
+      it "returns nil" do
+        easy.header_list.should eq(nil)
+      end
+    end
+
+    context "when set_headers" do
+      it "returns pointer to header list" do
+        easy.headers = {'User-Agent' => 'Custom'}
+        easy.set_headers
+        easy.header_list.should be_a(FFI::Pointer)
+      end
+    end
+  end
 end

@@ -20,4 +20,11 @@ describe Ethon::Multi do
       multi.handle.should be_a(FFI::Pointer)
     end
   end
+
+  describe ".finalizer" do
+    it "calls multi_cleanup" do
+      Ethon::Curl.expects(:multi_cleanup).with(multi.handle)
+      Ethon::Multi.finalizer(multi).call
+    end
+  end
 end

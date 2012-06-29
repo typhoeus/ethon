@@ -1,6 +1,14 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
+if RUBY_VERSION =~ /1.9/ && RUBY_ENGINE == 'ruby'
+  require 'simplecov'
+
+  SimpleCov.start do
+    add_filter 'spec/support'
+  end
+end
+
 require "ethon"
 require "mocha"
 require "json"
