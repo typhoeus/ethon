@@ -48,8 +48,8 @@ describe Ethon::Easy do
       end
 
       context "when invalid key" do
-        it "fails silent" do
-          easy.set_attributes({:fubar => 1})
+        it "raises invalid option error" do
+          expect{ easy.set_attributes({:fubar => 1}) }.to raise_error(Ethon::Errors::InvalidOption)
         end
       end
     end

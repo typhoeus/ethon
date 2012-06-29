@@ -5,6 +5,7 @@ require 'ethon/errors/multi_fdset'
 require 'ethon/errors/multi_add'
 require 'ethon/errors/multi_remove'
 require 'ethon/errors/select'
+require 'ethon/errors/invalid_option'
 
 module Ethon
 

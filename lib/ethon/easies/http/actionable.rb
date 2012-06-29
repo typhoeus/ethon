@@ -19,7 +19,7 @@ module Ethon
         # @return [ Action ] A new action.
         def initialize(url, options)
           @url = url
-          @options = options
+          @options = options.dup
         end
 
         # Return the url.
@@ -49,7 +49,7 @@ module Ethon
         #
         # @return [ Params ] The params.
         def params
-          @params ||= Params.new(options[:params])
+          @params ||= Params.new(options.delete(:params))
         end
 
         # Return the form.
@@ -59,7 +59,7 @@ module Ethon
         #
         # @return [ Form ] The form.
         def form
-          @form ||= Form.new(options[:body])
+          @form ||= Form.new(options.delete(:body))
         end
 
         # Setup everything necessary for a proper request.

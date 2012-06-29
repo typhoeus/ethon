@@ -151,10 +151,15 @@ module Ethon
     #
     # @param [ Hash ] options The options.
     #
+    # @raise InvalidOption
+    #
     # @see initialize
     def set_attributes(options)
       options.each_pair do |key, value|
-        method("#{key}=").call(value) if respond_to?("#{key}=")
+        unless respond_to?("#{key}=")
+          raise Errors::InvalidOption.new(key)
+        end
+        method("#{key}=").call(value)
       end
     end
 
