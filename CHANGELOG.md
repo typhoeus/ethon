@@ -7,6 +7,9 @@
 Enhancements:
 
 * GET requests are using custom requests only when there is a request body
+* Easy#on_complete takes multiple callbacks
+* raise Errors::GlobalInit when libcurls global_init failed instead of
+  runtime error
 
 ## 0.1.0
 
@@ -25,6 +28,8 @@ Bugfixes:
 * Add space between header key and value.
 
 ## 0.0.2
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.0.1...v0.0.2)
 
 Bugfixes:
 
