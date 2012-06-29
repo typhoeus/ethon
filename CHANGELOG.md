@@ -2,7 +2,11 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.1.0...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.2.0...master)
+
+## 0.2.0
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.1.0...v0.2.0)
 
 Enhancements:
 
@@ -10,6 +14,7 @@ Enhancements:
 * Easy#on_complete takes multiple callbacks
 * raise Errors::GlobalInit when libcurls global_init failed instead of
   runtime error
+* raise Errors::InvalidOption if option is invalid
 
 ## 0.1.0
 
