@@ -5,17 +5,19 @@ if RUBY_VERSION =~ /1.9/ && RUBY_ENGINE == 'ruby'
   require 'simplecov'
 
   SimpleCov.start do
-    add_filter 'spec/support'
+    add_filter 'spec'
   end
 end
 
+require 'bundler'
+Bundler.setup
 require "ethon"
-require "mocha"
-require "json"
-require "rspec"
+require 'rspec'
+
 require_relative 'support/boot.rb'
 
 RSpec.configure do |config|
+  config.order = :rand
   config.mock_with(:mocha)
 
   config.before(:suite) do
