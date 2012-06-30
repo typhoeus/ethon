@@ -522,7 +522,6 @@ module Ethon
       def get_info_string(option, handle)
         if easy_getinfo(handle, option, string_ptr) == :ok
           string_ptr.read_pointer.read_string
-        else nil
         end
       end
 
@@ -538,7 +537,6 @@ module Ethon
       def get_info_long(option, handle)
         if easy_getinfo(handle, option, long_ptr) == :ok
           long_ptr.read_long
-        else nil
         end
       end
 
@@ -554,7 +552,6 @@ module Ethon
       def get_info_double(option, handle)
         if easy_getinfo(handle, option, double_ptr) == :ok
           double_ptr.read_double
-        else nil
         end
       end
 
