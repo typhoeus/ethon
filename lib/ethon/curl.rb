@@ -434,9 +434,12 @@ module Ethon
     attach_function :easy_cleanup, :curl_easy_cleanup, [:pointer], :void
     attach_function :easy_getinfo, :curl_easy_getinfo, [:pointer, :info, :pointer], :easy_code
     attach_function :easy_setopt, :curl_easy_setopt, [:pointer, :option, :pointer], :easy_code
+    attach_function :easy_setopt_ffi_pointer, :curl_easy_setopt, [:pointer, :option, :pointer], :easy_code
     attach_function :easy_setopt_string, :curl_easy_setopt, [:pointer, :option, :string], :easy_code
     attach_function :easy_setopt_long, :curl_easy_setopt, [:pointer, :option, :long], :easy_code
+    attach_function :easy_setopt_fixnum, :curl_easy_setopt, [:pointer, :option, :long], :easy_code
     attach_function :easy_setopt_callback, :curl_easy_setopt, [:pointer, :option, :callback], :easy_code
+    attach_function :easy_setopt_proc, :curl_easy_setopt, [:pointer, :option, :callback], :easy_code
     attach_function :easy_perform, :curl_easy_perform, [:pointer], :easy_code
     attach_function :easy_strerror, :curl_easy_strerror, [:int], :string
     attach_function :easy_escape, :curl_easy_escape, [:pointer, :pointer, :int], :string
@@ -498,16 +501,9 @@ module Ethon
 
       # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle)
-        case value
-        when String
-          easy_setopt_string(handle, option, value.to_s)
-        when Integer
-          easy_setopt_long(handle, option, value)
-        when Proc, FFI::Function
-          easy_setopt_callback(handle, option, value)
-        else
-          easy_setopt(handle, option, value) if value
-        end
+        return unless value
+
+        method("easy_setopt_#{value.class.to_s.underscr}").call(handle, option, value)
       end
 
       # Return info as string.
