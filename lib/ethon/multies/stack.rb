@@ -24,6 +24,7 @@ module Ethon
       # @raise [Ethon::Errors::MultiAdd] when adding an easy failed.
       def add(easy)
         return nil if easy_handles.include?(easy)
+
         code = Curl.multi_add_handle(handle, easy.handle)
         raise Errors::MultiAdd.new(code, easy) unless code == :ok
         easy_handles << easy

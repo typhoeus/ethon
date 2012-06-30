@@ -75,10 +75,7 @@ module Ethon
       #   easy.set_options
       def set_options
         self.class.available_options.each do |option|
-          value = value_for(option)
-          next if value.nil?
-
-          Curl.set_option(option, value, handle)
+          Curl.set_option(option, value_for(option), handle)
         end
       end
 
