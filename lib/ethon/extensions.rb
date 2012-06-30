@@ -1,1 +1,1 @@
-require 'ethon/extensions/string.rb' unless ''.respond_to?(:byteslice)
+require 'ethon/extensions/string.rb'
