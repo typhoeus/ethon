@@ -104,6 +104,8 @@ module Ethon
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPROXYAUTH.
     # @option options :proxytype [String] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPROXYTYPE.
+    # @option options :proxyport [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPROXYPORT.
     # @option options :put [String] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTPUT.
     # @option options :readdata [String] See

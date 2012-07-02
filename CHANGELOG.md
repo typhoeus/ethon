@@ -4,6 +4,10 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.2.0...master)
 
+Enhancements:
+
+* New libcurl options proxyport
+
 ## 0.2.0
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.1.0...v0.2.0)
