@@ -52,7 +52,7 @@ module Ethon
         #
         # @return [ Hash ] The enum options.
         def enum_options
-          { :httpauth => Curl::Auth }
+          { :httpauth => Curl::Auth, :sslversion => Curl::SSLVersion }
         end
 
         # Return the options which need to set as an integer for easy.
@@ -93,7 +93,9 @@ module Ethon
         if self.class.bool_options.include?(option)
           value ? 1 : 0
         elsif self.class.enum_options.key?(option)
-          self.class.enum_options[option][value]
+          self.class.enum_options[option].to_h.fetch(value) do
+            raise Errors::InvalidValue.new(option, value)
+          end
         elsif self.class.int_options.include?(option)
           value.to_i
         elsif value.is_a?(::String)
