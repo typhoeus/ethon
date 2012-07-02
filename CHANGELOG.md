@@ -2,11 +2,20 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.2.0...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.3.0...master)
+
+## 0.3.0
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.2.0...v0.3.0)
 
 Enhancements:
 
-* New libcurl options proxyport
+* New libcurl option proxyport
+* Raise invalid value error when providing a wrong key for sslversion or httpauth
+
+Bugfixes:
+
+* Libcurl option sslversion is handled correct
 
 ## 0.2.0
 
