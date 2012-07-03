@@ -434,7 +434,7 @@ module Ethon
     attach_function :easy_cleanup, :curl_easy_cleanup, [:pointer], :void
     attach_function :easy_getinfo, :curl_easy_getinfo, [:pointer, :info, :pointer], :easy_code
     attach_function :easy_setopt, :curl_easy_setopt, [:pointer, :option, :pointer], :easy_code
-    attach_function :easy_setopt_ffi_pointer, :curl_easy_setopt, [:pointer, :option, :pointer], :easy_code
+    attach_function :easy_setopt_ffipointer, :curl_easy_setopt, [:pointer, :option, :pointer], :easy_code
     attach_function :easy_setopt_string, :curl_easy_setopt, [:pointer, :option, :string], :easy_code
     attach_function :easy_setopt_long, :curl_easy_setopt, [:pointer, :option, :long], :easy_code
     attach_function :easy_setopt_fixnum, :curl_easy_setopt, [:pointer, :option, :long], :easy_code
@@ -503,7 +503,8 @@ module Ethon
       def set_option(option, value, handle)
         return unless value
 
-        method("easy_setopt_#{value.class.to_s.underscr}").call(handle, option, value)
+        name = "easy_setopt_#{value.class.to_s.downcase.delete(':')}"
+        send(name, handle, option, value)
       end
 
       # Return info as string.
@@ -536,7 +537,7 @@ module Ethon
         end
       end
 
-      # Return info as float.
+      # Return info as float
       #
       # @example Return info.
       #   Curl.get_info_double(:response_code, easy)
