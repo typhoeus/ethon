@@ -34,4 +34,72 @@ describe Ethon::Easies::Queryable do
       end
     end
   end
+
+  describe "#build_query_pairs" do
+    let(:pairs) { params.method(:build_query_pairs).call(hash) }
+
+    context "when params is empty" do
+      it "returns empty array" do
+        pairs.should eq([])
+      end
+    end
+
+    context "when params is simple hash" do
+      let(:hash) { {:a => 1, :b => 2} }
+
+      it "transforms correct" do
+        pairs.should eq([[:a, 1], [:b, 2]])
+      end
+    end
+
+    context "when params is a nested hash" do
+      let(:hash) { {:a => 1, :b => {:c => 2}} }
+
+      it "transforms correct" do
+        pairs.should eq([[:a, 1], ["b[c]", 2]])
+      end
+    end
+
+    context "when params contains an array" do
+      let(:hash) { {:a => 1, :b => [2, 3]} }
+
+      it "transforms correct" do
+        pairs.should eq([[:a, 1], [:b, 2], [:b, 3]])
+      end
+    end
+
+    context "when params contains file" do
+      let(:file) { Tempfile.new("fubar") }
+      let(:file_info) { params.method(:file_info).call(file) }
+      let(:hash) { {:a => 1, :b => file} }
+
+      it "transforms correct" do
+        pairs.should eq([[:a, 1], [:b, file_info]])
+      end
+    end
+
+    context "when params key contains a null byte" do
+      let(:hash) { {:a => "1\0" } }
+
+      it "escapes" do
+        pairs.should eq([[:a, "1\\0"]])
+      end
+    end
+
+    context "when params value contains a null byte" do
+      let(:hash) { {"a\0" => 1 } }
+
+      it "escapes" do
+        pairs.should eq([["a\\0", 1]])
+      end
+    end
+  end
+
+  describe "#to_s" do
+    it
+  end
+
+  describe "#empty?" do
+    it
+  end
 end
