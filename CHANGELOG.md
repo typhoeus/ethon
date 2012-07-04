@@ -4,6 +4,10 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.3.0...master)
 
+Enhancements:
+
+* ruby 1.8.7 compatible
+
 ## 0.3.0
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.2.0...v0.3.0)
