@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ethon::Easies::Params do
+describe Ethon::Easies::Queryable do
   let(:hash) { {} }
   let(:params) { Ethon::Easies::Params.new(hash) }
 

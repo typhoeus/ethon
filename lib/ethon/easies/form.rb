@@ -1,4 +1,5 @@
 require 'ethon/easies/util'
+require 'ethon/easies/queryable'
 
 module Ethon
   module Easies
@@ -8,7 +9,7 @@ module Ethon
     # It handles multipart forms, too.
     class Form
       include Ethon::Easies::Util
-      attr_accessor :escape
+      include Ethon::Easies::Queryable
 
       # Return a new Form.
       #
@@ -62,37 +63,6 @@ module Ethon
       # @return [ Boolean ] True if form is multipart, else false.
       def multipart?
         query_pairs.any?{|pair| pair.last.is_a?(Array)}
-      end
-
-      # Return the query pairs.
-      #
-      # @example Return the query pairs.
-      #   form.query_pairs
-      #
-      # @return [ Array ] The query pairs.
-      def query_pairs
-        @query_pairs ||= build_query_pairs(@params)
-      end
-
-      # Return the string representation of the form. This makes only
-      # sense when the form is not multipart.
-      #
-      # @example Return string representation.
-      #   form.to_s
-      #
-      # @return [ String ] The string representation.
-      def to_s
-        query_pairs.map{|pair| pair.map{|e| escape ? CGI::escape(e.to_s) : e }.join("=")}.join('&')
-      end
-
-      # Return wether there are elements in the form or not.
-      #
-      # @example Return if form is empty.
-      #   form.empty?
-      #
-      # @return [ Boolean ] True if form is empty, else false.
-      def empty?
-        @params.empty?
       end
 
       # Add form elements to libcurl.
