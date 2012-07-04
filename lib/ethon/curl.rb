@@ -448,6 +448,7 @@ module Ethon
     attach_function :formadd, :curl_formadd, [:pointer, :pointer, :varargs], :int
 
     attach_function :multi_init, :curl_multi_init, [], :pointer
+    attach_function :multi_cleanup, :curl_multi_cleanup, [:pointer], :void
     attach_function :multi_add_handle, :curl_multi_add_handle, [:pointer, :pointer], :multi_code
     attach_function :multi_remove_handle, :curl_multi_remove_handle, [:pointer, :pointer], :multi_code
     attach_function :multi_info_read, :curl_multi_info_read, [:pointer, :pointer], Msg.ptr

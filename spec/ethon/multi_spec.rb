@@ -26,5 +26,9 @@ describe Ethon::Multi do
       Ethon::Curl.expects(:multi_cleanup).with(multi.handle)
       Ethon::Multi.finalizer(multi).call
     end
+
+    it "works" do
+      expect{ Ethon::Multi.finalizer(multi).call }.to_not raise_error
+    end
   end
 end
