@@ -95,11 +95,19 @@ describe Ethon::Easies::Queryable do
     end
   end
 
-  describe "#to_s" do
-    it
-  end
-
   describe "#empty?" do
-    it
+    context "when params empty" do
+      it "returns true" do
+        params.empty?.should be_true
+      end
+    end
+
+    context "when params not empty" do
+      let(:hash) { {:a => 1} }
+
+      it "returns false" do
+        params.empty?.should be_false
+      end
+    end
   end
 end

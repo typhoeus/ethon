@@ -23,7 +23,11 @@ module Ethon
       #
       # @return [ String ] The string representation.
       def to_s
-        query_pairs.map{|pair| pair.map{|e| escape ? CGI::escape(e.to_s) : e }.join("=")}.join('&')
+        query_pairs.map{ |pair|
+          pair.map{ |e|
+            escape ? CGI::escape(e.to_s) : e
+          }.join("=")
+        }.join('&')
       end
 
       # Return the query pairs.
