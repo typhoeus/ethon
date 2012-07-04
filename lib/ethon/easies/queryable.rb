@@ -1,7 +1,11 @@
 module Ethon
   module Easies
+
+    # This module contains logic about building
+    # query parameters for url or form.
     module Queryable
 
+      # :nodoc:
       def self.included(base)
         base.send(:attr_accessor, :escape)
       end
