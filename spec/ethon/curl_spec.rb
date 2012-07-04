@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Ethon::Curl do
   describe ".init" do
-    before { Ethon::Curl.class_variable_set(:@@initialized, false) }
+    before { Ethon::Curl.send(:class_variable_set, :@@initialized, false) }
 
     context "when global_init fails" do
       it "raises global init error" do

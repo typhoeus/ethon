@@ -96,7 +96,7 @@ describe Ethon::Easies::Http::Post do
           end
 
           it "submits the data" do
-            easy.response_body.should include('"rack.request.form_hash":{"a":{"filename":"post_spec.rb"')
+            easy.response_body.should include('"filename":"post_spec.rb"')
           end
         end
       end

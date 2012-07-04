@@ -62,7 +62,7 @@ describe Ethon::Easy do
   end
 
   describe "#reset" do
-    let(:resettables) { easy.instance_variables - [:@handle, :@header_list] }
+    let(:resettables) { easy.instance_variables - [:@handle, :@header_list, '@handle', '@header_list'] }
 
     before do
       easy.class.available_options.each do |option|
@@ -76,7 +76,7 @@ describe Ethon::Easy do
     end
 
     it "resets easy handle" do
-      Ethon::Curl.expects(:easy_reset).with(easy.handle)
+      Ethon::Curl.expects(:easy_reset)
       easy.reset
     end
   end

@@ -14,7 +14,11 @@ Bundler.setup
 require "ethon"
 require 'rspec'
 
-require_relative 'support/boot.rb'
+if defined? require_relative
+  require_relative 'support/boot.rb'
+else
+  require 'support/boot.rb'
+end
 
 RSpec.configure do |config|
   config.order = :rand
