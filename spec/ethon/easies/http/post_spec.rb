@@ -139,6 +139,25 @@ describe Ethon::Easies::Http::Post do
           end
         end
       end
+
+      context "when string" do
+        let(:form) { "{a: 1}" }
+
+        context "when requesting" do
+          before do
+            easy.prepare
+            easy.perform
+          end
+
+          it "returns ok" do
+            easy.return_code.should eq(:ok)
+          end
+
+          it "sends string" do
+            easy.response_body.should match('"body":"{a: 1}"')
+          end
+        end
+      end
     end
 
     context "when params and body" do

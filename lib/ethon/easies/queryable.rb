@@ -28,6 +28,8 @@ module Ethon
       # @return [ String ] The string representation.
       def to_s
         query_pairs.map{ |pair|
+          return pair unless pair.respond_to?(:map)
+
           pair.map{ |e|
             escape ? CGI::escape(e.to_s) : e
           }.join("=")
@@ -54,6 +56,8 @@ module Ethon
       #
       # @return [ Array ] The array of query pairs.
       def build_query_pairs(hash)
+        return [hash] if hash.is_a?(String)
+
         pairs = []
         recursive = Proc.new do |h, prefix|
           h.each_pair do |k,v|

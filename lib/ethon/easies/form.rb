@@ -62,7 +62,7 @@ module Ethon
       #
       # @return [ Boolean ] True if form is multipart, else false.
       def multipart?
-        query_pairs.any?{|pair| pair.last.is_a?(Array)}
+        query_pairs.any?{|pair| pair.respond_to?(:last) && pair.last.is_a?(Array)}
       end
 
       # Add form elements to libcurl.

@@ -33,6 +33,14 @@ describe Ethon::Easies::Queryable do
         end
       end
     end
+
+    context "when query_pairs contains a string" do
+      before { params.instance_variable_set(:@query_pairs, ["{a: 1}"]) }
+
+      it "returns correct string" do
+        params.to_s.should eq("{a: 1}")
+      end
+    end
   end
 
   describe "#build_query_pairs" do
@@ -41,6 +49,14 @@ describe Ethon::Easies::Queryable do
     context "when params is empty" do
       it "returns empty array" do
         pairs.should eq([])
+      end
+    end
+
+    context "when params is string" do
+      let(:hash) { "{a: 1}" }
+
+      it "wraps it in an array" do
+        pairs.should eq([hash])
       end
     end
 
