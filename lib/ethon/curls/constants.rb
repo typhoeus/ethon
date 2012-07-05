@@ -37,7 +37,7 @@ module Ethon
     Proxy = enum(proxy_types.to_a.flatten)
 
     # :nodoc:
-    SSLVersion = enum(ssl_versions)
+    SSLVersion = enum(ssl_versions.to_a.flatten)
 
     # :nodoc:
     MsgCode = enum(:msg_code, msg_codes)
