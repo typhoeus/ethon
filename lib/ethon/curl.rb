@@ -63,6 +63,7 @@ module Ethon
           if not @@initialized
             raise Errors::GlobalInit.new if Curl.global_init(GLOBAL_ALL) != 0
             @@initialized = true
+            Ethon.logger.debug("ETHON: Libcurl initialized") if Ethon.logger
           end
         }
       end

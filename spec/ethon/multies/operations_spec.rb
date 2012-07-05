@@ -139,6 +139,11 @@ describe Ethon::Multies::Operations do
       it "returns nil" do
         multi.perform.should be_nil
       end
+
+      it "logs" do
+        Ethon.logger.expects(:debug).twice
+        multi.perform
+      end
     end
 
     context "when easy handle" do

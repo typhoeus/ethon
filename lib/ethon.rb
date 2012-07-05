@@ -1,3 +1,4 @@
+require 'logger'
 require 'ffi'
 require 'rbconfig'
 require 'thread'
@@ -10,7 +11,7 @@ require 'ethon/curl'
 require 'ethon/errors'
 require 'ethon/easy'
 require 'ethon/multi'
-# require 'ethon/loggable'
+require 'ethon/loggable'
 require 'ethon/version'
 
 # Ethon is a very simple libcurl.
@@ -20,5 +21,4 @@ require 'ethon/version'
 # Ethon was extracted from Typhoeus. If you want to
 # see how others use Ethon look at the Typhoeus code.
 module Ethon
-  # extend loggable
 end

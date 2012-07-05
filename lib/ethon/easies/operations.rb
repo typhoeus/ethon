@@ -13,6 +13,7 @@ module Ethon
       def perform
         @return_code = Curl.easy_perform(handle)
         complete
+        Ethon.logger.debug("ETHON: performed #{self.log_inspect}") if Ethon.logger
         @return_code
       end
 

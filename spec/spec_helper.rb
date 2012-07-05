@@ -20,6 +20,10 @@ else
   require 'support/boot.rb'
 end
 
+# Ethon.logger = Logger.new($stdout).tap do |log|
+#   log.level = Logger::DEBUG
+# end
+
 RSpec.configure do |config|
   config.order = :rand
   config.mock_with(:mocha)
