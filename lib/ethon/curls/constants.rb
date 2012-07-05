@@ -16,25 +16,25 @@ module Ethon
     MultiCode = enum(:multi_code, multi_codes)
 
     # :nodoc:
-    Option = enum(:option, options.flatten)
-    OptionType = enum(option_types.flatten)
+    Option = enum(:option, options.to_a.flatten)
+    OptionType = enum(option_types.to_a.flatten)
 
     # :nodoc:
-    InfoType = enum(info_types.flatten)
+    InfoType = enum(info_types.to_a.flatten)
 
     # Info details, refer
     # https://github.com/bagder/curl/blob/master/src/tool_writeout.c#L66 for details
-    Info = enum(:info, infos.flatten)
+    Info = enum(:info, infos.to_a.flatten)
 
     # Form options, used by FormAdd for temporary storage, refer
     # https://github.com/bagder/curl/blob/master/lib/formdata.h#L51 for details
     FormOption = enum(:form_option, form_options)
 
     # :nodoc:
-    Auth = enum(auth_types.flatten)
+    Auth = enum(auth_types.to_a.flatten)
 
     # :nodoc:
-    Proxy = enum(proxy_types.flatten)
+    Proxy = enum(proxy_types.to_a.flatten)
 
     # :nodoc:
     SSLVersion = enum(ssl_versions)
