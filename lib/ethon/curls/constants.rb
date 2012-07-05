@@ -12,7 +12,7 @@ module Ethon
     # Flag. Initialize everything by default.
     GLOBAL_DEFAULT = GLOBAL_ALL
 
-    EasyCode = enum(easy_code, easy_codes)
+    EasyCode = enum(:easy_code, easy_codes)
     MultiCode = enum(:multi_code, multi_codes)
 
     # :nodoc:
