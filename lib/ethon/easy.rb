@@ -192,11 +192,12 @@ module Ethon
     #
     # @return [ Hash ] The informations hash.
     def to_hash
-      return @hash if defined?(@hash)
-      @hash = {}
-      @hash[:return_code] = return_code
-      @hash[:response_header] = response_header
-      @hash[:response_body] = response_body
+      return @hash if defined?(@hash) && @hash
+      @hash = {
+        :return_code => return_code,
+        :response_header => response_header,
+        :response_body => response_body
+      }
       Easies::Informations::AVAILABLE_INFORMATIONS.keys.each do |info|
         @hash[info] = method(info).call
       end
@@ -211,10 +212,10 @@ module Ethon
     # @return [ String ] The log out.
     def log_inspect
       hash = {
-        :url => @url,
-        :response_code => to_hash[:response_code],
-        :return_code => to_hash[:return_code],
-        :total_time => to_hash[:total_time]
+        :url => url,
+        :response_code => response_code,
+        :return_code => return_code,
+        :total_time => total_time
       }
       "EASY #{hash.map{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
     end
