@@ -154,7 +154,7 @@ describe Ethon::Easies::Http::Post do
           end
 
           it "sends string" do
-            easy.response_body.should match('"body":"{a: 1}"')
+            easy.response_body.should include('"body":"{a: 1}"')
           end
         end
       end

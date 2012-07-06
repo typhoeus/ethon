@@ -8,6 +8,6 @@ rvm:
   - jruby-19mode
 matrix:
   allow_failures:
-    - rvm: rbx
+    - rvm: rbx-19mode
 before_install:
   - gem uninstall ffi -a
