@@ -2,11 +2,22 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.3.0...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.0...master)
+
+## 0.4.0
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.3.0...v0.4.0)
 
 Enhancements:
 
 * ruby 1.8.7 compatible
+* Ethon.logger
+* Deal with string param/body
+* More documentation
+
+Bugfixes:
+
+* Add multi_cleanup to curl
 
 ## 0.3.0
 
