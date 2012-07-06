@@ -28,7 +28,7 @@ module Ethon
       # @return [ String ] The string representation.
       def to_s
         query_pairs.map{ |pair|
-          return pair unless pair.respond_to?(:map)
+          return pair if pair.is_a?(String)
 
           pair.map{ |e|
             escape ? CGI::escape(e.to_s) : e
