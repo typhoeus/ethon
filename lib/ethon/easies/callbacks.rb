@@ -63,7 +63,9 @@ module Ethon
           left = body.bytesize - @request_body_read
           size = left if size > left
           if size > 0
-            stream.write_string(body.byteslice(@request_body_read, size), size)
+            stream.write_string(
+              body.respond_to?(:byteslice) ? body.byteslice(@request_body_read, size) : body[@request_body_read, size], size
+            )
             @request_body_read += size
           end
           size

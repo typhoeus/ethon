@@ -6,7 +6,6 @@ require 'mime/types'
 require 'cgi'
 require 'tempfile'
 
-require 'ethon/extensions'
 require 'ethon/curl'
 require 'ethon/errors'
 require 'ethon/easy'
