@@ -1,5 +1,8 @@
 module Ethon
-  module Curls
+  module Curls # :nodoc:
+
+    # This module contains all easy and
+    # multi return codes.
     module Codes
 
       # Libcurl error codes, refer

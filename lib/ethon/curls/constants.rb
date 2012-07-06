@@ -12,11 +12,14 @@ module Ethon
     # Flag. Initialize everything by default.
     GLOBAL_DEFAULT = GLOBAL_ALL
 
+    # :nodoc:
     EasyCode = enum(:easy_code, easy_codes)
+    # :nodoc:
     MultiCode = enum(:multi_code, multi_codes)
 
     # :nodoc:
     Option = enum(:option, options.to_a.flatten)
+    # :nodoc:
     OptionType = enum(option_types.to_a.flatten)
 
     # :nodoc:

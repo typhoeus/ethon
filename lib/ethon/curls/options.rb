@@ -1,5 +1,8 @@
 module Ethon
   module Curls
+
+    # This module contains logic for setting options on
+    # easy or multi interface.
     module Options
 
       # Sets appropriate option for easy, depending on value type.

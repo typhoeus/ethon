@@ -23,7 +23,7 @@ module Ethon
     # @example Set the logger.
     #   Loggable.logger = Logger.new($stdout)
     #
-    # @param [ Logger ] The logger to set.
+    # @param [ Logger ] logger The logger to set.
     #
     # @return [ Logger ] The new logger.
     def logger=(logger)

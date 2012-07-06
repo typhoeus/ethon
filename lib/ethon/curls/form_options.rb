@@ -1,5 +1,7 @@
 module Ethon
   module Curls
+
+    # This module contains the available options for forms.
     module FormOptions
 
       # Form options, used by FormAdd for temporary storage, refer

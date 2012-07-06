@@ -1,6 +1,11 @@
 module Ethon
   module Curls
+
+    # This module contains the functions to be attached in order to work with
+    # libcurl.
     module Functions
+
+      # :nodoc:
       def self.extended(base)
         base.attach_function :global_init, :curl_global_init, [:long], :int
 

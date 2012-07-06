@@ -203,6 +203,12 @@ module Ethon
       @hash
     end
 
+    # Return pretty log out.
+    #
+    # @example Return log out.
+    #   easy.log_inspect
+    #
+    # @return [ String ] The log out.
     def log_inspect
       hash = {
         :url => @url,

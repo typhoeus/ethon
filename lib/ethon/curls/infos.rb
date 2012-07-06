@@ -1,6 +1,16 @@
 module Ethon
   module Curls
+
+    # This module contains logic for the available informations
+    # on an easy, eg.: connect_time.
     module Infos
+
+      # Return info types.
+      #
+      # @example Return info types.
+      #   Ethon::Curl.info_types
+      #
+      # @return [ Hash ] The info types.
       def info_types
         {
           :string =>0x100000,
@@ -10,8 +20,13 @@ module Ethon
         }
       end
 
-      # Info details, refer
+      # Return Info details, refer
       # https://github.com/bagder/curl/blob/master/src/tool_writeout.c#L66 for details
+      #
+      # @example Return infos.
+      #   Ethon::Curl.infos
+      #
+      # @return [ Hash ] The infos.
       def infos
         {
           :effective_url =>          info_types[:string] + 1,

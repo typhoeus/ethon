@@ -1,6 +1,15 @@
 module Ethon
   module Curls
+
+    # This module contain available auth types.
     module AuthTypes
+
+      # Return available auth types.
+      #
+      # @example Return auth types.
+      #   Ethon::Curl.auth_types
+      #
+      # @return [ Hash ] The auth types.
       def auth_types
         {
           :basic =>       0x01,
