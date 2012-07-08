@@ -80,16 +80,6 @@ module Ethon
       Curl.easy_reset(handle)
     end
 
-    # Returns a  pointer to the curl easy handle.
-    #
-    # @example Return the handle.
-    #   easy.handle
-    #
-    # @return [ FFI::Pointer ] A pointer to the curl easy handle.
-    def handle
-      @handle ||= Curl.easy_init
-    end
-
     def to_hash
       hash = {}
       hash[:return_code] = return_code

@@ -16,6 +16,16 @@ module Ethon
         @return_code
       end
 
+      # Returns a  pointer to the curl easy handle.
+      #
+      # @example Return the handle.
+      #   easy.handle
+      #
+      # @return [ FFI::Pointer ] A pointer to the curl easy handle.
+      def handle
+        @handle ||= Curl.easy_init
+      end
+
       # Prepare the easy. Options, headers and callbacks
       # were set.
       #
