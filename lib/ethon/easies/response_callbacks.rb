@@ -17,7 +17,7 @@ module Ethon
       #
       # @example Set complete callback.
       #   easy.on_complete = block
-      def on_complete(&block)
+      def on_complete=(block)
         @complete = block
       end
     end

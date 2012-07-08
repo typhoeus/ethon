@@ -5,14 +5,14 @@ describe Ethon::Easies::ResponseCallbacks do
 
   describe "#on_complete=" do
     it "assigns value" do
-      easy.on_complete {}
+      easy.on_complete = lambda {}
       easy.instance_variable_get("@complete").should be_a(Proc)
     end
   end
 
   describe "#complete" do
     before do
-      easy.on_complete {|e| e.response_code }
+      easy.on_complete = lambda {|e| e.response_code }
       Ethon::Curl.expects(:get_info_long)
     end
 
