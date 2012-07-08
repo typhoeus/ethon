@@ -2,8 +2,7 @@ module Ethon
   module Easies
     module Http
       # This class knows everything about making POST requests.
-      class Post
-        include Ethon::Easies::Http::Actionable
+      class Post < Request
         include Ethon::Easies::Http::Postable
 
         # Setup easy to make a POST request.

@@ -3,8 +3,7 @@ module Ethon
     module Http
 
       # This class knows everything about making HEAD requests.
-      class Head
-        include Ethon::Easies::Http::Actionable
+      class Head < Request
         include Ethon::Easies::Http::Postable
 
         # Setup easy to make a HEAD request.
