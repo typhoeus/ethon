@@ -48,8 +48,8 @@ describe Ethon::Easies::Operations do
       end
 
       context "when request timed out" do
-        let(:url) { "http://localhost:3001/?delay=1" }
         let(:timeout) { 1 }
+        let(:url) { "http://localhost:3001/?delay=#{timeout}" }
 
         it "returns operation_timedout" do
           easy.return_code.should eq(:operation_timedout)
