@@ -1,4 +1,5 @@
 require 'ethon/easies/http/actionable'
+require 'ethon/easies/http/base_request'
 require 'ethon/easies/http/post'
 require 'ethon/easies/http/get'
 require 'ethon/easies/http/head'

@@ -3,8 +3,7 @@ module Ethon
     module Http
 
       # This class knows everything about making PATCH requests.
-      class Patch
-        include Ethon::Easies::Http::Actionable
+      class Patch < BaseRequest
         include Ethon::Easies::Http::Postable
 
         # Setup url with escaped params and httpget.

@@ -3,8 +3,7 @@ module Ethon
     module Http
 
       # This class knows everything about making GET requests.
-      class Get
-        include Ethon::Easies::Http::Actionable
+      class Get < BaseRequest
         include Ethon::Easies::Http::Postable
 
         # Setup url with escaped params and httpget.

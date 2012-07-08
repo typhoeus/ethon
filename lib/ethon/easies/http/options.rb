@@ -2,9 +2,8 @@ module Ethon
   module Easies
     module Http
 
-      # This class knows everything about making GET requests.
-      class Options
-        include Ethon::Easies::Http::Actionable
+      # This class knows everything about making OPTIONS requests.
+      class Options < BaseRequest
         include Ethon::Easies::Http::Postable
 
         # Setup url with escaped params and httpget.

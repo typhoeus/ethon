@@ -3,8 +3,7 @@ module Ethon
     module Http
 
       # This class knows everything about making DELETE requests.
-      class Delete
-        include Ethon::Easies::Http::Actionable
+      class Delete < BaseRequest
         include Ethon::Easies::Http::Postable
 
         # Setup customrequest in order to make a delete.

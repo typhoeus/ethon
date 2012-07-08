@@ -3,8 +3,7 @@ module Ethon
     module Http
 
       # This class knows everything about making PUT requests.
-      class Put
-        include Ethon::Easies::Http::Actionable
+      class Put < BaseRequest
         include Ethon::Easies::Http::Putable
 
         def set_customs(easy)
