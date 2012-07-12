@@ -36,7 +36,7 @@ module Ethon
       #
       # @return [ Class ] The action class.
       def fabricate(action_name)
-        eval("#{action_name.to_s.capitalize}")
+        Ethon::Easies::Http.const_get(action_name.to_s.capitalize)
       end
     end
   end
