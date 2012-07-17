@@ -60,17 +60,16 @@ module Ethon
 
         pairs = []
         recursive = Proc.new do |h, prefix|
-          h.each_pair do |k,v|
-            key = prefix == '' ? k : "#{prefix}[#{k}]"
-            case v
-            when Hash
-              recursive.call(v, key)
-            when Array
-              v.each { |x| pairs << [key, x]  }
-            when File, Tempfile
-              pairs << [Util.escape_zero_byte(key), file_info(v)]
-            else
-              pairs << [Util.escape_zero_byte(key), Util.escape_zero_byte(v)]
+          case h
+          when Hash
+            h.each_pair do |k,v|
+              key = prefix == '' ? k : "#{prefix}[#{k}]"
+              pairs_for(v, key, pairs, recursive)
+            end
+          when Array
+            h.each_with_index do |v, i|
+              key = "#{prefix}[#{i}]"
+              pairs_for(v, key, pairs, recursive)
             end
           end
         end
@@ -94,6 +93,21 @@ module Ethon
           types.empty? ? 'application/octet-stream' : types[0].to_s,
           File.expand_path(file.path)
         ]
+      end
+
+      private
+
+      def pairs_for(v, key, pairs,  recursive)
+        case v
+        when Hash
+          recursive.call(v, key)
+        when Array
+          recursive.call(v, key)
+        when File, Tempfile
+          pairs << [Util.escape_zero_byte(key), file_info(v)]
+        else
+          pairs << [Util.escape_zero_byte(key), Util.escape_zero_byte(v)]
+        end
       end
     end
   end

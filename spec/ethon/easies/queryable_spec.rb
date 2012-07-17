@@ -63,7 +63,7 @@ describe Ethon::Easies::Queryable do
     context "when params is simple hash" do
       let(:hash) { {:a => 1, :b => 2} }
 
-      it "transforms correct" do
+      it "transforms" do
         pairs.should eq([[:a, 1], [:b, 2]])
       end
     end
@@ -71,7 +71,7 @@ describe Ethon::Easies::Queryable do
     context "when params is a nested hash" do
       let(:hash) { {:a => 1, :b => {:c => 2}} }
 
-      it "transforms correct" do
+      it "transforms" do
         pairs.should eq([[:a, 1], ["b[c]", 2]])
       end
     end
@@ -79,17 +79,46 @@ describe Ethon::Easies::Queryable do
     context "when params contains an array" do
       let(:hash) { {:a => 1, :b => [2, 3]} }
 
-      it "transforms correct" do
-        pairs.should eq([[:a, 1], [:b, 2], [:b, 3]])
+      it "transforms" do
+        pairs.should eq([[:a, 1], ["b[0]", 2], ["b[1]", 3]])
       end
     end
+
+    context "when params contains something nested in an array" do
+      context "when string" do
+        let(:hash) { {:a => {:b => ["hello", "world"]}} }
+
+        it "transforms" do
+          pairs.should eq([["a[b][0]", "hello"], ["a[b][1]", "world"]])
+        end
+      end
+
+      context "when hash" do
+        let(:hash) { {:a => {:b => [{:c =>1}, {:d => 2}]}} }
+
+        it "transforms" do
+          pairs.should eq([["a[b][0][c]", 1], ["a[b][1][d]", 2]])
+        end
+      end
+
+      context "when file" do
+        let(:file) { Tempfile.new("fubar") }
+        let(:file_info) { params.method(:file_info).call(file) }
+        let(:hash) { {:a => {:b => [file]}} }
+
+        it "transforms" do
+          pairs.should eq([["a[b][0]", file_info]])
+        end
+      end
+    end
+
 
     context "when params contains file" do
       let(:file) { Tempfile.new("fubar") }
       let(:file_info) { params.method(:file_info).call(file) }
       let(:hash) { {:a => 1, :b => file} }
 
-      it "transforms correct" do
+      it "transforms" do
         pairs.should eq([[:a, 1], [:b, file_info]])
       end
     end

@@ -4,6 +4,11 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.0...master)
 
+Bugfixes:
+
+* Handle nested hash in an array in params correct
+  ( Discussion: [\#201](https://github.com/typhoeus/typhoeus/issues/201) )
+
 ## 0.4.0
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.3.0...v0.4.0)
