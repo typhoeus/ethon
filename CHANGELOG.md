@@ -2,12 +2,16 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.0...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.1...master)
+
+## 0.4.1
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.0...v0.4.1)
 
 Bugfixes:
 
 * Handle nested hash in an array in params correct
-  ( Discussion: [\#201](https://github.com/typhoeus/typhoeus/issues/201) )
+  ( [\#201](https://github.com/typhoeus/typhoeus/issues/201) )
 
 ## 0.4.0
 
