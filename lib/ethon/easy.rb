@@ -80,6 +80,8 @@ module Ethon
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTDNSCACHETIMEOUT.
     # @option options :followlocation [Boolean] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTFOLLOWLOCATION.
+    # @option options :forbid_reuse [Boolean] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTFORBIDREUSE.
     # @option options :httpauth [String] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTHTTPAUTH.
     # @option options :httpget [Boolean] See

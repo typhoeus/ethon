@@ -4,6 +4,10 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.1...master)
 
+Enhancements:
+
+* New libcurl option forbid_reuse.
+
 ## 0.4.1
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.0...v0.4.1)

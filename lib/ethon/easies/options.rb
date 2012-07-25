@@ -11,7 +11,7 @@ module Ethon
         base.const_set(:AVAILABLE_OPTIONS, [
           :dns_cache_timeout, :httppost, :put, :httpget, :nobody, :upload,
           :customrequest, :cainfo, :capath, :connecttimeout,
-          :followlocation, :httpauth, :infilesize, :interface,
+          :forbid_reuse, :followlocation, :httpauth, :infilesize, :interface,
           :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
           :proxyauth, :proxyport, :proxytype, :timeout, :readdata, :sslcert,
           :ssl_verifypeer, :ssl_verifyhost, :sslcerttype, :sslkey, :sslkeytype,
@@ -40,7 +40,7 @@ module Ethon
         # @return [ Array ] The bool options.
         def bool_options
           [
-            :followlocation, :nosignal, :ssl_verifypeer,
+            :followlocation, :forbid_reuse, :nosignal, :ssl_verifypeer,
             :verbose, :httpget, :nobody, :upload
           ]
         end
