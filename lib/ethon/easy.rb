@@ -179,11 +179,19 @@ module Ethon
       Curl.easy_reset(handle)
     end
 
+    # Url escapes the value.
+    #
+    # @example Url escape.
+    #   easy.escape(value)
+    #
+    # @param [ String ] value The value to escape.
+    #
+    # @return [ String ] The escaped value.
     def escape(value)
       Curl.easy_escape(handle, value, 0)
     end
 
-    # Returns a  pointer to the curl easy handle.
+    # Returns a pointer to the curl easy handle.
     #
     # @example Return the handle.
     #   easy.handle
