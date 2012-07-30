@@ -1,8 +1,10 @@
+# encoding: utf-8
 require 'ethon'
 require 'open-uri'
 require 'patron'
 require 'curb'
 require "net/http"
+require 'cgi'
 require 'benchmark'
 
 Benchmark.bm do |bm|
@@ -16,6 +18,21 @@ Benchmark.bm do |bm|
 
     bm.report("Easy.new          ") do
       i.times { Ethon::Easy.new }
+    end
+  end
+
+  GC.start
+
+  [100_000].each do |i|
+    puts "[ #{i} Escapes]"
+
+    bm.report("CGI::escape       ") do
+      i.times { CGI::escape("まつもと") }
+    end
+
+    bm.report("Easy.escape       ") do
+      e = Ethon::Easy.new
+      i.times { e.escape("まつもと") }
     end
   end
 

@@ -3,7 +3,6 @@ require 'ffi'
 require 'rbconfig'
 require 'thread'
 require 'mime/types'
-require 'cgi'
 require 'tempfile'
 
 require 'ethon/curl'

@@ -19,7 +19,8 @@ module Ethon
       # @param [ Hash ] params The parameter to initialize the form with.
       #
       # @return [ Form ] A new Form.
-      def initialize(params)
+      def initialize(easy, params)
+        @easy = easy
         @params = params || {}
         ObjectSpace.define_finalizer(self, self.class.finalizer(self))
       end

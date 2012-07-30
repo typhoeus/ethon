@@ -6,7 +6,8 @@
 
 Enhancements:
 
-* New libcurl option forbid_reuse.
+* New libcurl option forbid_reuse
+* Use libcurls escape instead of CGI::escape
 
 ## 0.4.1
 

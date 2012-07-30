@@ -1,8 +1,10 @@
+# encoding: utf-8
 require 'spec_helper'
 
 describe Ethon::Easies::Queryable do
   let(:hash) { {} }
-  let(:params) { Ethon::Easies::Params.new(hash) }
+  let!(:easy) { Ethon::Easy.new }
+  let(:params) { Ethon::Easies::Params.new(easy, hash) }
 
   describe "#to_s" do
     context "when query_pairs empty" do
@@ -17,11 +19,34 @@ describe Ethon::Easies::Queryable do
       context "when escape" do
         before do
           params.escape = true
-          params.instance_variable_set(:@query_pairs, [[:a, "1&b=2"]])
         end
 
-        it "returns concatenated escaped query string" do
-          params.to_s.should eq("a=1%26b%3D2")
+        {
+          '!' => '%21', '*' => '%2A', "'" => '%27', '(' => '%28',
+          ')'  => '%29', ';' => '%3B', ':' => '%3A', '@' => '%40',
+          '&' => '%26', '=' => '%3D', '+' => '%2B', '$' => '%24',
+          ',' => '%2C', '/' => '%2F', '?' => '%3F', '#' => '%23',
+          '[' => '%5B', ']' => '%5D',
+
+          '<' => '%3C', '>' => '%3E', '"' => '%22', '{' => '%7B',
+          '}' => '%7D', '|' => '%7C', '\\' => '%5C', '`' => '%60',
+          '^' => '%5E', '%' => '%25', ' ' => '%20',
+
+          'まつもと' => '%E3%81%BE%E3%81%A4%E3%82%82%E3%81%A8',
+        }.each do |value, percent|
+          it "turns #{value.inspect} into #{percent}" do
+            params.instance_variable_set(:@query_pairs, [[:a, value]])
+            params.to_s.should eq("a=#{percent}")
+          end
+        end
+
+        {
+          '.' => '%2E', '-' => '%2D', '_' => '%5F', '~' => '%7E',
+        }.each do |value, percent|
+          it "leaves #{value.inspect} instead of turning into #{percent}" do
+            params.instance_variable_set(:@query_pairs, [[:a, value]])
+            params.to_s.should eq("a=#{value}")
+          end
         end
       end
 

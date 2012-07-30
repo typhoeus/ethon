@@ -31,7 +31,7 @@ module Ethon
           return pair if pair.is_a?(String)
 
           pair.map{ |e|
-            escape ? CGI::escape(e.to_s) : e
+            escape && @easy ? @easy.escape(e.to_s) : e
           }.join("=")
         }.join('&')
       end

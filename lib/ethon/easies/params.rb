@@ -17,7 +17,8 @@ module Ethon
       # @param [ Hash ] params The params to use.
       #
       # @return [ Params ] A new Params.
-      def initialize(params)
+      def initialize(easy, params)
+        @easy = easy
         @params = params || {}
       end
     end

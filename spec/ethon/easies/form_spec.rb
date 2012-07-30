@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe Ethon::Easies::Form do
   let(:hash) { {} }
-  let(:form) { Ethon::Easies::Form.new(hash) }
+  let!(:easy) { Ethon::Easy.new }
+  let(:form) { Ethon::Easies::Form.new(easy, hash) }
 
   describe ".new" do
     it "defines finalizer" do

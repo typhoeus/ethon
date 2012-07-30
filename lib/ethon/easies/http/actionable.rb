@@ -49,7 +49,7 @@ module Ethon
         #
         # @return [ Params ] The params.
         def params
-          @params ||= Params.new(options.delete(:params))
+          @params ||= Params.new(@easy, options.delete(:params))
         end
 
         # Return the form.
@@ -59,7 +59,7 @@ module Ethon
         #
         # @return [ Form ] The form.
         def form
-          @form ||= Form.new(options.delete(:body))
+          @form ||= Form.new(@easy, options.delete(:body))
         end
 
         # Setup everything necessary for a proper request.
@@ -69,6 +69,7 @@ module Ethon
         #
         # @param [ easy ] easy the easy to setup.
         def setup(easy)
+          @easy = easy
           set_nothing(easy) if params.empty? && form.empty?
           set_params(easy) unless params.empty?
           set_form(easy) unless form.empty?
