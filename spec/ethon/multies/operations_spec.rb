@@ -4,6 +4,12 @@ describe Ethon::Multies::Operations do
   let(:multi) { Ethon::Multi.new }
   let(:easy) { Ethon::Easy.new }
 
+  describe "#handle" do
+    it "returns a pointer" do
+      multi.handle.should be_a(FFI::Pointer)
+    end
+  end
+
   describe "#running_count" do
     context "when hydra has no easy" do
       it "returns nil" do

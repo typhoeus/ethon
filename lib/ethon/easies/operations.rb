@@ -4,6 +4,16 @@ module Ethon
     # an easy.
     module Operations
 
+      # Returns a pointer to the curl easy handle.
+      #
+      # @example Return the handle.
+      #   easy.handle
+      #
+      # @return [ FFI::Pointer ] A pointer to the curl easy handle.
+      def handle
+        @handle ||= Curl.easy_init
+      end
+
       # Perform the easy request.
       #
       # @example Perform the request.

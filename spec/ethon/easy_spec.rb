@@ -55,12 +55,6 @@ describe Ethon::Easy do
     end
   end
 
-  describe "#handle" do
-    it "returns a pointer" do
-      easy.handle.should be_a(FFI::Pointer)
-    end
-  end
-
   describe "#reset" do
     let(:resettables) { easy.instance_variables - [:@handle, :@header_list, '@handle', '@header_list'] }
 

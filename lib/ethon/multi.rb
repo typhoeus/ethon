@@ -32,16 +32,5 @@ module Ethon
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
       init_vars
     end
-
-    # Return the multi handle. Inititialize multi handle,
-    # in case it didn't happened already.
-    #
-    # @example Return multi handle.
-    #   multi.handle
-    #
-    # @return [ ::FFI::Pointer ] The multi handle.
-    def handle
-      @handle ||= Curl.multi_init
-    end
   end
 end

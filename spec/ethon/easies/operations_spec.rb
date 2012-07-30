@@ -3,6 +3,13 @@ require 'spec_helper'
 describe Ethon::Easies::Operations do
   let(:easy) { Ethon::Easy.new }
 
+  describe "#handle" do
+    it "returns a pointer" do
+      easy.handle.should be_a(FFI::Pointer)
+    end
+  end
+
+
   describe "#perform" do
     let(:url) { nil }
     let(:timeout) { nil }

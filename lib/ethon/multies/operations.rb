@@ -4,6 +4,17 @@ module Ethon
     # This module contains logic to run a multi.
     module Operations
 
+      # Return the multi handle. Inititialize multi handle,
+      # in case it didn't happened already.
+      #
+      # @example Return multi handle.
+      #   multi.handle
+      #
+      # @return [ ::FFI::Pointer ] The multi handle.
+      def handle
+        @handle ||= Curl.multi_init
+      end
+
       # Initialize variables.
       #
       # @example Initialize variables.
