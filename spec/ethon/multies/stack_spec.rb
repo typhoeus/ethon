@@ -9,7 +9,7 @@ describe Ethon::Multies::Stack do
       before { multi.add(easy) }
 
       it "returns nil" do
-        multi.add(easy).should be_nil
+        expect(multi.add(easy)).to be_nil
       end
     end
 
@@ -21,7 +21,7 @@ describe Ethon::Multies::Stack do
 
       it "adds easy to easy_handles" do
         multi.add(easy)
-        multi.easy_handles.should include(easy)
+        expect(multi.easy_handles).to include(easy)
       end
     end
 
@@ -63,7 +63,7 @@ describe Ethon::Multies::Stack do
 
       it "adds easy to easy_handles" do
         multi.add(easy)
-        multi.easy_handles.should include(easy)
+        expect(multi.easy_handles).to include(easy)
       end
     end
 

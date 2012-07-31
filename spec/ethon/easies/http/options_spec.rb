@@ -11,11 +11,11 @@ describe Ethon::Easies::Http::Options do
     before { options.setup(easy) }
 
     it "sets customrequest" do
-      easy.customrequest.should eq("OPTIONS")
+      expect(easy.customrequest).to eq("OPTIONS")
     end
 
     it "sets url" do
-      easy.url.should eq(url)
+      expect(easy.url).to eq(url)
     end
 
     context "when requesting" do
@@ -27,15 +27,15 @@ describe Ethon::Easies::Http::Options do
       end
 
       it "returns ok" do
-        easy.return_code.should eq(:ok)
+        expect(easy.return_code).to eq(:ok)
       end
 
       it "is a options request" do
-        easy.response_body.should include('"REQUEST_METHOD":"OPTIONS"')
+        expect(easy.response_body).to include('"REQUEST_METHOD":"OPTIONS"')
       end
 
       it "requests parameterized url" do
-        easy.effective_url.should eq("http://localhost:3001/?a=1%26b%3D2")
+        expect(easy.effective_url).to eq("http://localhost:3001/?a=1%26b%3D2")
       end
     end
   end

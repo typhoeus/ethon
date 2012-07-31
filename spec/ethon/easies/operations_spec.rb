@@ -5,7 +5,7 @@ describe Ethon::Easies::Operations do
 
   describe "#handle" do
     it "returns a pointer" do
-      easy.handle.should be_a(FFI::Pointer)
+      expect(easy.handle).to be_a(FFI::Pointer)
     end
   end
 
@@ -43,15 +43,15 @@ describe Ethon::Easies::Operations do
       let(:url) { "http://localhost:3001/" }
 
       it "returns ok" do
-        easy.return_code.should eq(:ok)
+        expect(easy.return_code).to eq(:ok)
       end
 
       it "sets response body" do
-        easy.response_body.should be
+        expect(easy.response_body).to be
       end
 
       it "sets response header" do
-        easy.response_header.should be
+        expect(easy.response_header).to be
       end
 
       context "when request timed out" do
@@ -59,7 +59,7 @@ describe Ethon::Easies::Operations do
         let(:timeout) { 1 }
 
         it "returns operation_timedout" do
-          easy.return_code.should eq(:operation_timedout)
+          expect(easy.return_code).to eq(:operation_timedout)
         end
       end
 
@@ -68,7 +68,7 @@ describe Ethon::Easies::Operations do
         let(:connect_timeout) { 1 }
 
         it "returns couldnt_connect" do
-          easy.return_code.should eq(:couldnt_connect)
+          expect(easy.return_code).to eq(:couldnt_connect)
         end
       end
 
@@ -77,7 +77,7 @@ describe Ethon::Easies::Operations do
         let(:follow_location) { false }
 
         it "doesn't follow" do
-          easy.response_code.should eq(302)
+          expect(easy.response_code).to eq(302)
         end
       end
 
@@ -86,7 +86,7 @@ describe Ethon::Easies::Operations do
         let(:follow_location) { true }
 
         it "follows" do
-          easy.response_code.should eq(200)
+          expect(easy.response_code).to eq(200)
         end
 
         context "when infinite redirect loop" do
@@ -95,7 +95,7 @@ describe Ethon::Easies::Operations do
 
           context "when max redirect set" do
             it "follows only x times" do
-              easy.response_code.should eq(302)
+              expect(easy.response_code).to eq(302)
             end
           end
         end
@@ -105,7 +105,7 @@ describe Ethon::Easies::Operations do
         let(:headers) { { 'User-Agent' => 'Ethon' } }
 
         it "sets" do
-          easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
+          expect(easy.response_body).to include('"HTTP_USER_AGENT":"Ethon"')
         end
       end
     end
@@ -118,7 +118,7 @@ describe Ethon::Easies::Operations do
 
         context "when no user_pwd" do
           it "returns 401" do
-            easy.response_code.should eq(401)
+            expect(easy.response_code).to eq(401)
           end
         end
 
@@ -126,7 +126,7 @@ describe Ethon::Easies::Operations do
           let(:user_pwd) { "invalid:invalid" }
 
           it "returns 401" do
-            easy.response_code.should eq(401)
+            expect(easy.response_code).to eq(401)
           end
         end
 
@@ -134,7 +134,7 @@ describe Ethon::Easies::Operations do
           let(:user_pwd) { "username:password" }
 
           it "returns 200" do
-            easy.response_code.should eq(200)
+            expect(easy.response_code).to eq(200)
           end
         end
       end
@@ -145,7 +145,7 @@ describe Ethon::Easies::Operations do
 
         context "when no user_pwd" do
           it "returns 401" do
-            easy.response_code.should eq(401)
+            expect(easy.response_code).to eq(401)
           end
         end
 
@@ -153,7 +153,7 @@ describe Ethon::Easies::Operations do
           let(:user_pwd) { "username:password" }
 
           it "returns 200" do
-            easy.response_code.should eq(200)
+            expect(easy.response_code).to eq(200)
           end
         end
       end
@@ -161,7 +161,7 @@ describe Ethon::Easies::Operations do
 
     context "when no url" do
       it "returns url_malformat" do
-        easy.perform.should eq(:url_malformat)
+        expect(easy.perform).to eq(:url_malformat)
       end
     end
   end

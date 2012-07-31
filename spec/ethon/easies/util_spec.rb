@@ -12,7 +12,7 @@ describe Ethon::Easies::Util do
       let(:value) { "hello world" }
 
       it "returns same value" do
-        klass.escape_zero_byte(value).should be(value)
+        expect(klass.escape_zero_byte(value)).to be(value)
       end
     end
 
@@ -20,7 +20,7 @@ describe Ethon::Easies::Util do
       let(:value) { "hello \0world" }
 
       it "returns escaped" do
-        klass.escape_zero_byte(value).should eq("hello \\0world")
+        expect(klass.escape_zero_byte(value)).to eq("hello \\0world")
       end
     end
   end

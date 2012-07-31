@@ -12,22 +12,22 @@ describe Ethon::Easies::Http::Put do
 
     context "when nothing" do
       it "sets url" do
-        easy.url.should eq(url)
+        expect(easy.url).to eq(url)
       end
 
       it "sets upload" do
-        easy.upload.should be_true
+        expect(easy.upload).to be_true
       end
 
       it "sets infilesize" do
-        easy.infilesize.should be_zero
+        expect(easy.infilesize).to be_zero
       end
 
       context "when requesting" do
         it "makes a put request" do
           easy.prepare
           easy.perform
-          easy.response_body.should include('"REQUEST_METHOD":"PUT"')
+          expect(easy.response_body).to include('"REQUEST_METHOD":"PUT"')
         end
       end
     end
@@ -36,15 +36,15 @@ describe Ethon::Easies::Http::Put do
       let(:params) { {:a => "1&"} }
 
       it "attaches escaped to url" do
-        easy.url.should eq("#{url}?a=1%26")
+        expect(easy.url).to eq("#{url}?a=1%26")
       end
 
       it "sets upload" do
-        easy.upload.should be_true
+        expect(easy.upload).to be_true
       end
 
       it "sets infilesize" do
-        easy.infilesize.should be_zero
+        expect(easy.infilesize).to be_zero
       end
 
       context "when requesting" do
@@ -54,7 +54,7 @@ describe Ethon::Easies::Http::Put do
         end
 
         it "makes a put request" do
-          easy.response_body.should include('"REQUEST_METHOD":"PUT"')
+          expect(easy.response_body).to include('"REQUEST_METHOD":"PUT"')
         end
       end
     end
@@ -71,7 +71,7 @@ describe Ethon::Easies::Http::Put do
       end
 
       it "sets upload" do
-        easy.upload.should be_true
+        expect(easy.upload).to be_true
       end
 
       context "when requesting" do
@@ -81,11 +81,11 @@ describe Ethon::Easies::Http::Put do
         end
 
         it "makes a put request" do
-          easy.response_body.should include('"REQUEST_METHOD":"PUT"')
+          expect(easy.response_body).to include('"REQUEST_METHOD":"PUT"')
         end
 
         it "submits a body" do
-          easy.response_body.should include('"body":"a=1%26b%3D2"')
+          expect(easy.response_body).to include('"body":"a=1%26b%3D2"')
         end
       end
     end

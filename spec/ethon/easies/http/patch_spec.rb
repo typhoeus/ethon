@@ -11,11 +11,11 @@ describe Ethon::Easies::Http::Patch do
     before { patch.setup(easy) }
 
     it "sets customrequest" do
-      easy.customrequest.should eq("PATCH")
+      expect(easy.customrequest).to eq("PATCH")
     end
 
     it "sets url" do
-      easy.url.should eq(url)
+      expect(easy.url).to eq(url)
     end
 
     context "when requesting" do
@@ -27,15 +27,15 @@ describe Ethon::Easies::Http::Patch do
       end
 
       it "returns ok" do
-        easy.return_code.should eq(:ok)
+        expect(easy.return_code).to eq(:ok)
       end
 
       it "is a patch request" do
-        easy.response_body.should include('"REQUEST_METHOD":"PATCH"')
+        expect(easy.response_body).to include('"REQUEST_METHOD":"PATCH"')
       end
 
       it "requests parameterized url" do
-        easy.effective_url.should eq("http://localhost:3001/?a=1%26b%3D2")
+        expect(easy.effective_url).to eq("http://localhost:3001/?a=1%26b%3D2")
       end
     end
   end

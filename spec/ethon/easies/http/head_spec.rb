@@ -12,11 +12,11 @@ describe Ethon::Easies::Http::Head do
 
     context "when nothing" do
       it "sets nobody" do
-        easy.nobody.should be
+        expect(easy.nobody).to be
       end
 
       it "sets url" do
-        easy.url.should eq(url)
+        expect(easy.url).to eq(url)
       end
     end
 
@@ -24,11 +24,11 @@ describe Ethon::Easies::Http::Head do
       let(:params) { {:a => "1&b=2"} }
 
       it "sets nobody" do
-        easy.nobody.should be
+        expect(easy.nobody).to be
       end
 
       it "attaches escaped to url" do
-        easy.url.should eq("#{url}?a=1%26b%3D2")
+        expect(easy.url).to eq("#{url}?a=1%26b%3D2")
       end
 
       context "when requesting" do
@@ -38,15 +38,15 @@ describe Ethon::Easies::Http::Head do
         end
 
         it "returns ok" do
-          easy.return_code.should eq(:ok)
+          expect(easy.return_code).to eq(:ok)
         end
 
         it "has no body" do
-          easy.response_body.should be_empty
+          expect(easy.response_body).to be_empty
         end
 
         it "requests parameterized url" do
-          easy.effective_url.should eq("http://localhost:3001/?a=1%26b%3D2")
+          expect(easy.effective_url).to eq("http://localhost:3001/?a=1%26b%3D2")
         end
       end
     end
@@ -61,7 +61,7 @@ describe Ethon::Easies::Http::Head do
         end
 
         it "returns ok" do
-          easy.return_code.should eq(:ok)
+          expect(easy.return_code).to eq(:ok)
         end
       end
     end

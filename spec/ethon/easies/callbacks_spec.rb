@@ -14,12 +14,12 @@ describe Ethon::Easies::Callbacks do
 
     it "resets @response_body" do
       easy.set_callbacks
-      easy.instance_variable_get(:@response_body).should eq("")
+      expect(easy.instance_variable_get(:@response_body)).to eq("")
     end
 
     it "resets @response_header" do
       easy.set_callbacks
-      easy.instance_variable_get(:@response_header).should eq("")
+      expect(easy.instance_variable_get(:@response_header)).to eq("")
     end
   end
 end

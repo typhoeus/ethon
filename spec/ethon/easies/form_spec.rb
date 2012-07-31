@@ -12,19 +12,19 @@ describe Ethon::Easies::Form do
     end
 
     it "assigns attribute to @params" do
-      form.instance_variable_get(:@params).should eq(hash)
+      expect(form.instance_variable_get(:@params)).to eq(hash)
     end
   end
 
   describe "#first" do
     it "returns a pointer" do
-      form.first.should be_a(FFI::MemoryPointer)
+      expect(form.first).to be_a(FFI::MemoryPointer)
     end
   end
 
   describe "#last" do
     it "returns a pointer" do
-      form.first.should be_a(FFI::MemoryPointer)
+      expect(form.first).to be_a(FFI::MemoryPointer)
     end
   end
 
@@ -35,7 +35,7 @@ describe Ethon::Easies::Form do
       let(:pairs) { [['a', '1'], ['b', '2']] }
 
       it "returns false" do
-        form.multipart?.should be_false
+        expect(form.multipart?).to be_false
       end
     end
 
@@ -43,7 +43,7 @@ describe Ethon::Easies::Form do
       let(:pairs) { [['a', '1'], ['b', ['path', 'encoding', 'abs_path']]] }
 
       it "returns true" do
-        form.multipart?.should be_true
+        expect(form.multipart?).to be_true
       end
     end
   end

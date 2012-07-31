@@ -11,7 +11,7 @@ describe Ethon::Easies::Queryable do
       before { params.instance_variable_set(:@query_pairs, []) }
 
       it "returns empty string" do
-        params.to_s.should eq("")
+        expect(params.to_s).to eq("")
       end
     end
 
@@ -36,7 +36,7 @@ describe Ethon::Easies::Queryable do
         }.each do |value, percent|
           it "turns #{value.inspect} into #{percent}" do
             params.instance_variable_set(:@query_pairs, [[:a, value]])
-            params.to_s.should eq("a=#{percent}")
+            expect(params.to_s).to eq("a=#{percent}")
           end
         end
 
@@ -45,7 +45,7 @@ describe Ethon::Easies::Queryable do
         }.each do |value, percent|
           it "leaves #{value.inspect} instead of turning into #{percent}" do
             params.instance_variable_set(:@query_pairs, [[:a, value]])
-            params.to_s.should eq("a=#{value}")
+            expect(params.to_s).to eq("a=#{value}")
           end
         end
       end
@@ -54,7 +54,7 @@ describe Ethon::Easies::Queryable do
         before { params.instance_variable_set(:@query_pairs, [[:a, 1], [:b, 2]]) }
 
         it "returns concatenated query string" do
-          params.to_s.should eq("a=1&b=2")
+          expect(params.to_s).to eq("a=1&b=2")
         end
       end
     end
@@ -63,7 +63,7 @@ describe Ethon::Easies::Queryable do
       before { params.instance_variable_set(:@query_pairs, ["{a: 1}"]) }
 
       it "returns correct string" do
-        params.to_s.should eq("{a: 1}")
+        expect(params.to_s).to eq("{a: 1}")
       end
     end
   end
@@ -73,7 +73,7 @@ describe Ethon::Easies::Queryable do
 
     context "when params is empty" do
       it "returns empty array" do
-        pairs.should eq([])
+        expect(pairs).to eq([])
       end
     end
 
@@ -81,7 +81,7 @@ describe Ethon::Easies::Queryable do
       let(:hash) { "{a: 1}" }
 
       it "wraps it in an array" do
-        pairs.should eq([hash])
+        expect(pairs).to eq([hash])
       end
     end
 
@@ -89,7 +89,7 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1, :b => 2} }
 
       it "transforms" do
-        pairs.should eq([[:a, 1], [:b, 2]])
+        expect(pairs).to eq([[:a, 1], [:b, 2]])
       end
     end
 
@@ -97,7 +97,7 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1, :b => {:c => 2}} }
 
       it "transforms" do
-        pairs.should eq([[:a, 1], ["b[c]", 2]])
+        expect(pairs).to eq([[:a, 1], ["b[c]", 2]])
       end
     end
 
@@ -105,7 +105,7 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1, :b => [2, 3]} }
 
       it "transforms" do
-        pairs.should eq([[:a, 1], ["b[0]", 2], ["b[1]", 3]])
+        expect(pairs).to eq([[:a, 1], ["b[0]", 2], ["b[1]", 3]])
       end
     end
 
@@ -114,7 +114,7 @@ describe Ethon::Easies::Queryable do
         let(:hash) { {:a => {:b => ["hello", "world"]}} }
 
         it "transforms" do
-          pairs.should eq([["a[b][0]", "hello"], ["a[b][1]", "world"]])
+          expect(pairs).to eq([["a[b][0]", "hello"], ["a[b][1]", "world"]])
         end
       end
 
@@ -122,7 +122,7 @@ describe Ethon::Easies::Queryable do
         let(:hash) { {:a => {:b => [{:c =>1}, {:d => 2}]}} }
 
         it "transforms" do
-          pairs.should eq([["a[b][0][c]", 1], ["a[b][1][d]", 2]])
+          expect(pairs).to eq([["a[b][0][c]", 1], ["a[b][1][d]", 2]])
         end
       end
 
@@ -132,7 +132,7 @@ describe Ethon::Easies::Queryable do
         let(:hash) { {:a => {:b => [file]}} }
 
         it "transforms" do
-          pairs.should eq([["a[b][0]", file_info]])
+          expect(pairs).to eq([["a[b][0]", file_info]])
         end
       end
     end
@@ -144,7 +144,7 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1, :b => file} }
 
       it "transforms" do
-        pairs.should eq([[:a, 1], [:b, file_info]])
+        expect(pairs).to eq([[:a, 1], [:b, file_info]])
       end
     end
 
@@ -152,7 +152,7 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => "1\0" } }
 
       it "escapes" do
-        pairs.should eq([[:a, "1\\0"]])
+        expect(pairs).to eq([[:a, "1\\0"]])
       end
     end
 
@@ -160,7 +160,7 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {"a\0" => 1 } }
 
       it "escapes" do
-        pairs.should eq([["a\\0", 1]])
+        expect(pairs).to eq([["a\\0", 1]])
       end
     end
   end
@@ -168,7 +168,7 @@ describe Ethon::Easies::Queryable do
   describe "#empty?" do
     context "when params empty" do
       it "returns true" do
-        params.empty?.should be_true
+        expect(params.empty?).to be_true
       end
     end
 
@@ -176,7 +176,7 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1} }
 
       it "returns false" do
-        params.empty?.should be_false
+        expect(params.empty?).to be_false
       end
     end
   end

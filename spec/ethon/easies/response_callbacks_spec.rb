@@ -5,19 +5,19 @@ describe Ethon::Easies::ResponseCallbacks do
 
   describe "#on_complete" do
     it "responds" do
-      easy.should respond_to(:on_complete)
+      expect(easy).to respond_to(:on_complete)
     end
 
     context "when no block given" do
       it "returns @on_complete" do
-        easy.on_complete.should eq([])
+        expect(easy.on_complete).to eq([])
       end
     end
 
     context "when block given" do
       it "stores" do
         easy.on_complete { p 1 }
-        easy.instance_variable_get(:@on_complete).should have(1).items
+        expect(easy.instance_variable_get(:@on_complete)).to have(1).items
       end
     end
 
@@ -25,7 +25,7 @@ describe Ethon::Easies::ResponseCallbacks do
       it "stores" do
         easy.on_complete { p 1 }
         easy.on_complete { p 2 }
-        easy.instance_variable_get(:@on_complete).should have(2).items
+        expect(easy.instance_variable_get(:@on_complete)).to have(2).items
       end
     end
   end

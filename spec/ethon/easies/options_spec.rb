@@ -11,11 +11,11 @@ describe Ethon::Easies::Options do
     let(:unspecific_options) { options - bool_options - enum_options.keys - int_options }
 
     it "have read accessors" do
-      options.all? { |o| easy.respond_to?(o) }.should be_true
+      expect(options.all? { |o| easy.respond_to?(o) }).to be_true
     end
 
     it "have write accessors" do
-      options.all? { |o| easy.respond_to?("#{o}=") }.should be_true
+      expect(options.all? { |o| easy.respond_to?("#{o}=") }).to be_true
     end
 
     context "when option in bool_options" do
@@ -99,7 +99,7 @@ describe Ethon::Easies::Options do
         let(:value) { true }
 
         it "returns 1" do
-          easy.value_for(option).should eq(1)
+          expect(easy.value_for(option)).to eq(1)
         end
       end
 
@@ -107,7 +107,7 @@ describe Ethon::Easies::Options do
         let(:value) { false }
 
         it "returns 0" do
-          easy.value_for(option).should eq(0)
+          expect(easy.value_for(option)).to eq(0)
         end
       end
     end
@@ -117,7 +117,7 @@ describe Ethon::Easies::Options do
       let(:value) { :ntlm }
 
       it "returns value from struct" do
-        easy.value_for(option).should eq(8)
+        expect(easy.value_for(option)).to eq(8)
       end
     end
 
@@ -126,7 +126,7 @@ describe Ethon::Easies::Options do
       let(:value) { "2" }
 
       it "returns value casted to int" do
-        easy.value_for(option).should eq(2)
+        expect(easy.value_for(option)).to eq(2)
       end
     end
 
@@ -136,7 +136,7 @@ describe Ethon::Easies::Options do
         let(:value) { "www.example.\0com" }
 
         it "returns zero byte escaped string" do
-          easy.value_for(option).should eq("www.example.\\0com")
+          expect(easy.value_for(option)).to eq("www.example.\\0com")
         end
       end
 
@@ -144,7 +144,7 @@ describe Ethon::Easies::Options do
         let(:value) { 1 }
 
         it "returns value" do
-          easy.value_for(option).should eq(1)
+          expect(easy.value_for(option)).to eq(1)
         end
       end
     end

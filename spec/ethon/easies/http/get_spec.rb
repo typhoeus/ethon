@@ -11,20 +11,20 @@ describe Ethon::Easies::Http::Get do
     before { get.setup(easy) }
 
     it "sets url" do
-      easy.url.should eq(url)
+      expect(easy.url).to eq(url)
     end
 
     context "when body" do
       let(:form) { { :a => 1 } }
 
       it "sets customrequest" do
-        easy.customrequest.should eq("GET")
+        expect(easy.customrequest).to eq("GET")
       end
     end
 
     context "when no body" do
       it "doesn't set customrequest" do
-        easy.customrequest.should be_nil
+        expect(easy.customrequest).to be_nil
       end
     end
 
@@ -38,15 +38,15 @@ describe Ethon::Easies::Http::Get do
         let(:params) { {:a => "1&b=2"} }
 
         it "returns ok" do
-          easy.return_code.should eq(:ok)
+          expect(easy.return_code).to eq(:ok)
         end
 
         it "is a get request" do
-          easy.response_body.should include('"REQUEST_METHOD":"GET"')
+          expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
         end
 
         it "requests parameterized url" do
-          easy.effective_url.should eq("http://localhost:3001/?a=1%26b%3D2")
+          expect(easy.effective_url).to eq("http://localhost:3001/?a=1%26b%3D2")
         end
       end
 
@@ -54,15 +54,15 @@ describe Ethon::Easies::Http::Get do
         let(:params) { {:a => "1&b=2"} }
         let(:form) { {:b => "2"} }
         it "returns ok" do
-          easy.return_code.should eq(:ok)
+          expect(easy.return_code).to eq(:ok)
         end
 
         it "is a get request" do
-          easy.response_body.should include('"REQUEST_METHOD":"GET"')
+          expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
         end
 
         it "requests parameterized url" do
-          easy.effective_url.should eq("http://localhost:3001/?a=1%26b%3D2")
+          expect(easy.effective_url).to eq("http://localhost:3001/?a=1%26b%3D2")
         end
       end
     end

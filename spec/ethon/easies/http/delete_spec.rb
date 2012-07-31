@@ -15,7 +15,7 @@ describe Ethon::Easies::Http::Delete do
     end
 
     it "makes a delete request" do
-      easy.response_body.should include('"REQUEST_METHOD":"DELETE"')
+      expect(easy.response_body).to include('"REQUEST_METHOD":"DELETE"')
     end
   end
 end

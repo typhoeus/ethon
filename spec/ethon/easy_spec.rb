@@ -16,7 +16,7 @@ describe Ethon::Easy do
 
     context "when options are empty" do
       it "sets nothing" do
-        easy.instance_variables.all? { |ivar| ivar == nil }.should be_true
+        expect(easy.instance_variables.all? { |ivar| ivar == nil }).to be_true
       end
     end
 
@@ -26,7 +26,7 @@ describe Ethon::Easy do
         let(:easy) { Ethon::Easy.new(options) }
 
         it "sets verbose" do
-          easy.verbose.should be_true
+          expect(easy.verbose).to be_true
         end
       end
     end
@@ -35,7 +35,7 @@ describe Ethon::Easy do
   describe "#set_attributes" do
     context "when options are empty" do
       it "sets nothing" do
-        easy.instance_variables.all? { |ivar| ivar == nil }.should be_true
+        expect(easy.instance_variables.all? { |ivar| ivar == nil }).to be_true
       end
     end
 
@@ -43,7 +43,7 @@ describe Ethon::Easy do
       context "when valid key" do
         it "sets" do
           easy.set_attributes({:verbose => true})
-          easy.verbose.should be_true
+          expect(easy.verbose).to be_true
         end
       end
 
@@ -66,7 +66,7 @@ describe Ethon::Easy do
 
     it "sets instance variables to nil" do
       easy.reset
-      resettables.map{|ivar| easy.instance_variable_get(ivar) }.any?.should be_false
+      expect(resettables.map{|ivar| easy.instance_variable_get(ivar) }.any?).to be_false
     end
 
     it "resets easy handle" do
@@ -83,7 +83,7 @@ describe Ethon::Easy do
       :effective_url, :primary_ip, :redirect_count
     ].each do |name|
       it "contains #{name}" do
-        easy.to_hash.should include(name)
+        expect(easy.to_hash).to include(name)
       end
     end
   end

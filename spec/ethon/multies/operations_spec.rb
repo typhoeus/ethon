@@ -6,14 +6,14 @@ describe Ethon::Multies::Operations do
 
   describe "#handle" do
     it "returns a pointer" do
-      multi.handle.should be_a(FFI::Pointer)
+      expect(multi.handle).to be_a(FFI::Pointer)
     end
   end
 
   describe "#running_count" do
     context "when hydra has no easy" do
       it "returns nil" do
-        multi.running_count.should be_nil
+        expect(multi.running_count).to be_nil
       end
     end
 
@@ -26,7 +26,7 @@ describe Ethon::Multies::Operations do
       end
 
       it "returns 1" do
-        multi.running_count.should eq(1)
+        expect(multi.running_count).to eq(1)
       end
     end
 
@@ -44,7 +44,7 @@ describe Ethon::Multies::Operations do
       end
 
       it "returns 2" do
-        multi.running_count.should eq(2)
+        expect(multi.running_count).to eq(2)
       end
     end
   end
@@ -66,7 +66,7 @@ describe Ethon::Multies::Operations do
         let(:timeout) { -1 }
 
         it "returns 1" do
-          multi.get_timeout.should eq(1)
+          expect(multi.get_timeout).to eq(1)
         end
       end
 
@@ -74,7 +74,7 @@ describe Ethon::Multies::Operations do
         let(:timeout) { 2 }
 
         it "returns timeout" do
-          multi.get_timeout.should eq(timeout)
+          expect(multi.get_timeout).to eq(timeout)
         end
       end
     end
@@ -143,7 +143,7 @@ describe Ethon::Multies::Operations do
   describe "#perform" do
     context "when no easy handles" do
       it "returns nil" do
-        multi.perform.should be_nil
+        expect(multi.perform).to be_nil
       end
 
       it "logs" do
@@ -165,7 +165,7 @@ describe Ethon::Multies::Operations do
 
       it "sets easy" do
         multi.perform
-        easy.response_code.should eq(200)
+        expect(easy.response_code).to eq(200)
       end
     end
 
@@ -186,7 +186,7 @@ describe Ethon::Multies::Operations do
       end
 
       it "sets response codes" do
-        easies.all?{ |e| e.response_code == 200 }.should be_true
+        expect(easies.all?{ |e| e.response_code == 200 }).to be_true
       end
     end
   end
@@ -199,7 +199,7 @@ describe Ethon::Multies::Operations do
         before { multi.instance_variable_set(:@running_count, 0) }
 
         it "returns true" do
-          multi.ongoing?.should be_true
+          expect(multi.ongoing?).to be_true
         end
       end
 
@@ -207,7 +207,7 @@ describe Ethon::Multies::Operations do
         before { multi.instance_variable_set(:@running_count, 1) }
 
         it "returns true" do
-          multi.ongoing?.should be_true
+          expect(multi.ongoing?).to be_true
         end
       end
     end
@@ -217,7 +217,7 @@ describe Ethon::Multies::Operations do
         before { multi.instance_variable_set(:@running_count, 0) }
 
         it "returns false" do
-          multi.ongoing?.should be_false
+          expect(multi.ongoing?).to be_false
         end
       end
 
@@ -225,7 +225,7 @@ describe Ethon::Multies::Operations do
         before { multi.instance_variable_set(:@running_count, 1) }
 
         it "returns true" do
-          multi.ongoing?.should be_true
+          expect(multi.ongoing?).to be_true
         end
       end
     end
@@ -233,27 +233,27 @@ describe Ethon::Multies::Operations do
 
   describe "#init_vars" do
     it "sets @timeout" do
-      multi.instance_variable_get(:@timeout).should be_a(FFI::MemoryPointer)
+      expect(multi.instance_variable_get(:@timeout)).to be_a(FFI::MemoryPointer)
     end
 
     it "sets @timeval" do
-      multi.instance_variable_get(:@timeval).should be_a(Ethon::Curl::Timeval)
+      expect(multi.instance_variable_get(:@timeval)).to be_a(Ethon::Curl::Timeval)
     end
 
     it "sets @fd_read" do
-      multi.instance_variable_get(:@fd_read).should be_a(Ethon::Curl::FDSet)
+      expect(multi.instance_variable_get(:@fd_read)).to be_a(Ethon::Curl::FDSet)
     end
 
     it "sets @fd_write" do
-      multi.instance_variable_get(:@fd_write).should be_a(Ethon::Curl::FDSet)
+      expect(multi.instance_variable_get(:@fd_write)).to be_a(Ethon::Curl::FDSet)
     end
 
     it "sets @fd_excep" do
-      multi.instance_variable_get(:@fd_excep).should be_a(Ethon::Curl::FDSet)
+      expect(multi.instance_variable_get(:@fd_excep)).to be_a(Ethon::Curl::FDSet)
     end
 
     it "sets @max_fd" do
-      multi.instance_variable_get(:@max_fd).should be_a(FFI::MemoryPointer)
+      expect(multi.instance_variable_get(:@max_fd)).to be_a(FFI::MemoryPointer)
     end
   end
 
@@ -295,7 +295,7 @@ describe Ethon::Multies::Operations do
 
     it "returns multi perform code" do
       Ethon::Curl.should_receive(:multi_perform).and_return(:ok)
-      multi.trigger.should eq(:ok)
+      expect(multi.trigger).to eq(:ok)
     end
   end
 end

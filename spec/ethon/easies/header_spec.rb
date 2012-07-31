@@ -21,14 +21,14 @@ describe Ethon::Easies::Header do
       end
 
       it "sends" do
-        easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
+        expect(easy.response_body).to include('"HTTP_USER_AGENT":"Ethon"')
       end
 
       context "when header value contains null byte" do
         let(:headers) { { 'User-Agent' => "Ethon\0" } }
 
         it "escapes" do
-          easy.response_body.should include('"HTTP_USER_AGENT":"Ethon\\\\0"')
+          expect(easy.response_body).to include('"HTTP_USER_AGENT":"Ethon\\\\0"')
         end
       end
 
@@ -36,7 +36,7 @@ describe Ethon::Easies::Header do
         let(:headers) { { 'User-Agent' => " Ethon" } }
 
         it "removes" do
-          easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
+          expect(easy.response_body).to include('"HTTP_USER_AGENT":"Ethon"')
         end
       end
 
@@ -44,7 +44,7 @@ describe Ethon::Easies::Header do
         let(:headers) { { 'User-Agent' => "Ethon " } }
 
         it "removes" do
-          easy.response_body.should include('"HTTP_USER_AGENT":"Ethon"')
+          expect(easy.response_body).to include('"HTTP_USER_AGENT":"Ethon"')
         end
       end
     end
@@ -52,7 +52,7 @@ describe Ethon::Easies::Header do
 
   describe "#compose_header" do
     it "has space in between" do
-      easy.compose_header('a', 'b').should eq('a: b')
+      expect(easy.compose_header('a', 'b')).to eq('a: b')
     end
 
     context "when value is a symbol" do
@@ -65,7 +65,7 @@ describe Ethon::Easies::Header do
   describe "#header_list" do
     context "when no set_headers" do
       it "returns nil" do
-        easy.header_list.should eq(nil)
+        expect(easy.header_list).to eq(nil)
       end
     end
 
@@ -73,7 +73,7 @@ describe Ethon::Easies::Header do
       it "returns pointer to header list" do
         easy.headers = {'User-Agent' => 'Custom'}
         easy.set_headers
-        easy.header_list.should be_a(FFI::Pointer)
+        expect(easy.header_list).to be_a(FFI::Pointer)
       end
     end
   end
