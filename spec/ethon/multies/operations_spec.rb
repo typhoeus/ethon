@@ -290,7 +290,7 @@ describe Ethon::Multies::Operations do
     it "sets running count" do
       multi.instance_variable_set(:@running_count, nil)
       multi.trigger
-      multi.instance_variable_get(:@running_count).should_not be_nil
+      expect(multi.instance_variable_get(:@running_count)).to_not be_nil
     end
 
     it "returns multi perform code" do

@@ -109,7 +109,7 @@ describe Ethon::Easies::Http::Post do
         end
 
         it "sets postfieldsize" do
-          easy.postfieldsize.should_not be_zero
+          expect(easy.postfieldsize).to_not be_zero
         end
 
         context "when requesting" do

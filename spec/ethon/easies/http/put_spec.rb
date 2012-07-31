@@ -63,11 +63,11 @@ describe Ethon::Easies::Http::Put do
       let(:form) { {:a => "1&b=2"} }
 
       it "sets infilesize" do
-        easy.infilesize.should_not be_zero
+        expect(easy.infilesize).to_not be_zero
       end
 
       it "sets readfunction" do
-        easy.readfunction.should_not be_nil
+        expect(easy.readfunction).to_not be_nil
       end
 
       it "sets upload" do

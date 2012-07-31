@@ -51,7 +51,7 @@ describe Ethon::Multies::Stack do
 
       it "deletes easy from easy_handles" do
         multi.delete(easy)
-        multi.easy_handles.should_not include(easy)
+        expect(multi.easy_handles).to_not include(easy)
       end
     end
 
