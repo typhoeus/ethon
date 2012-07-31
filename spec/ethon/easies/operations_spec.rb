@@ -35,7 +35,7 @@ describe Ethon::Easies::Operations do
     end
 
     it "calls Curl.easy_perform" do
-      Ethon::Curl.expects(:easy_perform)
+      Ethon::Curl.should_receive(:easy_perform)
       easy.perform
     end
 

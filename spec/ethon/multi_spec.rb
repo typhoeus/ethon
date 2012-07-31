@@ -5,19 +5,19 @@ describe Ethon::Multi do
 
   describe ".new" do
     it "inits curl" do
-      Ethon::Curl.expects(:init)
+      Ethon::Curl.should_receive(:init)
       multi
     end
 
     it "defines finalizer" do
-      ObjectSpace.expects(:define_finalizer)
+      ObjectSpace.should_receive(:define_finalizer)
       multi
     end
   end
 
   describe ".finalizer" do
     it "calls multi_cleanup" do
-      Ethon::Curl.expects(:multi_cleanup).with(multi.handle)
+      Ethon::Curl.should_receive(:multi_cleanup).with(multi.handle)
       Ethon::Multi.finalizer(multi).call
     end
 

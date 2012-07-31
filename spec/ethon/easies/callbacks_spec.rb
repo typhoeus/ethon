@@ -5,7 +5,7 @@ describe Ethon::Easies::Callbacks do
 
   describe "#set_callbacks" do
     before do
-      Ethon::Curl.expects(:set_option).twice
+      Ethon::Curl.should_receive(:set_option).twice
     end
 
     it "sets write- and headerfunction" do

@@ -6,20 +6,20 @@ describe Ethon::Curl do
 
     context "when global_init fails" do
       it "raises global init error" do
-        Ethon::Curl.expects(:global_init).returns(1)
+        Ethon::Curl.should_receive(:global_init).and_return(1)
         expect{ Ethon::Curl.init }.to raise_error(Ethon::Errors::GlobalInit)
       end
     end
 
     context "when global_init works" do
-      before { Ethon::Curl.expects(:global_init).returns(0) }
+      before { Ethon::Curl.should_receive(:global_init).and_return(0) }
 
       it "doesn't raises global init error" do
         expect{ Ethon::Curl.init }.to_not raise_error(Ethon::Errors::GlobalInit)
       end
 
       it "logs" do
-        Ethon.logger.expects(:debug)
+        Ethon.logger.should_receive(:debug)
         Ethon::Curl.init
       end
     end

@@ -8,7 +8,7 @@ describe Ethon::Easies::Header do
     before { easy.headers = headers }
 
     it "sets header" do
-      Ethon::Curl.expects(:set_option)
+      Ethon::Curl.should_receive(:set_option)
       easy.set_headers
     end
 

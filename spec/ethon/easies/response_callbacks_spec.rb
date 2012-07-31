@@ -36,7 +36,7 @@ describe Ethon::Easies::ResponseCallbacks do
     end
 
     it "executes blocks and passes self" do
-      String.expects(:new).with(easy.url)
+      String.should_receive(:new).with(easy.url)
       easy.complete
     end
   end

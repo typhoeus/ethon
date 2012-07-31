@@ -67,7 +67,7 @@ describe Ethon::Easies::Options do
     context "when option" do
       it "sets curl option" do
         easy.url = url
-        Ethon::Curl.expects(:set_option).at_least_once
+        Ethon::Curl.should_receive(:set_option).at_least(:once)
         easy.set_options
       end
 
@@ -83,7 +83,7 @@ describe Ethon::Easies::Options do
 
     context "when no option" do
       it "sets nothing" do
-        Ethon::Curl.expects(:set_option).at_least_once
+        Ethon::Curl.should_receive(:set_option).at_least(:once)
         easy.set_options
       end
     end

@@ -20,17 +20,6 @@ Gem::Specification.new do |s|
   s.add_dependency('ffi', ['~> 1.0.11'])
   s.add_dependency('mime-types', ['~> 1.18'])
 
-  s.add_development_dependency('sinatra', ['~> 1.3'])
-  s.add_development_dependency('json', ['~> 1.7'])
-  s.add_development_dependency('rake', ['~> 0.9'])
-  s.add_development_dependency("mocha", ["~> 0.10"])
-  s.add_development_dependency("rspec", ["~> 2.10"])
-  s.add_development_dependency("guard-rspec", ["~> 0.6"])
-  s.add_development_dependency("patron", ["~> 0.4"]) if RUBY_PLATFORM != "java"
-  s.add_development_dependency("curb", ["~> 0.8.0"]) if RUBY_PLATFORM != "java"
-  s.add_development_dependency('spoon') if RUBY_PLATFORM == "java"
-  s.add_development_dependency 'simplecov', '~> 0.5.3'
-
   s.files        = Dir.glob("lib/**/*") + %w(CHANGELOG.md Gemfile LICENSE README.md Rakefile)
   s.require_path = 'lib'
 end

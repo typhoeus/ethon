@@ -7,7 +7,7 @@ describe Ethon::Easies::Form do
 
   describe ".new" do
     it "defines finalizer" do
-      ObjectSpace.expects(:define_finalizer)
+      ObjectSpace.should_receive(:define_finalizer)
       form
     end
 
@@ -55,7 +55,7 @@ describe Ethon::Easies::Form do
       let(:pairs) { [['a', '1']] }
 
       it "adds params to form" do
-        Ethon::Curl.expects(:formadd)
+        Ethon::Curl.should_receive(:formadd)
         form.materialize
       end
     end
@@ -64,7 +64,7 @@ describe Ethon::Easies::Form do
       let(:pairs) { [['a', ["file", "type", "path/file"]]] }
 
       it "adds file to form" do
-        Ethon::Curl.expects(:formadd)
+        Ethon::Curl.should_receive(:formadd)
         form.materialize
       end
     end
