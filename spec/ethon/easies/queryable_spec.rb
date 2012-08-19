@@ -89,7 +89,8 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1, :b => 2} }
 
       it "transforms" do
-        expect(pairs).to eq([[:a, 1], [:b, 2]])
+        expect(pairs).to include([:a, 1])
+        expect(pairs).to include([:b, 2])
       end
     end
 
@@ -97,7 +98,8 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1, :b => {:c => 2}} }
 
       it "transforms" do
-        expect(pairs).to eq([[:a, 1], ["b[c]", 2]])
+        expect(pairs).to include([:a, 1])
+        expect(pairs).to include(["b[c]", 2])
       end
     end
 
@@ -105,7 +107,9 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1, :b => [2, 3]} }
 
       it "transforms" do
-        expect(pairs).to eq([[:a, 1], ["b[0]", 2], ["b[1]", 3]])
+        expect(pairs).to include([:a, 1])
+        expect(pairs).to include(["b[0]", 2])
+        expect(pairs).to include(["b[1]", 3])
       end
     end
 
@@ -144,7 +148,8 @@ describe Ethon::Easies::Queryable do
       let(:hash) { {:a => 1, :b => file} }
 
       it "transforms" do
-        expect(pairs).to eq([[:a, 1], [:b, file_info]])
+        expect(pairs).to include([:a, 1])
+        expect(pairs).to include([:b, file_info])
       end
     end
 
