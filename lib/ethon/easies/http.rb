@@ -21,6 +21,12 @@ module Ethon
       # @param [ String ] url The url.
       # @param [ String ] action_name The http action name.
       # @param [ Hash ] options The options hash.
+      #
+      # @option options :params [ Hash ] Params hash which
+      #   is attached to the url.
+      # @option options :body [ Hash ] Body hash which
+      #   becomes the request body. It is a PUT body for
+      #   PUT requests and a POST from for everything else.
       def http_request(url, action_name, options = {})
         fabricate(action_name).new(url, options).setup(self)
       end
