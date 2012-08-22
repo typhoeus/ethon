@@ -60,6 +60,15 @@ describe Ethon::Easies::Form do
       end
     end
 
+    context "when query_pairs contains nil" do
+      let(:pairs) { [['a', nil]] }
+
+      it "adds params to form" do
+        Ethon::Curl.should_receive(:formadd)
+        form.materialize
+      end
+    end
+
     context "when query_pairs contains file" do
       let(:pairs) { [['a', ["file", "type", "path/file"]]] }
 

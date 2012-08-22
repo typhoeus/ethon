@@ -92,7 +92,7 @@ module Ethon
                        :form_option, :copyname, :pointer, name,
                        :form_option, :namelength, :long, name.bytesize,
                        :form_option, :copycontents, :pointer, content,
-                       :form_option, :contentslength, :long, content.bytesize,
+                       :form_option, :contentslength, :long, content ? content.bytesize : 0,
                        :form_option, :end
                       )
         end
