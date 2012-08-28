@@ -10,10 +10,10 @@ module Ethon
         base.extend ClassMethods
         base.const_set(:AVAILABLE_OPTIONS, [
           :dns_cache_timeout, :httppost, :put, :httpget, :nobody, :upload,
-          :customrequest, :cainfo, :capath, :connecttimeout,
+          :customrequest, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
           :forbid_reuse, :followlocation, :httpauth, :infilesize, :interface,
           :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
-          :proxyauth, :proxyport, :proxytype, :timeout, :readdata, :sslcert,
+          :proxyauth, :proxyport, :proxytype, :timeout, :timeout_ms, :readdata, :sslcert,
           :ssl_verifypeer, :ssl_verifyhost, :sslcerttype, :sslkey, :sslkeytype,
           :sslversion, :url, :useragent, :userpwd, :verbose, :readfunction
         ])
@@ -63,8 +63,8 @@ module Ethon
         # @return [ Array ] The int options.
         def int_options
           [
-            :connecttimeout, :dns_cache_timeout, :infilesize, :maxredirs,
-            :postfieldsize, :proxyport, :ssl_verifyhost, :timeout
+            :connecttimeout, :connecttimeout_ms, :dns_cache_timeout, :infilesize, :maxredirs,
+            :postfieldsize, :proxyport, :ssl_verifyhost, :timeout, :timeout_ms
           ]
         end
       end

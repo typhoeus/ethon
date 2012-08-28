@@ -72,6 +72,8 @@ module Ethon
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCAPATH.
     # @option options :connecttimeout [Integer] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUT.
+    # @option options :connecttimeout_ms [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS.
     # @option options :copypostfields [String] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCOPYPOSTFIELDS.
     # @option options :customrequest [String] See
@@ -130,6 +132,8 @@ module Ethon
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTSSLVERSION.
     # @option options :timeout [Integer] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT.
+    # @option options :timeout_ms [Integer] See
+    #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUTMS.
     # @option options :upload [Boolean] See
     #  http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTUPLOAD.
     # @option options :url [String] See
