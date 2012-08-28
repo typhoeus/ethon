@@ -149,4 +149,70 @@ describe Ethon::Easies::Options do
       end
     end
   end
+
+  context "when requesting" do
+    let(:url) { "localhost:3001" }
+    let(:timeout) { nil }
+    let(:timeout_ms) { nil }
+    let(:connecttimeout) { nil }
+    let(:connecttimeout_ms) { nil }
+
+    before do
+      easy.url = url
+      easy.timeout = timeout
+      easy.timeout_ms = timeout_ms
+      easy.connecttimeout = connecttimeout
+      easy.connecttimeout_ms = connecttimeout_ms
+      easy.prepare
+      easy.perform
+    end
+
+    context "when timeout" do
+      let(:timeout) { 1 }
+
+      context "when request takes longer" do
+        let(:url) { "localhost:3001?delay=2" }
+
+        it "times out" do
+          expect(easy.return_code).to eq(:operation_timedout)
+        end
+      end
+    end
+
+    context "when timeout_ms" do
+      let(:timeout_ms) { 900 }
+
+      context "when request takes longer" do
+        let(:url) { "localhost:3001?delay=1" }
+
+        it "times out" do
+          expect(easy.return_code).to eq(:operation_timedout)
+        end
+      end
+    end
+
+    context "when connecttimeout" do
+      let(:connecttimeout) { 1 }
+
+      context "when cannot connect" do
+        let(:url) { "localhost:3002" }
+
+        it "times out" do
+          expect(easy.return_code).to eq(:couldnt_connect)
+        end
+      end
+    end
+
+    context "when connecttimeout_ms" do
+      let(:connecttimeout_ms) { 1 }
+
+      context "when cannot connect" do
+        let(:url) { "localhost:3002" }
+
+        it "times out" do
+          expect(easy.return_code).to eq(:couldnt_connect)
+        end
+      end
+    end
+  end
 end
