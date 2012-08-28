@@ -179,18 +179,6 @@ describe Ethon::Easies::Options do
       end
     end
 
-    context "when timeout_ms" do
-      let(:timeout_ms) { 900 }
-
-      context "when request takes longer" do
-        let(:url) { "localhost:3001?delay=1" }
-
-        it "times out" do
-          expect(easy.return_code).to eq(:operation_timedout)
-        end
-      end
-    end
-
     context "when connecttimeout" do
       let(:connecttimeout) { 1 }
 
@@ -203,14 +191,28 @@ describe Ethon::Easies::Options do
       end
     end
 
-    context "when connecttimeout_ms" do
-      let(:connecttimeout_ms) { 1 }
+    if Ethon::Curl.version.match("c-ares")
+      context "when timeout_ms" do
+        let(:timeout_ms) { 900 }
 
-      context "when cannot connect" do
-        let(:url) { "localhost:3002" }
+        context "when request takes longer" do
+          let(:url) { "localhost:3001?delay=1" }
 
-        it "times out" do
-          expect(easy.return_code).to eq(:couldnt_connect)
+          it "times out" do
+            expect(easy.return_code).to eq(:operation_timedout)
+          end
+        end
+      end
+
+      context "when connecttimeout_ms" do
+        let(:connecttimeout_ms) { 1 }
+
+        context "when cannot connect" do
+          let(:url) { "localhost:3002" }
+
+          it "times out" do
+            expect(easy.return_code).to eq(:couldnt_connect)
+          end
         end
       end
     end
