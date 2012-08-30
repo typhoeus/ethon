@@ -1,12 +1,12 @@
-require 'ethon/multies/stack'
-require 'ethon/multies/operations'
+require 'ethon/multi/stack'
+require 'ethon/multi/operations'
 
 module Ethon
 
   # This class represents libcurl multi.
   class Multi
-    include Ethon::Multies::Stack
-    include Ethon::Multies::Operations
+    include Ethon::Multi::Stack
+    include Ethon::Multi::Operations
 
     class << self
 

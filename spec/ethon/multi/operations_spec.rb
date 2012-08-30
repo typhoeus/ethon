@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ethon::Multies::Operations do
+describe Ethon::Multi::Operations do
   let(:multi) { Ethon::Multi.new }
   let(:easy) { Ethon::Easy.new }
 

@@ -1,5 +1,5 @@
 module Ethon
-  module Multies # :nodoc
+  class Multi # :nodoc
 
     # This module contains logic to run a multi.
     module Operations

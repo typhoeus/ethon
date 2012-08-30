@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ethon::Multies::Stack do
+describe Ethon::Multi::Stack do
   let(:multi) { Ethon::Multi.new }
   let(:easy) { Ethon::Easy.new }
 

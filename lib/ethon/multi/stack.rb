@@ -1,5 +1,5 @@
 module Ethon
-  module Multies
+  class Multi
 
     # This module provides the multi stack behaviour.
     module Stack
