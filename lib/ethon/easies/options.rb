@@ -9,7 +9,7 @@ module Ethon
       def self.included(base)
         base.extend ClassMethods
         base.const_set(:AVAILABLE_OPTIONS, [
-          :dns_cache_timeout, :httppost, :put, :httpget, :nobody, :upload,
+          :dns_cache_timeout, :httppost, :httpget, :nobody, :upload,
           :customrequest, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
           :forbid_reuse, :followlocation, :httpauth, :infilesize, :interface,
           :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
