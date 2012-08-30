@@ -1,13 +1,13 @@
-require 'ethon/easies/informations'
-require 'ethon/easies/callbacks'
-require 'ethon/easies/options'
-require 'ethon/easies/header'
-require 'ethon/easies/util'
-require 'ethon/easies/params'
-require 'ethon/easies/form'
-require 'ethon/easies/http'
-require 'ethon/easies/operations'
-require 'ethon/easies/response_callbacks'
+require 'ethon/easy/informations'
+require 'ethon/easy/callbacks'
+require 'ethon/easy/options'
+require 'ethon/easy/header'
+require 'ethon/easy/util'
+require 'ethon/easy/params'
+require 'ethon/easy/form'
+require 'ethon/easy/http'
+require 'ethon/easy/operations'
+require 'ethon/easy/response_callbacks'
 
 module Ethon
 
@@ -32,13 +32,13 @@ module Ethon
   #
   # @see initialize
   class Easy
-    include Ethon::Easies::Informations
-    include Ethon::Easies::Callbacks
-    include Ethon::Easies::Options
-    include Ethon::Easies::Header
-    include Ethon::Easies::Http
-    include Ethon::Easies::Operations
-    include Ethon::Easies::ResponseCallbacks
+    include Ethon::Easy::Informations
+    include Ethon::Easy::Callbacks
+    include Ethon::Easy::Options
+    include Ethon::Easy::Header
+    include Ethon::Easy::Http
+    include Ethon::Easy::Operations
+    include Ethon::Easy::ResponseCallbacks
 
    # Returns the curl return code.
    #
@@ -844,7 +844,7 @@ module Ethon
         :response_header => response_header,
         :response_body => response_body
       }
-      Easies::Informations::AVAILABLE_INFORMATIONS.keys.each do |info|
+      Easy::Informations::AVAILABLE_INFORMATIONS.keys.each do |info|
         @hash[info] = method(info).call
       end
       @hash
