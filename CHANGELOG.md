@@ -2,19 +2,26 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.2...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.3...master)
+
+Enhancements:
+
+Bugfixes:
+
+## 0.4.3
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.2...v0.4.3)
 
 Enhancements:
 
 * Remove deprecated libcurl option put
 * More documentation
 * New libcurl option connecttimeout_ms and timeout_ms
+* Support multi options
 
 Bugfixes:
 
 * Handle nil values in query params
-
-# Changelog
 
 ## 0.4.2
 
