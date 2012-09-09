@@ -18,7 +18,9 @@ module Ethon
     MultiCode = enum(:multi_code, multi_codes)
 
     # :nodoc:
-    Option = enum(:option, options.to_a.flatten)
+    EasyOption = enum(:easy_option, easy_options.to_a.flatten)
+    # :nodoc:
+    MultiOption = enum(:multi_option, multi_options.to_a.flatten)
     # :nodoc:
     OptionType = enum(option_types.to_a.flatten)
 

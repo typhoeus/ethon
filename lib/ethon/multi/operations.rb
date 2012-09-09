@@ -43,6 +43,7 @@ module Ethon
       # @example Perform multi.
       #   multi.perform
       def perform
+        set_options
         Ethon.logger.debug("ETHON: started MULTI") if Ethon.logger
         while ongoing?
           run

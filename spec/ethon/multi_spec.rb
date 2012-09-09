@@ -13,6 +13,17 @@ describe Ethon::Multi do
       ObjectSpace.should_receive(:define_finalizer)
       multi
     end
+
+    context "when options not empty" do
+      context "when pipelining is set" do
+        let(:options) { { :pipelining => true } }
+        let(:multi) { Ethon::Multi.new(options) }
+
+        it "sets pipelining" do
+          expect(multi.pipelining).to be_true
+        end
+      end
+    end
   end
 
   describe ".finalizer" do
