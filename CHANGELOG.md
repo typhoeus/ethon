@@ -4,6 +4,10 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.4...master)
 
+Enhancements:
+
+* New libcurl option proxyuserpwd
+
 ## 0.4.4
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.3...v0.4.4)
