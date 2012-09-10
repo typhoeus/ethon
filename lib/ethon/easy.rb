@@ -475,6 +475,10 @@ module Ethon
     # @option options :proxyport [Integer]
     #  Pass a long with this option to set the proxy port to connect to
     #  unless it is specified in the proxy string CURLOPT_PROXY.
+    # @option options :proxyuserpwd [String]
+    #  Pass a char * as parameter, which should be [user name]:[password]
+    #  to use for the connection to the HTTP proxy. Use CURLOPT_PROXYAUTH
+    #  to decide the authentication method.
     # @option options :readdata [String]
     #  Data pointer to pass to the file read function. If you use the
     #  CURLOPT_READFUNCTION option, this is the pointer you'll get as input.
