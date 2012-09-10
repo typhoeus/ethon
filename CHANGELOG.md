@@ -2,13 +2,15 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.3...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.4...master)
+
+## 0.4.4
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.3...v0.4.4)
 
 Enhancements:
 
 * Prepare multi explicit like easy
-
-Bugfixes:
 
 ## 0.4.3
 
