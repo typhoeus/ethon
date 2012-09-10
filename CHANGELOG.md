@@ -6,6 +6,8 @@
 
 Enhancements:
 
+* Prepare multi explicit like easy
+
 Bugfixes:
 
 ## 0.4.3

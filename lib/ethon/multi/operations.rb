@@ -43,7 +43,6 @@ module Ethon
       # @example Perform multi.
       #   multi.perform
       def perform
-        set_options
         Ethon.logger.debug("ETHON: started MULTI") if Ethon.logger
         while ongoing?
           run
@@ -54,6 +53,14 @@ module Ethon
         end
         Ethon.logger.debug("ETHON: performed MULTI") if Ethon.logger
         nil
+      end
+
+      # Prepare multi.
+      #
+      # @example Prepare multi.
+      #   multi.prepare
+      def prepare
+        set_options
       end
 
       # Get timeout.
