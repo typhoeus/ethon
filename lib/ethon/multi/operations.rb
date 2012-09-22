@@ -43,7 +43,7 @@ module Ethon
       # @example Perform multi.
       #   multi.perform
       def perform
-        Ethon.logger.debug("ETHON: started MULTI") if Ethon.logger
+        Ethon.logger.debug("ETHON: started MULTI")
         while ongoing?
           run
           timeout = get_timeout
@@ -51,7 +51,7 @@ module Ethon
           reset_fds
           set_fds(timeout)
         end
-        Ethon.logger.debug("ETHON: performed MULTI") if Ethon.logger
+        Ethon.logger.debug("ETHON: performed MULTI")
         nil
       end
 
@@ -122,7 +122,7 @@ module Ethon
           easy.return_code = msg[:data][:code]
           delete(easy)
           easy.complete
-          Ethon.logger.debug("ETHON:         performed #{easy.log_inspect}") if Ethon.logger
+          Ethon.logger.debug("ETHON:         performed #{easy.log_inspect}")
         end
       end
 
