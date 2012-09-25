@@ -17,9 +17,9 @@ describe Ethon::Easy::Callbacks do
       expect(easy.instance_variable_get(:@response_body)).to eq("")
     end
 
-    it "resets @response_header" do
+    it "resets @response_headers" do
       easy.set_callbacks
-      expect(easy.instance_variable_get(:@response_header)).to eq("")
+      expect(easy.instance_variable_get(:@response_headers)).to eq("")
     end
   end
 end

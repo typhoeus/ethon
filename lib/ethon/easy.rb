@@ -850,7 +850,7 @@ module Ethon
       return @hash if defined?(@hash) && @hash
       @hash = {
         :return_code => return_code,
-        :response_header => response_header,
+        :response_headers => response_headers,
         :response_body => response_body
       }
       Easy::Informations::AVAILABLE_INFORMATIONS.keys.each do |info|

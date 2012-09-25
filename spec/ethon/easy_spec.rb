@@ -77,7 +77,7 @@ describe Ethon::Easy do
 
   describe "#to_hash" do
     [
-      :return_code, :response_code, :response_header, :response_body,
+      :return_code, :response_code, :response_headers, :response_body,
       :total_time, :starttransfer_time, :appconnect_time,
       :pretransfer_time, :connect_time, :namelookup_time,
       :effective_url, :primary_ip, :redirect_count

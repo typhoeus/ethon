@@ -51,7 +51,7 @@ describe Ethon::Easy::Operations do
       end
 
       it "sets response header" do
-        expect(easy.response_header).to be
+        expect(easy.response_headers).to be
       end
 
       context "when request timed out" do
