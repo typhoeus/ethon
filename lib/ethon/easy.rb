@@ -201,12 +201,16 @@ module Ethon
 
     class << self
 
-      # Free libcurl representation from an easy handle.
+      # Frees libcurls easy represantation including its headers if any.
       #
       # @example Free easy handle.
       #   Easy.finalizer(easy)
       #
       # @param [ Easy ] easy The easy to free.
+      #
+      # @see http://curl.haxx.se/libcurl/c/curl_easy_cleanup.html
+      #
+      # @api private
       def finalizer(easy)
         proc {
           Curl.slist_free_all(easy.header_list) if easy.header_list
@@ -809,6 +813,8 @@ module Ethon
     # @raise InvalidOption
     #
     # @see initialize
+    #
+    # @api private
     def set_attributes(options)
       options.each_pair do |key, value|
         unless respond_to?("#{key}=")
@@ -838,6 +844,8 @@ module Ethon
     # @param [ String ] value The value to escape.
     #
     # @return [ String ] The escaped value.
+    #
+    # @api private
     def escape(value)
       Curl.easy_escape(handle, value, 0)
     end

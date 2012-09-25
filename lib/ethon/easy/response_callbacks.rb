@@ -38,6 +38,8 @@ module Ethon
       #
       # @example Execute on_completes.
       #   request.complete
+      #
+      # @api private
       def complete
         if defined?(@on_complete)
           @on_complete.map{ |callback| callback.call(self) }

@@ -31,6 +31,8 @@ module Ethon
       #   Form.finalizer(form)
       #
       # @param [ Form ] form The form to free.
+      #
+      # @api private
       def self.finalizer(form)
         proc { Curl.formfree(form.first) if form.multipart? }
       end
@@ -41,6 +43,8 @@ module Ethon
       #   form.first
       #
       # @return [ FFI::Pointer ] The first element.
+      #
+      # @api private
       def first
         @first ||= FFI::MemoryPointer.new(:pointer)
       end
@@ -51,6 +55,8 @@ module Ethon
       #   form.last
       #
       # @return [ FFI::Pointer ] The last element.
+      #
+      # @api private
       def last
         @last ||= FFI::MemoryPointer.new(:pointer)
       end
@@ -70,6 +76,8 @@ module Ethon
       #
       # @example Add form to libcurl.
       #   form.materialize
+      #
+      # @api private
       def materialize
         query_pairs.each { |pair| form_add(pair.first.to_s, pair.last) }
       end

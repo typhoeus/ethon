@@ -7,6 +7,8 @@ module Ethon
 
       # Libcurl error codes, refer
       # https://github.com/bagder/curl/blob/master/include/curl/curl.h for details
+      #
+      # @api private
       def easy_codes
         [
           :ok,
@@ -104,6 +106,8 @@ module Ethon
 
       # Curl-Multi socket error codes, refer
       # https://github.com/bagder/curl/blob/master/include/curl/multi.h for details
+      #
+      # @api private
       def multi_codes
         [
           :call_multi_perform, -1,

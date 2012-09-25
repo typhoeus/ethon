@@ -11,6 +11,8 @@ module Ethon
     end
 
     # :nodoc:
+    #
+    # @api private
     def Curl.windows?
       !(RbConfig::CONFIG['host_os'] !~ /mingw|mswin|bccwin/)
     end

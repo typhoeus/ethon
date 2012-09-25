@@ -6,6 +6,8 @@ module Ethon
     module Options
 
       # :nodoc:
+      #
+      # @api private
       def self.included(base)
         base.extend ClassMethods
         base.const_set(:AVAILABLE_OPTIONS, [
@@ -29,6 +31,8 @@ module Ethon
         #   easy.available_options
         #
         # @return [ Array ]  The available options.
+        #
+        # @api private
         def available_options
           Ethon::Easy::AVAILABLE_OPTIONS
         end
@@ -39,6 +43,8 @@ module Ethon
         #   easy.bool_options
         #
         # @return [ Array ] The bool options.
+        #
+        # @api private
         def bool_options
           [
             :followlocation, :forbid_reuse, :nosignal, :ssl_verifypeer,
@@ -52,6 +58,8 @@ module Ethon
         #   easy.enum_options
         #
         # @return [ Hash ] The enum options.
+        #
+        # @api private
         def enum_options
           { :httpauth => Curl::Auth, :sslversion => Curl::SSLVersion }
         end
@@ -62,6 +70,8 @@ module Ethon
         #   easy.int_options
         #
         # @return [ Array ] The int options.
+        #
+        # @api private
         def int_options
           [
             :connecttimeout, :connecttimeout_ms, :dns_cache_timeout, :infilesize, :maxredirs,
@@ -74,6 +84,8 @@ module Ethon
       #
       # @example Set options.
       #   easy.set_options
+      #
+      # @api private
       def set_options
         self.class.available_options.each do |option|
           Curl.set_option(option, value_for(option), handle)
@@ -87,6 +99,8 @@ module Ethon
       #   easy.value_for(:verbose)
       #
       # @return [ Object ] The casted value.
+      #
+      # @api private
       def value_for(option)
         value = method(option).call
         return nil if value.nil?

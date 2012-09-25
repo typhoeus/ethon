@@ -10,6 +10,8 @@ module Ethon
       #   Ethon::Curl.proxy_types
       #
       # @return [ Hash ] The proxy_types.
+      #
+      # @api private
       def proxy_types
         {
           :http =>           0,

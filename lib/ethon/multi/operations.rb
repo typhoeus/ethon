@@ -11,6 +11,8 @@ module Ethon
       #   multi.handle
       #
       # @return [ ::FFI::Pointer ] The multi handle.
+      #
+      # @api private
       def handle
         @handle ||= Curl.multi_init
       end
@@ -19,6 +21,8 @@ module Ethon
       #
       # @example Initialize variables.
       #   multi.init_vars
+      #
+      # @api private
       def init_vars
         @timeout = ::FFI::MemoryPointer.new(:long)
         @timeval = Curl::Timeval.new
@@ -34,6 +38,8 @@ module Ethon
       #   multi.ongoing?
       #
       # @return [ Boolean ] True if ongoing, else false.
+      #
+      # @api private
       def ongoing?
         easy_handles.size > 0 || (!defined?(@running_count) || running_count > 0)
       end
@@ -69,6 +75,8 @@ module Ethon
       #   multi.get_timeout
       #
       # @raise [Ethon::Errors::MultiTimeout] when getting the timeout failed.
+      #
+      # @api private
       def get_timeout
         code = Curl.multi_timeout(handle, @timeout)
         raise Errors::MultiTimeout.new(code) unless code == :ok
@@ -81,6 +89,8 @@ module Ethon
       #
       # @example Reset fds.
       #   multi.reset_fds
+      #
+      # @api private
       def reset_fds
         @fd_read.clear
         @fd_write.clear
@@ -94,6 +104,8 @@ module Ethon
       #
       # @raise [Ethon::Errors::MultiFdset] when setting the file descriptors failed.
       # @raise [Ethon::Errors::Select] when select failed.
+      #
+      # @api private
       def set_fds(timeout)
         code = Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
         raise Errors::MultiFdset.new(code) unless code == :ok
@@ -112,6 +124,8 @@ module Ethon
       #
       # @example Check.
       #   multi.check
+      #
+      # @api private
       def check
         msgs_left = ::FFI::MemoryPointer.new(:int)
         while true
@@ -130,6 +144,8 @@ module Ethon
       #
       # @example Run
       #   multi.run
+      #
+      # @api private
       def run
         begin code = trigger end while code == :call_multi_perform
         check
@@ -139,6 +155,8 @@ module Ethon
       #
       # @example Trigger.
       #   multi.trigger
+      #
+      # @api private
       def trigger
         running_count = FFI::MemoryPointer.new(:int)
         code = Curl.multi_perform(handle, running_count)
@@ -152,6 +170,8 @@ module Ethon
       #   multi.running_count
       #
       # @return [ Integer ] Number running requests.
+      #
+      # @api private
       def running_count
         @running_count ||= nil
       end

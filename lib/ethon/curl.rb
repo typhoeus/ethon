@@ -58,6 +58,8 @@ module Ethon
       # mean no other thread that is using libcurl. Because curl_global_init() calls
       # functions of other libraries that are similarly thread unsafe, it could conflict with
       # any other thread that uses these other libraries.
+      #
+      # @api private
       def init
         @@init_mutex.synchronize {
           if not @@initialized

@@ -41,6 +41,8 @@ module Ethon
       # @param [ String ] action_name The action name.
       #
       # @return [ Class ] The action class.
+      #
+      # @api private
       def fabricate(action_name)
         Ethon::Easy::Http.const_get(action_name.to_s.capitalize)
       end

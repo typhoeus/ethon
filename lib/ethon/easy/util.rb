@@ -14,6 +14,8 @@ module Ethon
       #
       # @return [ String, Object ] Escaped String if
       #   zero byte found, original object if not.
+      #
+      # @api private
       def escape_zero_byte(value)
         return value unless value.to_s.include?(0.chr)
         value.to_s.gsub(0.chr, '\\\0')

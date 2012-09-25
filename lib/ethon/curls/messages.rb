@@ -10,6 +10,8 @@ module Ethon
       #   Ethon::Curl.msg_codes
       #
       # @return [ Array ] The messages codes.
+      #
+      # @api private
       def msg_codes
         [:none, :done, :last]
       end

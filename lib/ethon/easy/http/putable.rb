@@ -11,6 +11,8 @@ module Ethon
         #   put.set_form(easy)
         #
         # @param [ Easy ] easy The easy to setup.
+        #
+        # @api private
         def set_form(easy)
           easy.url ||= url
           easy.upload = true
