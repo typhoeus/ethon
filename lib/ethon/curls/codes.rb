@@ -7,8 +7,6 @@ module Ethon
 
       # Libcurl error codes, refer
       # https://github.com/bagder/curl/blob/master/include/curl/curl.h for details
-      #
-      # @api private
       def easy_codes
         [
           :ok,

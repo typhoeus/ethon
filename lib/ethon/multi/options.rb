@@ -6,8 +6,6 @@ module Ethon
     module Options
 
       # :nodoc:
-      #
-      # @api private
       def self.included(base)
         base.extend ClassMethods
         base.const_set(:AVAILABLE_OPTIONS, [
@@ -25,8 +23,6 @@ module Ethon
         #   multi.available_options
         #
         # @return [ Array ]  The available options.
-        #
-        # @api private
         def available_options
           Ethon::Multi::AVAILABLE_OPTIONS
         end
@@ -37,8 +33,6 @@ module Ethon
         #   multi.bool_options
         #
         # @return [ Array ] The bool options.
-        #
-        # @api private
         def bool_options
           [
             :pipelining
@@ -51,8 +45,6 @@ module Ethon
         #   multi.int_options
         #
         # @return [ Array ] The int options.
-        #
-        # @api private
         def int_options
           [
             :maxconnects
@@ -64,8 +56,6 @@ module Ethon
       #
       # @example Set options.
       #   multi.set_options
-      #
-      # @api private
       def set_options
         self.class.available_options.each do |option|
           Curl.set_option(option, value_for(option), handle, :multi)
@@ -79,8 +69,6 @@ module Ethon
       #   multi.value_for(:verbose)
       #
       # @return [ Object ] The casted value.
-      #
-      # @api private
       def value_for(option)
         value = method(option).call
         return nil if value.nil?

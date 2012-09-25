@@ -18,8 +18,6 @@ module Ethon
       #   Multi.finalizer(multi)
       #
       # @param [ Multi ] multi The multi to free.
-      #
-      # @api private
       def finalizer(multi)
         proc {
           Curl.multi_cleanup(multi.handle)
@@ -94,8 +92,6 @@ module Ethon
     # @raise InvalidOption
     #
     # @see initialize
-    #
-    # @api private
     def set_attributes(options)
       options.each_pair do |key, value|
         unless respond_to?("#{key}=")

@@ -10,8 +10,6 @@ module Ethon
       #   Ethon::Curl.ssl_versions
       #
       # @return [ Hash ] The versions.
-      #
-      # @api private
       def ssl_versions
         {
           :default =>0,

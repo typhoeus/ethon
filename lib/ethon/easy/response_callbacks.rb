@@ -28,6 +28,8 @@ module Ethon
       #   request.on_complete { p "yay" }
       #
       # @param [ Block ] block The block to execute.
+      #
+      # @api public
       def on_complete(&block)
         @on_complete ||= []
         @on_complete << block if block_given?
@@ -38,8 +40,6 @@ module Ethon
       #
       # @example Execute on_completes.
       #   request.complete
-      #
-      # @api private
       def complete
         if defined?(@on_complete)
           @on_complete.map{ |callback| callback.call(self) }

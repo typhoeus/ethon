@@ -10,8 +10,6 @@ module Ethon
       #   easy.handle
       #
       # @return [ FFI::Pointer ] A pointer to the curl easy handle.
-      #
-      # @api private
       def handle
         @handle ||= Curl.easy_init
       end
@@ -22,6 +20,8 @@ module Ethon
       #   easy.perform
       #
       # @return [ Integer ] The return code.
+      #
+      # @api public
       def perform
         @return_code = Curl.easy_perform(handle)
         complete
@@ -34,6 +34,8 @@ module Ethon
       #
       # @example Prepare easy.
       #   easy.prepare
+      #
+      # @api public
       def prepare
         set_options
         set_headers

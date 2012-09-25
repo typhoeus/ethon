@@ -13,8 +13,6 @@ module Ethon
         #   get.set_params(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        #
-        # @api private
         def setup(easy)
           super
           easy.customrequest = "GET" unless form.empty?

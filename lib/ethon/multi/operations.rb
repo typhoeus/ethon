@@ -10,9 +10,7 @@ module Ethon
       # @example Return multi handle.
       #   multi.handle
       #
-      # @return [ ::FFI::Pointer ] The multi handle.
-      #
-      # @api private
+      # @return [ FFI::Pointer ] The multi handle.
       def handle
         @handle ||= Curl.multi_init
       end
@@ -22,7 +20,7 @@ module Ethon
       # @example Initialize variables.
       #   multi.init_vars
       #
-      # @api private
+      # @return [ void ]
       def init_vars
         @timeout = ::FFI::MemoryPointer.new(:long)
         @timeval = Curl::Timeval.new
@@ -38,16 +36,18 @@ module Ethon
       #   multi.ongoing?
       #
       # @return [ Boolean ] True if ongoing, else false.
-      #
-      # @api private
       def ongoing?
         easy_handles.size > 0 || (!defined?(@running_count) || running_count > 0)
       end
 
       # Perform multi.
       #
+      # @return [ nil ]
+      #
       # @example Perform multi.
       #   multi.perform
+      #
+      # @api public
       def perform
         Ethon.logger.debug("ETHON: started MULTI")
         while ongoing?
@@ -63,8 +63,12 @@ module Ethon
 
       # Prepare multi.
       #
+      # @return [ nil ]
+      #
       # @example Prepare multi.
       #   multi.prepare
+      #
+      # @api public
       def prepare
         set_options
       end
@@ -74,9 +78,9 @@ module Ethon
       # @example Get timeout.
       #   multi.get_timeout
       #
-      # @raise [Ethon::Errors::MultiTimeout] when getting the timeout failed.
+      # @return [ Integer ] The timeout.
       #
-      # @api private
+      # @raise [ Ethon::Errors::MultiTimeout ] If getting the timeout fails.
       def get_timeout
         code = Curl.multi_timeout(handle, @timeout)
         raise Errors::MultiTimeout.new(code) unless code == :ok
@@ -90,7 +94,7 @@ module Ethon
       # @example Reset fds.
       #   multi.reset_fds
       #
-      # @api private
+      # @return [ void ]
       def reset_fds
         @fd_read.clear
         @fd_write.clear
@@ -102,10 +106,10 @@ module Ethon
       # @example Set fds.
       #   multi.set_fds
       #
-      # @raise [Ethon::Errors::MultiFdset] when setting the file descriptors failed.
-      # @raise [Ethon::Errors::Select] when select failed.
+      # @return [ void ]
       #
-      # @api private
+      # @raise [ Ethon::Errors::MultiFdset ] If setting the file descriptors fails.
+      # @raise [ Ethon::Errors::Select ] If select fails.
       def set_fds(timeout)
         code = Curl.multi_fdset(handle, @fd_read, @fd_write, @fd_excep, @max_fd)
         raise Errors::MultiFdset.new(code) unless code == :ok
@@ -125,7 +129,7 @@ module Ethon
       # @example Check.
       #   multi.check
       #
-      # @api private
+      # @return [ void ]
       def check
         msgs_left = ::FFI::MemoryPointer.new(:int)
         while true
@@ -145,7 +149,7 @@ module Ethon
       # @example Run
       #   multi.run
       #
-      # @api private
+      # @return [ void ]
       def run
         begin code = trigger end while code == :call_multi_perform
         check
@@ -156,7 +160,7 @@ module Ethon
       # @example Trigger.
       #   multi.trigger
       #
-      # @api private
+      # @return [ Symbol ] The Curl.multi_perform return code.
       def trigger
         running_count = FFI::MemoryPointer.new(:int)
         code = Curl.multi_perform(handle, running_count)
@@ -170,8 +174,6 @@ module Ethon
       #   multi.running_count
       #
       # @return [ Integer ] Number running requests.
-      #
-      # @api private
       def running_count
         @running_count ||= nil
       end

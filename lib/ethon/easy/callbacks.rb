@@ -6,7 +6,6 @@ module Ethon
     module Callbacks
 
       # :nodoc:
-      # @api private
       def self.included(base)
         base.send(:attr_accessor, *[:response_body, :response_headers])
       end
@@ -17,8 +16,6 @@ module Ethon
       #
       # @example Set callbacks.
       #   easy.set_callbacks
-      #
-      # @api private
       def set_callbacks
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
@@ -32,8 +29,6 @@ module Ethon
       #   easy.body_write_callback
       #
       # @return [ Proc ] The callback.
-      #
-      # @api private
       def body_write_callback
         @body_write_callback ||= proc {|stream, size, num, object|
           @response_body << stream.read_string(size * num)
@@ -47,8 +42,6 @@ module Ethon
       #   easy.header_write_callback
       #
       # @return [ Proc ] The callback.
-      #
-      # @api private
       def header_write_callback
         @header_write_callback ||= proc {|stream, size, num, object|
           @response_headers << stream.read_string(size * num)
@@ -63,8 +56,6 @@ module Ethon
       #   easy.set_read_callback("a=1")
       #
       # @param [ String ] body The body.
-      #
-      # @api private
       def set_read_callback(body)
         @request_body_read = 0
         @read_callback = proc {|stream, size, num, object|
@@ -88,8 +79,6 @@ module Ethon
       #   easy.read_callback
       #
       # @return [ Proc ] The callback.
-      #
-      # @api private
       def read_callback
         @read_callback
       end

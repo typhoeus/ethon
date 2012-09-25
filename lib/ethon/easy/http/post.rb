@@ -12,8 +12,6 @@ module Ethon
         #   post.setup(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        #
-        # @api private
         def setup(easy)
           super
           if form.empty?

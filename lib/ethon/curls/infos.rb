@@ -11,8 +11,6 @@ module Ethon
       #   Ethon::Curl.info_types
       #
       # @return [ Hash ] The info types.
-      #
-      # @api private
       def info_types
         {
           :string =>0x100000,
@@ -29,8 +27,6 @@ module Ethon
       #   Ethon::Curl.infos
       #
       # @return [ Hash ] The infos.
-      #
-      # @api private
       def infos
         {
           :effective_url =>          info_types[:string] + 1,
@@ -88,8 +84,6 @@ module Ethon
       # @param [ ::FFI::Pointer ] handle The easy handle.
       #
       # @return [ String ] The info.
-      #
-      # @api private
       def get_info_string(option, handle)
         if easy_getinfo(handle, option, string_ptr) == :ok
           string_ptr.read_pointer.read_string
@@ -105,8 +99,6 @@ module Ethon
       # @param [ ::FFI::Pointer ] handle The easy handle.
       #
       # @return [ Integer ] The info.
-      #
-      # @api private
       def get_info_long(option, handle)
         if easy_getinfo(handle, option, long_ptr) == :ok
           long_ptr.read_long
@@ -122,8 +114,6 @@ module Ethon
       # @param [ ::FFI::Pointer ] handle The easy handle.
       #
       # @return [ Float ] The info.
-      #
-      # @api private
       def get_info_double(option, handle)
         if easy_getinfo(handle, option, double_ptr) == :ok
           double_ptr.read_double
@@ -136,8 +126,6 @@ module Ethon
       #   Curl.string_ptr
       #
       # @return [ ::FFI::Pointer ] The string pointer.
-      #
-      # @api private
       def string_ptr
         @string_ptr ||= ::FFI::MemoryPointer.new(:pointer)
       end
@@ -148,8 +136,6 @@ module Ethon
       #   Curl.long_ptr
       #
       # @return [ ::FFI::Pointer ] The long pointer.
-      #
-      # @api private
       def long_ptr
         @long_ptr ||= ::FFI::MemoryPointer.new(:long)
       end
@@ -160,8 +146,6 @@ module Ethon
       #   Curl.double_ptr
       #
       # @return [ ::FFI::Pointer ] The double pointer.
-      #
-      # @api private
       def double_ptr
         @double_ptr ||= ::FFI::MemoryPointer.new(:double)
       end

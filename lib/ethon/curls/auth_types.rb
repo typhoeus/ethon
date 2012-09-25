@@ -10,8 +10,6 @@ module Ethon
       #   Ethon::Curl.auth_types
       #
       # @return [ Hash ] The auth types.
-      #
-      # @api private
       def auth_types
         {
           :basic =>       0x01,

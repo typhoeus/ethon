@@ -68,8 +68,6 @@ module Ethon
         #   action.setup(easy)
         #
         # @param [ easy ] easy the easy to setup.
-        #
-        # @api private
         def setup(easy)
           @easy = easy
           easy.url = url
@@ -85,8 +83,6 @@ module Ethon
         #   action.set_nothing(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        #
-        # @api private
         def set_nothing(easy)
           easy.url = url
         end
@@ -97,8 +93,6 @@ module Ethon
         #   action.set_params(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        #
-        # @api private
         def set_params(easy)
           params.escape = true
           easy.url = "#{url}?#{params.to_s}"
@@ -110,8 +104,6 @@ module Ethon
         #   action.set_form(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        #
-        # @api private
         def set_form(easy)
         end
       end

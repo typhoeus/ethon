@@ -6,8 +6,6 @@ module Ethon
     module Options
 
       # Sets appropriate option for easy, depending on value type.
-      #
-      # @api private
       def set_option(option, value, handle, type = :easy)
         return unless value
 
@@ -16,8 +14,6 @@ module Ethon
       end
 
       # :nodoc:
-      #
-      # @api private
       def option_types
         {
           :long => 0,
@@ -29,8 +25,6 @@ module Ethon
 
       # Curl multi options, refer
       # https://github.com/bagder/curl/blob/master/include/curl/multi.h
-      #
-      # @api private
       def multi_options
         {
           :socketfunction  =>  option_types[:function_point]  +  1,
@@ -44,8 +38,6 @@ module Ethon
 
       # Curl easy options, refer
       # https://github.com/bagder/curl/blob/master/include/curl/curl.h
-      #
-      # @api private
       def easy_options
         {
 

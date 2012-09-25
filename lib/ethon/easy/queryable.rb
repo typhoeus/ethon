@@ -6,8 +6,6 @@ module Ethon
     module Queryable
 
       # :nodoc:
-      #
-      # @api private
       def self.included(base)
         base.send(:attr_accessor, :escape)
       end
@@ -57,8 +55,6 @@ module Ethon
       # @param [ Hash ] hash The hash to go through.
       #
       # @return [ Array ] The array of query pairs.
-      #
-      # @api private
       def build_query_pairs(hash)
         return [hash] if hash.is_a?(String)
 
@@ -89,8 +85,6 @@ module Ethon
       # @param [ File ] file The file to handle.
       #
       # @return [ Array ] Array of informations.
-      #
-      # @api private
       def file_info(file)
         filename = File.basename(file.path)
         types = MIME::Types.type_for(filename)

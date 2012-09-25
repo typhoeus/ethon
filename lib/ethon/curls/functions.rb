@@ -6,8 +6,6 @@ module Ethon
     module Functions
 
       # :nodoc:
-      #
-      # @api private
       def self.extended(base)
         base.attach_function :global_init,            :curl_global_init,         [:long],                        :int
 

@@ -21,7 +21,7 @@ module Ethon
       #
       # @param [ Easy ] easy The easy to add.
       #
-      # @raise [Ethon::Errors::MultiAdd] when adding an easy failed.
+      # @raise [ Ethon::Errors::MultiAdd ] If adding an easy failed.
       def add(easy)
         return nil if easy_handles.include?(easy)
 
@@ -36,7 +36,7 @@ module Ethon
       #
       # @param [ Easy ] easy The easy to delete.
       #
-      # @raise [Ethon::Errors::MultiRemove] when removing an easy failed.
+      # @raise [ Ethon::Errors::MultiRemove ] If removing an easy failed.
       def delete(easy)
         if easy_handles.delete(easy)
           code = Curl.multi_remove_handle(handle, easy.handle)

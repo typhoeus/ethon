@@ -11,8 +11,6 @@ module Ethon
         #   post.set_form(easy)
         #
         # @param [ Easy ] easy The easy to setup.
-        #
-        # @api private
         def set_form(easy)
           easy.url ||= url
           if form.multipart?

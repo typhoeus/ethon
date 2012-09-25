@@ -59,7 +59,7 @@ module Ethon
       # functions of other libraries that are similarly thread unsafe, it could conflict with
       # any other thread that uses these other libraries.
       #
-      # @api private
+      # @raise [ Ethon::Errors::GlobalInit ] If Curl.global_init fails.
       def init
         @@init_mutex.synchronize {
           if not @@initialized

@@ -30,8 +30,6 @@ module Ethon
       #   easy.header_list
       #
       # @return [ FFI::Pointer ] The header list.
-      #
-      # @api private
       def header_list
         @header_list ||= nil
       end
@@ -42,8 +40,6 @@ module Ethon
       #   easy.set_headers
       #
       # @return [ Symbol ] The return value from Curl.set_option.
-      #
-      # @api private
       def set_headers
         @header_list = nil
         headers.each {|k, v| @header_list = Curl.slist_append(@header_list, compose_header(k,v)) }
@@ -61,8 +57,6 @@ module Ethon
       # @param [ String ] value The header value.
       #
       # @return [ String ] The composed header.
-      #
-      # @api private
       def compose_header(key, value)
         Util.escape_zero_byte("#{key}: #{value}")
       end
