@@ -2,11 +2,14 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.4...master)
+## 0.5.0
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.4...0.5.0)
 
 Enhancements:
 
 * New libcurl option proxyuserpwd
+* Rename response_header to response_headers
 
 ## 0.4.4
 
