@@ -28,7 +28,7 @@ Making the first request is realy simple:
 
 You have access to various options like following redirects:
 
-    easy = Ethon::Easy.new(:url => "www.google.com", :follow_location => true)
+    easy = Ethon::Easy.new(:url => "www.google.com", :followlocation => true)
     easy.prepare
     easy.perform
     #=> :ok
