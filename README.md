@@ -21,43 +21,53 @@ With rubygems:
 
 Making the first request is realy simple:
 
-    easy = Ethon::Easy.new(:url => "www.google.de")
-    easy.prepare
-    easy.perform
-    #=> :ok
+```ruby
+easy = Ethon::Easy.new(:url => "www.google.de")
+easy.prepare
+easy.perform
+#=> :ok
+```
 
 You have access to various options like following redirects:
 
-    easy = Ethon::Easy.new(:url => "www.google.com", :followlocation => true)
-    easy.prepare
-    easy.perform
-    #=> :ok
+```ruby
+easy = Ethon::Easy.new(:url => "www.google.com", :followlocation => true)
+easy.prepare
+easy.perform
+#=> :ok
+```
 
 Once you're done you can look at the response code and body:
 
-    easy = Ethon::Easy.new(:url => "www.google.de")
-    easy.prepare
-    easy.perform
-    easy.response_code
-    #=> 200
-    easy.response_body
-    #=> "<!doctype html><html ..."
+```ruby
+easy = Ethon::Easy.new(:url => "www.google.de")
+easy.prepare
+easy.perform
+easy.response_code
+#=> 200
+easy.response_body
+#=> "<!doctype html><html ..."
+```
 
 ## Http
 
 In order to make life easier there are some helpers for doing http requests:
 
-    easy = Ethon::Easy.new
-    easy.http_request("www.google.de", :get, { :params => {:a => 1} })
-    easy.prepare
-    easy.perform
-    #=> :ok
+```ruby
+easy = Ethon::Easy.new
+easy.http_request("www.google.de", :get, { :params => {:a => 1} })
+easy.prepare
+easy.perform
+#=> :ok
+```
 
-    easy = Ethon::Easy.new
-    easy.http_request("www.google.de", :post, { :params => { :a => 1 }, :body => { :b => 2 } })
-    easy.prepare
-    easy.perform
-    #=> :ok
+```ruby
+easy = Ethon::Easy.new
+easy.http_request("www.google.de", :post, { :params => { :a => 1 }, :body => { :b => 2 } })
+easy.prepare
+easy.perform
+#=> :ok
+```
 
 This really handy when doing requests since you don't have to care about setting
 everything up correct.
