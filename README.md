@@ -22,7 +22,7 @@ With rubygems:
 Making the first request is realy simple:
 
 ```ruby
-easy = Ethon::Easy.new(:url => "www.google.de")
+easy = Ethon::Easy.new(:url => "www.example.com")
 easy.prepare
 easy.perform
 #=> :ok
@@ -31,7 +31,7 @@ easy.perform
 You have access to various options like following redirects:
 
 ```ruby
-easy = Ethon::Easy.new(:url => "www.google.com", :followlocation => true)
+easy = Ethon::Easy.new(:url => "www.example.com", :followlocation => true)
 easy.prepare
 easy.perform
 #=> :ok
@@ -40,7 +40,7 @@ easy.perform
 Once you're done you can look at the response code and body:
 
 ```ruby
-easy = Ethon::Easy.new(:url => "www.google.de")
+easy = Ethon::Easy.new(:url => "www.example.com", :followlocation => true)
 easy.prepare
 easy.perform
 easy.response_code
@@ -55,7 +55,7 @@ In order to make life easier there are some helpers for doing http requests:
 
 ```ruby
 easy = Ethon::Easy.new
-easy.http_request("www.google.de", :get, { :params => {:a => 1} })
+easy.http_request("www.example.com", :get, { :params => {:a => 1} })
 easy.prepare
 easy.perform
 #=> :ok
@@ -63,7 +63,7 @@ easy.perform
 
 ```ruby
 easy = Ethon::Easy.new
-easy.http_request("www.google.de", :post, { :params => { :a => 1 }, :body => { :b => 2 } })
+easy.http_request("www.example.com", :post, { :params => { :a => 1 }, :body => { :b => 2 } })
 easy.prepare
 easy.perform
 #=> :ok
