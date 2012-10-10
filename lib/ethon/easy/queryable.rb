@@ -49,7 +49,7 @@ module Ethon
       # Return query pairs build from a hash.
       #
       # @example Build query pairs.
-      #   action.build_query_pairs({:a => 1, :b => 2})
+      #   action.build_query_pairs({a: 1, b: 2})
       #   #=> [[:a, 1], [:b, 2]]
       #
       # @param [ Hash ] hash The hash to go through.

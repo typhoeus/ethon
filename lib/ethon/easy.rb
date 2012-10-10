@@ -221,7 +221,7 @@ module Ethon
     # It initializes curl, if not already done and applies the provided options.
     #
     # @example Create a new Easy.
-    #   Easy.new(:url => "www.google.de")
+    #   Easy.new(url: "www.google.de")
     #
     # @param [ Hash ] options The options to set.
     #
