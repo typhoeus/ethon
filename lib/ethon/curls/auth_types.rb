@@ -1,5 +1,5 @@
 module Ethon
-  module Curls
+  module Curls # :nodoc:
 
     # This module contain available auth types.
     module AuthTypes

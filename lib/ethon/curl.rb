@@ -11,6 +11,8 @@ require 'ethon/curls/functions'
 module Ethon
 
   # FFI Wrapper module for Curl. Holds constants and required initializers.
+  #
+  # @api private
   module Curl
     extend ::FFI::Library
     extend Ethon::Curls::Codes
