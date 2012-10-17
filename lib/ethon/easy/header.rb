@@ -2,6 +2,8 @@ module Ethon
   class Easy
 
     # This module contains the logic around adding headers to libcurl.
+    #
+    # @api private
     module Header
 
       # Return headers, return empty hash if none.

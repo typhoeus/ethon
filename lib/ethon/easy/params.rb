@@ -5,6 +5,8 @@ module Ethon
   class Easy
 
     # This class represents http request parameters.
+    #
+    # @api private
     class Params
       include Ethon::Easy::Util
       include Ethon::Easy::Queryable

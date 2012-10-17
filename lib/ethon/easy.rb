@@ -209,6 +209,8 @@ module Ethon
       # @param [ Easy ] easy The easy to free.
       #
       # @see http://curl.haxx.se/libcurl/c/curl_easy_cleanup.html
+      #
+      # @api private
       def finalizer(easy)
         proc {
           Curl.slist_free_all(easy.header_list) if easy.header_list
@@ -813,6 +815,8 @@ module Ethon
     # @raise InvalidOption
     #
     # @see initialize
+    #
+    # @api private
     def set_attributes(options)
       options.each_pair do |key, value|
         unless respond_to?("#{key}=")
@@ -827,8 +831,6 @@ module Ethon
     #
     # @example Reset.
     #   easy.reset
-    #
-    # @api public
     def reset
       (instance_variables - [:@handle, :@header_list]).each do |ivar|
         instance_variable_set(ivar, nil)
@@ -844,6 +846,8 @@ module Ethon
     # @param [ String ] value The value to escape.
     #
     # @return [ String ] The escaped value.
+    #
+    # @api private
     def escape(value)
       Curl.easy_escape(handle, value, 0)
     end
@@ -852,8 +856,6 @@ module Ethon
     # a hash.
     #
     # @return [ Hash ] The informations hash.
-    #
-    # @api public
     def to_hash
       return @hash if defined?(@hash) && @hash
       @hash = {
@@ -873,8 +875,6 @@ module Ethon
     #   easy.log_inspect
     #
     # @return [ String ] The log out.
-    #
-    # @api public
     def log_inspect
       hash = {
         :url => url,

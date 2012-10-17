@@ -18,5 +18,7 @@ require 'ethon/version'
 #
 # Ethon was extracted from Typhoeus. If you want to
 # see how others use Ethon look at the Typhoeus code.
+#
+# @see https://www.github.com/typhoeus/typhoeus Typhoeus
 module Ethon
 end

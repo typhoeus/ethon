@@ -2,6 +2,8 @@ module Ethon
   class Easy # :nodoc:
 
     # This module contains small helpers.
+    #
+    # @api private
     module Util
 
       # Escapes zero bytes in strings.

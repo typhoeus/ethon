@@ -3,6 +3,8 @@ module Ethon
 
     # This module contains all the logic around the callbacks,
     # which are needed to interact with libcurl.
+    #
+    # @api private
     module Callbacks
 
       # :nodoc:

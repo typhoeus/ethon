@@ -7,6 +7,8 @@ module Ethon
     # This class represents a form and is used to send a payload in the
     # request body via POST/PUT.
     # It handles multipart forms, too.
+    #
+    # @api private
     class Form
       include Ethon::Easy::Util
       include Ethon::Easy::Queryable
