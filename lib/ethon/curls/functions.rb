@@ -19,6 +19,7 @@ module Ethon
         base.attach_function :easy_setopt_fixnum,     :curl_easy_setopt,         [:pointer, :easy_option, :long],     :easy_code
         base.attach_function :easy_setopt_callback,   :curl_easy_setopt,         [:pointer, :easy_option, :callback], :easy_code
         base.attach_function :easy_setopt_proc,       :curl_easy_setopt,         [:pointer, :easy_option, :callback], :easy_code
+        base.instance_variable_set(:@blocking, true)
         base.attach_function :easy_perform,           :curl_easy_perform,        [:pointer],                     :easy_code
         base.attach_function :easy_strerror,          :curl_easy_strerror,       [:int],                         :string
         base.attach_function :easy_escape,            :curl_easy_escape,         [:pointer, :pointer, :int],     :string
@@ -46,6 +47,7 @@ module Ethon
         base.attach_function :version,                :curl_version,             [],                             :string
         base.attach_function :slist_append,           :curl_slist_append,        [:pointer, :string],            :pointer
         base.attach_function :slist_free_all,         :curl_slist_free_all,      [:pointer],                     :void
+        base.instance_variable_set(:@blocking, true)
         base.attach_function :select,                                            [:int, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::Timeval.ptr], :int
       end
     end
