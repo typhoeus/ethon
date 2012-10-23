@@ -2,6 +2,15 @@
 
 ## Master
 
+## 0.5.1
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.0...0.5.1)
+
+Bugfixes:
+
+* Mark Curl.select and Curl.easy_perform as blocking so that the GIL is
+  released by ffi.
+
 ## 0.5.0
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.4...0.5.0)
@@ -10,6 +19,11 @@ Enhancements:
 
 * New libcurl option proxyuserpwd
 * Rename response_header to response_headers
+
+Bugfixes:
+
+* Mark Curl.select and Curl.easy_perform as blocking so that the GIL is
+  released by ffi.
 
 ## 0.4.4
 
