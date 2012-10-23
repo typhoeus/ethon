@@ -4,7 +4,7 @@
 
 ## 0.5.1
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.0...0.5.1)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.0...v0.5.1)
 
 Bugfixes:
 
@@ -13,7 +13,7 @@ Bugfixes:
 
 ## 0.5.0
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.4...0.5.0)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.4...v0.5.0)
 
 Enhancements:
 
