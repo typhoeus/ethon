@@ -138,9 +138,9 @@ module Ethon
           next if msg[:code] != :done
           easy = easy_handles.find{ |e| e.handle == msg[:easy_handle] }
           easy.return_code = msg[:data][:code]
+          Ethon.logger.debug("ETHON:         performed #{easy.log_inspect}")
           delete(easy)
           easy.complete
-          Ethon.logger.debug("ETHON:         performed #{easy.log_inspect}")
         end
       end
 
