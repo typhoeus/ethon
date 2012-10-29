@@ -2,6 +2,12 @@
 
 ## Master
 
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.1...master)
+
+Bugfixes:
+
+* Correct request logging when using multi interface.
+
 ## 0.5.1
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.0...v0.5.1)
