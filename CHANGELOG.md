@@ -4,9 +4,14 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.1...master)
 
+Enhancements:
+
+* New libcurl option keypasswd.
+
 Bugfixes:
 
 * Correct request logging when using multi interface.
+* Remove invalid libcurl option sslcertpasswd.
 
 ## 0.5.1
 

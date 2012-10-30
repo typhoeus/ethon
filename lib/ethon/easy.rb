@@ -384,6 +384,13 @@ module Ethon
     #  to avoid allowing the code to block. If "if!" is specified but the
     #  parameter does not match an existing interface,
     #  CURLE_INTERFACE_FAILED is returned.
+    # @option options :keypasswd [String]
+    #  Pass a pointer to a zero terminated string as parameter. It will be
+    #  used as the password required to use the CURLOPT_SSLKEY or
+    #  CURLOPT_SSH_PRIVATE_KEYFILE private key. You never needed a pass
+    #  phrase to load a certificate but you need one to load your private key.
+    #  (This option was known as CURLOPT_SSLKEYPASSWD up to 7.16.4 and
+    #  CURLOPT_SSLCERTPASSWD up to 7.9.2)
     # @option options :maxredirs [Integer]
     #  Pass a long. The set number will be the redirection limit. If that
     #  many redirections have been followed, the next redirect will cause an

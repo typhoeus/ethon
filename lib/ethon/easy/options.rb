@@ -14,7 +14,7 @@ module Ethon
           :dns_cache_timeout, :httppost, :httpget, :nobody, :upload,
           :customrequest, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
           :forbid_reuse, :followlocation, :httpauth, :infilesize, :interface,
-          :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
+          :keypasswd, :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
           :proxyauth, :proxyport, :proxytype, :proxyuserpwd, :timeout, :timeout_ms,
           :readdata, :sslcert, :ssl_verifypeer, :ssl_verifyhost, :sslcerttype,
           :sslkey, :sslkeytype, :sslversion, :url, :useragent, :userpwd,

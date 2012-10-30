@@ -40,7 +40,6 @@ module Ethon
       # https://github.com/bagder/curl/blob/master/include/curl/curl.h
       def easy_options
         {
-
           :file                        =>  option_types[:object_point]    +  1,
           :writedata                   =>  option_types[:object_point]    +  1,
           :url                         =>  option_types[:object_point]    +  2,
@@ -66,8 +65,7 @@ module Ethon
           :httpheader                  =>  option_types[:object_point]    +  23,
           :httppost                    =>  option_types[:object_point]    +  24,
           :sslcert                     =>  option_types[:object_point]    +  25,
-          :sslcertpasswd               =>  option_types[:object_point]    +  26,
-          :sslkeypasswd                =>  option_types[:object_point]    +  26,
+          :keypasswd                   =>  option_types[:object_point]    +  26,
           :crlf                        =>  option_types[:long]            +  27,
           :quote                       =>  option_types[:object_point]    +  28,
           :writeheader                 =>  option_types[:object_point]    +  29,
