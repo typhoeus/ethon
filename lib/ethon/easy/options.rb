@@ -55,7 +55,7 @@ module Ethon
         #
         # @return [ Hash ] The enum options.
         def enum_options
-          { :httpauth => Curl::Auth, :sslversion => Curl::SSLVersion }
+          { :httpauth => Curl::Auth, :sslversion => Curl::SSLVersion, :proxytype => Curl::Proxy }
         end
 
         # Return the options which need to set as an integer for easy.
