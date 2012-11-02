@@ -19,7 +19,7 @@ end
 # end
 
 RSpec.configure do |config|
-  config.order = :rand
+  # config.order = :rand
 
   config.before(:suite) do
     LocalhostServer.new(TESTSERVER.new, 3001)

@@ -20,8 +20,8 @@ module Ethon
             easy.httppost = form.first.read_pointer
           else
             form.escape = true
-            easy.copypostfields = form.to_s
             easy.postfieldsize = form.to_s.bytesize
+            easy.copypostfields = form.to_s
           end
         end
       end

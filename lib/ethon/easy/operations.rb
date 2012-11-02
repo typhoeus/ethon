@@ -37,7 +37,6 @@ module Ethon
       #
       # @api public
       def prepare
-        set_options
         set_headers
         set_callbacks
       end

@@ -8,13 +8,13 @@ describe Ethon::Easy::Http::Patch do
   let(:patch) { described_class.new(url, {:params => params, :body => form}) }
 
   describe "#setup" do
-    before { patch.setup(easy) }
-
     it "sets customrequest" do
-      expect(easy.customrequest).to eq("PATCH")
+      easy.should_receive(:customrequest=).with("PATCH")
+      patch.setup(easy)
     end
 
     it "sets url" do
+      patch.setup(easy)
       expect(easy.url).to eq(url)
     end
 
@@ -22,6 +22,7 @@ describe Ethon::Easy::Http::Patch do
       let(:params) { {:a => "1&b=2"} }
 
       before do
+        patch.setup(easy)
         easy.prepare
         easy.perform
       end

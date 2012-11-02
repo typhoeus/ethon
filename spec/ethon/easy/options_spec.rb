@@ -3,95 +3,41 @@ require 'spec_helper'
 describe Ethon::Easy::Options do
   let(:easy) { Ethon::Easy.new }
 
-  describe "options" do
-    let(:options) { Ethon::Easy.available_options }
-    let(:bool_options) { Ethon::Easy.bool_options }
-    let(:enum_options) { Ethon::Easy.enum_options }
-    let(:int_options) { Ethon::Easy.int_options }
-    let(:unspecific_options) { options - bool_options - enum_options.keys - int_options }
+  [
+    :dns_cache_timeout, :httppost, :httpget, :nobody, :upload,
+    :customrequest, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
+    :forbid_reuse, :followlocation, :httpauth, :infilesize, :interface,
+    :keypasswd, :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
+    :proxyauth, :proxyport, :proxytype, :proxyuserpwd, :timeout, :timeout_ms,
+    :readdata, :sslcert, :ssl_verifypeer, :ssl_verifyhost, :sslcerttype,
+    :sslkey, :sslkeytype, :sslversion, :url, :useragent, :userpwd,
+    :verbose, :readfunction
+  ].each do |name|
+    describe "#{name}=" do
+      it "responds_to" do
+        expect(easy).to respond_to("#{name}=")
+      end
 
-    it "have read accessors" do
-      expect(options.all? { |o| easy.respond_to?(o) }).to be_true
-    end
-
-    it "have write accessors" do
-      expect(options.all? { |o| easy.respond_to?("#{o}=") }).to be_true
-    end
-
-    context "when option in bool_options" do
-      context "when value true" do
-        it "sets" do
-          bool_options.each { |o| easy.method("#{o}=").call(true); easy.prepare }
+      it "sets option" do
+        Ethon::Curl.should_receive(:set_option).with do |option, _, _|
+          expect(option).to be(name)
         end
-      end
-
-      context "when value false" do
-        it "sets" do
-          bool_options.each { |o| easy.method("#{o}=").call(false); easy.prepare }
+        value = case name
+        when :httpauth
+          :basic
+        when :sslversion
+          :default
+        when :proxytype
+          :http
+        else
+          1
         end
-      end
-    end
-
-    context "when option in enum_options" do
-      context "when invalid value" do
-        it "raises invalid value error" do
-          easy.httpauth = :invalid
-          expect{ easy.prepare }.to raise_error(Ethon::Errors::InvalidValue)
-        end
-      end
-
-      context "when valid value" do
-        it "sets" do
-          easy.httpauth = :basic
-          easy.prepare
-        end
-      end
-    end
-
-    context "when option in int_options" do
-      it "sets" do
-        int_options.each { |o| easy.method("#{o}=").call(1); easy.prepare }
-      end
-    end
-
-    context "when option unspecific" do
-      it "sets" do
-        unspecific_options.each { |o| easy.method("#{o}=").call("hello"); easy.prepare }
-      end
-    end
-  end
-
-  describe "#set_options" do
-    let(:url) { "http://localhost:3001/" }
-
-    context "when option" do
-      it "sets curl option" do
-        easy.url = url
-        Ethon::Curl.should_receive(:set_option).at_least(:once)
-        easy.set_options
-      end
-
-      context "when options contains a null byte" do
-        let(:url) { "http://localhost:3001/\0" }
-
-        it "doesn't fail" do
-          easy.url = url
-          easy.set_options
-        end
-      end
-    end
-
-    context "when no option" do
-      it "sets nothing" do
-        Ethon::Curl.should_receive(:set_option).at_least(:once)
-        easy.set_options
+        easy.method("#{name}=").call(value)
       end
     end
   end
 
   describe "#value_for" do
-    before { easy.method("#{option}=").call(value) }
-
     context "when option in bool_options" do
       let(:option) { :verbose }
 
@@ -99,7 +45,7 @@ describe Ethon::Easy::Options do
         let(:value) { true }
 
         it "returns 1" do
-          expect(easy.value_for(option)).to eq(1)
+          expect(easy.method(:value_for).call(value, :bool)).to eq(1)
         end
       end
 
@@ -107,7 +53,7 @@ describe Ethon::Easy::Options do
         let(:value) { false }
 
         it "returns 0" do
-          expect(easy.value_for(option)).to eq(0)
+          expect(easy.method(:value_for).call(value, :bool)).to eq(0)
         end
       end
     end
@@ -116,8 +62,16 @@ describe Ethon::Easy::Options do
       let(:option) { :httpauth }
       let(:value) { :ntlm }
 
-      it "returns value from struct" do
-        expect(easy.value_for(option)).to eq(8)
+      context "when valid" do
+        it "returns value from struct" do
+          expect(easy.method(:value_for).call(value, :enum, option)).to eq(8)
+        end
+      end
+
+      context "when invalid" do
+        it "raises Errors::InvalidValue" do
+          expect{ easy.method(:value_for).call(:fubar, :enum, :sslversion) }.to raise_error(Ethon::Errors::InvalidValue)
+        end
       end
     end
 
@@ -126,7 +80,7 @@ describe Ethon::Easy::Options do
       let(:value) { "2" }
 
       it "returns value casted to int" do
-        expect(easy.value_for(option)).to eq(2)
+        expect(easy.method(:value_for).call(value, :int)).to eq(2)
       end
     end
 
@@ -136,7 +90,7 @@ describe Ethon::Easy::Options do
         let(:value) { "www.example.\0com" }
 
         it "returns zero byte escaped string" do
-          expect(easy.value_for(option)).to eq("www.example.\\0com")
+          expect(easy.method(:value_for).call(value, nil)).to eq("www.example.\\0com")
         end
       end
 
@@ -144,7 +98,7 @@ describe Ethon::Easy::Options do
         let(:value) { 1 }
 
         it "returns value" do
-          expect(easy.value_for(option)).to eq(1)
+          expect(easy.method(:value_for).call(value, nil)).to eq(1)
         end
       end
     end

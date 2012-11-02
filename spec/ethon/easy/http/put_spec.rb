@@ -8,23 +8,25 @@ describe Ethon::Easy::Http::Put do
   let(:put) { described_class.new(url, {:params => params, :body => form}) }
 
   describe "#setup" do
-    before { put.setup(easy) }
-
     context "when nothing" do
       it "sets url" do
+        put.setup(easy)
         expect(easy.url).to eq(url)
       end
 
       it "sets upload" do
-        expect(easy.upload).to be_true
+        easy.should_receive(:upload=).with(true)
+        put.setup(easy)
       end
 
       it "sets infilesize" do
-        expect(easy.infilesize).to be_zero
+        easy.should_receive(:infilesize=).with(0)
+        put.setup(easy)
       end
 
       context "when requesting" do
         it "makes a put request" do
+          put.setup(easy)
           easy.prepare
           easy.perform
           expect(easy.response_body).to include('"REQUEST_METHOD":"PUT"')
@@ -36,19 +38,23 @@ describe Ethon::Easy::Http::Put do
       let(:params) { {:a => "1&"} }
 
       it "attaches escaped to url" do
+        put.setup(easy)
         expect(easy.url).to eq("#{url}?a=1%26")
       end
 
       it "sets upload" do
-        expect(easy.upload).to be_true
+        easy.should_receive(:upload=).with(true)
+        put.setup(easy)
       end
 
       it "sets infilesize" do
-        expect(easy.infilesize).to be_zero
+        easy.should_receive(:infilesize=).with(0)
+        put.setup(easy)
       end
 
       context "when requesting" do
         before do
+          put.setup(easy)
           easy.prepare
           easy.perform
         end
@@ -63,19 +69,24 @@ describe Ethon::Easy::Http::Put do
       let(:form) { {:a => "1&b=2"} }
 
       it "sets infilesize" do
-        expect(easy.infilesize).to_not be_zero
+        easy.should_receive(:infilesize=).with(11)
+        put.setup(easy)
       end
 
       it "sets readfunction" do
-        expect(easy.readfunction).to_not be_nil
+        easy.should_receive(:readfunction=)
+        put.setup(easy)
       end
 
       it "sets upload" do
-        expect(easy.upload).to be_true
+        easy.should_receive(:upload=).with(true)
+        put.setup(easy)
       end
 
       context "when requesting" do
         before do
+          easy.headers = { 'Expect' => '' }
+          put.setup(easy)
           easy.prepare
           easy.perform
         end

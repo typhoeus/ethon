@@ -8,9 +8,8 @@ describe Ethon::Easy::Http::Get do
   let(:get) { described_class.new(url, {:params => params, :body => form}) }
 
   describe "#setup" do
-    before { get.setup(easy) }
-
     it "sets url" do
+      get.setup(easy)
       expect(easy.url).to eq(url)
     end
 
@@ -18,18 +17,21 @@ describe Ethon::Easy::Http::Get do
       let(:form) { { :a => 1 } }
 
       it "sets customrequest" do
-        expect(easy.customrequest).to eq("GET")
+        easy.should_receive(:customrequest=).with("GET")
+        get.setup(easy)
       end
     end
 
     context "when no body" do
       it "doesn't set customrequest" do
-        expect(easy.customrequest).to be_nil
+        easy.should_receive(:customrequest=).never
+        get.setup(easy)
       end
     end
 
     context "when requesting" do
       before do
+        get.setup(easy)
         easy.prepare
         easy.perform
       end
@@ -53,6 +55,7 @@ describe Ethon::Easy::Http::Get do
       context "when params and body" do
         let(:params) { {:a => "1&b=2"} }
         let(:form) { {:b => "2"} }
+
         it "returns ok" do
           expect(easy.return_code).to eq(:ok)
         end

@@ -26,7 +26,11 @@ describe Ethon::Easy do
         let(:easy) { Ethon::Easy.new(options) }
 
         it "sets verbose" do
-          expect(easy.verbose).to be_true
+          Ethon::Curl.should_receive(:set_option).with do |option, value, _|
+            expect(option).to be(:verbose)
+            expect(value).to be(1)
+          end
+          easy
         end
       end
     end
@@ -35,15 +39,16 @@ describe Ethon::Easy do
   describe "#set_attributes" do
     context "when options are empty" do
       it "sets nothing" do
-        expect(easy.instance_variables.all? { |ivar| ivar == nil }).to be_true
+        Ethon::Curl.should_receive(:set_option).never
+        easy
       end
     end
 
     context "when options aren't empty" do
       context "when valid key" do
         it "sets" do
+          easy.should_receive(:verbose=).with(true)
           easy.set_attributes({:verbose => true})
-          expect(easy.verbose).to be_true
         end
       end
 
@@ -56,17 +61,11 @@ describe Ethon::Easy do
   end
 
   describe "#reset" do
-    let(:resettables) { easy.instance_variables - [:@handle, :@header_list, '@handle', '@header_list'] }
-
-    before do
-      easy.class.available_options.each do |option|
-        easy.method("#{option}=").call(1)
-      end
-    end
+    before { easy.url = "www.example.com" }
 
     it "sets instance variables to nil" do
       easy.reset
-      expect(resettables.map{|ivar| easy.instance_variable_get(ivar) }.any?).to be_false
+      expect(easy.url).to be_nil
     end
 
     it "resets easy handle" do

@@ -8,13 +8,13 @@ describe Ethon::Easy::Http::Options do
   let(:options) { described_class.new(url, {:params => params, :body => form}) }
 
   describe "#setup" do
-    before { options.setup(easy) }
-
     it "sets customrequest" do
-      expect(easy.customrequest).to eq("OPTIONS")
+      easy.should_receive(:customrequest=).with("OPTIONS")
+      options.setup(easy)
     end
 
     it "sets url" do
+      options.setup(easy)
       expect(easy.url).to eq(url)
     end
 
@@ -22,6 +22,7 @@ describe Ethon::Easy::Http::Options do
       let(:params) { {:a => "1&b=2"} }
 
       before do
+        options.setup(easy)
         easy.prepare
         easy.perform
       end

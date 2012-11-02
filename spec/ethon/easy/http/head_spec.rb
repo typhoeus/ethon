@@ -8,14 +8,14 @@ describe Ethon::Easy::Http::Head do
   let(:head) { described_class.new(url, {:params => params, :body => form}) }
 
   describe "#setup" do
-    before { head.setup(easy) }
-
     context "when nothing" do
       it "sets nobody" do
-        expect(easy.nobody).to be
+        easy.should_receive(:nobody=).with(true)
+        head.setup(easy)
       end
 
       it "sets url" do
+        head.setup(easy)
         expect(easy.url).to eq(url)
       end
     end
@@ -24,15 +24,18 @@ describe Ethon::Easy::Http::Head do
       let(:params) { {:a => "1&b=2"} }
 
       it "sets nobody" do
-        expect(easy.nobody).to be
+        easy.should_receive(:nobody=).with(true)
+        head.setup(easy)
       end
 
       it "attaches escaped to url" do
+        head.setup(easy)
         expect(easy.url).to eq("#{url}?a=1%26b%3D2")
       end
 
       context "when requesting" do
         before do
+          head.setup(easy)
           easy.prepare
           easy.perform
         end
@@ -56,6 +59,7 @@ describe Ethon::Easy::Http::Head do
 
       context "when requesting" do
         before do
+          head.setup(easy)
           easy.prepare
           easy.perform
         end

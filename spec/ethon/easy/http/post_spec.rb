@@ -8,22 +8,24 @@ describe Ethon::Easy::Http::Post do
   let(:post) { described_class.new(url, {:params => params, :body => form}) }
 
   describe "#setup" do
-    before { post.setup(easy) }
-
     context "when nothing" do
       it "sets url" do
+        post.setup(easy)
         expect(easy.url).to eq(url)
       end
 
       it "sets postfield_size" do
-        expect(easy.postfieldsize).to eq(0)
+        easy.should_receive(:postfieldsize=).with(0)
+        post.setup(easy)
       end
 
       it "sets copy_postfields" do
-        expect(easy.copypostfields).to eq("")
+        easy.should_receive(:copypostfields=).with("")
+        post.setup(easy)
       end
 
       it "makes a post request" do
+        post.setup(easy)
         easy.prepare
         easy.perform
         expect(easy.response_body).to include('"REQUEST_METHOD":"POST"')
@@ -34,19 +36,24 @@ describe Ethon::Easy::Http::Post do
       let(:params) { {:a => "1&"} }
 
       it "attaches escaped to url" do
+        post.setup(easy)
         expect(easy.url).to eq("#{url}?a=1%26")
       end
 
-      it "sets postfield_size" do
-        expect(easy.postfieldsize).to eq(0)
+      it "sets postfieldsize" do
+        easy.should_receive(:postfieldsize=).with(0)
+        post.setup(easy)
       end
 
-      it "sets copy_postfields" do
-        expect(easy.copypostfields).to eq("")
+      it "sets copypostfields" do
+        easy.should_receive(:copypostfields=).with("")
+        post.setup(easy)
       end
 
       context "when requesting" do
         before do
+          easy.headers = { 'Expect' => '' }
+          post.setup(easy)
           easy.prepare
           easy.perform
         end
@@ -70,11 +77,14 @@ describe Ethon::Easy::Http::Post do
         let(:form) { {:a => File.open(__FILE__, 'r')} }
 
         it "sets httppost" do
-          expect(easy.httppost).to be
+          easy.should_receive(:httppost=)
+          post.setup(easy)
         end
 
         context "when requesting" do
           before do
+            easy.headers = { 'Expect' => '' }
+            post.setup(easy)
             easy.prepare
             easy.perform
           end
@@ -103,17 +113,22 @@ describe Ethon::Easy::Http::Post do
 
       context "when not multipart" do
         let(:form) { {:a => "1&b=2"} }
+        let(:encoded) { "a=1%26b%3D2" }
 
         it "sets escaped copypostfields" do
-          expect(easy.copypostfields).to eq("a=1%26b%3D2")
+          easy.should_receive(:copypostfields=).with(encoded)
+          post.setup(easy)
         end
 
         it "sets postfieldsize" do
-          expect(easy.postfieldsize).to_not be_zero
+          easy.should_receive(:postfieldsize=).with{ |value| expect(value).to be(encoded.bytesize) }
+          post.setup(easy)
         end
 
         context "when requesting" do
           before do
+            easy.headers = { 'Expect' => '' }
+            post.setup(easy)
             easy.prepare
             easy.perform
           end
@@ -145,6 +160,8 @@ describe Ethon::Easy::Http::Post do
 
         context "when requesting" do
           before do
+            easy.headers = { 'Expect' => '' }
+            post.setup(easy)
             easy.prepare
             easy.perform
           end
@@ -166,6 +183,8 @@ describe Ethon::Easy::Http::Post do
 
       context "when requesting" do
         before do
+          easy.headers = { 'Expect' => '' }
+          post.setup(easy)
           easy.prepare
           easy.perform
         end
