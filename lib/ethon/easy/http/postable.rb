@@ -4,6 +4,7 @@ module Ethon
 
       # This module contains logic for setting up a [multipart] POST body.
       module Postable
+
         # Set things up when form is provided.
         # Deals with multipart forms.
         #
@@ -20,7 +21,7 @@ module Ethon
           else
             form.escape = true
             easy.copypostfields = form.to_s
-            easy.postfieldsize = easy.copypostfields.bytesize
+            easy.postfieldsize = form.to_s.bytesize
           end
         end
       end
