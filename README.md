@@ -3,7 +3,7 @@
 In the greek mythology Ethon is a gigantic eagle the son of Typhoeus and Echidna. So much for the history.
 In the modern world Ethon is a very basic libcurl wrapper using ffi.
 
-* [Documentation](http://rubydoc.info/github/typhoeus/ethon)
+* [Documentation](http://rubydoc.info/github/typhoeus/ethon/frames/Ethon)
 * [Website](http://typhoeus.github.com/)
 * [Mailinglist](http://groups.google.com/group/typhoeus)
 
