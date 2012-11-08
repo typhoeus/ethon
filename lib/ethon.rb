@@ -20,5 +20,9 @@ require 'ethon/version'
 # see how others use Ethon look at the Typhoeus code.
 #
 # @see https://www.github.com/typhoeus/typhoeus Typhoeus
+#
+# @note Please update to the latest libcurl version in order
+#   to benefit from all features and bugfixes.
+#   http://curl.haxx.se/download.html
 module Ethon
 end
