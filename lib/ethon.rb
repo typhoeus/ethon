@@ -6,10 +6,11 @@ require 'mime/types'
 require 'tempfile'
 
 require 'ethon/curl'
-require 'ethon/errors'
 require 'ethon/easy'
-require 'ethon/multi'
+require 'ethon/errors'
+require 'ethon/libc'
 require 'ethon/loggable'
+require 'ethon/multi'
 require 'ethon/version'
 
 # Ethon is a very simple libcurl.
