@@ -8,6 +8,7 @@ module Ethon
       # :nodoc:
       def self.extended(base)
         base.attach_function :global_init,            :curl_global_init,         [:long],                        :int
+        base.attach_function :free,                   :curl_free,                [:pointer],                      :void
 
         base.attach_function :easy_init,              :curl_easy_init,           [],                             :pointer
         base.attach_function :easy_cleanup,           :curl_easy_cleanup,        [:pointer],                     :void
