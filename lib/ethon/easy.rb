@@ -193,7 +193,6 @@ module Ethon
     #   * :obsolete: These error codes will never be returned. They were used in an old
     #     libcurl version and are currently unused.
     #
-    #
     # @see http://curl.haxx.se/libcurl/c/libcurl-errors.html
     attr_accessor :return_code
 
