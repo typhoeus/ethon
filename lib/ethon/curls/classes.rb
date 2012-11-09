@@ -18,7 +18,7 @@ module Ethon
     # :nodoc:
     class FDSet < ::FFI::Struct
       # XXX how does this work on non-windows? how can curl know the new size...
-      FD_SETSIZE = 524288 # set a higher maximum number of fds. this has never applied to windows, so just use the default there
+      FD_SETSIZE = ::Ethon::Libc.getdtablesize
 
       if Curl.windows?
         layout :fd_count, :u_int,
