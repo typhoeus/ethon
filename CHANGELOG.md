@@ -2,7 +2,26 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.1...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.3...master)
+
+## 0.5.3
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.2...v0.5.3)
+
+Enhancements:
+
+* Deprecate Easy#prepare. It is no longer necessary.
+* Unroll metaprogramming for easy and multi options.
+* More specs.
+
+Bugfixes:
+
+* Correct size for FDSets
+* Add proxytypes to enums.
+
+## 0.5.2
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.1...v0.5.2)
 
 Enhancements:
 
