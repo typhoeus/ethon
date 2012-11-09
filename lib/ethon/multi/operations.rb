@@ -179,6 +179,10 @@ module Ethon
       def running_count
         @running_count ||= nil
       end
+
+      def ffi_vars
+        [ @timeout, @timeval, @fd_read, @fd_write, @fd_excep, @max_fd ]
+      end
     end
   end
 end

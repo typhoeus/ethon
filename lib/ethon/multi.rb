@@ -23,6 +23,9 @@ module Ethon
       def finalizer(multi)
         proc {
           Curl.multi_cleanup(multi.handle)
+          multi.method(:ffi_vars).call.map do |var|
+            Curl.free(var.respond_to?(:pointer) ? var.pointer : var)
+          end
         }
       end
     end
