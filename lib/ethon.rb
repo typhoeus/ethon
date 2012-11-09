@@ -1,5 +1,6 @@
 require 'logger'
 require 'ffi'
+require 'thread'
 require 'mime/types'
 require 'tempfile'
 
