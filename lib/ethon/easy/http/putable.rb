@@ -12,7 +12,6 @@ module Ethon
         #
         # @param [ Easy ] easy The easy to setup.
         def set_form(easy)
-          easy.url ||= url
           easy.upload = true
           form.escape = true
           easy.infilesize = form.to_s.bytesize

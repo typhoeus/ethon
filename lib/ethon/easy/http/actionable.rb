@@ -70,21 +70,13 @@ module Ethon
         # @param [ easy ] easy the easy to setup.
         def setup(easy)
           @easy = easy
-          easy.url = url
-          set_nothing(easy) if params.empty? && form.empty?
-          set_params(easy) unless params.empty?
+          if params.empty?
+            easy.url = url
+          else
+            set_params(easy)
+          end
           set_form(easy) unless form.empty?
           easy.set_attributes(options)
-        end
-
-        # Setup request as if there were no params and form.
-        #
-        # @example Setup nothing.
-        #   action.set_nothing(easy)
-        #
-        # @param [ Easy ] easy The easy to setup.
-        def set_nothing(easy)
-          easy.url = url
         end
 
         # Setup request with params.

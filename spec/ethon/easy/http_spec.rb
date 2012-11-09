@@ -16,5 +16,23 @@ describe Ethon::Easy::Http do
       get_class.should_receive(:new).and_return(get)
       easy.http_request(url, action_name, options)
     end
+
+    context "when requesting" do
+      [ :get, :post, :put, :delete, :head, :patch, :options ].map do |action|
+        it "returns ok" do
+          easy.http_request(url, action, options)
+          easy.perform
+          expect(easy.return_code).to be(:ok)
+        end
+
+        unless action == :head
+          it "makes a #{action.to_s.upcase} request" do
+            easy.http_request(url, action, options)
+            easy.perform
+            expect(easy.response_body).to include("\"REQUEST_METHOD\":\"#{action.to_s.upcase}\"")
+          end
+        end
+      end
+    end
   end
 end
