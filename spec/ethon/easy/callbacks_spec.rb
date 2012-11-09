@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Ethon::Easy::Callbacks do
-  let(:easy) { Ethon::Easy.new }
+  let!(:easy) { Ethon::Easy.new }
 
   describe "#set_callbacks" do
     before do

@@ -26,7 +26,6 @@ describe Ethon::Easy::Http::Post do
 
       it "makes a post request" do
         post.setup(easy)
-        easy.prepare
         easy.perform
         expect(easy.response_body).to include('"REQUEST_METHOD":"POST"')
       end
@@ -54,7 +53,6 @@ describe Ethon::Easy::Http::Post do
         before do
           easy.headers = { 'Expect' => '' }
           post.setup(easy)
-          easy.prepare
           easy.perform
         end
 
@@ -85,7 +83,6 @@ describe Ethon::Easy::Http::Post do
           before do
             easy.headers = { 'Expect' => '' }
             post.setup(easy)
-            easy.prepare
             easy.perform
           end
 
@@ -129,7 +126,6 @@ describe Ethon::Easy::Http::Post do
           before do
             easy.headers = { 'Expect' => '' }
             post.setup(easy)
-            easy.prepare
             easy.perform
           end
 
@@ -162,7 +158,6 @@ describe Ethon::Easy::Http::Post do
           before do
             easy.headers = { 'Expect' => '' }
             post.setup(easy)
-            easy.prepare
             easy.perform
           end
 
@@ -185,7 +180,6 @@ describe Ethon::Easy::Http::Post do
         before do
           easy.headers = { 'Expect' => '' }
           post.setup(easy)
-          easy.prepare
           easy.perform
         end
 

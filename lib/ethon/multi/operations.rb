@@ -59,8 +59,14 @@ module Ethon
       #   multi.prepare
       #
       # @api public
+      #
+      # @deprecated It is no longer necessary to call prepare.
       def prepare
-        set_options
+        Ethon.logger.warn(
+          "ETHON: It is no longer necessay to call "+
+          "Multi#prepare. Its going to be removed "+
+          "in future versions."
+        )
       end
 
       private
@@ -178,10 +184,6 @@ module Ethon
       # @return [ Integer ] Number running requests.
       def running_count
         @running_count ||= nil
-      end
-
-      def ffi_vars
-        [ @timeout, @timeval, @fd_read, @fd_write, @fd_excep, @max_fd ]
       end
     end
   end

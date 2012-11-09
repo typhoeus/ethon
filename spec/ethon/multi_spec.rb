@@ -17,23 +17,21 @@ describe Ethon::Multi do
     context "when options not empty" do
       context "when pipelining is set" do
         let(:options) { { :pipelining => true } }
-        let(:multi) { Ethon::Multi.new(options) }
 
         it "sets pipelining" do
-          expect(multi.pipelining).to be_true
+          Ethon::Multi.any_instance.should_receive(:pipelining=).with(true)
+          Ethon::Multi.new(options)
         end
       end
     end
   end
 
   describe ".finalizer" do
-    it "calls multi_cleanup" do
-      Ethon::Curl.should_receive(:multi_cleanup).with(multi.handle)
-      Ethon::Multi.finalizer(multi).call
-    end
+    let(:multi) { stub(handle: 1) }
 
-    it "works" do
-      expect{ Ethon::Multi.finalizer(multi).call }.to_not raise_error
+    it "calls multi_cleanup" do
+      Ethon::Curl.should_receive(:multi_cleanup).with(1)
+      Ethon::Multi.finalizer(multi).call
     end
   end
 end

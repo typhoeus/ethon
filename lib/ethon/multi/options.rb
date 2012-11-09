@@ -5,62 +5,79 @@ module Ethon
     # available options on multi.
     module Options
 
-      # :nodoc:
-      def self.included(base)
-        base.extend ClassMethods
-        base.const_set(:AVAILABLE_OPTIONS, [
-          :socketfunction, :socketdata, :pipelining,
-          :timerfunction, :timerdata, :maxconnects
-        ])
-        base.send(:attr_accessor, *Ethon::Multi::AVAILABLE_OPTIONS)
-      end
-
-      module ClassMethods # :nodoc:
-
-        # Return the available options.
-        #
-        # @example Return the available options.
-        #   multi.available_options
-        #
-        # @return [ Array ]  The available options.
-        def available_options
-          Ethon::Multi::AVAILABLE_OPTIONS
-        end
-
-        # Return the options which need to set as 0 or 1 for multi.
-        #
-        # @example Return the bool options.
-        #   multi.bool_options
-        #
-        # @return [ Array ] The bool options.
-        def bool_options
-          [
-            :pipelining
-          ]
-        end
-
-        # Return the options which need to set as an integer for multi.
-        #
-        # @example Return the int options.
-        #   multi.int_options
-        #
-        # @return [ Array ] The int options.
-        def int_options
-          [
-            :maxconnects
-          ]
-        end
-      end
-
-      # Set specified options on multi handle.
+      # Sets maxconnects option.
       #
-      # @example Set options.
-      #   multi.set_options
-      def set_options
-        self.class.available_options.each do |option|
-          Curl.set_option(option, value_for(option), handle, :multi)
-        end
+      # @example Set maxconnects option.
+      #   easy.maxconnects = $value
+      #
+      # @param [ String ] value The value to set.
+      #
+      # @return [ void ]
+      def maxconnects=(value)
+        Curl.set_option(:maxconnects, value_for(value, :int), handle)
       end
+
+      # Sets pipelining option.
+      #
+      # @example Set pipelining option.
+      #   easy.pipelining = $value
+      #
+      # @param [ String ] value The value to set.
+      #
+      # @return [ void ]
+      def pipelining=(value)
+        Curl.set_option(:pipelining, value_for(value, :bool), handle)
+      end
+
+      # Sets socketdata option.
+      #
+      # @example Set socketdata option.
+      #   easy.socketdata = $value
+      #
+      # @param [ String ] value The value to set.
+      #
+      # @return [ void ]
+      def socketdata=(value)
+        Curl.set_option(:socketdata, value_for(value, :string), handle)
+      end
+
+      # Sets socketfunction option.
+      #
+      # @example Set socketfunction option.
+      #   easy.socketfunction = $value
+      #
+      # @param [ String ] value The value to set.
+      #
+      # @return [ void ]
+      def socketfunction=(value)
+        Curl.set_option(:socketfunction, value_for(value, :string), handle)
+      end
+
+      # Sets timerdata option.
+      #
+      # @example Set timerdata option.
+      #   easy.timerdata = $value
+      #
+      # @param [ String ] value The value to set.
+      #
+      # @return [ void ]
+      def timerdata=(value)
+        Curl.set_option(:timerdata, value_for(value, :string), handle)
+      end
+
+      # Sets timerfunction option.
+      #
+      # @example Set timerfunction option.
+      #   easy.timerfunction = $value
+      #
+      # @param [ String ] value The value to set.
+      #
+      # @return [ void ]
+      def timerfunction=(value)
+        Curl.set_option(:timerfunction, value_for(value, :string), handle)
+      end
+
+      private
 
       # Return the value to set to multi handle. It is converted with the help
       # of bool_options, enum_options and int_options.
@@ -69,14 +86,15 @@ module Ethon
       #   multi.value_for(:verbose)
       #
       # @return [ Object ] The casted value.
-      def value_for(option)
-        value = method(option).call
+      def value_for(value, type, option = nil)
         return nil if value.nil?
 
-        if self.class.bool_options.include?(option)
+        if type == :bool
           value ? 1 : 0
-        elsif self.class.int_options.include?(option)
+        elsif type == :int
           value.to_i
+        elsif value.is_a?(String)
+          Ethon::Easy::Util.escape_zero_byte(value)
         else
           value
         end

@@ -19,6 +19,7 @@ describe Ethon::Easy::Options do
       end
 
       it "sets option" do
+        Ethon::Easy.any_instance.should_receive(:set_callbacks)
         Ethon::Curl.should_receive(:set_option).with do |option, _, _|
           expect(option).to be(name)
         end
@@ -117,7 +118,6 @@ describe Ethon::Easy::Options do
       easy.timeout_ms = timeout_ms
       easy.connecttimeout = connecttimeout
       easy.connecttimeout_ms = connecttimeout_ms
-      easy.prepare
       easy.perform
     end
 

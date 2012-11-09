@@ -3,20 +3,19 @@ require 'spec_helper'
 describe Ethon::Easy::Header do
   let(:easy) { Ethon::Easy.new }
 
-  describe "#set_headers" do
+  describe "#headers=" do
     let(:headers) { { 'User-Agent' => 'Ethon' } }
-    before { easy.headers = headers }
 
     it "sets header" do
+      Ethon::Easy.any_instance.should_receive(:set_callbacks)
       Ethon::Curl.should_receive(:set_option)
-      easy.set_headers
+      easy.headers = headers
     end
 
     context "when requesting" do
       before do
-        easy.set_headers
+        easy.headers = headers
         easy.url = "http://localhost:3001"
-        easy.prepare
         easy.perform
       end
 
@@ -72,7 +71,6 @@ describe Ethon::Easy::Header do
     context "when set_headers" do
       it "returns pointer to header list" do
         easy.headers = {'User-Agent' => 'Custom'}
-        easy.set_headers
         expect(easy.header_list).to be_a(FFI::Pointer)
       end
     end

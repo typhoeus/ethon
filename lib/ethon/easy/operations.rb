@@ -36,9 +36,14 @@ module Ethon
       #   easy.prepare
       #
       # @api public
+      #
+      # @deprecated It is no longer necessary to call prepare.
       def prepare
-        set_headers
-        set_callbacks
+        Ethon.logger.warn(
+          "ETHON: It is no longer necessay to call "+
+          "Easy#prepare. Its going to be removed "+
+          "in future versions."
+        )
       end
     end
   end

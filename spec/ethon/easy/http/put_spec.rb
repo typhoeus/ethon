@@ -27,7 +27,6 @@ describe Ethon::Easy::Http::Put do
       context "when requesting" do
         it "makes a put request" do
           put.setup(easy)
-          easy.prepare
           easy.perform
           expect(easy.response_body).to include('"REQUEST_METHOD":"PUT"')
         end
@@ -55,7 +54,6 @@ describe Ethon::Easy::Http::Put do
       context "when requesting" do
         before do
           put.setup(easy)
-          easy.prepare
           easy.perform
         end
 
@@ -87,7 +85,6 @@ describe Ethon::Easy::Http::Put do
         before do
           easy.headers = { 'Expect' => '' }
           put.setup(easy)
-          easy.prepare
           easy.perform
         end
 

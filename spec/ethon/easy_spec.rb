@@ -15,8 +15,10 @@ describe Ethon::Easy do
     end
 
     context "when options are empty" do
-      it "sets nothing" do
-        expect(easy.instance_variables.all? { |ivar| ivar == nil }).to be_true
+      it "sets only callbacks" do
+        Ethon::Easy.any_instance.should_receive(:set_callbacks)
+        Ethon::Curl.should_receive(:set_option).never
+        easy
       end
     end
 
@@ -26,6 +28,7 @@ describe Ethon::Easy do
         let(:easy) { Ethon::Easy.new(options) }
 
         it "sets verbose" do
+          Ethon::Easy.any_instance.should_receive(:set_callbacks)
           Ethon::Curl.should_receive(:set_option).with do |option, value, _|
             expect(option).to be(:verbose)
             expect(value).to be(1)
@@ -39,6 +42,7 @@ describe Ethon::Easy do
   describe "#set_attributes" do
     context "when options are empty" do
       it "sets nothing" do
+        Ethon::Easy.any_instance.should_receive(:set_callbacks)
         Ethon::Curl.should_receive(:set_option).never
         easy
       end
@@ -63,9 +67,14 @@ describe Ethon::Easy do
   describe "#reset" do
     before { easy.url = "www.example.com" }
 
-    it "sets instance variables to nil" do
+    it "resets url" do
       easy.reset
       expect(easy.url).to be_nil
+    end
+
+    it "resets hash" do
+      easy.reset
+      expect(easy.instance_variable_get(:@hash)).to be_nil
     end
 
     it "resets easy handle" do

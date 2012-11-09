@@ -23,7 +23,6 @@ describe Ethon::Easy::Http::Patch do
 
       before do
         patch.setup(easy)
-        easy.prepare
         easy.perform
       end
 

@@ -5,7 +5,6 @@ describe Ethon::Easy::Informations do
 
   before do
     easy.url = "http://localhost:3001"
-    easy.prepare
     easy.perform
   end
 

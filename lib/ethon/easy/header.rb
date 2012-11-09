@@ -23,7 +23,10 @@ module Ethon
       #
       # @param [ Hash ] headers The headers.
       def headers=(headers)
-        @headers = headers
+        headers ||= {}
+        @header_list = nil
+        headers.each {|k, v| @header_list = Curl.slist_append(@header_list, compose_header(k,v)) }
+        Curl.set_option(:httpheader, @header_list, handle)
       end
 
       # Return header_list.
@@ -34,18 +37,6 @@ module Ethon
       # @return [ FFI::Pointer ] The header list.
       def header_list
         @header_list ||= nil
-      end
-
-      # Set previously defined headers in libcurl.
-      #
-      # @example Set headers in libcurl.
-      #   easy.set_headers
-      #
-      # @return [ Symbol ] The return value from Curl.set_option.
-      def set_headers
-        @header_list = nil
-        headers.each {|k, v| @header_list = Curl.slist_append(@header_list, compose_header(k,v)) }
-        Curl.set_option(:httpheader, @header_list, handle)
       end
 
       # Compose libcurl header string from key and value.

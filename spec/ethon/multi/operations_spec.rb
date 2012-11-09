@@ -20,7 +20,6 @@ describe Ethon::Multi::Operations do
     context "when hydra has easy" do
       before do
         easy.url = "http://localhost:3001/"
-        easy.prepare
         multi.add(easy)
         multi.method(:trigger).call
       end
@@ -35,9 +34,7 @@ describe Ethon::Multi::Operations do
 
       before do
         easy.url = "http://localhost:3001/"
-        easy.prepare
         another_easy.url = "http://localhost:3001/"
-        another_easy.prepare
         multi.add(easy)
         multi.add(another_easy)
         multi.method(:trigger).call
@@ -155,7 +152,6 @@ describe Ethon::Multi::Operations do
     context "when easy handle" do
       before do
         easy.url = "http://localhost:3001/"
-        easy.prepare
         multi.add(easy)
       end
 
@@ -175,7 +171,6 @@ describe Ethon::Multi::Operations do
         4.times do
           ary << another_easy = Ethon::Easy.new
           another_easy.url = "http://localhost:3001/"
-          another_easy.prepare
         end
         ary
       end

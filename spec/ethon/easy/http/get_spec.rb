@@ -32,7 +32,6 @@ describe Ethon::Easy::Http::Get do
     context "when requesting" do
       before do
         get.setup(easy)
-        easy.prepare
         easy.perform
       end
 

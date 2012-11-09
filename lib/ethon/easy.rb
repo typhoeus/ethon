@@ -17,7 +17,6 @@ module Ethon
   # @example You can access the libcurl easy interface through this class, every request is based on it. The simplest setup looks like that:
   #
   #   e = Ethon::Easy.new(url: "www.example.com")
-  #   e.prepare
   #   e.perform
   #   #=> :ok
   #
@@ -26,7 +25,6 @@ module Ethon
   #   e.reset # reset easy handle
   #   e.url = "www.google.com"
   #   e.followlocation = true
-  #   e.prepare
   #   e.perform
   #   #=> :ok
   #
@@ -810,6 +808,7 @@ module Ethon
       Curl.init
       ObjectSpace.define_finalizer(self, self.class.finalizer(self))
       set_attributes(options)
+      set_callbacks
     end
 
     # Set given options.
@@ -839,10 +838,10 @@ module Ethon
     # @example Reset.
     #   easy.reset
     def reset
-      (instance_variables - [:@handle, :@header_list]).each do |ivar|
-        instance_variable_set(ivar, nil)
-      end
+      @url = nil
+      @hash = nil
       Curl.easy_reset(handle)
+      set_callbacks
     end
 
     # Url escapes the value.

@@ -30,7 +30,6 @@ describe Ethon::Easy::Operations do
       easy.httpauth = http_auth
       easy.headers = headers
 
-      easy.prepare
       easy.perform
     end
 

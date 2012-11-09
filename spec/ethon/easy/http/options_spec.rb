@@ -23,7 +23,6 @@ describe Ethon::Easy::Http::Options do
 
       before do
         options.setup(easy)
-        easy.prepare
         easy.perform
       end
 

@@ -10,7 +10,6 @@ describe Ethon::Easy::Http::Delete do
   context "when requesting" do
     before do
       delete.setup(easy)
-      easy.prepare
       easy.perform
     end
 

@@ -36,7 +36,6 @@ describe Ethon::Easy::Http::Head do
       context "when requesting" do
         before do
           head.setup(easy)
-          easy.prepare
           easy.perform
         end
 
@@ -60,7 +59,6 @@ describe Ethon::Easy::Http::Head do
       context "when requesting" do
         before do
           head.setup(easy)
-          easy.prepare
           easy.perform
         end
 
