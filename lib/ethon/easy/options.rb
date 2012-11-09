@@ -3,8 +3,6 @@ module Ethon
 
     # This module contains the logic and knowledge about the
     # available options on easy.
-    #
-    # @api private
     module Options
 
       attr_reader :url
