@@ -30,16 +30,6 @@ module Ethon
         @max_fd = ::FFI::MemoryPointer.new(:int)
       end
 
-      # Return wether the multi still requests or not.
-      #
-      # @example Return if ongoing.
-      #   multi.ongoing?
-      #
-      # @return [ Boolean ] True if ongoing, else false.
-      def ongoing?
-        easy_handles.size > 0 || (!defined?(@running_count) || running_count > 0)
-      end
-
       # Perform multi.
       #
       # @return [ nil ]
@@ -71,6 +61,18 @@ module Ethon
       # @api public
       def prepare
         set_options
+      end
+
+      private
+
+      # Return wether the multi still requests or not.
+      #
+      # @example Return if ongoing.
+      #   multi.ongoing?
+      #
+      # @return [ Boolean ] True if ongoing, else false.
+      def ongoing?
+        easy_handles.size > 0 || (!defined?(@running_count) || running_count > 0)
       end
 
       # Get timeout.
