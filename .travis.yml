@@ -1,5 +1,5 @@
 env:
-  - JRUBY_OPTS="-Xcext.enabled=false"
+  - JRUBY_OPTS="-Xcext.enabled=true"
 script: "bundle exec rake"
 rvm:
   - 1.8.7
