@@ -20,8 +20,6 @@ module Ethon
       #   easy.perform
       #
       # @return [ Integer ] The return code.
-      #
-      # @api public
       def perform
         @return_code = Curl.easy_perform(handle)
         complete
@@ -34,8 +32,6 @@ module Ethon
       #
       # @example Prepare easy.
       #   easy.prepare
-      #
-      # @api public
       #
       # @deprecated It is no longer necessary to call prepare.
       def prepare

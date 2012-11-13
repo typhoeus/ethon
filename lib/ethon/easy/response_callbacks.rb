@@ -28,8 +28,6 @@ module Ethon
       #   request.on_complete { p "yay" }
       #
       # @param [ Block ] block The block to execute.
-      #
-      # @api public
       def on_complete(&block)
         @on_complete ||= []
         @on_complete << block if block_given?

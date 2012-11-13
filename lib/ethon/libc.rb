@@ -1,4 +1,8 @@
 module Ethon
+
+  # FFI Wrapper module for Libc.
+  #
+  # @api private
   module Libc
     extend FFI::Library
     ffi_lib 'c'

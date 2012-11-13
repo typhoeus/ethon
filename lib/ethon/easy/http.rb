@@ -14,6 +14,8 @@ module Ethon
     module Http
 
       # Set specified options in order to make a http request.
+      # Look into {Ethon::Easy::Options Options} to see what you can
+      # provide in the options hash.
       #
       # @example Set options for http request.
       #   easy.http_request("www.google.com", :get, {})
@@ -27,6 +29,11 @@ module Ethon
       # @option options :body [ Hash ] Body hash which
       #   becomes the request body. It is a PUT body for
       #   PUT requests and a POST from for everything else.
+      # @option options :headers [ Hash ] Request headers.
+      #
+      # @return [ void ]
+      #
+      # @see Ethon::Easy::Options
       def http_request(url, action_name, options = {})
         fabricate(action_name).new(url, options).setup(self)
       end

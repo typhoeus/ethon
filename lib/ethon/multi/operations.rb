@@ -36,8 +36,6 @@ module Ethon
       #
       # @example Perform multi.
       #   multi.perform
-      #
-      # @api public
       def perform
         Ethon.logger.debug("ETHON: started MULTI")
         while ongoing?
@@ -57,8 +55,6 @@ module Ethon
       #
       # @example Prepare multi.
       #   multi.prepare
-      #
-      # @api public
       #
       # @deprecated It is no longer necessary to call prepare.
       def prepare

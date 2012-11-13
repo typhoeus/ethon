@@ -23,6 +23,7 @@ module Ethon
 
         def clear; self[:fd_count] = 0; end
       else
+        # FD Set size.
         FD_SETSIZE = ::Ethon::Libc.getdtablesize
         layout :fds_bits, [:long, FD_SETSIZE / ::FFI::Type::LONG.size]
 
