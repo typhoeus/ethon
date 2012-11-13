@@ -7,6 +7,30 @@ module Ethon
 
       attr_reader :url
 
+      # Sets the contents of the Accept-Encoding: header sent in a HTTP
+      # request, and enables decoding of a response when a
+      # Content-Encoding: header is received. Three encodings are
+      # supported: identity, which does nothing, deflate which requests
+      # the server to compress its response using the zlib algorithm,
+      # and gzip which requests the gzip algorithm. If a zero-length
+      # string is set, then an Accept-Encoding: header containing all
+      # supported encodings is sent.
+      # This is a request, not an order; the server may or may not do it.
+      # This option must be set (to any non-NULL value) or else any
+      # unsolicited encoding done by the server is ignored. See the
+      # special file lib/README.encoding for details.
+      # (This option was called CURLOPT_ENCODING before 7.21.6)
+      #
+      # @example Set accept_encoding option.
+      #   easy.accept_encoding = "gzip"
+      #
+      # @param [ String ] value The value to set.
+      #
+      # @return [ void ]
+      def accept_encoding=(value)
+        Curl.set_option(:accept_encoding, value_for(value, :string), handle)
+      end
+
       # Pass a string to a zero terminated
       # string naming a file holding one or more certificates to verify
       # the peer with. This makes sense only when used in combination with

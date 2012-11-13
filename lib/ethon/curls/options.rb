@@ -133,7 +133,7 @@ module Ethon
           :nosignal                    =>  option_types[:long]            +  99,
           :share                       =>  option_types[:object_point]    +  100,
           :proxytype                   =>  option_types[:long]            +  101,
-          :encoding                    =>  option_types[:object_point]    +  102,
+          :accept_encoding             =>  option_types[:object_point]    +  102,
           :private                     =>  option_types[:object_point]    +  103,
           :unrestricted_auth           =>  option_types[:long]            +  105,
           :ftp_use_eprt                =>  option_types[:long]            +  106,

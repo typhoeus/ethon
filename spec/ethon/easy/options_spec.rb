@@ -4,7 +4,7 @@ describe Ethon::Easy::Options do
   let(:easy) { Ethon::Easy.new }
 
   [
-    :dns_cache_timeout, :httppost, :httpget, :nobody, :upload,
+    :accept_encoding, :dns_cache_timeout, :httppost, :httpget, :nobody, :upload,
     :customrequest, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
     :forbid_reuse, :followlocation, :httpauth, :infilesize, :interface,
     :keypasswd, :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
