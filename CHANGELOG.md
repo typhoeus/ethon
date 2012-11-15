@@ -4,6 +4,12 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.3...master)
 
+Enhancements:
+
+* Use Libc#getdtablesize to get the FDSet size.
+* New libcurl option accept_encoding.
+* Documentation updates.
+
 ## 0.5.3
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.2...v0.5.3)
