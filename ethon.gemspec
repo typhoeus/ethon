@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = '[none]'
 
-  s.add_dependency('ffi', ['~> 1.0.11'])
+  s.add_dependency('ffi', ['~> 1.1.5'])
   s.add_dependency('mime-types', ['~> 1.18'])
 
   s.files        = Dir.glob("lib/**/*") + %w(CHANGELOG.md Gemfile LICENSE README.md Rakefile)
