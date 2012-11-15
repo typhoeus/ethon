@@ -285,6 +285,27 @@ module Ethon
         Curl.set_option(:httppost, value_for(value, :string), handle)
       end
 
+      # Pass a long, set to one of the values described below. They force
+      # libcurl to use the specific HTTP versions. This is not sensible
+      # to do unless you have a good reason.
+      #
+      # Options:
+      #
+      #   * :none: We don't care about what version the library uses.
+      #     libcurl will use whatever it thinks fit.
+      #   * :httpv1_0: Enforce HTTP 1.0 requests.
+      #   * :httpv1_1: Enforce HTTP 1.1 requests.
+      #
+      # @example Set http_version option.
+      #   easy.http_version = :httpv1_0
+      #
+      # @param [ Symbol ] value The value to set.
+      #
+      # @return [ void ]
+      def http_version=(value)
+        Curl.set_option(:http_version, value_for(value, :enum, :http_version), handle)
+      end
+
       # When uploading a file to a remote site, this option should be used to
       # tell libcurl what the expected size of the infile is. This value
       # should be passed as a long. See also CURLOPT_INFILESIZE_LARGE.
@@ -1042,6 +1063,10 @@ module Ethon
           end
         elsif type == :enum && option == :sslversion
           Curl::SSLVersion.to_h.fetch(value) do
+            raise Errors::InvalidValue.new(option, value)
+          end
+        elsif type == :enum && option == :http_version
+          Curl::HTTPVersion.to_h.fetch(value) do
             raise Errors::InvalidValue.new(option, value)
           end
         elsif type == :enum && option == :proxytype

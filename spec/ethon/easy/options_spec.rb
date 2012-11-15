@@ -6,7 +6,7 @@ describe Ethon::Easy::Options do
   [
     :accept_encoding, :dns_cache_timeout, :httppost, :httpget, :nobody, :upload,
     :customrequest, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
-    :forbid_reuse, :followlocation, :httpauth, :infilesize, :interface,
+    :forbid_reuse, :followlocation, :httpauth, :http_version, :infilesize, :interface,
     :keypasswd, :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
     :proxyauth, :proxyport, :proxytype, :proxyuserpwd, :timeout, :timeout_ms,
     :readdata, :sslcert, :ssl_verifypeer, :ssl_verifyhost, :sslcerttype,
@@ -30,6 +30,8 @@ describe Ethon::Easy::Options do
           :default
         when :proxytype
           :http
+        when :http_version
+          :httpv1_0
         else
           1
         end

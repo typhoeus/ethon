@@ -1,5 +1,6 @@
 require 'ethon/curls/codes'
 require 'ethon/curls/options'
+require 'ethon/curls/http_versions'
 require 'ethon/curls/infos'
 require 'ethon/curls/form_options'
 require 'ethon/curls/auth_types'
@@ -17,6 +18,7 @@ module Ethon
     extend ::FFI::Library
     extend Ethon::Curls::Codes
     extend Ethon::Curls::Options
+    extend Ethon::Curls::HttpVersions
     extend Ethon::Curls::Infos
     extend Ethon::Curls::FormOptions
     extend Ethon::Curls::AuthTypes

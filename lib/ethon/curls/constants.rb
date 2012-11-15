@@ -45,6 +45,9 @@ module Ethon
     SSLVersion = enum(ssl_versions.to_a.flatten)
 
     # :nodoc:
+    HTTPVersion = enum(http_versions.to_a.flatten)
+
+    # :nodoc:
     MsgCode = enum(:msg_code, msg_codes)
   end
 end
