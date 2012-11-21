@@ -4,6 +4,10 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.4...master)
 
+Bugfixes:
+
+* Easy#reset resets on_complete callbacks.
+
 ## 0.5.4
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.3...v0.5.4)

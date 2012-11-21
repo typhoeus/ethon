@@ -265,6 +265,7 @@ module Ethon
     def reset
       @url = nil
       @hash = nil
+      @on_complete = []
       Curl.easy_reset(handle)
       set_callbacks
     end

@@ -81,6 +81,12 @@ describe Ethon::Easy do
       Ethon::Curl.should_receive(:easy_reset)
       easy.reset
     end
+
+    it "resets on_complete" do
+      easy.on_complete { p 1 }
+      easy.reset
+      expect(easy.on_complete).to be_empty
+    end
   end
 
   describe "#to_hash" do
