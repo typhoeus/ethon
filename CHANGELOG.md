@@ -2,7 +2,15 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.6...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.7...master)
+
+## 0.5.7
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.6...v0.5.7)
+
+Enhancements:
+
+* Use new version of ffi.
 
 ## 0.5.6
 
