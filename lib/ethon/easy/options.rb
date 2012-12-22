@@ -384,6 +384,14 @@ module Ethon
         Curl.set_option(:maxredirs, value_for(value, :int), handle)
       end
 
+      def max_send_speed_large=(value)
+        Curl.set_option(:max_send_speed_large, value_for(value, :int), handle)
+      end
+
+      def max_recv_speed_large=(value)
+        Curl.set_option(:max_recv_speed_large, value_for(value, :int), handle)
+      end
+
       # A parameter set to 1 tells the library to not include the body-part
       # in the output. This is only relevant for protocols that have separate
       # header and body parts. On HTTP(S) servers, this will make libcurl do
