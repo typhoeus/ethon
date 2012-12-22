@@ -384,10 +384,22 @@ module Ethon
         Curl.set_option(:maxredirs, value_for(value, :int), handle)
       end
 
+      # @example Set max_send_speed_large option.
+      #   easy.max_send_speed_large = 1
+      #
+      # @param [ Integer ] value The value to set.
+      #
+      # @return [ void ]
       def max_send_speed_large=(value)
         Curl.set_option(:max_send_speed_large, value_for(value, :int), handle)
       end
 
+      # @example Set max_recv_speed_large option.
+      #   easy.max_recv_speed_large = 1
+      #
+      # @param [ Integer ] value The value to set.
+      #
+      # @return [ void ]
       def max_recv_speed_large=(value)
         Curl.set_option(:max_recv_speed_large, value_for(value, :int), handle)
       end
