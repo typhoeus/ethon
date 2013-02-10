@@ -2,7 +2,16 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.7...master)
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.8...master)
+
+## 0.5.8
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.7...v0.5.8)
+
+Enhancements:
+
+* Add support for protocols and redir_protocols(
+  [libcurl SASL buffer overflow vulnerability](http://curl.haxx.se/docs/adv_20130206.html)).
 
 ## 0.5.7
 
