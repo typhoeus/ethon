@@ -384,6 +384,12 @@ module Ethon
         Curl.set_option(:maxredirs, value_for(value, :int), handle)
       end
 
+      # Pass a curl_off_t as parameter. If an upload exceeds this speed
+      # (counted in bytes per second) on cumulative average during the
+      # transfer, the transfer will pause to keep the average rate less than or
+      # equal to the parameter value. Defaults to unlimited speed. (Added in
+      # 7.15.5)
+      #
       # @example Set max_send_speed_large option.
       #   easy.max_send_speed_large = 1
       #
@@ -394,6 +400,12 @@ module Ethon
         Curl.set_option(:max_send_speed_large, value_for(value, :int), handle)
       end
 
+      # Pass a curl_off_t as parameter. If a download exceeds this speed
+      # (counted in bytes per second) on cumulative average during the
+      # transfer, the transfer will pause to keep the average rate less than or
+      # equal to the parameter value. Defaults to unlimited speed. (Added in
+      # 7.15.5)
+      #
       # @example Set max_recv_speed_large option.
       #   easy.max_recv_speed_large = 1
       #
