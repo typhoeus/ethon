@@ -446,6 +446,42 @@ module Ethon
         Curl.set_option(:postfieldsize, value_for(value, :int), handle)
       end
 
+      # Pass a long that holds a bitmask of CURLPROTO_* defines. If used, this
+      # bitmask limits what protocols libcurl may use in the transfer. This
+      # allows you to have a libcurl built to support a wide range of protocols
+      # but still limit specific transfers to only be allowed to use a subset
+      # of them. By default libcurl will accept all protocols it supports. See
+      # also CURLOPT_REDIR_PROTOCOLS. (Added in 7.19.4)
+      #
+      # @example Set protocols option.
+      #   easy.protocols = :http
+      #
+      # @param [ Symbol ] value The value to set.
+      #
+      # @return [ void ]
+      def protocols=(value)
+        Curl.set_option(:protocols, value_for(value, :enum, :protocols), handle)
+      end
+
+      # Pass a long that holds a bitmask of CURLPROTO_* defines. If used, this
+      # bitmask limits what protocols libcurl may use in a transfer that it
+      # follows to in a redirect when CURLOPT_FOLLOWLOCATION is enabled. This
+      # allows you to limit specific transfers to only be allowed to use a
+      # subset of protocols in redirections. By default libcurl will allow all
+      # protocols except for FILE and SCP. This is a difference compared to
+      # pre-7.19.4 versions which unconditionally would follow to all protocols
+      # supported. (Added in 7.19.4)
+      #
+      # @example Set redir_protocols option.
+      #   easy.redir_protocols = :http
+      #
+      # @param [ Symbol ] value The value to set.
+      #
+      # @return [ void ]
+      def redir_protocols=(value)
+        Curl.set_option(:redir_protocols, value_for(value, :enum, :redir_protocols), handle)
+      end
+
       # Set HTTP proxy to use. The parameter should be a string to a zero
       # terminated string holding the host name or dotted IP address. To
       # specify port number in this string, append :[port] to the end of the
@@ -1067,6 +1103,10 @@ module Ethon
           end
         elsif type == :enum && option == :http_version
           Curl::HTTPVersion.to_h.fetch(value) do
+            raise Errors::InvalidValue.new(option, value)
+          end
+        elsif type == :enum && (option == :protocols || option == :redir_protocols)
+          Curl::Protocols.to_h.fetch(value) do
             raise Errors::InvalidValue.new(option, value)
           end
         elsif type == :enum && option == :proxytype

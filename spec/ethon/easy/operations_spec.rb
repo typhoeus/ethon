@@ -19,6 +19,8 @@ describe Ethon::Easy::Operations do
     let(:user_pwd) { nil }
     let(:http_auth) { nil }
     let(:headers) { nil }
+    let(:protocols) { nil }
+    let(:redir_protocols) { nil }
 
     before do
       easy.url = url
@@ -29,6 +31,8 @@ describe Ethon::Easy::Operations do
       easy.userpwd = user_pwd
       easy.httpauth = http_auth
       easy.headers = headers
+      easy.protocols = protocols
+      easy.redir_protocols = redir_protocols
 
       easy.perform
     end
@@ -154,6 +158,38 @@ describe Ethon::Easy::Operations do
           it "returns 200" do
             expect(easy.response_code).to eq(200)
           end
+        end
+      end
+    end
+
+    context "when protocols" do
+      context "when asking for a allowed url" do
+        let(:url) { "http://localhost:3001" }
+        let(:protocols) { :http }
+
+        it "returns ok" do
+          expect(easy.return_code).to be(:ok)
+        end
+      end
+
+      context "when asking for a not allowed url" do
+        let(:url) { "http://localhost:3001" }
+        let(:protocols) { :https }
+
+        it "returns unsupported_protocol" do
+          expect(easy.return_code).to be(:unsupported_protocol)
+        end
+      end
+    end
+
+    context "when redir_protocols" do
+      context "when redirecting to a not allowed url" do
+        let(:url) { "http://localhost:3001/redirect" }
+        let(:follow_location) { true }
+        let(:redir_protocols) { :https }
+
+        it "returns unsupported_protocol" do
+          expect(easy.return_code).to be(:unsupported_protocol)
         end
       end
     end

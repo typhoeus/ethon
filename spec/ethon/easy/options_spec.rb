@@ -4,14 +4,14 @@ describe Ethon::Easy::Options do
   let(:easy) { Ethon::Easy.new }
 
   [
-    :accept_encoding, :dns_cache_timeout, :httppost, :httpget, :nobody, :upload,
-    :customrequest, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
-    :forbid_reuse, :followlocation, :httpauth, :http_version, :infilesize, :interface,
-    :keypasswd, :maxredirs, :nosignal, :postfieldsize, :copypostfields, :proxy,
-    :proxyauth, :proxyport, :proxytype, :proxyuserpwd, :timeout, :timeout_ms,
-    :readdata, :sslcert, :ssl_verifypeer, :ssl_verifyhost, :sslcerttype,
-    :sslkey, :sslkeytype, :sslversion, :url, :useragent, :userpwd,
-    :verbose, :readfunction
+    :accept_encoding, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
+    :copypostfields, :customrequest, :dns_cache_timeout, :followlocation,
+    :forbid_reuse, :http_version, :httpauth, :httpget, :httppost, :infilesize,
+    :interface, :keypasswd, :maxredirs, :nobody, :nosignal, :postfieldsize,
+    :protocols, :proxy, :proxyauth, :proxyport, :proxytype, :proxyuserpwd,
+    :readdata, :readfunction, :redir_protocols, :ssl_verifyhost, :ssl_verifypeer,
+    :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion, :timeout,
+    :timeout_ms, :upload, :url, :useragent, :userpwd, :verbose
   ].each do |name|
     describe "#{name}=" do
       it "responds_to" do
@@ -24,14 +24,16 @@ describe Ethon::Easy::Options do
           expect(option).to be(name)
         end
         value = case name
-        when :httpauth
-          :basic
-        when :sslversion
-          :default
-        when :proxytype
-          :http
         when :http_version
           :httpv1_0
+        when :httpauth
+          :basic
+        when :protocols, :redir_protocols
+          :http
+        when :proxytype
+          :http
+        when :sslversion
+          :default
         else
           1
         end
