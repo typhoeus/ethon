@@ -182,6 +182,37 @@ describe Ethon::Easy::Operations do
       end
     end
 
+    context "when multiple protocols" do
+      context "when asking for a allowed url" do
+        let(:protocols) { [:http, :https] }
+
+        context "when http" do
+          let(:url) { "http://localhost:3001" }
+
+          it "returns ok for http" do
+            expect(easy.return_code).to be(:ok)
+          end
+        end
+
+        context "when https" do
+          let(:url) { "https://localhost:3001" }
+
+          it "returns ssl_connect_error for https" do
+            expect(easy.return_code).to be(:ssl_connect_error)
+          end
+        end
+      end
+
+      context "when asking for a not allowed url" do
+        let(:url) { "ssh://localhost" }
+        let(:protocols) { [:https, :http] }
+
+        it "returns unsupported_protocol" do
+          expect(easy.return_code).to be(:unsupported_protocol)
+        end
+      end
+    end
+
     context "when redir_protocols" do
       context "when redirecting to a not allowed url" do
         let(:url) { "http://localhost:3001/redirect" }

@@ -78,6 +78,12 @@ describe Ethon::Easy::Options do
           expect{ easy.method(:value_for).call(:fubar, :enum, :sslversion) }.to raise_error(Ethon::Errors::InvalidValue)
         end
       end
+
+      context "when invalid protocol in array" do
+        it "raises Errors::InvalidValue" do
+          expect{ easy.method(:value_for).call([:fubar], :enum, :protocols) }.to raise_error(Ethon::Errors::InvalidValue)
+        end
+      end
     end
 
     context "when value in int_options" do

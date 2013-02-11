@@ -488,7 +488,7 @@ module Ethon
       # @example Set protocols option.
       #   easy.protocols = :http
       #
-      # @param [ Symbol ] value The value to set.
+      # @param [ Symbol ] value The value or array of values to set.
       #
       # @return [ void ]
       def protocols=(value)
@@ -507,7 +507,7 @@ module Ethon
       # @example Set redir_protocols option.
       #   easy.redir_protocols = :http
       #
-      # @param [ Symbol ] value The value to set.
+      # @param [ Symbol ] value The value or array of values to set.
       #
       # @return [ void ]
       def redir_protocols=(value)
@@ -1138,9 +1138,11 @@ module Ethon
             raise Errors::InvalidValue.new(option, value)
           end
         elsif type == :enum && (option == :protocols || option == :redir_protocols)
-          Curl::Protocols.to_h.fetch(value) do
-            raise Errors::InvalidValue.new(option, value)
-          end
+          Array(value).map do |v|
+            Curl::Protocols.to_h.fetch(v) do
+              raise Errors::InvalidValue.new(option, v)
+            end
+          end.inject(:+)
         elsif type == :enum && option == :proxytype
           Curl::Proxy.to_h.fetch(value) do
             raise Errors::InvalidValue.new(option, value)
