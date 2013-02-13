@@ -4,6 +4,14 @@
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.8...master)
 
+## 0.5.9
+
+[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.8...v0.5.9)
+
+Enhancements:
+
+* Allow to set multiple protocols.
+
 ## 0.5.8
 
 [Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.7...v0.5.8)
