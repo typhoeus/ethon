@@ -6,6 +6,7 @@ require 'ethon/easy/http/put'
 require 'ethon/easy/http/delete'
 require 'ethon/easy/http/patch'
 require 'ethon/easy/http/options'
+require 'ethon/easy/http/custom'
 
 module Ethon
   class Easy
@@ -35,7 +36,7 @@ module Ethon
       #
       # @see Ethon::Easy::Options
       def http_request(url, action_name, options = {})
-        fabricate(action_name).new(url, options).setup(self)
+        fabricate(url, action_name, options).setup(self)
       end
 
       private
@@ -44,13 +45,23 @@ module Ethon
       #
       # @example Return the action.
       #   Action.fabricate(:get)
+      #   Action.fabricate(:smash)
       #
-      # @param [ String ] action_name The action name.
+      # @param [ String ] url The url.
+      # @param [ String ] action_name The http action name.
+      # @param [ Hash ] options The option hash.
       #
-      # @return [ Class ] The action class.
-      def fabricate(action_name)
-        Ethon::Easy::Http.const_get(action_name.to_s.capitalize)
+      # @return [ Easy::Ethon::Actionable ] The request instance.
+      def fabricate(url, action_name, options)
+        constant_name = action_name.to_s.capitalize
+
+        if Ethon::Easy::Http.const_defined?(constant_name)
+          Ethon::Easy::Http.const_get(constant_name).new(url, options)
+        else
+          Ethon::Easy::Http::Custom.new(constant_name.upcase, url, options)
+        end
       end
+
     end
   end
 end

@@ -33,6 +33,12 @@ describe Ethon::Easy::Http do
           end
         end
       end
+
+      it "makes requests with custom HTTP verbs" do
+        easy.http_request(url, :purge, options)
+        easy.perform
+        expect(easy.response_body).to include(%{"REQUEST_METHOD":"PURGE"})
+      end
     end
   end
 end
