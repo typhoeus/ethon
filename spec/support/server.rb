@@ -103,4 +103,8 @@ TESTSERVER = Sinatra.new do
   options '/**' do
     request.env.merge!(:body => request.body.read).to_json
   end
+
+  route 'PURGE', '/**' do
+    request.env.merge!(:body => request.body.read).to_json
+  end
 end
