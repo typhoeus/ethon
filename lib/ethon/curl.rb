@@ -34,12 +34,6 @@ module Ethon
     require 'ethon/curls/classes'
     extend Ethon::Curls::Functions
 
-    if windows?
-      ffi_lib 'ws2_32'
-    else
-      ffi_lib ::FFI::Library::LIBC
-    end
-
     @blocking = true
 
     @@initialized = false
