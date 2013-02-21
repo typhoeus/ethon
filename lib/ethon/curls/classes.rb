@@ -11,11 +11,6 @@ module Ethon
     end
 
     # :nodoc:
-    def Curl.windows?
-      !(RbConfig::CONFIG['host_os'] !~ /mingw|mswin|bccwin/)
-    end
-
-    # :nodoc:
     class FDSet < ::FFI::Struct
       if Curl.windows?
         layout :fd_count, :u_int,

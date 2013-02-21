@@ -28,6 +28,16 @@ module Ethon
     extend Ethon::Curls::Messages
     extend Ethon::Curls::Protocols
 
+    # :nodoc:
+    def self.windows?
+      !(RbConfig::CONFIG['host_os'] !~ /mingw|mswin|bccwin/)
+    end
+
+    if Curl.windows?
+      ffi_lib 'ws2_32'
+    else
+      ffi_lib ::FFI::Library::LIBC
+    end
 
     require 'ethon/curls/constants'
     require 'ethon/curls/settings'
