@@ -2,11 +2,26 @@
 
 ## Master
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.8...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.10...master)
+
+## 0.5.10
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.9...v0.5.10)
+
+Enhancements:
+
+* Allow custom requests.
+  ([nate](https://github.com/nate), [\#36](https://github.com/typhoeus/ethon/pull/36))
+* Use updated version of FFI.
+
+Bugfixes:
+
+* Fix windows install issue.
+  ([brainsucker](https://github.com/brainsucker), [\#38](https://github.com/typhoeus/ethon/pull/38))
 
 ## 0.5.9
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.8...v0.5.9)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.8...v0.5.9)
 
 Enhancements:
 
@@ -14,7 +29,7 @@ Enhancements:
 
 ## 0.5.8
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.7...v0.5.8)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.7...v0.5.8)
 
 Enhancements:
 
@@ -24,7 +39,7 @@ Enhancements:
 
 ## 0.5.7
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.6...v0.5.7)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.6...v0.5.7)
 
 Enhancements:
 
@@ -32,7 +47,7 @@ Enhancements:
 
 ## 0.5.6
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.4...v0.5.6)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.4...v0.5.6)
 
 Bugfixes:
 
@@ -40,7 +55,7 @@ Bugfixes:
 
 ## 0.5.4
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.3...v0.5.4)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.3...v0.5.4)
 
 Enhancements:
 
@@ -50,7 +65,7 @@ Enhancements:
 
 ## 0.5.3
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.2...v0.5.3)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.2...v0.5.3)
 
 Enhancements:
 
@@ -65,7 +80,7 @@ Bugfixes:
 
 ## 0.5.2
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.1...v0.5.2)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.1...v0.5.2)
 
 Enhancements:
 
@@ -78,7 +93,7 @@ Bugfixes:
 
 ## 0.5.1
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.5.0...v0.5.1)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.0...v0.5.1)
 
 Bugfixes:
 
@@ -87,7 +102,7 @@ Bugfixes:
 
 ## 0.5.0
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.4...v0.5.0)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.4.4...v0.5.0)
 
 Enhancements:
 
@@ -101,7 +116,7 @@ Bugfixes:
 
 ## 0.4.4
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.3...v0.4.4)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.4.3...v0.4.4)
 
 Enhancements:
 
@@ -109,7 +124,7 @@ Enhancements:
 
 ## 0.4.3
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.2...v0.4.3)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.4.2...v0.4.3)
 
 Enhancements:
 
@@ -124,7 +139,7 @@ Bugfixes:
 
 ## 0.4.2
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.1...v0.4.2)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.4.1...v0.4.2)
 
 Enhancements:
 
@@ -133,7 +148,7 @@ Enhancements:
 
 ## 0.4.1
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.4.0...v0.4.1)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.4.0...v0.4.1)
 
 Bugfixes:
 
@@ -142,7 +157,7 @@ Bugfixes:
 
 ## 0.4.0
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.3.0...v0.4.0)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.3.0...v0.4.0)
 
 Enhancements:
 
@@ -157,7 +172,7 @@ Bugfixes:
 
 ## 0.3.0
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.2.0...v0.3.0)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.2.0...v0.3.0)
 
 Enhancements:
 
@@ -170,7 +185,7 @@ Bugfixes:
 
 ## 0.2.0
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.1.0...v0.2.0)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.1.0...v0.2.0)
 
 Enhancements:
 
@@ -182,7 +197,7 @@ Enhancements:
 
 ## 0.1.0
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.0.2...v0.1.0)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.0.2...v0.1.0)
 
 Enhancements:
 
@@ -198,7 +213,7 @@ Bugfixes:
 
 ## 0.0.2
 
-[Full Changelog](http://github.com/typhoeus/ethon/compare/v0.0.1...v0.0.2)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.0.1...v0.0.2)
 
 Bugfixes:
 
