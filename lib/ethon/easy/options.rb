@@ -865,6 +865,21 @@ module Ethon
         Curl.set_option(:timeout_ms, value_for(value, :int), handle)
       end
 
+      # A parameter set to 1 tells the library it can continue to send
+      # authentication (user+password) when following locations, even
+      # when hostname changed. This option is meaningful only when setting
+      # CURLOPT_FOLLOWLOCATION.
+      #
+      # @example Set unrestricted auth.
+      #   easy.unrestricted_auth = true
+      #
+      # @param [ Boolean ] value The value to set.
+      #
+      # @return [ void ]
+      def unrestricted_auth=(value)
+        Curl.set_option(:unrestricted_auth, value_for(value, :bool), handle)
+      end
+
       # A parameter set to 1 tells the library to prepare for an upload. The
       # CURLOPT_READDATA and CURLOPT_INFILESIZE or CURLOPT_INFILESIZE_LARGE
       # options are also interesting for uploads. If the protocol is HTTP,
