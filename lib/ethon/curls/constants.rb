@@ -39,6 +39,9 @@ module Ethon
     Auth = enum(auth_types.to_a.flatten)
 
     # :nodoc:
+    Postredir = enum(postredir.to_a.flatten)
+
+    # :nodoc:
     Protocols = enum(protocols.to_a.flatten)
 
     # :nodoc:

@@ -50,9 +50,13 @@ describe Ethon::Easy::Http::Post do
       end
 
       context "when requesting" do
+        let(:postredir) { nil }
+
         before do
           easy.headers = { 'Expect' => '' }
           post.setup(easy)
+          easy.postredir = postredir
+          easy.followlocation = true
           easy.perform
         end
 
@@ -66,6 +70,24 @@ describe Ethon::Easy::Http::Post do
 
         it "requests parameterized url" do
           expect(easy.response_body).to include('"REQUEST_URI":"http://localhost:3001/?a=1%26"')
+        end
+
+        context "when redirection" do
+          let(:url) { "localhost:3001/redirect" }
+
+          context "when no postredirs" do
+            it "is a get" do
+              expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
+            end
+          end
+
+          context "when postredirs" do
+            let(:postredir) { :post_303 }
+
+            it "is a post" do
+              expect(easy.response_body).to include('"REQUEST_METHOD":"POST"')
+            end
+          end
         end
       end
     end

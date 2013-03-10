@@ -478,6 +478,17 @@ module Ethon
         Curl.set_option(:postfieldsize, value_for(value, :int), handle)
       end
 
+      #
+      # @example Set protocols option.
+      #   easy.protocols = :http
+      #
+      # @param [ Symbol ] value The value or array of values to set.
+      #
+      # @return [ void ]
+      def postredir=(value)
+        Curl.set_option(:postredir, value_for(value, :enum, :postredir), handle)
+      end
+
       # Pass a long that holds a bitmask of CURLPROTO_* defines. If used, this
       # bitmask limits what protocols libcurl may use in the transfer. This
       # allows you to have a libcurl built to support a wide range of protocols
@@ -1155,6 +1166,12 @@ module Ethon
         elsif type == :enum && (option == :protocols || option == :redir_protocols)
           Array(value).map do |v|
             Curl::Protocols.to_h.fetch(v) do
+              raise Errors::InvalidValue.new(option, v)
+            end
+          end.inject(:+)
+        elsif type == :enum && option == :postredir
+          Array(value).map do |v|
+            Curl::Postredir.to_h.fetch(v) do
               raise Errors::InvalidValue.new(option, v)
             end
           end.inject(:+)

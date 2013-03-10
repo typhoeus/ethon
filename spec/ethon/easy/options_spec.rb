@@ -8,11 +8,11 @@ describe Ethon::Easy::Options do
     :copypostfields, :customrequest, :dns_cache_timeout, :followlocation,
     :forbid_reuse, :http_version, :httpauth, :httpget, :httppost, :infilesize,
     :interface, :keypasswd, :maxredirs, :nobody, :nosignal, :postfieldsize,
-    :protocols, :proxy, :proxyauth, :proxyport, :proxytype, :proxyuserpwd,
-    :readdata, :readfunction, :redir_protocols, :ssl_verifyhost, :ssl_verifypeer,
-    :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion, :timeout,
-    :timeout_ms, :unrestricted_auth, :upload, :url, :useragent, :userpwd,
-    :verbose
+    :postredir, :protocols, :proxy, :proxyauth, :proxyport, :proxytype,
+    :proxyuserpwd, :readdata, :readfunction, :redir_protocols, :ssl_verifyhost,
+    :ssl_verifypeer, :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion,
+    :timeout, :timeout_ms, :unrestricted_auth, :upload, :url, :useragent,
+    :userpwd, :verbose
   ].each do |name|
     describe "#{name}=" do
       it "responds_to" do
@@ -31,6 +31,8 @@ describe Ethon::Easy::Options do
           :basic
         when :protocols, :redir_protocols
           :http
+        when :postredir
+          :post_301
         when :proxytype
           :http
         when :sslversion

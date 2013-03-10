@@ -4,6 +4,7 @@ require 'ethon/curls/http_versions'
 require 'ethon/curls/infos'
 require 'ethon/curls/form_options'
 require 'ethon/curls/auth_types'
+require 'ethon/curls/postredir'
 require 'ethon/curls/protocols'
 require 'ethon/curls/proxy_types'
 require 'ethon/curls/ssl_versions'
@@ -27,6 +28,7 @@ module Ethon
     extend Ethon::Curls::SslVersions
     extend Ethon::Curls::Messages
     extend Ethon::Curls::Protocols
+    extend Ethon::Curls::Postredir
 
     # :nodoc:
     def self.windows?

@@ -38,6 +38,10 @@ TESTSERVER = Sinatra.new do
     redirect '/'
   end
 
+  post '/redirect' do
+    redirect '/'
+  end
+
   get '/bad_redirect' do
     redirect '/bad_redirect'
   end

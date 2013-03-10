@@ -178,6 +178,7 @@ module Ethon
           :connecttimeout_ms           =>  option_types[:long]            +  156,
           :http_transfer_decoding      =>  option_types[:long]            +  157,
           :http_content_decoding       =>  option_types[:long]            +  158,
+          :postredir                   =>  option_types[:long]            +  161,
           :copypostfields              =>  option_types[:object_point]    +  165,
           :proxy_transfer_mode         =>  option_types[:long]            +  166,
           :seekfunction                =>  option_types[:function_point]  +  167,
