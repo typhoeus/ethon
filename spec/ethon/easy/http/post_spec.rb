@@ -85,6 +85,7 @@ describe Ethon::Easy::Http::Post do
             let(:postredir) { :post_all }
 
             it "is a post" do
+              p Ethon::Curl.version
               expect(easy.response_body).to include('"REQUEST_METHOD":"POST"')
             end
           end
