@@ -82,7 +82,7 @@ describe Ethon::Easy::Http::Post do
           end
 
           context "when postredirs" do
-            let(:postredir) { :post_303 }
+            let(:postredir) { :post_all }
 
             it "is a post" do
               expect(easy.response_body).to include('"REQUEST_METHOD":"POST"')
