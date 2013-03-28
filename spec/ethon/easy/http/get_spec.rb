@@ -35,6 +35,23 @@ describe Ethon::Easy::Http::Get do
         easy.perform
       end
 
+      context "when url already contains params" do
+        let(:url) { "http://localhost:3001/?query=here" }
+        let(:params) { {:a => "1&b=2"} }
+
+        it "returns ok" do
+          expect(easy.return_code).to eq(:ok)
+        end
+
+        it "is a get request" do
+          expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
+        end
+
+        it "requests parameterized url" do
+          expect(easy.effective_url).to eq("http://localhost:3001/?query=here&a=1%26b%3D2")
+        end
+      end
+
       context "when params and no body" do
         let(:params) { {:a => "1&b=2"} }
 
