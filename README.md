@@ -71,7 +71,7 @@ everything up correct.
 
 (The MIT License)
 
-Copyright © 2012 [Hans Hasselberg](http://www.hans.io)
+Copyright © 2012-2013 [Hans Hasselberg](http://www.hans.io)
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
