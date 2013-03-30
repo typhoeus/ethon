@@ -1,11 +1,11 @@
 #  Ethon [![Build Status](https://secure.travis-ci.org/typhoeus/ethon.png?branch=master)](http://travis-ci.org/typhoeus/ethon)
 
-In the greek mythology Ethon is a gigantic eagle the son of Typhoeus and Echidna. So much for the history.
-In the modern world Ethon is a very basic libcurl wrapper using ffi.
+In Greek mythology, Ethon, the son of Typhoeus and Echidna, is a gigantic eagle. So much for the history.
+In the modern world, Ethon is a very basic libcurl wrapper using ffi.
 
 * [Documentation](http://rubydoc.info/github/typhoeus/ethon/frames/Ethon)
 * [Website](http://typhoeus.github.com/)
-* [Mailinglist](http://groups.google.com/group/typhoeus)
+* [Mailing list](http://groups.google.com/group/typhoeus)
 
 ## Installation
 
@@ -19,7 +19,7 @@ With rubygems:
 
 ## Usage
 
-Making the first request is realy simple:
+Making the first request is simple:
 
 ```ruby
 easy = Ethon::Easy.new(url: "www.example.com")
@@ -27,7 +27,7 @@ easy.perform
 #=> :ok
 ```
 
-You have access to various options like following redirects:
+You have access to various options, such as following redirects:
 
 ```ruby
 easy = Ethon::Easy.new(url: "www.example.com", followlocation: true)
@@ -35,7 +35,7 @@ easy.perform
 #=> :ok
 ```
 
-Once you're done you can look at the response code and body:
+Once you're done you can inspect the response code and body:
 
 ```ruby
 easy = Ethon::Easy.new(url: "www.example.com", followlocation: true)
@@ -48,7 +48,7 @@ easy.response_body
 
 ## Http
 
-In order to make life easier there are some helpers for doing http requests:
+In order to make life easier, there are some helpers for making HTTP requests:
 
 ```ruby
 easy = Ethon::Easy.new
@@ -64,8 +64,8 @@ easy.perform
 #=> :ok
 ```
 
-This really handy when doing requests since you don't have to care about setting
-everything up correct.
+This is really handy when making requests since you don't have to care about setting
+everything up correctly.
 
 ##  LICENSE
 
