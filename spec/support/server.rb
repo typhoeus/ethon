@@ -6,7 +6,7 @@ require 'sinatra/base'
 TESTSERVER = Sinatra.new do
   set :logging, false
 
-  @@fail_count = 0
+  fail_count = 0
 
   post '/file' do
     {
@@ -22,10 +22,10 @@ TESTSERVER = Sinatra.new do
   end
 
   get '/fail/:number' do
-    if @@fail_count >= params[:number].to_i
+    if fail_count >= params[:number].to_i
       "ok"
     else
-      @@fail_count += 1
+      fail_count += 1
       error 500, "oh noes!"
     end
   end
