@@ -196,26 +196,6 @@ module Ethon
     # @see http://curl.haxx.se/libcurl/c/libcurl-errors.html
     attr_accessor :return_code
 
-    class << self
-
-      # Frees libcurls easy represantation including its headers if any.
-      #
-      # @example Free easy handle.
-      #   Easy.finalizer(easy)
-      #
-      # @param [ Easy ] easy The easy to free.
-      #
-      # @see http://curl.haxx.se/libcurl/c/curl_easy_cleanup.html
-      #
-      # @api private
-      def finalizer(easy)
-        proc {
-          Curl.slist_free_all(easy.header_list) if easy.header_list
-          Curl.easy_cleanup(easy.handle)
-        }
-      end
-    end
-
     # Initialize a new Easy.
     # It initializes curl, if not already done and applies the provided options.
     # Look into {Ethon::Easy::Options Options} to see what you can provide in the
@@ -233,7 +213,6 @@ module Ethon
     # @see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html
     def initialize(options = {})
       Curl.init
-      ObjectSpace.define_finalizer(self, self.class.finalizer(self))
       set_attributes(options)
       set_callbacks
     end

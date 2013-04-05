@@ -9,11 +9,6 @@ describe Ethon::Easy do
       easy
     end
 
-    it "defines finalizer" do
-      ObjectSpace.should_receive(:define_finalizer)
-      easy
-    end
-
     context "when options are empty" do
       it "sets only callbacks" do
         Ethon::Easy.any_instance.should_receive(:set_callbacks)
@@ -98,22 +93,6 @@ describe Ethon::Easy do
     ].each do |name|
       it "contains #{name}" do
         expect(easy.to_hash).to include(name)
-      end
-    end
-  end
-
-  describe ".finalizer" do
-    it "calls easy_cleanup" do
-      Ethon::Curl.should_receive(:easy_cleanup).with(easy.handle)
-      Ethon::Easy.finalizer(easy).call
-    end
-
-    context "when header_list" do
-      before { easy.instance_variable_set(:@header_list, 1) }
-
-      it "calls slist_free_all" do
-        Ethon::Curl.should_receive(:slist_free_all).with(easy.header_list)
-        Ethon::Easy.finalizer(easy).call
       end
     end
   end

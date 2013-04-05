@@ -6,11 +6,6 @@ describe Ethon::Easy::Form do
   let(:form) { Ethon::Easy::Form.new(easy, hash) }
 
   describe ".new" do
-    it "defines finalizer" do
-      ObjectSpace.should_receive(:define_finalizer)
-      form
-    end
-
     it "assigns attribute to @params" do
       expect(form.instance_variable_get(:@params)).to eq(hash)
     end

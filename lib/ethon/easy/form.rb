@@ -24,17 +24,6 @@ module Ethon
       def initialize(easy, params)
         @easy = easy
         @params = params || {}
-        ObjectSpace.define_finalizer(self, self.class.finalizer(self))
-      end
-
-      # Frees form in libcurl if necessary.
-      #
-      # @example Free the form
-      #   Form.finalizer(form)
-      #
-      # @param [ Form ] form The form to free.
-      def self.finalizer(form)
-        proc { Curl.formfree(form.first) if form.multipart? }
       end
 
       # Return a pointer to the first form element in libcurl.
@@ -98,6 +87,17 @@ module Ethon
                        :form_option, :end
                       )
         end
+
+        build_multipart_finalizer
+      end
+
+      def build_multipart_finalizer
+        return
+        # This has been broken for a long time in ethon. I'm disabling it, and
+        # it will be fixed as part of:
+        # https://github.com/typhoeus/ethon/issues/43
+        return if @first.is_a?(FFI::AutoPointer)
+        @first = FFI::AutoPointer.new(@first, Curl.method(:formfree))
       end
     end
   end
