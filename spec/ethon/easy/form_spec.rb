@@ -6,11 +6,6 @@ describe Ethon::Easy::Form do
   let(:form) { Ethon::Easy::Form.new(easy, hash) }
 
   describe ".new" do
-    it "defines finalizer" do
-      ObjectSpace.should_receive(:define_finalizer)
-      form
-    end
-
     it "assigns attribute to @params" do
       expect(form.instance_variable_get(:@params)).to eq(hash)
     end
@@ -18,13 +13,13 @@ describe Ethon::Easy::Form do
 
   describe "#first" do
     it "returns a pointer" do
-      expect(form.first).to be_a(FFI::MemoryPointer)
+      expect(form.first).to be_a(FFI::Pointer)
     end
   end
 
   describe "#last" do
     it "returns a pointer" do
-      expect(form.first).to be_a(FFI::MemoryPointer)
+      expect(form.first).to be_a(FFI::Pointer)
     end
   end
 

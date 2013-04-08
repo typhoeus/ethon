@@ -24,17 +24,6 @@ module Ethon
       def initialize(easy, params)
         @easy = easy
         @params = params || {}
-        ObjectSpace.define_finalizer(self, self.class.finalizer(self))
-      end
-
-      # Frees form in libcurl if necessary.
-      #
-      # @example Free the form
-      #   Form.finalizer(form)
-      #
-      # @param [ Form ] form The form to free.
-      def self.finalizer(form)
-        proc { Curl.formfree(form.first) if form.multipart? }
       end
 
       # Return a pointer to the first form element in libcurl.
@@ -98,6 +87,17 @@ module Ethon
                        :form_option, :end
                       )
         end
+
+        setup_garbage_collection
+      end
+
+      def setup_garbage_collection
+        # first is a pointer to a pointer. Since it's a MemoryPointer it will
+        # auto clean itself up, but we need to clean up the object it points
+        # to. So this results in (pseudo-c):
+        #   form_data_cleanup_handler = *first
+        #   curl_form_free(form_data_cleanup_handler)
+        @form_data_cleanup_handler ||= FFI::AutoPointer.new(@first.get_pointer(0), Curl.method(:formfree))
       end
     end
   end

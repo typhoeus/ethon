@@ -7,11 +7,11 @@ require "ethon"
 require 'rspec'
 
 if defined? require_relative
-  require_relative 'support/localhost_server.rb'
-  require_relative 'support/server.rb'
+  require_relative 'support/localhost_server'
+  require_relative 'support/server'
 else
-  require 'support/localhost_server.rb'
-  require 'support/server.rb'
+  require 'support/localhost_server'
+  require 'support/server'
 end
 
 # Ethon.logger = Logger.new($stdout).tap do |log|
