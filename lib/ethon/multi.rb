@@ -21,9 +21,9 @@ module Ethon
       # @param [ Multi ] multi The multi to free.
       #
       # @api private
-      def finalizer(multi)
+      def finalizer(multi_handle)
         proc {
-          Curl.multi_cleanup(multi.handle)
+          Curl.multi_cleanup(multi_handle)
         }
       end
     end
@@ -82,7 +82,7 @@ module Ethon
     # @return [ Multi ] The new multi.
     def initialize(options = {})
       Curl.init
-      ObjectSpace.define_finalizer(self, self.class.finalizer(self))
+      ObjectSpace.define_finalizer(self, self.class.finalizer(handle))
       set_attributes(options)
       init_vars
     end

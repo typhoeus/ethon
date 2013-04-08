@@ -27,11 +27,9 @@ describe Ethon::Multi do
   end
 
   describe ".finalizer" do
-    let(:multi) { stub(:handle => 1) }
-
     it "calls multi_cleanup" do
       Ethon::Curl.should_receive(:multi_cleanup).with(1).at_least(1)
-      Ethon::Multi.finalizer(multi).call
+      Ethon::Multi.finalizer(1).call
     end
   end
 end

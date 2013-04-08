@@ -104,16 +104,15 @@ describe Ethon::Easy do
 
   describe ".finalizer" do
     it "calls easy_cleanup" do
-      Ethon::Curl.should_receive(:easy_cleanup).with(easy.handle)
-      Ethon::Easy.finalizer(easy).call
+      Ethon::Curl.should_receive(:easy_cleanup).with(1)
+      Ethon::Easy.finalizer(1).call
     end
 
     context "when header_list" do
-      before { easy.instance_variable_set(:@header_list, 1) }
-
       it "calls slist_free_all" do
-        Ethon::Curl.should_receive(:slist_free_all).with(easy.header_list)
-        Ethon::Easy.finalizer(easy).call
+        Ethon::Curl.should_receive(:easy_cleanup).with(1)
+        Ethon::Curl.should_receive(:slist_free_all).with(2)
+        Ethon::Easy.finalizer(1, 2).call
       end
     end
   end

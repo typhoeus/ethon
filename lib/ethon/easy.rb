@@ -208,10 +208,11 @@ module Ethon
       # @see http://curl.haxx.se/libcurl/c/curl_easy_cleanup.html
       #
       # @api private
-      def finalizer(easy)
+      def finalizer(easy_address, header_list_address=nil)
         proc {
-          Curl.slist_free_all(easy.header_list) if easy.header_list
-          Curl.easy_cleanup(easy.handle)
+          Curl.slist_free_all(header_list_address) if header_list_address
+          Curl.easy_cleanup(easy_address)
+          Ethon::Libc.free(easy_address)
         }
       end
     end
@@ -233,7 +234,7 @@ module Ethon
     # @see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html
     def initialize(options = {})
       Curl.init
-      ObjectSpace.define_finalizer(self, self.class.finalizer(self))
+      ObjectSpace.define_finalizer(self, self.class.finalizer(handle.address))
       set_attributes(options)
       set_callbacks
     end
