@@ -27,6 +27,7 @@ module Ethon
         base.attach_function :easy_reset,             :curl_easy_reset,          [:pointer],                     :void
 
         base.attach_function :formadd,                :curl_formadd,             [:pointer, :pointer, :varargs], :int
+        base.attach_function :formfree,               :curl_formfree,            [:pointer],                     :void
 
         base.attach_function :multi_init,             :curl_multi_init,          [],                             :pointer
         base.attach_function :multi_cleanup,          :curl_multi_cleanup,       [:pointer],                     :void

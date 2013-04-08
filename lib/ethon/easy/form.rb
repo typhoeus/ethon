@@ -88,16 +88,16 @@ module Ethon
                       )
         end
 
-        build_multipart_finalizer
+        setup_garbage_collection
       end
 
-      def build_multipart_finalizer
-        return
-        # This has been broken for a long time in ethon. I'm disabling it, and
-        # it will be fixed as part of:
-        # https://github.com/typhoeus/ethon/issues/43
-        return if @first.is_a?(FFI::AutoPointer)
-        @first = FFI::AutoPointer.new(@first, Curl.method(:formfree))
+      def setup_garbage_collection
+        # first is a pointer to a pointer. Since it's a MemoryPointer it will
+        # auto clean itself up, but we need to clean up the object it points
+        # to. So this results in (pseudo-c):
+        #   form_data_cleanup_handler = *first
+        #   curl_form_free(form_data_cleanup_handler)
+        @form_data_cleanup_handler ||= FFI::AutoPointer.new(@first.get_pointer(0), Curl.method(:formfree))
       end
     end
   end

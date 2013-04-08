@@ -13,13 +13,13 @@ describe Ethon::Easy::Form do
 
   describe "#first" do
     it "returns a pointer" do
-      expect(form.first).to be_a(FFI::MemoryPointer)
+      expect(form.first).to be_a(FFI::Pointer)
     end
   end
 
   describe "#last" do
     it "returns a pointer" do
-      expect(form.first).to be_a(FFI::MemoryPointer)
+      expect(form.first).to be_a(FFI::Pointer)
     end
   end
 
