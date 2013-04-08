@@ -260,7 +260,10 @@ module Ethon
     #
     # @api private
     def escape(value)
-      Curl.easy_escape(handle, value, 0)
+      string_pointer = Curl.easy_escape(handle, value, 0)
+      returned_string = string_pointer.read_string
+      Curl.free(string_pointer)
+      returned_string
     end
 
     # Returns the informations available through libcurl as

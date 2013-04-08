@@ -22,13 +22,16 @@ describe "low-level interactions with libcurl" do
     memory_leak_test("handle") do
       Ethon::Easy.new.handle
     end
-  end
 
-  describe Ethon::Easy, "headers" do
     memory_leak_test("headers") do
       Ethon::Easy.new.headers = { "a" => 1, "b" => 2, "c" => 3, "d" => 4}
     end
+
+    memory_leak_test("escape") do
+      Ethon::Easy.new.escape("the_sky&is_blue")
+    end
   end
+
 
   describe Ethon::Easy::Form do
     memory_leak_test("init") do
