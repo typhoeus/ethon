@@ -40,7 +40,7 @@ module Ethon
       end
 
       # Compose libcurl header string from key and value.
-      # Also replaces null bytes, because libcurl will complain about
+      # Also replaces null bytes, because libcurl will complain
       # otherwise.
       #
       # @example Compose header.

@@ -36,8 +36,8 @@ module Ethon
       # @deprecated It is no longer necessary to call prepare.
       def prepare
         Ethon.logger.warn(
-          "ETHON: It is no longer necessay to call "+
-          "Easy#prepare. Its going to be removed "+
+          "ETHON: It is no longer necessary to call "+
+          "Easy#prepare. It's going to be removed "+
           "in future versions."
         )
       end

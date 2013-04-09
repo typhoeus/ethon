@@ -9,29 +9,29 @@ module Ethon
       # Holds available informations and their type, which is needed to
       # request the informations from libcurl.
       AVAILABLE_INFORMATIONS = {
-        # Return the available http auth methods.
+        # Return the available HTTP auth methods.
         :httpauth_avail => :long,
 
         # Return the total time in seconds for the previous
-        # transfer, including name resolving, TCP connect etc.
+        # transfer, including name resolution, TCP connection, etc.
         :total_time => :double,
 
         # Return the time, in seconds, it took from the start
-        # until the first byte is received by libcurl. This
-        # includes pretransfer time and also the time the
+        # until the first byte was received by libcurl. This
+        # includes pre-transfer time and also the time the
         # server needs to calculate the result.
         :starttransfer_time => :double,
 
         # Return the time, in seconds, it took from the start
         # until the SSL/SSH connect/handshake to the remote
         # host was completed. This time is most often very near
-        # to the pre transfer time, except for cases such as HTTP
-        # pippelining where the pretransfer time can be delayed
+        # to the pre-transfer time, except for cases such as HTTP
+        # pipelining where the pre-transfer time can be delayed
         # due to waits in line for the pipeline and more.
         :appconnect_time => :double,
 
         # Return the time, in seconds, it took from the start
-        # until the file transfer is just about to begin. This
+        # until the file transfer was just about to begin. This
         # includes all pre-transfer commands and negotiations
         # that are specific to the particular protocol(s) involved.
         # It does not involve the sending of the protocol-
@@ -43,7 +43,7 @@ module Ethon
         :connect_time => :double,
 
         # Return the time, in seconds, it took from the
-        # start until the name resolving was completed.
+        # start until the name resolution was completed.
         :namelookup_time => :double,
 
         # Return the last used effective url.
@@ -61,7 +61,7 @@ module Ethon
         :response_code => :long,
 
         # Return the total number of redirections that were
-        # actually followed
+        # actually followed.
         :redirect_count => :long
       }
 

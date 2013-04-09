@@ -18,7 +18,7 @@ module Ethon
       # @example Return a new Form.
       #   Form.new({})
       #
-      # @param [ Hash ] params The parameter to initialize the form with.
+      # @param [ Hash ] params The parameter with which to initialize the form.
       #
       # @return [ Form ] A new Form.
       def initialize(easy, params)
@@ -29,7 +29,7 @@ module Ethon
 
       # Frees form in libcurl if necessary.
       #
-      # @example Free the form
+      # @example Free the form.
       #   Form.finalizer(form)
       #
       # @param [ Form ] form The form to free.
@@ -57,7 +57,7 @@ module Ethon
         @last ||= FFI::MemoryPointer.new(:pointer)
       end
 
-      # Return if form is multipart. The form is multipart,
+      # Return if form is multipart. The form is multipart
       # when it contains a file.
       #
       # @example Return if form is multipart.

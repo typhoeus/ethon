@@ -4,7 +4,7 @@ require 'ethon/easy/queryable'
 module Ethon
   class Easy
 
-    # This class represents http request parameters.
+    # This class represents HTTP request parameters.
     #
     # @api private
     class Params

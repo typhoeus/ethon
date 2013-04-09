@@ -31,15 +31,14 @@ module Ethon
         Curl.set_option(:accept_encoding, value_for(value, :string), handle)
       end
 
-      # Pass a string to a zero terminated
-      # string naming a file holding one or more certificates to verify
-      # the peer with. This makes sense only when used in combination with
-      # the CURLOPT_SSL_VERIFYPEER option. If CURLOPT_SSL_VERIFYPEER is
-      # zero, CURLOPT_CAINFO need not even indicate an accessible file.
-      # This option is by default set to the system path where libcurl's
-      # cacert bundle is assumed to be stored, as established at build time.
-      # When built against NSS, this is the directory that the NSS certificate
-      # database resides in.
+      # Pass a string to a zero-terminated string naming a file holding one
+      # or more certificates with which to verify the peer. This makes sense
+      # only when used in combination with the CURLOPT_SSL_VERIFYPEER option.
+      # If CURLOPT_SSL_VERIFYPEER is zero, CURLOPT_CAINFO need not even
+      # indicate an accessible file. This option is by default set to the
+      # system path where libcurl's cacert bundle is assumed to be stored,
+      # as established at build time. When built against NSS, this is the
+      # directory that the NSS certificate database resides in.
       #
       # @example Set cainfo option.
       #   easy.cainfo = "/path/to/file"
@@ -51,10 +50,10 @@ module Ethon
         Curl.set_option(:cainfo, value_for(value, :string), handle)
       end
 
-      # Pass a string to a zero terminated string naming a directory holding
-      # multiple CA certificates to verify the peer with. If libcurl is built
-      # against OpenSSL, the certificate directory must be prepared using the
-      # openssl c_rehash utility. This makes sense only when used in
+      # Pass a string to a zero-terminated string naming a directory holding
+      # multiple CA certificates with which to verify the peer. If libcurl is
+      # built against OpenSSL, the certificate directory must be prepared using
+      # the openssl c_rehash utility. This makes sense only when used in
       # combination with the CURLOPT_SSL_VERIFYPEER option. If
       # CURLOPT_SSL_VERIFYPEER is zero, CURLOPT_CAPATH need not even indicate
       # an accessible path. The CURLOPT_CAPATH function apparently does not
@@ -78,7 +77,7 @@ module Ethon
       # connection phase, once it has connected, this option is of no more
       # use. Set to zero to switch to the default built-in connection timeout
       # \- 300 seconds. See also the CURLOPT_TIMEOUT option.
-      # In unix-like systems, this might cause signals to be used unless
+      # In Unix-like systems, this might cause signals to be used unless
       # CURLOPT_NOSIGNAL is set.
       #
       # @example Set connecttimeout option.
@@ -130,7 +129,7 @@ module Ethon
         Curl.set_option(:copypostfields, value_for(value, :string), handle)
       end
 
-      # Pass a pointer to a zero terminated string as parameter. It can be
+      # Pass a pointer to a zero-terminated string as parameter. It can be
       # used to specify the request instead of GET or HEAD when performing
       # HTTP based requests, instead of LIST and NLST when performing FTP
       # directory listings and instead of LIST and RETR when issuing POP3
@@ -143,7 +142,7 @@ module Ethon
       # in regards to the particular request method, it will only change the
       # actual string sent in the request.
       # For example:
-      # With the HTTP protocol when you tell libcurl to do a HEAD request,
+      # With the HTTP protocol, when you tell libcurl to do a HEAD request,
       # but then specify a GET though a custom request libcurl will still act
       # as if it sent a HEAD. To switch to a proper HEAD use CURLOPT_NOBODY,
       # to switch to a proper POST use CURLOPT_POST or CURLOPT_POSTFIELDS and
@@ -172,7 +171,7 @@ module Ethon
         Curl.set_option(:customrequest, value_for(value, :string), handle)
       end
 
-      # Pass a long, this sets the timeout in seconds. Name resolves will be
+      # Pass a long, this sets the timeout in seconds. Name resolutions will be
       # kept in memory for this number of seconds. Set to zero to completely
       # disable caching, or set to -1 to make the cached entries remain
       # forever. By default, libcurl caches this info for 60 seconds.
