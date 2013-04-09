@@ -106,6 +106,51 @@ module Ethon
         Curl.set_option(:connecttimeout_ms, value_for(value, :int), handle)
       end
 
+      # Sets the cookie value
+      #
+      # If you want to read/write the cookie from a file,
+      # see cookiefile= and cookiejar=
+      #
+      # @example Set the cookie option
+      #   easy.cookie = "cookie-value"
+      #
+      # @param [ String ] value The cookie value
+      #
+      # @return [ void ]
+      def cookie=(value)
+        Curl.set_option(:cookie, value_for(value, :string), handle)
+      end
+
+      # Sets the cookie jar file
+      # The file will only be used to write the cookie value
+      # If you want to read the cookie from a file, see cookiefile=
+      #
+      # If the file does not exist, it will try to create it
+      #
+      # @example Set cookiejar option
+      #   easy.cookiejar = "/path/to/file"
+      #
+      # @param [ String ] file The path to the file
+      #
+      # @return [ void ]
+      def cookiejar=(file)
+        Curl.set_option(:cookiejar, value_for(file, :string), handle)
+      end
+
+      # Sets the cookie file
+      # The file will only be used to read the cookie value
+      # If you want to set the cookie in a file, see cookiejar=
+      #
+      # @example Set cookiefile option
+      #   easy.cookiefile = "/path/to/file"
+      #
+      # @param [ String ] file The path to the file
+      #
+      # @return [ void ]
+      def cookiefile=(file)
+        Curl.set_option(:cookiefile, value_for(file, :string), handle)
+      end
+
       # Pass a string as parameter, which should be the full data to post in
       # a HTTP POST operation. It behaves as the CURLOPT_POSTFIELDS option,
       # but the original data are copied by the library, allowing the

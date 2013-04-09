@@ -4,11 +4,11 @@ describe Ethon::Easy::Options do
   let(:easy) { Ethon::Easy.new }
 
   [
-    :accept_encoding, :cainfo, :capath, :connecttimeout, :connecttimeout_ms,
-    :copypostfields, :customrequest, :dns_cache_timeout, :followlocation,
-    :forbid_reuse, :http_version, :httpauth, :httpget, :httppost, :infilesize,
-    :interface, :keypasswd, :maxredirs, :nobody, :nosignal, :postfieldsize,
-    :postredir, :protocols, :proxy, :proxyauth, :proxyport, :proxytype,
+    :accept_encoding, :cainfo, :capath, :connecttimeout, :connecttimeout_ms, :cookie,
+    :cookiejar, :cookiefile, :copypostfields, :customrequest, :dns_cache_timeout,
+    :followlocation, :forbid_reuse, :http_version, :httpauth, :httpget, :httppost,
+    :infilesize, :interface, :keypasswd, :maxredirs, :nobody, :nosignal,
+    :postfieldsize, :postredir, :protocols, :proxy, :proxyauth, :proxyport, :proxytype,
     :proxyuserpwd, :readdata, :readfunction, :redir_protocols, :ssl_verifyhost,
     :ssl_verifypeer, :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion,
     :timeout, :timeout_ms, :unrestricted_auth, :upload, :url, :useragent,
