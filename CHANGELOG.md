@@ -2,7 +2,26 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.10...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.11...master)
+
+## 0.5.11
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.10...v0.5.11)
+
+Enhancements:
+
+* Add support for postredirs, unrestricted_auth.
+* Add support for cookie, cookiejar, cookiefile.
+  ([erwanlr](https://github.com/erwanlr), [\#46](https://github.com/typhoeus/ethon/pull/46))
+* Relax ffi requirements.
+  ([voxik](https://github.com/voxik), [\#40](https://github.com/typhoeus/ethon/pull/40))
+* Various documentation improvements.
+  ([craiglittle](https://github.com/craiglittle))
+
+Bugfixes:
+
+* Fix the memory leaks.
+  ([richievos](https://github.com/richievos), [\#45](https://github.com/typhoeus/ethon/pull/45))
 
 ## 0.5.10
 
