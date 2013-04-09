@@ -3,7 +3,6 @@ module Ethon
     # This module contains the logic to prepare and perform
     # an easy.
     module Operations
-
       # Returns a pointer to the curl easy handle.
       #
       # @example Return the handle.
@@ -11,7 +10,7 @@ module Ethon
       #
       # @return [ FFI::Pointer ] A pointer to the curl easy handle.
       def handle
-        @handle ||= Curl.easy_init
+        @handle ||= FFI::AutoPointer.new(Curl.easy_init, Curl.method(:easy_cleanup))
       end
 
       # Perform the easy request.

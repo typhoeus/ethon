@@ -1,9 +1,7 @@
 module Ethon
   class Multi # :nodoc
-
     # This module contains logic to run a multi.
     module Operations
-
       # Return the multi handle. Inititialize multi handle,
       # in case it didn't happened already.
       #
@@ -12,7 +10,7 @@ module Ethon
       #
       # @return [ FFI::Pointer ] The multi handle.
       def handle
-        @handle ||= Curl.multi_init
+        @handle ||= FFI::AutoPointer.new(Curl.multi_init, Curl.method(:multi_cleanup))
       end
 
       # Initialize variables.

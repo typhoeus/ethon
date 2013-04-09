@@ -23,10 +23,11 @@ module Ethon
         base.instance_variable_set(:@blocking, true)
         base.attach_function :easy_perform,           :curl_easy_perform,        [:pointer],                     :easy_code
         base.attach_function :easy_strerror,          :curl_easy_strerror,       [:int],                         :string
-        base.attach_function :easy_escape,            :curl_easy_escape,         [:pointer, :pointer, :int],     :string
+        base.attach_function :easy_escape,            :curl_easy_escape,         [:pointer, :pointer, :int],     :pointer
         base.attach_function :easy_reset,             :curl_easy_reset,          [:pointer],                     :void
 
         base.attach_function :formadd,                :curl_formadd,             [:pointer, :pointer, :varargs], :int
+        base.attach_function :formfree,               :curl_formfree,            [:pointer],                     :void
 
         base.attach_function :multi_init,             :curl_multi_init,          [],                             :pointer
         base.attach_function :multi_cleanup,          :curl_multi_cleanup,       [:pointer],                     :void

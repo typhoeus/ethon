@@ -11,23 +11,6 @@ module Ethon
     include Ethon::Multi::Operations
     include Ethon::Multi::Options
 
-    class << self
-
-      # Frees the libcurl multi handle.
-      #
-      # @example Free multi.
-      #   Multi.finalizer(multi)
-      #
-      # @param [ Multi ] multi The multi to free.
-      #
-      # @api private
-      def finalizer(multi)
-        proc {
-          Curl.multi_cleanup(multi.handle)
-        }
-      end
-    end
-
     # Create a new multi. Initialize curl in case
     # it didn't happen before.
     #
@@ -82,7 +65,6 @@ module Ethon
     # @return [ Multi ] The new multi.
     def initialize(options = {})
       Curl.init
-      ObjectSpace.define_finalizer(self, self.class.finalizer(self))
       set_attributes(options)
       init_vars
     end
