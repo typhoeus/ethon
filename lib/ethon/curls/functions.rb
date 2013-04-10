@@ -51,6 +51,12 @@ module Ethon
         base.attach_function :slist_free_all,         :curl_slist_free_all,      [:pointer],                     :void
         base.instance_variable_set(:@blocking, true)
 
+        if Curl.windows?
+            base.ffi_lib 'ws2_32'
+        else
+            base.ffi_lib ::FFI::Library::LIBC
+        end
+
         base.attach_function :select,                                            [:int, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::Timeval.ptr], :int
       end
     end
