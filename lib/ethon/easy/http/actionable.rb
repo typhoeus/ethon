@@ -87,7 +87,9 @@ module Ethon
         # @param [ Easy ] easy The easy to setup.
         def set_params(easy)
           params.escape = true
-          easy.url = "#{url}?#{params.to_s}"
+          base_url, base_params = url.split("?")
+          base_params += "&" if base_params
+          easy.url = "#{base_url}?#{base_params}#{params.to_s}"
         end
 
         # Setup request with form.

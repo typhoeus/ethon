@@ -37,6 +37,14 @@ describe Ethon::Easy::Http::Patch do
       it "requests parameterized url" do
         expect(easy.effective_url).to eq("http://localhost:3001/?a=1%26b%3D2")
       end
+ 
+      context "when url already contains params" do
+        let(:url) { "http://localhost:3001/?query=here" }
+
+        it "requests parameterized url" do
+          expect(easy.effective_url).to eq("http://localhost:3001/?query=here&a=1%26b%3D2")
+        end
+      end
     end
   end
 end
