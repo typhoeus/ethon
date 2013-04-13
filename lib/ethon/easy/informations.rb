@@ -66,8 +66,9 @@ module Ethon
       }
 
       AVAILABLE_INFORMATIONS.each do |name, type|
+        curl_method_name = "get_info_#{type}"
         define_method(name) do
-          Curl.method("get_info_#{type}").call(name, handle)
+          Curl.send(curl_method_name, name, handle)
         end
       end
 

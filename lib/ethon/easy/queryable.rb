@@ -27,8 +27,11 @@ module Ethon
       #
       # @return [ String ] The string representation.
       def to_s
-        query_pairs.map{ |pair|
+        @to_s ||= query_pairs.map{ |pair|
           return pair if pair.is_a?(String)
+
+          perform_escape = escape && @easy
+          "#{perform_escape ? @easy.escape()}=#{}"
 
           pair.map{ |e|
             escape && @easy ? @easy.escape(e.to_s) : e
@@ -59,21 +62,7 @@ module Ethon
         return [hash] if hash.is_a?(String)
 
         pairs = []
-        recursive = Proc.new do |h, prefix|
-          case h
-          when Hash
-            h.each_pair do |k,v|
-              key = prefix == '' ? k : "#{prefix}[#{k}]"
-              pairs_for(v, key, pairs, recursive)
-            end
-          when Array
-            h.each_with_index do |v, i|
-              key = "#{prefix}[#{i}]"
-              pairs_for(v, key, pairs, recursive)
-            end
-          end
-        end
-        recursive.call(hash, '')
+        recursively_generate_pairs(hash, nil, pairs)
         pairs
       end
 
@@ -97,12 +86,27 @@ module Ethon
 
       private
 
-      def pairs_for(v, key, pairs,  recursive)
+      def recursively_generate_pairs(h, prefix, pairs)
+        case h
+        when Hash
+          h.each_pair do |k,v|
+            key = prefix.nil? ? k : "#{prefix}[#{k}]"
+            pairs_for(v, key, pairs)
+          end
+        when Array
+          h.each_with_index do |v, i|
+            key = "#{prefix}[#{i}]"
+            pairs_for(v, key, pairs)
+          end
+        end
+      end
+
+      def pairs_for(v, key, pairs)
         case v
         when Hash
-          recursive.call(v, key)
+          recursively_generate_pairs(v, key, pairs)
         when Array
-          recursive.call(v, key)
+          recursively_generate_pairs(v, key, pairs)
         when File, Tempfile
           pairs << [Util.escape_zero_byte(key), file_info(v)]
         else

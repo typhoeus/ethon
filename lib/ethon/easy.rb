@@ -229,10 +229,11 @@ module Ethon
     # @see initialize
     def set_attributes(options)
       options.each_pair do |key, value|
-        unless respond_to?("#{key}=")
+        method = "#{key}="
+        unless respond_to?(method)
           raise Errors::InvalidOption.new(key)
         end
-        method("#{key}=").call(value)
+        send(method, value)
       end
     end
 
@@ -244,7 +245,7 @@ module Ethon
     def reset
       @url = nil
       @hash = nil
-      @on_complete = []
+      @on_complete = nil
       Curl.easy_reset(handle)
       set_callbacks
     end
@@ -278,7 +279,7 @@ module Ethon
         :response_body => response_body
       }
       Easy::Informations::AVAILABLE_INFORMATIONS.keys.each do |info|
-        @hash[info] = method(info).call
+        @hash[info] = send(info)
       end
       @hash
     end
@@ -296,7 +297,7 @@ module Ethon
         :return_code => return_code,
         :total_time => total_time
       }
-      "EASY #{hash.map{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
+      "EASY #{hash.map!{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
     end
   end
 end

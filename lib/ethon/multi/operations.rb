@@ -2,6 +2,9 @@ module Ethon
   class Multi # :nodoc
     # This module contains logic to run a multi.
     module Operations
+      STARTED_MULTI = "ETHON: started MULTI"
+      PERFORMED_MULTI = "ETHON: performed MULTI"
+
       # Return the multi handle. Inititialize multi handle,
       # in case it didn't happened already.
       #
@@ -35,7 +38,7 @@ module Ethon
       # @example Perform multi.
       #   multi.perform
       def perform
-        Ethon.logger.debug("ETHON: started MULTI")
+        Ethon.logger.debug(STARTED_MULTI)
         while ongoing?
           run
           timeout = get_timeout
@@ -43,7 +46,7 @@ module Ethon
           reset_fds
           set_fds(timeout)
         end
-        Ethon.logger.debug("ETHON: performed MULTI")
+        Ethon.logger.debug(PERFORMED_MULTI)
         nil
       end
 
@@ -140,7 +143,7 @@ module Ethon
           next if msg[:code] != :done
           easy = easy_handles.find{ |e| e.handle == msg[:easy_handle] }
           easy.return_code = msg[:data][:code]
-          Ethon.logger.debug("ETHON:         performed #{easy.log_inspect}")
+          Ethon.logger.debug { "ETHON:         performed #{easy.log_inspect}" }
           delete(easy)
           easy.complete
         end
@@ -153,7 +156,8 @@ module Ethon
       #
       # @return [ void ]
       def run
-        begin code = trigger end while code == :call_multi_perform
+        running_count = FFI::MemoryPointer.new(:int)
+        begin code = trigger(running_count) end while code == :call_multi_perform
         check
       end
 
@@ -163,8 +167,7 @@ module Ethon
       #   multi.trigger
       #
       # @return [ Symbol ] The Curl.multi_perform return code.
-      def trigger
-        running_count = FFI::MemoryPointer.new(:int)
+      def trigger(running_count)
         code = Curl.multi_perform(handle, running_count)
         @running_count = running_count.read_int
         code
