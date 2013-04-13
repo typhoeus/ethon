@@ -30,12 +30,11 @@ module Ethon
         @to_s ||= query_pairs.map{ |pair|
           return pair if pair.is_a?(String)
 
-          perform_escape = escape && @easy
-          "#{perform_escape ? @easy.escape()}=#{}"
-
-          pair.map{ |e|
-            escape && @easy ? @easy.escape(e.to_s) : e
-          }.join("=")
+          if escape && @easy
+            pair.map{ |e| @easy.escape(e.to_s) }.join("=")
+          else
+            pair.join("=")
+          end
         }.join('&')
       end
 
