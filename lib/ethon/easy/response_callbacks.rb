@@ -40,7 +40,7 @@ module Ethon
       #   request.complete
       def complete
         if defined?(@on_complete)
-          @on_complete.map{ |callback| callback.call(self) }
+          @on_complete.each{ |callback| callback.call(self) }
         end
       end
     end
