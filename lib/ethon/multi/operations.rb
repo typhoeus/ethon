@@ -156,8 +156,7 @@ module Ethon
       #
       # @return [ void ]
       def run
-        running_count = FFI::MemoryPointer.new(:int)
-        begin code = trigger(running_count) end while code == :call_multi_perform
+        begin code = trigger end while code == :call_multi_perform
         check
       end
 
@@ -167,7 +166,8 @@ module Ethon
       #   multi.trigger
       #
       # @return [ Symbol ] The Curl.multi_perform return code.
-      def trigger(running_count)
+      def trigger
+        running_count = FFI::MemoryPointer.new(:int)
         code = Curl.multi_perform(handle, running_count)
         @running_count = running_count.read_int
         code
