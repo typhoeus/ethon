@@ -13,7 +13,7 @@ describe Ethon::Multi::Operations do
   describe "#running_count" do
     context "when hydra has no easy" do
       it "returns nil" do
-        expect(multi.method(:running_count).call).to be_nil
+        expect(multi.send(:running_count)).to be_nil
       end
     end
 
@@ -21,11 +21,11 @@ describe Ethon::Multi::Operations do
       before do
         easy.url = "http://localhost:3001/"
         multi.add(easy)
-        multi.method(:trigger).call
+        multi.send(:trigger)
       end
 
       it "returns 1" do
-        expect(multi.method(:running_count).call).to eq(1)
+        expect(multi.send(:running_count)).to eq(1)
       end
     end
 
@@ -37,11 +37,11 @@ describe Ethon::Multi::Operations do
         another_easy.url = "http://localhost:3001/"
         multi.add(easy)
         multi.add(another_easy)
-        multi.method(:trigger).call
+        multi.send(:trigger)
       end
 
       it "returns 2" do
-        expect(multi.method(:running_count).call).to eq(2)
+        expect(multi.send(:running_count)).to eq(2)
       end
     end
   end
@@ -56,14 +56,14 @@ describe Ethon::Multi::Operations do
       end
 
       it "doesn't raise" do
-        expect{ multi.method(:get_timeout).call }.to_not raise_error
+        expect{ multi.send(:get_timeout) }.to_not raise_error
       end
 
       context "when timeout smaller zero" do
         let(:timeout) { -1 }
 
         it "returns 1" do
-          expect(multi.method(:get_timeout).call).to eq(1)
+          expect(multi.send(:get_timeout)).to eq(1)
         end
       end
 
@@ -71,7 +71,7 @@ describe Ethon::Multi::Operations do
         let(:timeout) { 2 }
 
         it "returns timeout" do
-          expect(multi.method(:get_timeout).call).to eq(timeout)
+          expect(multi.send(:get_timeout)).to eq(timeout)
         end
       end
     end
@@ -80,7 +80,7 @@ describe Ethon::Multi::Operations do
       before { Ethon::Curl.should_receive(:multi_timeout).and_return(:not_ok) }
 
       it "raises MultiTimeout error" do
-        expect{ multi.method(:get_timeout).call }.to raise_error(Ethon::Errors::MultiTimeout)
+        expect{ multi.send(:get_timeout) }.to raise_error(Ethon::Errors::MultiTimeout)
       end
     end
   end
