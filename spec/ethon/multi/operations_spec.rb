@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Ethon::Multi::Operations do
   let(:multi) { Ethon::Multi.new }
   let(:easy) { Ethon::Easy.new }
+  let(:pointer) { FFI::MemoryPointer.new(:int) }
 
   describe "#handle" do
     it "returns a pointer" do
@@ -21,7 +22,7 @@ describe Ethon::Multi::Operations do
       before do
         easy.url = "http://localhost:3001/"
         multi.add(easy)
-        multi.send(:trigger)
+        multi.send(:trigger, pointer)
       end
 
       it "returns 1" do
@@ -37,7 +38,7 @@ describe Ethon::Multi::Operations do
         another_easy.url = "http://localhost:3001/"
         multi.add(easy)
         multi.add(another_easy)
-        multi.send(:trigger)
+        multi.send(:trigger, pointer)
       end
 
       it "returns 2" do
@@ -279,18 +280,18 @@ describe Ethon::Multi::Operations do
   describe "#trigger" do
     it "calls multi perform" do
       Ethon::Curl.should_receive(:multi_perform)
-      multi.method(:trigger).call
+      multi.send(:trigger, pointer)
     end
 
     it "sets running count" do
       multi.instance_variable_set(:@running_count, nil)
-      multi.method(:trigger).call
+      multi.send(:trigger, pointer)
       expect(multi.instance_variable_get(:@running_count)).to_not be_nil
     end
 
     it "returns multi perform code" do
       Ethon::Curl.should_receive(:multi_perform).and_return(:ok)
-      expect(multi.method(:trigger).call).to eq(:ok)
+      expect(multi.send(:trigger, pointer)).to eq(:ok)
     end
   end
 end
