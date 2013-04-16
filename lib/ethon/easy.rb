@@ -297,7 +297,7 @@ module Ethon
         :return_code => return_code,
         :total_time => total_time
       }
-      "EASY #{hash.map!{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
+      "EASY #{hash.map{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
     end
   end
 end

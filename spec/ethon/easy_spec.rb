@@ -96,4 +96,12 @@ describe Ethon::Easy do
       end
     end
   end
+
+  describe "#log_inspect" do
+    [ :url, :response_code, :return_code, :total_time ].each do |name|
+      it "contains #{name}" do
+        expect(easy.log_inspect).to match name.to_s
+      end
+    end
+  end
 end
