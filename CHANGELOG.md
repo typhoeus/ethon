@@ -2,7 +2,25 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.11...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.12...master)
+
+## 0.5.12
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.11...v0.5.12)
+
+Enhancements:
+
+* Performance optimizations.
+  ([Kyle Oppenheim](https://github.com/koppenheim) and [Richie Vos](https://github.com/richievos), [\#48](https://github.com/typhoeus/ethon/pull/48))
+* Reuse memory pointer.
+  ([Richie Vos](https://github.com/richievos), [\#49](https://github.com/typhoeus/ethon/pull/49))
+
+Bugfixes:
+
+* Fix windows install.
+  ([Derik Olsson](https://github.com/derikolsson), [\#47](https://github.com/typhoeus/ethon/pull/47))
+* Handle urls that already contain query params.
+  ([Turner King](https://github.com/turnerking ), [\#45](https://github.com/typhoeus/ethon/pull/45))
 
 ## 0.5.11
 
@@ -16,12 +34,12 @@ Enhancements:
 * Relax ffi requirements.
   ([voxik](https://github.com/voxik), [\#40](https://github.com/typhoeus/ethon/pull/40))
 * Various documentation improvements.
-  ([craiglittle](https://github.com/craiglittle))
+  ([Craig Little](https://github.com/craiglittle))
 
 Bugfixes:
 
 * Fix the memory leaks.
-  ([richievos](https://github.com/richievos), [\#45](https://github.com/typhoeus/ethon/pull/45))
+  ([Richie Vos](https://github.com/richievos), [\#45](https://github.com/typhoeus/ethon/pull/45))
 
 ## 0.5.10
 
@@ -30,7 +48,7 @@ Bugfixes:
 Enhancements:
 
 * Allow custom requests.
-  ([nate](https://github.com/nate), [\#36](https://github.com/typhoeus/ethon/pull/36))
+  ([Nathan Sutton](https://github.com/nate), [\#36](https://github.com/typhoeus/ethon/pull/36))
 * Use updated version of FFI.
 
 Bugfixes:
