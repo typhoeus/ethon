@@ -6,7 +6,7 @@ gem "rake"
 group :development, :test do
   gem "rspec", "~> 2.11"
 
-  gem "sinatra", "~> 1.3"
+  gem "sinatra", git: "https://github.com/sinatra/sinatra.git"
   gem "json"
 
   unless ENV["CI"]
