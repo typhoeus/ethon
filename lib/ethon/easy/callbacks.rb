@@ -62,11 +62,15 @@ module Ethon
         @request_body_read = 0
         @read_callback = proc {|stream, size, num, object|
           size = size * num
-          left = if body.respond_to?(:bytesize)
-            body.bytesize - @request_body_read
-          else
-            body.size - @request_body_read
+          body_size = if body.respond_to?(:bytesize)
+            body.bytesize
+          elsif body.respond_to?(:size)
+            body.size
+          elsif body.is_a?(File)
+            File.size(body.path)
           end
+
+          left = body_size - @request_body_read
           size = left if size > left
 
           if size > 0
