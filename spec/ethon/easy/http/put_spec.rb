@@ -101,7 +101,7 @@ describe Ethon::Easy::Http::Put do
         context "when injecting a file as body" do
           let(:file) { File.open(__FILE__) }
           let(:easy) do
-            e = Ethon::Easy.new(url: url, upload: true)
+            e = Ethon::Easy.new(:url => url, :upload => true)
             e.set_read_callback(file)
             e.infilesize = file.size
             e
