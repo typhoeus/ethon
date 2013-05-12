@@ -82,18 +82,39 @@ describe Ethon::Easy::Http::Put do
       end
 
       context "when requesting" do
-        before do
-          easy.headers = { 'Expect' => '' }
-          put.setup(easy)
-          easy.perform
+        context "sending string body" do
+          before do
+            easy.headers = { 'Expect' => '' }
+            put.setup(easy)
+            easy.perform
+          end
+
+          it "makes a put request" do
+            expect(easy.response_body).to include('"REQUEST_METHOD":"PUT"')
+          end
+
+          it "submits a body" do
+            expect(easy.response_body).to include('"body":"a=1%26b%3D2"')
+          end
         end
 
-        it "makes a put request" do
-          expect(easy.response_body).to include('"REQUEST_METHOD":"PUT"')
-        end
+        context "when injecting a file as body" do
+          let(:file) { File.open(__FILE__) }
+          let(:easy) do
+            e = Ethon::Easy.new(url: url, upload: true)
+            e.set_read_callback(file)
+            e.infilesize = file.size
+            e
+          end
 
-        it "submits a body" do
-          expect(easy.response_body).to include('"body":"a=1%26b%3D2"')
+          before do
+            easy.headers = { 'Expect' => '' }
+            easy.perform
+          end
+
+          it "submits file" do
+            expect(easy.response_body).to include("injecting")
+          end
         end
       end
     end

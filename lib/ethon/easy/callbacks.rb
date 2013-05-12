@@ -62,11 +62,24 @@ module Ethon
         @request_body_read = 0
         @read_callback = proc {|stream, size, num, object|
           size = size * num
-          left = body.bytesize - @request_body_read
+          left = if body.respond_to?(:bytesize)
+            body.bytesize - @request_body_read
+          else
+            body.size - @request_body_read
+          end
           size = left if size > left
+
           if size > 0
+            chunk = if body.respond_to?(:byteslice)
+              body.byteslice(@request_body_read, size)
+            elsif body.respond_to?(:read)
+              body.read(size)
+            else
+              body[@request_body_read, size]
+            end
+
             stream.write_string(
-              body.respond_to?(:byteslice) ? body.byteslice(@request_body_read, size) : body[@request_body_read, size], size
+              chunk, size
             )
             @request_body_read += size
           end
