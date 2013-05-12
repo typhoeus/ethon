@@ -103,7 +103,7 @@ describe Ethon::Easy::Http::Put do
           let(:easy) do
             e = Ethon::Easy.new(:url => url, :upload => true)
             e.set_read_callback(file)
-            e.infilesize = file.size
+            e.infilesize = File.size(file.path)
             e
           end
 
