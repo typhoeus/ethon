@@ -28,7 +28,7 @@ module Ethon
       #
       # @return [ void ]
       def accept_encoding=(value)
-        Curl.set_option(:accept_encoding, value_for(value, :string), handle)
+        Curl.set_option(:accept_encoding, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a string to a zero-terminated string naming a file holding one
@@ -47,7 +47,7 @@ module Ethon
       #
       # @return [ void ]
       def cainfo=(value)
-        Curl.set_option(:cainfo, value_for(value, :string), handle)
+        Curl.set_option(:cainfo, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a string to a zero-terminated string naming a directory holding
@@ -69,7 +69,7 @@ module Ethon
       #
       # @return [ void ]
       def capath=(value)
-        Curl.set_option(:capath, value_for(value, :string), handle)
+        Curl.set_option(:capath, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a long. It should contain the maximum time in seconds that you
@@ -118,7 +118,7 @@ module Ethon
       #
       # @return [ void ]
       def cookie=(value)
-        Curl.set_option(:cookie, value_for(value, :string), handle)
+        Curl.set_option(:cookie, value_for(value, :string_with_zero), handle)
       end
 
       # Sets the cookie jar file
@@ -134,7 +134,7 @@ module Ethon
       #
       # @return [ void ]
       def cookiejar=(file)
-        Curl.set_option(:cookiejar, value_for(file, :string), handle)
+        Curl.set_option(:cookiejar, value_for(file, :string_no_zero), handle)
       end
 
       # Sets the cookie file
@@ -148,7 +148,7 @@ module Ethon
       #
       # @return [ void ]
       def cookiefile=(file)
-        Curl.set_option(:cookiefile, value_for(file, :string), handle)
+        Curl.set_option(:cookiefile, value_for(file, :string_no_zero), handle)
       end
 
       # Pass a string as parameter, which should be the full data to post in
@@ -171,7 +171,7 @@ module Ethon
       #
       # @return [ void ]
       def copypostfields=(value)
-        Curl.set_option(:copypostfields, value_for(value, :string), handle)
+        Curl.set_option(:copypostfields, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a pointer to a zero-terminated string as parameter. It can be
@@ -213,7 +213,7 @@ module Ethon
       #
       # @return [ void ]
       def customrequest=(value)
-        Curl.set_option(:customrequest, value_for(value, :string), handle)
+        Curl.set_option(:customrequest, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a long, this sets the timeout in seconds. Name resolutions will be
@@ -326,7 +326,7 @@ module Ethon
       #
       # @return [ void ]
       def httppost=(value)
-        Curl.set_option(:httppost, value_for(value, :string), handle)
+        Curl.set_option(:httppost, value_for(value, :string_with_zero), handle)
       end
 
       # Pass a long, set to one of the values described below. They force
@@ -391,7 +391,7 @@ module Ethon
       #
       # @return [ void ]
       def interface=(value)
-        Curl.set_option(:interface, value_for(value, :string), handle)
+        Curl.set_option(:interface, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a pointer to a zero terminated string as parameter. It will be
@@ -408,7 +408,7 @@ module Ethon
       #
       # @return [ void ]
       def keypasswd=(value)
-        Curl.set_option(:keypasswd, value_for(value, :string), handle)
+        Curl.set_option(:keypasswd, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a long. The set number will be the redirection limit. If that
@@ -626,7 +626,7 @@ module Ethon
       #
       # @return [ void ]
       def proxy=(value)
-        Curl.set_option(:proxy, value_for(value, :string), handle)
+        Curl.set_option(:proxy, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a long as parameter, which is set to a bitmask, to tell libcurl
@@ -647,7 +647,7 @@ module Ethon
       #
       # @return [ void ]
       def proxyauth=(value)
-        Curl.set_option(:proxyauth, value_for(value, :string), handle)
+        Curl.set_option(:proxyauth, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a long with this option to set the proxy port to connect to
@@ -686,7 +686,7 @@ module Ethon
           "ETHON: Easy#proxytype= is deprecated. "+
           "Please use Easy#proxy= with protocoll handlers."
         )
-        Curl.set_option(:proxytype, value_for(value, :string), handle)
+        Curl.set_option(:proxytype, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a string as parameter, which should be [user name]:[password]
@@ -700,7 +700,7 @@ module Ethon
       #
       # @return [ void ]
       def proxyuserpwd=(value)
-        Curl.set_option(:proxyuserpwd, value_for(value, :string), handle)
+        Curl.set_option(:proxyuserpwd, value_for(value, :string_no_zero), handle)
       end
 
       # Data pointer to pass to the file read function. If you use the
@@ -719,7 +719,7 @@ module Ethon
       #
       # @return [ void ]
       def readdata=(value)
-        Curl.set_option(:readdata, value_for(value, :string), handle)
+        Curl.set_option(:readdata, value_for(value, :string_with_zero), handle)
       end
 
       # Pass a pointer to a function that matches the following prototype:
@@ -754,7 +754,7 @@ module Ethon
       #
       # @return [ void ]
       def readfunction=(value)
-        Curl.set_option(:readfunction, value_for(value, :string), handle)
+        Curl.set_option(:readfunction, value_for(value, :string_with_zero), handle)
       end
 
       # Pass a long as parameter.
@@ -838,7 +838,7 @@ module Ethon
       #
       # @return [ void ]
       def sslcert=(value)
-        Curl.set_option(:sslcert, value_for(value, :string), handle)
+        Curl.set_option(:sslcert, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a pointer to a zero terminated string as parameter. The string
@@ -852,7 +852,7 @@ module Ethon
       #
       # @return [ void ]
       def sslcerttype=(value)
-        Curl.set_option(:sslcerttype, value_for(value, :string), handle)
+        Curl.set_option(:sslcerttype, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a pointer to a zero terminated string as parameter. The string
@@ -866,7 +866,7 @@ module Ethon
       #
       # @return [ void ]
       def sslkey=(value)
-        Curl.set_option(:sslkey, value_for(value, :string), handle)
+        Curl.set_option(:sslkey, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a pointer to a zero terminated string as parameter. The string
@@ -885,7 +885,7 @@ module Ethon
       #
       # @return [ void ]
       def sslkeytype=(value)
-        Curl.set_option(:sslkeytype, value_for(value, :string), handle)
+        Curl.set_option(:sslkeytype, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a long as parameter to control what version of SSL/TLS to
@@ -1129,7 +1129,7 @@ module Ethon
       # @return [ void ]
       def url=(value)
         @url = value
-        Curl.set_option(:url, value_for(value, :string), handle)
+        Curl.set_option(:url, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a pointer to a zero terminated string as parameter. It will be
@@ -1144,7 +1144,7 @@ module Ethon
       #
       # @return [ void ]
       def useragent=(value)
-        Curl.set_option(:useragent, value_for(value, :string), handle)
+        Curl.set_option(:useragent, value_for(value, :string_no_zero), handle)
       end
 
       # Pass a string as parameter, which should be [user name]:[password] to
@@ -1169,7 +1169,7 @@ module Ethon
       #
       # @return [ void ]
       def userpwd=(value)
-        Curl.set_option(:userpwd, value_for(value, :string), handle)
+        Curl.set_option(:userpwd, value_for(value, :string_no_zero), handle)
       end
 
       # Set the parameter to 1 to get the library to display a lot of verbose
@@ -1213,6 +1213,8 @@ module Ethon
           value ? 1 : 0
         elsif type == :int
           value.to_i
+        elsif type == :string_no_zero
+          value.to_s
         elsif type == :enum && option == :httpauth
           Curl::Auth.to_h.fetch(value) do
             raise Errors::InvalidValue.new(option, value)
