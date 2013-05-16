@@ -326,6 +326,7 @@ module Ethon
       #
       # @return [ void ]
       def httppost=(value)
+        raise Errors::InvalidValue.new(:httppost, value) unless value.is_a?(FFI::Pointer)
         Curl.set_option(:httppost, value_for(value, :string_with_zero), handle)
       end
 

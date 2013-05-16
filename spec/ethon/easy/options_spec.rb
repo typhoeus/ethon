@@ -37,11 +37,19 @@ describe Ethon::Easy::Options do
           :http
         when :sslversion
           :default
+        when :httppost
+          FFI::Pointer::NULL
         else
           1
         end
         easy.method("#{name}=").call(value)
       end
+    end
+  end
+
+  describe "#httppost=" do
+    it "raises unless given a FFI::Pointer" do
+      expect{ easy.httppost = 1 }.to raise_error(Ethon::Errors::InvalidValue)
     end
   end
 
