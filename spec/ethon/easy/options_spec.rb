@@ -132,6 +132,7 @@ describe Ethon::Easy::Options do
     let(:timeout_ms) { nil }
     let(:connecttimeout) { nil }
     let(:connecttimeout_ms) { nil }
+    let(:userpwd) { nil }
 
     before do
       easy.url = url
@@ -139,7 +140,19 @@ describe Ethon::Easy::Options do
       easy.timeout_ms = timeout_ms
       easy.connecttimeout = connecttimeout
       easy.connecttimeout_ms = connecttimeout_ms
+      easy.userpwd = userpwd
       easy.perform
+    end
+
+    context "when userpwd" do
+      context "when contains /" do
+        let(:url) { "localhost:3001/auth_basic/test/te%2Fst" }
+        let(:userpwd) { "test:te/st" }
+
+        it "works" do
+          expect(easy.response_code).to eq(200)
+        end
+      end
     end
 
     context "when timeout" do
