@@ -7,8 +7,8 @@ module Ethon
 
       # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle, type = :easy)
-        raise NameError, "Ethon::Curls::Options unknown type #{type}." unless respond_to?("#{type.downcase}_options")
-        opthash=send("#{type.downcase}_options")
+        raise NameError, "Ethon::Curls::Options unknown type #{type}." unless respond_to?("#{type.to_s.downcase}_options")
+        opthash=send("#{type.to_s.downcase}_options")
         raise Errors::InvalidOption.new(option) unless opthash.include?(option)
         
         case opthash[option][:type]
@@ -155,18 +155,18 @@ module Ethon
           raise ArgumentError, "Ethon::Curls::Options #{ftype} #{name} Expected no opts." unless opts.nil?
         end
         
-        opthash=const_get("#{ftype.upcase}_OPTIONS")
+        opthash=const_get("#{ftype.to_s.upcase}_OPTIONS")
         opthash[name]={:type=>type, :opt=>OPTION_TYPE_BASE[OPTION_TYPE_MAP[type]]+num, :opts=>opts}
       end
 
       def self.option_alias(ftype,name,*aliases)
-        opthash=const_get("#{ftype.upcase}_OPTIONS")
+        opthash=const_get("#{ftype.to_s.upcase}_OPTIONS")
         aliases.each { |a| opthash[a]=opthash[name] }
       end
 
       def self.option_type(type)
-        c=const_set("#{type.upcase}_OPTIONS",{})
-        define_method("#{type.downcase}_options") { |*rt|
+        c=const_set("#{type.to_s.upcase}_OPTIONS",{})
+        define_method("#{type.to_s.downcase}_options") { |*rt|
             return c.map { |k,v| [k,v[:opt]] } if rt.first==:enum
             c
         }
