@@ -9,7 +9,7 @@ module Ethon
       def set_option(option, value, handle, type = :easy)
         raise NameError, "Ethon::Curls::Options unknown type #{type}." unless respond_to?("#{type.downcase}_options")
         opthash=send("#{type.downcase}_options")
-        raise NameError, "Ethon::Curls::Options unknown option #{option}." unless opthash.include?(option)
+        raise Errors::InvalidOption.new(option) unless opthash.include?(option)
         
         case opthash[option][:type]
         when :none
@@ -47,10 +47,10 @@ module Ethon
           value=Util.escape_zero_byte(value) unless value.nil?
         when :ffipointer
           func=:ffipointer
-          raise TypeError, "Ethon::Curls::Options option #{option} expects value to be a pointer." unless value.nil? or value.is_a? FFI::Pointer
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :curl_slist
           func=:ffipointer
-          raise TypeError, "Ethon::Curls::Options option #{option} expects value to be a pointer." unless value.nil? or value.is_a? FFI::Pointer
+          raise TypeError, Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :buffer
           raise NotImplementedError, "Ethon::Curls::Options option #{option} buffer type not implemented."
         when :dontuse_object
@@ -59,7 +59,7 @@ module Ethon
           raise NotImplementedError, "Ethon::Curls::Options option #{option} callback data type not implemented. Use Ruby closures."
         when :callback
           func=:callback
-          raise TypeError, "Ethon::Curls::Options option #{option} expects value to be a Proc." unless value.nil? or value.is_a? Proc
+          raise TypeError, Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :off_t
           return if value.nil?
           func=:off_t
@@ -70,7 +70,7 @@ module Ethon
             bits=FFI.type_size(:long)*8 if func==:long
             bits=FFI.type_size(:int64)*8 if func==:off_t
             tv=((value<0) ? value.abs-1 : value)
-            raise RangeError, "Ethon::Curls::Options option #{option} expects a #{bits}-bit integer." unless tv<(1<<bits)
+            raise Errors::InvalidValue.new(option,value) unless tv<(1<<bits)
         end
 
         send("#{type}_setopt_#{func}", handle, opthash[option][:opt], value)
