@@ -165,11 +165,12 @@ module Ethon
       end
 
       def self.option_type(type)
-        c=const_set("#{type.to_s.upcase}_OPTIONS",{})
+        cname="#{type.to_s.upcase}_OPTIONS"
+        c=const_set(cname,{})
         eval %Q<
           def #{type.to_s.downcase}_options(rt=nil)
-            return c.map { |k,v| [k,v[:opt]] } if rt==:enum
-            c
+            return #{cname}.map { |k,v| [k,v[:opt]] } if rt==:enum
+            #{cname}
           end
         >
       end

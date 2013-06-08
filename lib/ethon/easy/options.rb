@@ -14,7 +14,7 @@ module Ethon
       Curl.easy_options.each do |opt,_|
         eval %Q<
           def #{opt}=(value)
-            Curl.set_option(#{opt}, value, handle)
+            Curl.set_option(:#{opt}, value, handle)
           end
         > unless method_defined? opt.to_s+"="
       end
