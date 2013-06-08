@@ -50,7 +50,7 @@ module Ethon
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :curl_slist
           func=:ffipointer
-          raise TypeError, Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :buffer
           raise NotImplementedError, "Ethon::Curls::Options option #{option} buffer type not implemented."
         when :dontuse_object
@@ -59,7 +59,7 @@ module Ethon
           raise NotImplementedError, "Ethon::Curls::Options option #{option} callback data type not implemented. Use Ruby closures."
         when :callback
           func=:callback
-          raise TypeError, Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :off_t
           return if value.nil?
           func=:off_t
