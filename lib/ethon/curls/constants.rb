@@ -34,24 +34,6 @@ module Ethon
     FormOption = enum(:form_option, form_options)
 
     # :nodoc:
-    Auth = enum(auth_types.to_a.flatten)
-
-    # :nodoc:
-    Postredir = enum(postredir.to_a.flatten)
-
-    # :nodoc:
-    Protocols = enum(protocols.to_a.flatten)
-
-    # :nodoc:
-    Proxy = enum(proxy_types.to_a.flatten)
-
-    # :nodoc:
-    SSLVersion = enum(ssl_versions.to_a.flatten)
-
-    # :nodoc:
-    HTTPVersion = enum(http_versions.to_a.flatten)
-
-    # :nodoc:
     MsgCode = enum(:msg_code, msg_codes)
   end
 end
