@@ -26,7 +26,7 @@ describe Ethon::Easy do
           Ethon::Easy.any_instance.should_receive(:set_callbacks)
           Ethon::Curl.should_receive(:set_option).with do |option, value, _|
             expect(option).to be(:verbose)
-            expect(value).to be(1)
+            expect(value).to be(true)
           end
           easy
         end
