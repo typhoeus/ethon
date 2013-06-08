@@ -102,9 +102,7 @@ module Ethon
 
       def pairs_for(v, key, pairs)
         case v
-        when Hash
-          recursively_generate_pairs(v, key, pairs)
-        when Array
+        when Hash, Array
           recursively_generate_pairs(v, key, pairs)
         when File, Tempfile
           pairs << [Util.escape_zero_byte(key), file_info(v)]
