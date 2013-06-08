@@ -10,12 +10,12 @@ module Ethon
         base.send(:attr_accessor, :escape)
       end
 
-      # Return wether there are elements in the form or not.
+      # Return wether there are elements in params or not.
       #
-      # @example Return if form is empty.
+      # @example Return if params is empty.
       #   form.empty?
       #
-      # @return [ Boolean ] True if form is empty, else false.
+      # @return [ Boolean ] True if params is empty, else false.
       def empty?
         @params.empty?
       end
