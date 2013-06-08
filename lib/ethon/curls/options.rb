@@ -166,8 +166,8 @@ module Ethon
 
       def self.option_type(type)
         c=const_set("#{type.upcase}_OPTIONS",{})
-        define_method("#{type.downcase}_options") { |rt=nil|
-            return c.map { |k,v| [k,v[:opt]] } if type==:enum
+        define_method("#{type.downcase}_options") { |*rt|
+            return c.map { |k,v| [k,v[:opt]] } if rt.first==:enum
             c
         }
       end
@@ -274,11 +274,11 @@ module Ethon
       option :easy, :password, :string, 174
       option :easy, :proxyusername, :string, 175
       option :easy, :proxypassword, :string, 176 
-      option :easy, :httpauth, :bitmask, 107, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, :only => 1<<31, :any => ~0x10, :anysafe => ~0x11]
+      option :easy, :httpauth, :bitmask, 107, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11}]
       option :easy, :tlsauth_type, :enum, 206, [:none, :srp]
       option :easy, :tlsauth_username, :string, 204
       option :easy, :tlsauth_password, :string, 205
-      option :easy, :proxyauth, :bitmask, 111, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, :only => 1<<31, :any => ~0x10, :anysafe => ~0x11]
+      option :easy, :proxyauth, :bitmask, 111, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11}]
       option :easy, :sasl_ir, :bool, 218
       ## HTTP OPTIONS
       option :easy, :autoreferer, :bool, 58
@@ -288,7 +288,7 @@ module Ethon
       option :easy, :followlocation, :bool, 52
       option :easy, :unrestricted_auth, :bool, 105
       option :easy, :maxredirs, :int, 68
-      option :easy, :postredir, :bitmask, 161, [:get_all, :post_301, :post_302, :post_303, :post_all => [:post_301, :post_302, :post_303]]
+      option :easy, :postredir, :bitmask, 161, [:get_all, :post_301, :post_302, :post_303, {:post_all => [:post_301, :post_302, :post_303]}]
       option_alias :easy, :postredir, :post301
       option :easy, :put, :bool, 54
       option :easy, :post, :bool, 47
@@ -409,7 +409,7 @@ module Ethon
       option_alias :easy, :krblevel, :krb4level
       option :easy, :gssapi_delegation, :bitmask, 210, [:none, :policy_flag, :flag]
       ## SSH OPTIONS
-      option :easy, :ssh_auth_types, :bitmask, 151, [:none, :publickey, :password, :host, :keyboard, :agent, :any => [:all], :default => [:any]]
+      option :easy, :ssh_auth_types, :bitmask, 151, [:none, :publickey, :password, :host, :keyboard, :agent, {:any => [:all], :default => [:any]}]
       option :easy, :ssh_host_public_key_md5, :string, 162
       option :easy, :ssh_public_keyfile, :string, 152
       option :easy, :ssh_private_keyfile, :string, 153
