@@ -166,10 +166,12 @@ module Ethon
 
       def self.option_type(type)
         c=const_set("#{type.to_s.upcase}_OPTIONS",{})
-        define_method("#{type.to_s.downcase}_options") { |*rt|
-            return c.map { |k,v| [k,v[:opt]] } if rt.first==:enum
+        eval %Q<
+          def #{type.to_s.downcase}_options(rt=nil)
+            return c.map { |k,v| [k,v[:opt]] } if rt==:enum
             c
-        }
+          end
+        >
       end
       
       # Curl multi options, refer

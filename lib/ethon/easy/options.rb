@@ -12,9 +12,11 @@ module Ethon
       end
       
       Curl.easy_options.each do |opt,_|
-        define_method(opt.to_s+"=") do |value|
-          Curl.set_option(opt, value, handle)
-        end unless method_defined? opt.to_s+"="
+        eval %Q<
+          def #{opt}=(value)
+            Curl.set_option(#{opt}, value, handle)
+          end
+        > unless method_defined? opt.to_s+"="
       end
     end
   end
