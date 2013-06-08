@@ -248,7 +248,7 @@ module Ethon
       option :easy, :redir_protocols, :bitmask, 182, [nil, :http, :https, :ftp, :ftps, :scp, :sftp, :telnet, :ldap, :ldaps, :dict, :file, :tftp, :imap, :imaps, :pop3, :pop3s, :smtp, :smtps, :rtsp, :rtmp, :rtmpt, :rtmpe, :rtmpte, :rtmps, :rtmpts, :gopher]
       option :easy, :proxy, :string, 4
       option :easy, :proxyport, :int, 59
-      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, nil, nil, :socks4, :socks5, :socks4a, :socks5hostname]
+      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, nil, nil, :socks4, :socks5, :socks4a, :socks5_hostname]
       option :easy, :noproxy, :string, 177
       option :easy, :httpproxytunnel, :bool, 61
       option :easy, :socks5_gssapi_service, :string, 179
@@ -274,11 +274,11 @@ module Ethon
       option :easy, :password, :string, 174
       option :easy, :proxyusername, :string, 175
       option :easy, :proxypassword, :string, 176 
-      option :easy, :httpauth, :bitmask, 107, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11}]
+      option :easy, :httpauth, :bitmask, 107, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11, :auto => 0x1f}]
       option :easy, :tlsauth_type, :enum, 206, [:none, :srp]
       option :easy, :tlsauth_username, :string, 204
       option :easy, :tlsauth_password, :string, 205
-      option :easy, :proxyauth, :bitmask, 111, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11}]
+      option :easy, :proxyauth, :bitmask, 111, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11, :auto => 0x1f}]
       option :easy, :sasl_ir, :bool, 218
       ## HTTP OPTIONS
       option :easy, :autoreferer, :bool, 58
@@ -307,7 +307,7 @@ module Ethon
       option :easy, :cookiesession, :bool, 96
       option :easy, :cookielist, :string, 135
       option :easy, :httpget, :bool, 80
-      option :easy, :http_version, :enum, 84, [:none, :v1_0, :v1_1]
+      option :easy, :http_version, :enum, 84, [:none, :httpv1_0, :httpv1_1]
       option :easy, :ignore_content_length, :bool, 136
       option :easy, :http_content_decoding, :bool, 158
       option :easy, :http_transfer_decoding, :bool, 157
