@@ -11,12 +11,21 @@ module Ethon
         Curl.set_option(:url, value, handle)
       end
       
-      Curl.easy_options.each do |opt,_|
+      Curl.easy_options.each do |opt,props|
         eval %Q<
           def #{opt}=(value)
             Curl.set_option(:#{opt}, value, handle)
+            value
           end
         > unless method_defined? opt.to_s+"="
+        if props[:type]==:callback then
+          eval %Q<
+            def #{opt}(&block)
+              Curl.set_option(:#{opt}, block, handle)
+              nil
+            end
+          > unless method_defined? opt.to_s
+        end
       end
     end
   end
