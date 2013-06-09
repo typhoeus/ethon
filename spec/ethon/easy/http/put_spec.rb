@@ -72,7 +72,7 @@ describe Ethon::Easy::Http::Put do
       end
 
       it "sets readfunction" do
-        easy.should_receive(:readfunction=)
+        easy.should_receive(:readfunction)
         put.setup(easy)
       end
 
