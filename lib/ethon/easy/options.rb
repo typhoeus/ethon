@@ -21,6 +21,8 @@ module Ethon
         if props[:type]==:callback then
           eval %Q<
             def #{opt}(&block)
+              @procs ||= {}
+              @procs[:#{opt}]=block
               Curl.set_option(:#{opt}, block, handle)
               nil
             end
