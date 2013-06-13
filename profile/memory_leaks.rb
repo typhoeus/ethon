@@ -1,14 +1,15 @@
-require 'perf_spec_helper'
-
 require 'ethon'
 require 'ethon/easy'
+
+require_relative 'perf_spec_helper'
+require 'rspec/autorun'
 
 describe "low-level interactions with libcurl" do
   describe Ethon::Multi do
     memory_leak_test("init") do
       Ethon::Multi.new
     end
-    
+
     memory_leak_test("handle") do
       Ethon::Multi.new.handle
     end
@@ -18,7 +19,7 @@ describe "low-level interactions with libcurl" do
     memory_leak_test("init") do
       Ethon::Easy.new
     end
-    
+
     memory_leak_test("handle") do
       Ethon::Easy.new.handle
     end
@@ -37,15 +38,15 @@ describe "low-level interactions with libcurl" do
     memory_leak_test("init") do
       Ethon::Easy::Form.new(nil, {})
     end
-    
+
     memory_leak_test("first") do
       Ethon::Easy::Form.new(nil, {}).first
     end
-    
+
     memory_leak_test("last") do
       Ethon::Easy::Form.new(nil, {}).last
     end
-    
+
     memory_leak_test("materialized with some params") do
       form = Ethon::Easy::Form.new(nil, { "a" => "1" })
       form.materialize

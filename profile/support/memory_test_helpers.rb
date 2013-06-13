@@ -1,5 +1,5 @@
-require 'support/ruby_object_leak_tracker'
-require 'support/os_memory_leak_tracker'
+require_relative 'ruby_object_leak_tracker'
+require_relative 'os_memory_leak_tracker'
 
 module MemoryTestHelpers
   class << self
@@ -21,6 +21,7 @@ module MemoryTestHelpers
 
   module TestMethods
     def memory_leak_test(description, &block)
+      p method(:context).source_location
       context(description) do
         it "doesn't leak ruby objects" do
           object_leak_tracker = RubyObjectLeakTracker.new

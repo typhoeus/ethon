@@ -5,7 +5,7 @@ require 'rspec'
 
 require 'support/localhost_server'
 require 'support/server'
-require 'support/memory_test_helpers'
+require_relative 'support/memory_test_helpers'
 
 require 'logger'
 
