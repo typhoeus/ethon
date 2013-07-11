@@ -105,9 +105,9 @@ module Ethon
         when Hash, Array
           recursively_generate_pairs(v, key, pairs)
         when File, Tempfile
-          pairs << [Util.escape_zero_byte(key), file_info(v)]
+          pairs << [key, file_info(v)]
         else
-          pairs << [Util.escape_zero_byte(key), Util.escape_zero_byte(v)]
+          pairs << [key, v]
         end
       end
     end

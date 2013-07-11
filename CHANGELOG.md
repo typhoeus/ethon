@@ -4,6 +4,11 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.12...master)
 
+Bugfixes:
+
+  * URL-encode nullbytes in parameters instead of escaping them to `\\0`.
+    ([Tasos Laskos](https://github.com/zapotek)
+
 ## 0.5.12
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.11...v0.5.12)
