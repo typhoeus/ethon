@@ -38,9 +38,6 @@ module Ethon
     include Ethon::Easy::Operations
     include Ethon::Easy::ResponseCallbacks
 
-    # Nullbyte placeholder in order to bypass the FFI/C barrier.
-    NULLBYTE = "_null#{rand( 9999999999999 )}byte_"
-
     # Returns the curl return code.
     #
     # @return [ Symbol ] The return code.
@@ -264,11 +261,10 @@ module Ethon
     #
     # @api private
     def escape(value)
-	    value = value.gsub( "\0", NULLBYTE )
-      string_pointer = Curl.easy_escape(handle, value, 0)
+      string_pointer = Curl.easy_escape(handle, value, value.bytesize)
       returned_string = string_pointer.read_string
       Curl.free(string_pointer)
-      returned_string.gsub( NULLBYTE, '%00' )
+      returned_string
     end
 
     # Returns the informations available through libcurl as
