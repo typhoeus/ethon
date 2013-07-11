@@ -30,7 +30,7 @@ describe Ethon::Easy::Queryable do
 
           '<' => '%3C', '>' => '%3E', '"' => '%22', '{' => '%7B',
           '}' => '%7D', '|' => '%7C', '\\' => '%5C', '`' => '%60',
-          '^' => '%5E', '%' => '%25', ' ' => '%20',
+          '^' => '%5E', '%' => '%25', ' ' => '%20', "\0" => '%00',
 
           'まつもと' => '%E3%81%BE%E3%81%A4%E3%82%82%E3%81%A8',
         }.each do |value, percent|
@@ -156,16 +156,16 @@ describe Ethon::Easy::Queryable do
     context "when params key contains a null byte" do
       let(:hash) { {:a => "1\0" } }
 
-      it "escapes" do
-        expect(pairs).to eq([[:a, "1\\0"]])
+      it "preserves" do
+        expect(pairs).to eq([[:a, "1\0"]])
       end
     end
 
     context "when params value contains a null byte" do
       let(:hash) { {"a\0" => 1 } }
 
-      it "escapes" do
-        expect(pairs).to eq([["a\\0", 1]])
+      it "preserves" do
+        expect(pairs).to eq([["a\0", 1]])
       end
     end
   end
