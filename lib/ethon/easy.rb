@@ -246,6 +246,7 @@ module Ethon
       @url = nil
       @hash = nil
       @on_complete = nil
+      @procs = nil
       Curl.easy_reset(handle)
       set_callbacks
     end
