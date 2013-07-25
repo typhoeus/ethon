@@ -1,13 +1,7 @@
 require 'ethon/curls/codes'
 require 'ethon/curls/options'
-require 'ethon/curls/http_versions'
 require 'ethon/curls/infos'
 require 'ethon/curls/form_options'
-require 'ethon/curls/auth_types'
-require 'ethon/curls/postredir'
-require 'ethon/curls/protocols'
-require 'ethon/curls/proxy_types'
-require 'ethon/curls/ssl_versions'
 require 'ethon/curls/messages'
 require 'ethon/curls/functions'
 
@@ -20,15 +14,9 @@ module Ethon
     extend ::FFI::Library
     extend Ethon::Curls::Codes
     extend Ethon::Curls::Options
-    extend Ethon::Curls::HttpVersions
     extend Ethon::Curls::Infos
     extend Ethon::Curls::FormOptions
-    extend Ethon::Curls::AuthTypes
-    extend Ethon::Curls::ProxyTypes
-    extend Ethon::Curls::SslVersions
     extend Ethon::Curls::Messages
-    extend Ethon::Curls::Protocols
-    extend Ethon::Curls::Postredir
 
     # :nodoc:
     def self.windows?

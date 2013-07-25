@@ -60,7 +60,7 @@ module Ethon
       # @param [ String ] body The body.
       def set_read_callback(body)
         @request_body_read = 0
-        @read_callback = proc {|stream, size, num, object|
+        readfunction do |stream, size, num, object|
           size = size * num
           body_size = if body.respond_to?(:bytesize)
             body.bytesize
@@ -88,8 +88,7 @@ module Ethon
             @request_body_read += size
           end
           size
-        }
-        self.readfunction = read_callback
+        end
       end
 
       # Returns the body read callback.
