@@ -9,23 +9,29 @@ describe Ethon::Easy do
       easy
     end
 
+    it "sets verbose" do
+      Ethon::Easy.any_instance.should_receive(:verbose=).with(true)
+      easy
+    end
+
     context "when options are empty" do
-      it "sets only callbacks" do
+      it "sets only verbose and callbacks" do
+        Ethon::Easy.any_instance.should_receive(:verbose=).with(true)
         Ethon::Easy.any_instance.should_receive(:set_callbacks)
-        Ethon::Curl.should_receive(:set_option).never
         easy
       end
     end
 
     context "when options not empty" do
-      context "when verbose is set" do
-        let(:options) { { :verbose => true } }
+      context "when followlocation is set" do
+        let(:options) { { :followlocation => true } }
         let(:easy) { Ethon::Easy.new(options) }
 
-        it "sets verbose" do
+        it "sets followlocation" do
+          Ethon::Easy.any_instance.should_receive(:verbose=).with(true)
           Ethon::Easy.any_instance.should_receive(:set_callbacks)
           Ethon::Curl.should_receive(:set_option).with do |option, value, _|
-            expect(option).to be(:verbose)
+            expect(option).to be(:followlocation)
             expect(value).to be(true)
           end
           easy
@@ -36,9 +42,9 @@ describe Ethon::Easy do
 
   describe "#set_attributes" do
     context "when options are empty" do
-      it "sets nothing" do
+      it "sets only verbose and callbacks" do
+        Ethon::Easy.any_instance.should_receive(:verbose=).with(true)
         Ethon::Easy.any_instance.should_receive(:set_callbacks)
-        Ethon::Curl.should_receive(:set_option).never
         easy
       end
     end

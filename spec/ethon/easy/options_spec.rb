@@ -12,7 +12,7 @@ describe Ethon::Easy::Options do
     :proxyuserpwd, :readdata, :readfunction, :redir_protocols, :ssl_verifyhost,
     :ssl_verifypeer, :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion,
     :timeout, :timeout_ms, :unrestricted_auth, :upload, :url, :useragent,
-    :userpwd, :verbose
+    :userpwd
   ].each do |name|
     describe "#{name}=" do
       it "responds_to" do
@@ -20,6 +20,7 @@ describe Ethon::Easy::Options do
       end
 
       it "sets option" do
+        Ethon::Easy.any_instance.should_receive(:verbose=).with(true)
         Ethon::Easy.any_instance.should_receive(:set_callbacks)
         Ethon::Curl.should_receive(:set_option).with do |option, _, _|
           expect(option).to be(name)
@@ -44,6 +45,12 @@ describe Ethon::Easy::Options do
         end
         easy.method("#{name}=").call(value)
       end
+    end
+  end
+
+  describe "verbose=" do
+    it "response_to" do
+      expect(easy).to respond_to("verbose=")
     end
   end
 
