@@ -276,6 +276,7 @@ module Ethon
       return @hash if defined?(@hash) && @hash
       @hash = {
         :return_code => return_code,
+        :request_headers => request_headers,
         :response_headers => response_headers,
         :response_body => response_body
       }

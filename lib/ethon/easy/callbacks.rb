@@ -9,7 +9,7 @@ module Ethon
 
       # :nodoc:
       def self.included(base)
-        base.send(:attr_accessor, *[:response_body, :response_headers])
+        base.send(:attr_accessor, *[:response_body, :response_headers, :request_headers])
       end
 
       # Set writefunction and headerfunction callback.
@@ -21,8 +21,10 @@ module Ethon
       def set_callbacks
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
+        Curl.set_option(:debugfunction, debug_callback, handle)
         @response_body = ""
         @response_headers = ""
+        @request_headers = ""
       end
 
       # Returns the body write callback.
@@ -48,6 +50,22 @@ module Ethon
         @header_write_callback ||= proc {|stream, size, num, object|
           @response_headers << stream.read_string(size * num)
           size * num
+        }
+      end
+
+      # Returns the debug callback. This callback is currently used
+      # write the raw http request headers.
+      #
+      # @example Return the callback.
+      #   easy.body_write_callback
+      #
+      # @return [ Proc ] The callback.
+      def debug_callback
+        @debug_callback ||= proc {|handle, type, data, size, udata|
+          if type == 2 # CURLINFO_HEADER_OUT
+            @request_headers << data.read_string(size)
+          end
+          0
         }
       end
 
