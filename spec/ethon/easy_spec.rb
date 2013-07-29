@@ -12,20 +12,20 @@ describe Ethon::Easy do
     context "when options are empty" do
       it "sets only callbacks" do
         Ethon::Easy.any_instance.should_receive(:set_callbacks)
-        Ethon::Curl.should_receive(:set_option).never
+        Ethon::Easy.should_receive(:set_option).never
         easy
       end
     end
 
     context "when options not empty" do
-      context "when verbose is set" do
-        let(:options) { { :verbose => true } }
+      context "when followlocation is set" do
+        let(:options) { { :followlocation => true } }
         let(:easy) { Ethon::Easy.new(options) }
 
-        it "sets verbose" do
+        it "sets followlocation" do
           Ethon::Easy.any_instance.should_receive(:set_callbacks)
           Ethon::Curl.should_receive(:set_option).with do |option, value, _|
-            expect(option).to be(:verbose)
+            expect(option).to be(:followlocation)
             expect(value).to be(true)
           end
           easy
@@ -36,9 +36,9 @@ describe Ethon::Easy do
 
   describe "#set_attributes" do
     context "when options are empty" do
-      it "sets nothing" do
+      it "sets only callbacks" do
         Ethon::Easy.any_instance.should_receive(:set_callbacks)
-        Ethon::Curl.should_receive(:set_option).never
+        Ethon::Easy.should_receive(:set_option).never
         easy
       end
     end
@@ -86,7 +86,7 @@ describe Ethon::Easy do
 
   describe "#to_hash" do
     [
-      :return_code, :response_code, :response_headers, :response_body,
+      :return_code, :response_code, :response_body, :response_headers, :request_headers,
       :total_time, :starttransfer_time, :appconnect_time,
       :pretransfer_time, :connect_time, :namelookup_time,
       :effective_url, :primary_ip, :redirect_count

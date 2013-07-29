@@ -20,6 +20,25 @@ module Ethon
         }
       end
 
+      # http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTDEBUGFUNCTION
+      # https://github.com/bagder/curl/blob/master/include/curl/curl.h#L378
+      #
+      # @example Return debug info types.
+      #   Ethon::Curl.debug_info_types
+      #
+      # @return [ Hash ] The info types available to curl_debug_callback.
+      def debug_info_types
+        [
+          :text, 0,
+          :header_in,
+          :header_out,
+          :data_in,
+          :data_out,
+          :ssl_data_in,
+          :ssl_data_out
+        ]
+      end
+
       # Return Info details, refer
       # https://github.com/bagder/curl/blob/master/src/tool_writeout.c#L66 for details
       #

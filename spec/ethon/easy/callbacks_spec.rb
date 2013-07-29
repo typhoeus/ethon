@@ -5,7 +5,7 @@ describe Ethon::Easy::Callbacks do
 
   describe "#set_callbacks" do
     before do
-      Ethon::Curl.should_receive(:set_option).twice
+      Ethon::Curl.should_receive(:set_option).exactly(3).times
     end
 
     it "sets write- and headerfunction" do
@@ -21,5 +21,11 @@ describe Ethon::Easy::Callbacks do
       easy.set_callbacks
       expect(easy.instance_variable_get(:@response_headers)).to eq("")
     end
+
+    it "resets @debug_info" do
+      easy.set_callbacks
+      expect(easy.instance_variable_get(:@debug_info).to_a).to eq([])
+    end
+
   end
 end

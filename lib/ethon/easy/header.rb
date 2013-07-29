@@ -55,6 +55,7 @@ module Ethon
       def compose_header(key, value)
         Util.escape_zero_byte("#{key}: #{value}")
       end
+
     end
   end
 end
