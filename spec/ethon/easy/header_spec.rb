@@ -7,7 +7,6 @@ describe Ethon::Easy::Header do
     let(:headers) { { 'User-Agent' => 'Ethon' } }
 
     it "sets header" do
-      Ethon::Easy.any_instance.should_receive(:verbose=).with(true)
       Ethon::Easy.any_instance.should_receive(:set_callbacks)
       Ethon::Curl.should_receive(:set_option)
       easy.headers = headers

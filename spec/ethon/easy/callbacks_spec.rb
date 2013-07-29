@@ -22,9 +22,9 @@ describe Ethon::Easy::Callbacks do
       expect(easy.instance_variable_get(:@response_headers)).to eq("")
     end
 
-    it "resets @request_headers" do
+    it "resets @debug_info" do
       easy.set_callbacks
-      expect(easy.instance_variable_get(:@request_headers)).to eq("")
+      expect(easy.instance_variable_get(:@debug_info).to_a).to eq([])
     end
 
   end
