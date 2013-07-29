@@ -62,7 +62,8 @@ module Ethon
       # @return [ Proc ] The callback.
       def debug_callback
         @debug_callback ||= proc {|handle, type, data, size, udata|
-          if type == 2 # CURLINFO_HEADER_OUT
+          case type
+          when :header_out
             @request_headers << data.read_string(size)
           end
           0
