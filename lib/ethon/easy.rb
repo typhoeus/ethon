@@ -215,7 +215,6 @@ module Ethon
     def initialize(options = {})
       Curl.init
       set_attributes(options)
-      self.verbose = true
       set_callbacks
     end
 
