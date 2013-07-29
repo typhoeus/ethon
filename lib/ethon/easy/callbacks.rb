@@ -9,7 +9,7 @@ module Ethon
 
       # :nodoc:
       def self.included(base)
-        base.send(:attr_accessor, *[:response_body, :response_headers, :request_headers])
+        base.send(:attr_accessor, *[:response_body, :response_headers, :debug_info])
       end
 
       # Set writefunction and headerfunction callback.
@@ -24,7 +24,7 @@ module Ethon
         Curl.set_option(:debugfunction, debug_callback, handle)
         @response_body = ""
         @response_headers = ""
-        @request_headers = ""
+        @debug_info = Ethon::Easy::DebugInfo.new
       end
 
       # Returns the body write callback.
@@ -62,10 +62,7 @@ module Ethon
       # @return [ Proc ] The callback.
       def debug_callback
         @debug_callback ||= proc {|handle, type, data, size, udata|
-          case type
-          when :header_out
-            @request_headers << data.read_string(size)
-          end
+          @debug_info.add type, data.read_string(size)
           0
         }
       end

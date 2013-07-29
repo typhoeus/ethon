@@ -8,6 +8,7 @@ require 'ethon/easy/form'
 require 'ethon/easy/http'
 require 'ethon/easy/operations'
 require 'ethon/easy/response_callbacks'
+require 'ethon/easy/debug_info'
 
 module Ethon
 
@@ -302,5 +303,6 @@ module Ethon
       }
       "EASY #{hash.map{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
     end
+
   end
 end
