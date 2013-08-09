@@ -60,6 +60,9 @@ module Ethon
         when :callback
           func=:callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+        when :debug_callback
+          func=:debug_callback
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :off_t
           return if value.nil?
           func=:off_t
@@ -110,6 +113,7 @@ module Ethon
         :dontuse_object => :objectpoint, # An object we don't support (e.g. FILE*)
         :cbdata => :objectpoint,
         :callback => :functionpoint,
+        :debug_callback => :functionpoint,
         :off_t => :off_t,
       }
 
@@ -227,7 +231,7 @@ module Ethon
       option :easy, :headerfunction, :callback, 79
       option :easy, :writeheader, :cbdata, 29
       option_alias :easy, :writeheader, :headerdata
-      option :easy, :debugfunction, :callback, 94
+      option :easy, :debugfunction, :debug_callback, 94
       option :easy, :debugdata, :cbdata, 95
       option :easy, :ssl_ctx_function, :callback, 108
       option :easy, :ssl_ctx_data, :cbdata, 109

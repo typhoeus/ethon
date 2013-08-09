@@ -53,8 +53,12 @@ describe Ethon::Easy::Operations do
         expect(easy.response_body).to be
       end
 
-      it "sets response header" do
+      it "sets response headers" do
         expect(easy.response_headers).to be
+      end
+
+      it "sets request headers" do
+        expect(easy.request_headers).to be
       end
 
       context "when request timed out" do

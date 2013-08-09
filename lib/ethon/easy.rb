@@ -8,6 +8,7 @@ require 'ethon/easy/form'
 require 'ethon/easy/http'
 require 'ethon/easy/operations'
 require 'ethon/easy/response_callbacks'
+require 'ethon/easy/debug_info'
 
 module Ethon
 
@@ -276,6 +277,7 @@ module Ethon
       return @hash if defined?(@hash) && @hash
       @hash = {
         :return_code => return_code,
+        :request_headers => request_headers,
         :response_headers => response_headers,
         :response_body => response_body
       }
@@ -300,5 +302,6 @@ module Ethon
       }
       "EASY #{hash.map{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
     end
+
   end
 end

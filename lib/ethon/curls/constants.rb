@@ -22,6 +22,10 @@ module Ethon
     # :nodoc:
     MultiOption = enum(:multi_option, multi_options(:enum).to_a.flatten)
 
+    # Used by curl_debug_callback when setting CURLOPT_DEBUGFUNCTION
+    # https://github.com/bagder/curl/blob/master/include/curl/curl.h#L378 for details
+    DebugInfoType = enum(:debug_info_type, debug_info_types)
+
     # :nodoc:
     InfoType = enum(info_types.to_a.flatten)
 
