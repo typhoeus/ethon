@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Ethon::Easy::DebugInfo do
   let(:easy) { Ethon::Easy.new }
-  
+
   before do
     easy.url = "http://localhost:3001/"
     easy.perform
@@ -13,11 +13,6 @@ describe Ethon::Easy::DebugInfo do
       it "does not save any debug info after a request" do
         expect(easy.debug_info.to_a.length).to eq(0)
         expect(easy.debug_info.to_h.values.flatten.length).to eq(0)
-      end
-
-      it "does not save request headers" do
-        expect(easy.debug_info.header_out.length).to eq(0)
-        expect(easy.request_headers).to eq("")
       end
     end
 
@@ -33,13 +28,10 @@ describe Ethon::Easy::DebugInfo do
 
       it "saves debug info after a request" do
         expect(easy.debug_info.to_a.length).to be > 0
-        expect(easy.debug_info.to_h.values.flatten.length).to be > 0
       end
 
       it "saves request headers" do
-        expect(easy.debug_info.header_out.length).to be > 0
-        expect(easy.debug_info.header_out.join).to eq(easy.request_headers)
-        expect(easy.request_headers).to include('GET / HTTP/1.1')
+        expect(easy.debug_info.header_out.join).to include('GET / HTTP/1.1')
       end
 
       it "saves response headers" do

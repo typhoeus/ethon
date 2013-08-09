@@ -41,14 +41,6 @@ module Ethon
       def to_h
         Hash[MESSAGE_TYPES.map {|k| [k, send(k)] }]
       end
-
     end
-
-
-    def request_headers
-      return unless @debug_info
-      @debug_info.header_out.join
-    end
-
   end
 end
