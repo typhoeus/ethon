@@ -84,16 +84,14 @@ describe Ethon::Easy do
     end
   end
 
-  describe "#to_hash" do
-    [
-      :return_code, :response_code, :response_body, :response_headers, :request_headers,
-      :total_time, :starttransfer_time, :appconnect_time,
-      :pretransfer_time, :connect_time, :namelookup_time,
-      :effective_url, :primary_ip, :redirect_count
-    ].each do |name|
-      it "contains #{name}" do
-        expect(easy.to_hash).to include(name)
-      end
+  describe "#mirror" do
+    it "returns a Mirror" do
+      expect(easy.mirror).to be_a(Ethon::Easy::Mirror)
+    end
+
+    it "builds from easy" do
+      Ethon::Easy::Mirror.should_receive(:from_easy).with(easy)
+      easy.mirror
     end
   end
 

@@ -9,6 +9,7 @@ require 'ethon/easy/http'
 require 'ethon/easy/operations'
 require 'ethon/easy/response_callbacks'
 require 'ethon/easy/debug_info'
+require 'ethon/easy/mirror'
 
 module Ethon
 
@@ -246,6 +247,7 @@ module Ethon
     def reset
       @url = nil
       @hash = nil
+      @mirror = nil
       @on_complete = nil
       @procs = nil
       Curl.easy_reset(handle)
@@ -274,17 +276,12 @@ module Ethon
     #
     # @return [ Hash ] The informations hash.
     def to_hash
-      return @hash if defined?(@hash) && @hash
-      @hash = {
-        :return_code => return_code,
-        :request_headers => request_headers,
-        :response_headers => response_headers,
-        :response_body => response_body
-      }
-      Easy::Informations::AVAILABLE_INFORMATIONS.keys.each do |info|
-        @hash[info] = send(info)
-      end
-      @hash
+      Kernel.warn("Ethon: Easy#to_hash is deprecated and will be removed, please use #mirror.")
+      mirror.to_hash
+    end
+
+    def mirror
+      @mirror ||= Mirror.from_easy(self)
     end
 
     # Return pretty log out.
@@ -294,14 +291,7 @@ module Ethon
     #
     # @return [ String ] The log out.
     def log_inspect
-      hash = {
-        :url => url,
-        :response_code => response_code,
-        :return_code => return_code,
-        :total_time => total_time
-      }
-      "EASY #{hash.map{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
+      "EASY #{mirror.log_informations.map{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
     end
-
   end
 end

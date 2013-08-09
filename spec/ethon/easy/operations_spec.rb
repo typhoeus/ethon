@@ -21,6 +21,8 @@ describe Ethon::Easy::Operations do
     let(:headers) { nil }
     let(:protocols) { nil }
     let(:redir_protocols) { nil }
+    let(:username) { nil }
+    let(:password) { nil }
 
     before do
       easy.url = url
@@ -28,11 +30,17 @@ describe Ethon::Easy::Operations do
       easy.connecttimeout = connect_timeout
       easy.followlocation = follow_location
       easy.maxredirs = max_redirs
-      easy.userpwd = user_pwd
       easy.httpauth = http_auth
       easy.headers = headers
       easy.protocols = protocols
       easy.redir_protocols = redir_protocols
+
+      if user_pwd
+        easy.userpwd = user_pwd
+      else
+        easy.username = username
+        easy.password = password
+      end
 
       easy.perform
     end
@@ -135,6 +143,15 @@ describe Ethon::Easy::Operations do
 
         context "when valid user_pwd" do
           let(:user_pwd) { "username:password" }
+
+          it "returns 200" do
+            expect(easy.response_code).to eq(200)
+          end
+        end
+
+        context "when user and password" do
+          let(:username) { "username" }
+          let(:password) { "password" }
 
           it "returns 200" do
             expect(easy.response_code).to eq(200)
