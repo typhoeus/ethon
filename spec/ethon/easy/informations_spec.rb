@@ -52,7 +52,7 @@ describe Ethon::Easy::Informations do
 
   describe "#effective_url" do
     it "returns url" do
-      expect(easy.effective_url).to eq("http://localhost:3001/")
+      expect(easy.effective_url).to eq("http://localhost:3001")
     end
   end
 
