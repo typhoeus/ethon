@@ -8,7 +8,7 @@ describe Ethon::Easy::Http do
     let(:action_name) { :get }
     let(:options) { {} }
 
-    let(:get) { mock(:setup) }
+    let(:get) { double(:setup) }
     let(:get_class) { Ethon::Easy::Http::Get }
 
     it "instanciates action" do
