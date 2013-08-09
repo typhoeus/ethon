@@ -57,10 +57,6 @@ describe Ethon::Easy::Operations do
         expect(easy.response_headers).to be
       end
 
-      it "sets request headers" do
-        expect(easy.request_headers).to be
-      end
-
       context "when request timed out" do
         let(:url) { "http://localhost:3001/?delay=1" }
         let(:timeout) { 1 }
