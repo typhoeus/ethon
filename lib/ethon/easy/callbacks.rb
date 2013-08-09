@@ -62,7 +62,9 @@ module Ethon
       # @return [ Proc ] The callback.
       def debug_callback
         @debug_callback ||= proc {|handle, type, data, size, udata|
-          @debug_info.add type, data.read_string(size)
+          message = data.read_string(size)
+          @debug_info.add type, message
+          print message unless [:data_in, :data_out].include?(type)
           0
         }
       end
