@@ -39,5 +39,12 @@ describe Ethon::Easy::ResponseCallbacks do
       String.should_receive(:new).with(easy.url)
       easy.complete
     end
+
+    context "when @on_complete nil" do
+      it "doesn't raise" do
+        easy.instance_variable_set(:@on_complete, nil)
+        expect{ easy.complete }.to_not raise_error(NoMethodError)
+      end
+    end
   end
 end
