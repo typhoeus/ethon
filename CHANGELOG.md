@@ -2,7 +2,13 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.12...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.6.0...master)
+
+## 0.6.0
+
+The changelog entries are coming soon!
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.5.12...v0.6.0)
 
 Bugfixes:
 
