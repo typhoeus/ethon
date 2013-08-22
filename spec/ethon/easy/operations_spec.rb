@@ -50,6 +50,16 @@ describe Ethon::Easy::Operations do
       easy.perform
     end
 
+    it "logs" do
+      Ethon.logger.should_receive(:debug)
+      easy.perform
+    end
+
+    it "doesn't log after completing because completing could reset" do
+      easy.on_complete{ Ethon.logger.should_receive(:debug).never }
+      easy.perform
+    end
+
     context "when url" do
       let(:url) { "http://localhost:3001/" }
 

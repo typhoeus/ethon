@@ -249,6 +249,7 @@ module Ethon
       @hash = nil
       @on_complete = nil
       @procs = nil
+      @mirror = nil
       Curl.easy_reset(handle)
       set_callbacks
     end
@@ -280,7 +281,7 @@ module Ethon
     end
 
     def mirror
-      Mirror.from_easy(self)
+      @mirror ||= Mirror.from_easy(self)
     end
 
     # Return pretty log out.
