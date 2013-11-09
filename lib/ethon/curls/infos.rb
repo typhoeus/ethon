@@ -104,8 +104,8 @@ module Ethon
       #
       # @return [ String ] The info.
       def get_info_string(option, handle)
-        if easy_getinfo(handle, option, string_ptr) == :ok
-          ptr=string_ptr.read_pointer
+        if easy_getinfo(handle, option, ptr_ptr) == :ok
+          ptr=ptr_ptr.read_pointer
           ptr.null? ? nil : ptr.read_string
         end
       end
@@ -140,14 +140,35 @@ module Ethon
         end
       end
 
-      # Return a string pointer.
+      # Return info as array of strings.
       #
-      # @example Return a string pointer.
-      #   Curl.string_ptr
+      # @example Return info.
+      #   Curl.get_info_slist(:ssl_engines, easy)
       #
-      # @return [ ::FFI::Pointer ] The string pointer.
-      def string_ptr
-        @string_ptr ||= ::FFI::MemoryPointer.new(:pointer)
+      # @param [ Symbol ] option The option name.
+      # @param [ ::FFI::Pointer ] handle The easy handle.
+      #
+      # @return [ Array ] The info.
+      def get_info_slist(option, handle)
+        if easy_getinfo(handle, option, ptr_ptr) == :ok
+          ret=[]
+          ptr=ptr_ptr.read_pointer
+          unless ptr.null?
+            slist=Curl::Slist.new(ptr)
+            ret=slist.to_a
+            slist.pointer.free
+          end
+        end
+      end
+
+      # Return a pointer pointer.
+      #
+      # @example Return a pointer pointer.
+      #   Curl.ptr_ptr
+      #
+      # @return [ ::FFI::Pointer ] The pointer pointer.
+      def ptr_ptr
+        @ptr_ptr ||= ::FFI::MemoryPointer.new(:pointer)
       end
 
       # Return a long pointer.
