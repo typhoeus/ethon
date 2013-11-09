@@ -13,10 +13,11 @@ module Ethon
       # @return [ Hash ] The info types.
       def info_types
         {
-          :string =>0x100000,
-          :long =>  0x200000,
-          :double =>0x300000,
-          :slist => 0x400000
+          :string   => 0x100000,
+          :long     => 0x200000,
+          :double   => 0x300000,
+          :slist    => 0x400000,
+          :certinfo => 0x400000
         }
       end
 
@@ -46,52 +47,51 @@ module Ethon
       #   Ethon::Curl.infos
       #
       # @return [ Hash ] The infos.
-      def infos
-        {
-          :effective_url =>          info_types[:string] + 1,
-          :response_code =>          info_types[:long]   + 2,
-          :total_time =>             info_types[:double] + 3,
-          :namelookup_time =>        info_types[:double] + 4,
-          :connect_time =>           info_types[:double] + 5,
-          :pretransfer_time =>       info_types[:double] + 6,
-          :size_upload =>            info_types[:double] + 7,
-          :size_download =>          info_types[:double] + 8,
-          :speed_download =>         info_types[:double] + 9,
-          :speed_upload =>           info_types[:double] + 10,
-          :header_size =>            info_types[:long]   + 11,
-          :request_size =>           info_types[:long]   + 12,
-          :ssl_verifyresult =>       info_types[:long]   + 13,
-          :filetime =>               info_types[:long]   + 14,
-          :content_length_download =>info_types[:double] + 15,
-          :content_length_upload =>  info_types[:double] + 16,
-          :starttransfer_time =>     info_types[:double] + 17,
-          :content_type =>           info_types[:string] + 18,
-          :redirect_time =>          info_types[:double] + 19,
-          :redirect_count =>         info_types[:long]   + 20,
-          :private =>                info_types[:string] + 21,
-          :http_connectcode =>       info_types[:long]   + 22,
-          :httpauth_avail =>         info_types[:long]   + 23,
-          :proxyauth_avail =>        info_types[:long]   + 24,
-          :os_errno =>               info_types[:long]   + 25,
-          :num_connects =>           info_types[:long]   + 26,
-          :ssl_engines =>            info_types[:slist]  + 27,
-          :cookielist =>             info_types[:slist]  + 28,
-          :lastsocket =>             info_types[:long]   + 29,
-          :ftp_entry_path =>         info_types[:string] + 30,
-          :redirect_url =>           info_types[:string] + 31,
-          :primary_ip =>             info_types[:string] + 32,
-          :appconnect_time =>        info_types[:double] + 33,
-          :certinfo =>               info_types[:slist]  + 34,
-          :condition_unmet =>        info_types[:long]   + 35,
-          :rtsp_session_id =>        info_types[:string] + 36,
-          :rtsp_client_cseq =>       info_types[:long]   + 37,
-          :rtsp_server_cseq =>       info_types[:long]   + 38,
-          :rtsp_cseq_recv =>         info_types[:long]   + 39,
-          :primary_port =>           info_types[:long]   + 40,
-          :local_ip =>               info_types[:string] + 41,
-          :local_port =>             info_types[:long]   + 42,
-          :last =>42
-        }
+      def infos(indices=true)
+        Hash[{
+          :effective_url =>          [:string,    1],
+          :response_code =>          [:long,      2],
+          :total_time =>             [:double,    3],
+          :namelookup_time =>        [:double,    4],
+          :connect_time =>           [:double,    5],
+          :pretransfer_time =>       [:double,    6],
+          :size_upload =>            [:double,    7],
+          :size_download =>          [:double,    8],
+          :speed_download =>         [:double,    9],
+          :speed_upload =>           [:double,   10],
+          :header_size =>            [:long,     11],
+          :request_size =>           [:long,     12],
+          :ssl_verifyresult =>       [:long,     13],
+          :filetime =>               [:long,     14],
+          :content_length_download =>[:double,   15],
+          :content_length_upload =>  [:double,   16],
+          :starttransfer_time =>     [:double,   17],
+          :content_type =>           [:string,   18],
+          :redirect_time =>          [:double,   19],
+          :redirect_count =>         [:long,     20],
+          :private =>                [:string,   21],
+          :http_connectcode =>       [:long,     22],
+          :httpauth_avail =>         [:long,     23],
+          :proxyauth_avail =>        [:long,     24],
+          :os_errno =>               [:long,     25],
+          :num_connects =>           [:long,     26],
+          :ssl_engines =>            [:slist,    27],
+          :cookielist =>             [:slist,    28],
+          :lastsocket =>             [:long,     29],
+          :ftp_entry_path =>         [:string,   30],
+          :redirect_url =>           [:string,   31],
+          :primary_ip =>             [:string,   32],
+          :appconnect_time =>        [:double,   33],
+          :certinfo =>               [:certinfo, 34],
+          :condition_unmet =>        [:long,     35],
+          :rtsp_session_id =>        [:string,   36],
+          :rtsp_client_cseq =>       [:long,     37],
+          :rtsp_server_cseq =>       [:long,     38],
+          :rtsp_cseq_recv =>         [:long,     39],
+          :primary_port =>           [:long,     40],
+          :local_ip =>               [:string,   41],
+          :local_port =>             [:long,     42],
+        }.map { |k,v| indices ? [k,info_types[v[0]]+v[1]] : [k,v[0]] }]
       end
 
       # Return info as string.
