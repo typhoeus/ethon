@@ -127,5 +127,18 @@ module Ethon
                :usec, :suseconds_t
       end
     end
+
+    # :nodoc:
+    class Certinfo < ::FFI::Struct
+      layout :num_of_certs, :int,
+             :certinfo, :pointer
+             
+      def to_a
+        return [] if self[:num_of_certs] == 0
+        self[:certinfo].read_array_of_pointer(self[:num_of_certs]).map do |pointer|
+          SlistNode.to_a(pointer)
+        end
+      end
+    end
   end
 end

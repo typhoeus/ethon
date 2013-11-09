@@ -167,6 +167,15 @@ module Ethon
       ensure
         list.free if list
       end
+
+      # Return certificate information copied from libcurl-owned memory.
+      def get_info_certinfo(option, handle)
+        result = ::FFI::MemoryPointer.new(:pointer)
+        return unless easy_getinfo(handle, option, :pointer, result) == :ok
+
+        pointer = result.read_pointer
+        pointer.null? ? [] : Curl::Certinfo.new(pointer).to_a
+      end
     end
   end
 end
