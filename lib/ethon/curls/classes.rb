@@ -37,8 +37,27 @@ module Ethon
     end
 
     class Slist < OwnedPointer
+      def to_a
+        SlistNode.to_a(self)
+      end
+
       def self.native_release(pointer)
         Curl.slist_free_all(pointer)
+      end
+    end
+
+    class SlistNode < ::FFI::Struct
+      layout :data, :string,
+        :next, :pointer
+
+      def self.to_a(pointer)
+        values = []
+        until pointer.null?
+          node = new(pointer)
+          values << node[:data]
+          pointer = node[:next]
+        end
+        values
       end
     end
 
