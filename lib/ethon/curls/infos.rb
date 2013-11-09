@@ -161,6 +161,22 @@ module Ethon
         end
       end
 
+      # Return info as certinfo array.
+      #
+      # @example Return info.
+      #   Curl.get_info_certinfo(:ssl_engines, easy)
+      #
+      # @param [ Symbol ] option The option name.
+      # @param [ ::FFI::Pointer ] handle The easy handle.
+      #
+      # @return [ Array ] The info.
+      def get_info_certinfo(option, handle)
+        if easy_getinfo(handle, option, ptr_ptr) == :ok
+          ptr=ptr_ptr.read_pointer
+          ptr.null? ? nil : Curl::Certinfo.new(ptr).to_a
+        end
+      end
+
       # Return a pointer pointer.
       #
       # @example Return a pointer pointer.

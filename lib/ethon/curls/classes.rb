@@ -70,5 +70,19 @@ module Ethon
         Curl.slist_free_all_ptr(ptr)
       end
     end
+
+    # :nodoc:
+    class Certinfo < ::FFI::Struct
+      layout :num_of_certs, :int,
+             :certinfo, :pointer
+             
+      def to_a
+        # This line can be removed when https://github.com/ffi/ffi/issues/305 gets fixed
+        return [] if self[:num_of_certs]==0
+        self[:certinfo].read_array_of_pointer(self[:num_of_certs]).map do |ptr|
+          Slist.new(ptr).to_a
+        end
+      end
+    end
   end
 end
