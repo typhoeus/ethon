@@ -105,7 +105,8 @@ module Ethon
       # @return [ String ] The info.
       def get_info_string(option, handle)
         if easy_getinfo(handle, option, string_ptr) == :ok
-          string_ptr.read_pointer.read_string
+          ptr=string_ptr.read_pointer
+          ptr.null? ? nil : ptr.read_string
         end
       end
 
