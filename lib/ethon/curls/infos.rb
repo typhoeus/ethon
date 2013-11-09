@@ -146,6 +146,27 @@ module Ethon
           double_ptr.read_double
         end
       end
+      # Return info as array of strings.
+      #
+      # @example Return info.
+      #   Curl.get_info_slist(:ssl_engines, easy)
+      #
+      # @param [ Symbol ] option The option name.
+      # @param [ ::FFI::Pointer ] handle The easy handle.
+      #
+      # @return [ Array ] The info.
+      def get_info_slist(option, handle)
+        result = ::FFI::MemoryPointer.new(:pointer)
+        return unless easy_getinfo(handle, option, :pointer, result) == :ok
+
+        pointer = result.read_pointer
+        return [] if pointer.null?
+
+        list = Curl::Slist.new(pointer)
+        list.to_a
+      ensure
+        list.free if list
+      end
     end
   end
 end
