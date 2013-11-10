@@ -39,7 +39,7 @@ module Ethon
       # @example Execute on_completes.
       #   request.complete
       def complete
-        if @on_complete
+        if defined?(@on_complete) and not @on_complete.nil?
           @on_complete.each{ |callback| callback.call(self) }
         end
       end
