@@ -10,7 +10,7 @@ module Ethon
         raise NameError, "Ethon::Curls::Options unknown type #{type}." unless respond_to?("#{type.to_s.downcase}_options")
         opthash=send("#{type.to_s.downcase}_options")
         raise Errors::InvalidOption.new(option) unless opthash.include?(option)
-        
+
         case opthash[option][:type]
         when :none
           return if value.nil?
@@ -78,7 +78,7 @@ module Ethon
 
         send("#{type}_setopt_#{func}", handle, opthash[option][:opt], value)
       end
-      
+
       OPTION_TYPE_BASE = {
         :long => 0,
         :objectpoint => 10000,
@@ -125,7 +125,7 @@ module Ethon
           elsif not opts.is_a? Hash then
             raise TypeError, "Ethon::Curls::Options #{ftype} #{name} Expected opts to be an Array or a Hash."
           end
-        
+
         when :bitmask
           if opts.is_a? Array then
             if opts.last.is_a? Hash then
@@ -151,14 +151,14 @@ module Ethon
               opts[k]=v.map { |b| opts[b] }.inject :|
             end
           end
-          
+
         when :buffer
           raise TypeError, "Ethon::Curls::Options #{ftype} #{name} Expected opts to be an Array or a Hash." unless opts.is_a? Integer
-          
+
         else
           raise ArgumentError, "Ethon::Curls::Options #{ftype} #{name} Expected no opts." unless opts.nil?
         end
-        
+
         opthash=const_get("#{ftype.to_s.upcase}_OPTIONS")
         opthash[name]={:type=>type, :opt=>OPTION_TYPE_BASE[OPTION_TYPE_MAP[type]]+num, :opts=>opts}
       end
@@ -178,12 +178,12 @@ module Ethon
           end
         >
       end
-      
+
       # Curl multi options, refer
       # Defined @ https://github.com/bagder/curl/blob/master/include/curl/multi.h
       # Documentation @ http://curl.haxx.se/libcurl/c/curl_multi_setopt.html
       option_type :multi
-      
+
       option :multi, :socketfunction, :callback, 1
       option :multi, :socketdata, :cbdata, 2
       option :multi, :pipelining, :bool, 3
@@ -280,7 +280,7 @@ module Ethon
       option :easy, :username, :string, 173
       option :easy, :password, :string, 174
       option :easy, :proxyusername, :string, 175
-      option :easy, :proxypassword, :string, 176 
+      option :easy, :proxypassword, :string, 176
       option :easy, :httpauth, :bitmask, 107, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11, :auto => 0x1f}]
       option :easy, :tlsauth_type, :enum, 206, [:none, :srp]
       option :easy, :tlsauth_username, :string, 204

@@ -14,7 +14,7 @@ module Ethon
       #
       # @return [ void ]
       def maxconnects=(value)
-        Curl.set_option(:maxconnects, value_for(value, :int), handle)
+        Curl.set_option(:maxconnects, value_for(value, :int), handle, :multi)
       end
 
       # Sets pipelining option.
@@ -26,7 +26,7 @@ module Ethon
       #
       # @return [ void ]
       def pipelining=(value)
-        Curl.set_option(:pipelining, value_for(value, :bool), handle)
+        Curl.set_option(:pipelining, value_for(value, :bool), handle, :multi)
       end
 
       # Sets socketdata option.
@@ -38,7 +38,7 @@ module Ethon
       #
       # @return [ void ]
       def socketdata=(value)
-        Curl.set_option(:socketdata, value_for(value, :string), handle)
+        Curl.set_option(:socketdata, value_for(value, :string), handle, :multi)
       end
 
       # Sets socketfunction option.
@@ -50,7 +50,7 @@ module Ethon
       #
       # @return [ void ]
       def socketfunction=(value)
-        Curl.set_option(:socketfunction, value_for(value, :string), handle)
+        Curl.set_option(:socketfunction, value_for(value, :string), handle, :multi)
       end
 
       # Sets timerdata option.
@@ -62,7 +62,7 @@ module Ethon
       #
       # @return [ void ]
       def timerdata=(value)
-        Curl.set_option(:timerdata, value_for(value, :string), handle)
+        Curl.set_option(:timerdata, value_for(value, :string), handle, :multi)
       end
 
       # Sets timerfunction option.
@@ -74,7 +74,7 @@ module Ethon
       #
       # @return [ void ]
       def timerfunction=(value)
-        Curl.set_option(:timerfunction, value_for(value, :string), handle)
+        Curl.set_option(:timerfunction, value_for(value, :string), handle, :multi)
       end
 
       private
