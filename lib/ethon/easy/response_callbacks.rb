@@ -63,6 +63,8 @@ module Ethon
       def body(chunk)
         if defined?(@on_body) and not @on_body.nil?
           @on_body.each{ |callback| callback.call(chunk) }
+        else
+          :unhandled
         end
       end
     end
