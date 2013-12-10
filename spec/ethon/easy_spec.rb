@@ -83,6 +83,12 @@ describe Ethon::Easy do
       expect(easy.on_complete).to be_empty
     end
 
+    it "resets on_headers" do
+      easy.on_headers { p 1 }
+      easy.reset
+      expect(easy.on_headers).to be_empty
+    end
+
     it "resets on_body" do
       easy.on_body { p 1 }
       easy.reset

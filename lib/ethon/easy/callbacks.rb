@@ -24,6 +24,7 @@ module Ethon
         Curl.set_option(:debugfunction, debug_callback, handle)
         @response_body = ""
         @response_headers = ""
+        @headers_called = false
         @debug_info = Ethon::Easy::DebugInfo.new
       end
 
@@ -35,6 +36,10 @@ module Ethon
       # @return [ Proc ] The callback.
       def body_write_callback
         @body_write_callback ||= proc {|stream, size, num, object|
+          unless @headers_called
+            @headers_called = true
+            headers
+          end
           if :unhandled == body(chunk = stream.read_string(size * num))
             @response_body << chunk
           end

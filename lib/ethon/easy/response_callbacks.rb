@@ -22,6 +22,28 @@ module Ethon
     #   #=> []
     module ResponseCallbacks
 
+      # Set on_headers callback.
+      #
+      # @example Set on_complete.
+      #   request.on_headers { p "yay" }
+      #
+      # @param [ Block ] block The block to execute.
+      def on_headers(&block)
+        @on_headers ||= []
+        @on_headers << block if block_given?
+        @on_headers
+      end
+
+      # Execute on_headers callbacks.
+      #
+      # @example Execute on_headers.
+      #   request.headers
+      def headers
+        if defined?(@on_headers) and not @on_headers.nil?
+          @on_headers.each{ |callback| callback.call(self) }
+        end
+      end
+
       # Set on_complete callback.
       #
       # @example Set on_complete.

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Ethon::Easy::ResponseCallbacks do
   let(:easy) { Ethon::Easy.new }
 
-  [:on_complete, :on_body].each do |callback_type|
+  [:on_complete, :on_headers, :on_body].each do |callback_type|
     describe "##{callback_type}" do
       it "responds" do
         expect(easy).to respond_to("#{callback_type}")
@@ -46,6 +46,24 @@ describe Ethon::Easy::ResponseCallbacks do
       it "doesn't raise" do
         easy.instance_variable_set(:@on_complete, nil)
         expect{ easy.complete }.to_not raise_error(NoMethodError)
+      end
+    end
+  end
+
+  describe "#headers" do
+    before do
+      easy.on_headers {|r| String.new(r.url) }
+    end
+
+    it "executes blocks and passes self" do
+      String.should_receive(:new).with(easy.url)
+      easy.headers
+    end
+
+    context "when @on_headers nil" do
+      it "doesn't raise" do
+        easy.instance_variable_set(:@on_headers, nil)
+        expect{ easy.headers }.to_not raise_error(NoMethodError)
       end
     end
   end

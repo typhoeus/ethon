@@ -41,6 +41,15 @@ describe Ethon::Easy::Http do
             expect(bytes_read).to eq(content_length)
             expect(easy.response_body).to eq("")
           end
+
+          it "notifies when headers are ready" do
+            headers = []
+            easy.on_headers { |r| headers << r.response_headers }
+            easy.http_request(url, action, options)
+            easy.perform
+            expect(headers).to eq([easy.response_headers])
+            expect(headers.first).to match(/Content-Length: (\d+)/)
+          end
         end
       end
 
