@@ -71,7 +71,13 @@ describe Ethon::Easy::ResponseCallbacks do
   describe "#body" do
     before do
       @chunk = nil
-      easy.on_body { |chunk| @chunk = chunk }
+      @r = nil
+      easy.on_body { |chunk, r| @chunk = chunk ; @r = r }
+    end
+
+    it "executes blocks and passes self" do
+      easy.body("the chunk")
+      expect(@r).to be(easy)
     end
 
     it "executes blocks and passes chunk" do

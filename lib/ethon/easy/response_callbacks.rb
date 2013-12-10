@@ -84,7 +84,7 @@ module Ethon
       #   request.body("This data came from HTTP.")
       def body(chunk)
         if defined?(@on_body) and not @on_body.nil?
-          @on_body.each{ |callback| callback.call(chunk) }
+          @on_body.each{ |callback| callback.call(chunk, self) }
         else
           :unhandled
         end
