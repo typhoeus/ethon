@@ -35,7 +35,7 @@ module Ethon
       # @return [ Proc ] The callback.
       def body_write_callback
         @body_write_callback ||= proc {|stream, size, num, object|
-          if body(chunk = stream.read_string(size * num)) == :unhandled
+          if :unhandled == body(chunk = stream.read_string(size * num))
             @response_body << chunk
           end
           size * num
