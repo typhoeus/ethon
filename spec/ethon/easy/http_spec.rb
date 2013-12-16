@@ -34,7 +34,7 @@ describe Ethon::Easy::Http do
 
           it "streams the response body from the #{action.to_s.upcase} request" do
             bytes_read = 0
-            easy.on_body { |chunk| bytes_read += chunk.bytesize }
+            easy.on_body { |chunk, response| bytes_read += chunk.bytesize }
             easy.http_request(url, action, options)
             easy.perform
             content_length = ((easy.response_headers =~ /Content-Length: (\d+)/) && $1.to_i)
