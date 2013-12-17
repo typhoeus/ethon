@@ -40,7 +40,7 @@ module Ethon
             @headers_called = true
             headers
           end
-          if :unhandled == body(chunk = stream.read_string(size * num))
+          if :unyielded == body(chunk = stream.read_string(size * num))
             @response_body << chunk
           end
           size * num

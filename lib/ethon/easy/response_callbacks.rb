@@ -82,11 +82,13 @@ module Ethon
       #
       # @example Execute on_body.
       #   request.body("This data came from HTTP.")
+      #
+      # @return [ Object ] If there are no on_body callbacks, returns the symbol :unyielded.
       def body(chunk)
         if defined?(@on_body) and not @on_body.nil?
           @on_body.each{ |callback| callback.call(chunk, self) }
         else
-          :unhandled
+          :unyielded
         end
       end
     end
