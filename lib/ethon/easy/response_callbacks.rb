@@ -24,7 +24,7 @@ module Ethon
 
       # Set on_headers callback.
       #
-      # @example Set on_complete.
+      # @example Set on_headers.
       #   request.on_headers { p "yay" }
       #
       # @param [ Block ] block The block to execute.
