@@ -248,6 +248,8 @@ module Ethon
       @url = nil
       @hash = nil
       @on_complete = nil
+      @on_headers = nil
+      @on_body = nil
       @procs = nil
       @mirror = nil
       Curl.easy_reset(handle)
