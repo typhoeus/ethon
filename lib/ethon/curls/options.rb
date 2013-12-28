@@ -50,7 +50,7 @@ module Ethon
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :curl_slist
           func=:ffipointer
-          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Curl::Slist
         when :buffer
           raise NotImplementedError, "Ethon::Curls::Options option #{option} buffer type not implemented."
         when :dontuse_object

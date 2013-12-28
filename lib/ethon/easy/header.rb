@@ -22,13 +22,9 @@ module Ethon
       # @param [ Hash ] headers The headers.
       def headers=(headers)
         headers ||= {}
-        header_list = nil
-        headers.each do |k, v|
-          header_list = Curl.slist_append(header_list, compose_header(k,v))
-        end
+        header_list = Curl::Slist[headers.map { |k,v| compose_header(k,v) }]
         Curl.set_option(:httpheader, header_list, handle)
-
-        @header_list = header_list && FFI::AutoPointer.new(header_list, Curl.method(:slist_free_all))
+        @header_list = header_list
       end
 
       # Return header_list.

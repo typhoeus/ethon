@@ -69,9 +69,9 @@ describe Ethon::Easy::Header do
     end
 
     context "when set_headers" do
-      it "returns pointer to header list" do
+      it "returns Slist to header list" do
         easy.headers = {'User-Agent' => 'Custom'}
-        expect(easy.header_list).to be_a(FFI::Pointer)
+        expect(easy.header_list).to be_a(Ethon::Curl::Slist)
       end
     end
   end

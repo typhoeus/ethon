@@ -32,5 +32,57 @@ module Ethon
       layout :sec, :time_t,
              :usec, :suseconds_t
     end
+    
+    # :nodoc:
+    class Slist < ::FFI::ManagedStruct
+      layout :data, :string,
+             :next, self.ptr
+
+      def initialize(pointer=nil)
+        super(pointer)
+        # Only call release on things returned by slist_append
+        pointer().autorelease=false
+      end
+      
+      def to_a
+        cur=self
+        ret=[]
+        loop do
+          ret << cur[:data]
+          break if cur[:next].null?
+          cur=cur[:next]
+          break if cur[:data].nil?
+        end
+        ret
+      end
+
+      def self.[](ary)
+        slist=nil
+        ary.each do |v|
+          slist=Curl.slist_append(slist,v)
+        end
+        # Autorelease the final value returned by slist_append
+        slist.pointer.autorelease=true unless slist.nil?
+        slist
+      end
+
+      def self.release(ptr)
+        Curl.slist_free_all_ptr(ptr)
+      end
+    end
+
+    # :nodoc:
+    class Certinfo < ::FFI::Struct
+      layout :num_of_certs, :int,
+             :certinfo, :pointer
+             
+      def to_a
+        # This line can be removed when https://github.com/ffi/ffi/issues/305 gets fixed
+        return [] if self[:num_of_certs]==0
+        self[:certinfo].read_array_of_pointer(self[:num_of_certs]).map do |ptr|
+          Slist.new(ptr).to_a
+        end
+      end
+    end
   end
 end
