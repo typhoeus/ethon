@@ -60,7 +60,19 @@ module Ethon
     #  This option is for the multi handle's use only, when using the easy
     #  interface you should instead use the CURLOPT_MAXCONNECTS option.
     #  (Added in 7.16.3)
-    #
+    # @option options :max_total_connections [Integer]
+    # Pass a long. The set number will be used as the maximum amount of 
+    # simultaneously open connections in total. For each new session, 
+    # libcurl will open a new connection up to the limit set by 
+    # CURLMOPT_MAX_TOTAL_CONNECTIONS. When the limit is reached, the 
+    # sessions will be pending until there are available connections. 
+    # If CURLMOPT_PIPELINING is 1, libcurl will try to pipeline if the host 
+    # is capable of it.
+    # The default value is 0, which means that there is no limit. However, 
+    # for backwards compatibility, setting it to 0 when CURLMOPT_PIPELINING 
+    # is 1 will not be treated as unlimited. Instead it will open only 1 
+    # connection and try to pipeline on it.
+    # (Added in 7.30.0)
     #
     # @return [ Multi ] The new multi.
     def initialize(options = {})
