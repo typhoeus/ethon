@@ -5,7 +5,7 @@ describe Ethon::Multi::Options do
 
   [
     :maxconnects, :pipelining, :socketdata, :socketfunction,
-    :timerdata, :timerfunction
+    :timerdata, :timerfunction, :max_total_connections
   ].each do |name|
     describe "#{name}=" do
       it "responds_to" do
