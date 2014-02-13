@@ -5,6 +5,18 @@ module Ethon
     # available options on multi.
     module Options
 
+      # Sets max_total_connections option.
+      #
+      # @example Set max_total_connections option.
+      #   easy.max_total_conections = $value
+      #
+      # @param [ String ] value The value to set.
+      #
+      # @return [ void ]
+      def max_total_connections=(value)
+        Curl.set_option(:max_total_connections, value_for(value, :int), handle, :multi)
+      end
+
       # Sets maxconnects option.
       #
       # @example Set maxconnects option.
