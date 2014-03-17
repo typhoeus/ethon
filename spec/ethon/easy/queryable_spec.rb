@@ -131,12 +131,36 @@ describe Ethon::Easy::Queryable do
       end
 
       context "when file" do
-        let(:file) { Tempfile.new("fubar") }
+        let(:file) { File.open("spec/spec_helper.rb") }
         let(:file_info) { params.method(:file_info).call(file) }
         let(:hash) { {:a => {:b => [file]}} }
+        let(:mime_type) { file_info[1] }
 
         it "transforms" do
           expect(pairs).to eq([["a[b][0]", file_info]])
+        end
+
+        context "when MIME" do
+          context "when mime type" do
+            it "sets mime type to text" do
+              expect(mime_type).to eq("application/x-ruby")
+            end
+          end
+
+          context "when no mime type" do
+            let(:file) { Tempfile.new("fubar") }
+
+            it "sets mime type to default application/octet-stream" do
+              Object.send(:remove_const, :MIME)
+              expect(mime_type).to eq("application/octet-stream")
+            end
+          end
+        end
+
+        context "when no MIME" do
+          it "sets mime type to default application/octet-stream" do
+            expect(mime_type).to eq("application/octet-stream")
+          end
         end
       end
     end

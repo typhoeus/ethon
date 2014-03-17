@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
 
   s.add_dependency('ffi', ['>= 1.3.0'])
-  s.add_dependency('mime-types', ['~> 1.18'])
 
   s.files        = `git ls-files`.split("\n")
   s.test_files   = `git ls-files -- spec/*`.split("\n")

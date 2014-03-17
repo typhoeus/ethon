@@ -75,15 +75,22 @@ module Ethon
       # @return [ Array ] Array of informations.
       def file_info(file)
         filename = File.basename(file.path)
-        types = MIME::Types.type_for(filename)
         [
           filename,
-          types.empty? ? 'application/octet-stream' : types[0].to_s,
+          mime_type(filename),
           File.expand_path(file.path)
         ]
       end
 
       private
+
+      def mime_type(filename)
+        if defined?(MIME) && t = MIME::Types.type_for(filename).first
+          t.to_s
+        else
+          'application/octet-stream'
+        end
+      end
 
       def recursively_generate_pairs(h, prefix, pairs)
         case h

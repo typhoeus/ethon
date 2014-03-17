@@ -1,7 +1,10 @@
 require 'logger'
 require 'ffi'
 require 'thread'
-require 'mime/types'
+begin
+  require 'mime/types'
+rescue LoadError
+end
 require 'tempfile'
 
 require 'ethon/libc'
