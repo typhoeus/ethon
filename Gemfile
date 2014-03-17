@@ -8,7 +8,7 @@ group :development, :test do
 
   gem "sinatra", :git => "https://github.com/sinatra/sinatra.git"
   gem "json"
-  gem "mime-types"
+  gem "mime-types", "~> 1.18"
 
   unless ENV["CI"]
     gem "guard-rspec", "~> 0.7"
