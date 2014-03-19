@@ -2,13 +2,23 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.6.2...master)
+Not backwards compatible changes:
+
+* `mime-types` are no longer a dependency. The gem will be still used if available to determine the mime type of a file which is uploaded. That means you have to have take care of the gem installation yourself.
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.0...master)
+
+## 0.7.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.6.3...v0.7.0)
+
+## 0.6.3
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.6.2...v0.6.3)
 
 ## 0.6.2
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.6.1...v0.6.2)
-
-The changelog entries are coming soon!
 
 ## 0.6.1
 
