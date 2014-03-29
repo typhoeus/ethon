@@ -74,6 +74,12 @@ describe Ethon::Easy::Informations do
     end
   end
 
+  describe "#request_size" do
+    it "returns 53" do
+      expect(easy.request_size).to eq(53)
+    end
+  end
+
   describe "#supports_zlib?" do
     it "returns true" do
       expect(easy.supports_zlib?).to be_true

@@ -60,6 +60,8 @@ module Ethon
         # be read with http_connect_code and not this.
         :response_code => :long,
 
+        :request_size => :long,
+
         # Return the total number of redirections that were
         # actually followed.
         :redirect_count => :long
