@@ -4,6 +4,9 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.0...master)
 
+* MS Windows determination delegated to `Gem.windows?` for better accuracy.
+* FFI data-types updated to work on MS Windows.
+
 ## 0.7.0
 
 Not backwards compatible changes:
