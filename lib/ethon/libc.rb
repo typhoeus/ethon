@@ -9,7 +9,7 @@ module Ethon
 
     # :nodoc:
     def self.windows?
-      !(RbConfig::CONFIG['host_os'] !~ /mingw|mswin|bccwin/)
+      Gem.win_platform?
     end
 
     unless windows?
