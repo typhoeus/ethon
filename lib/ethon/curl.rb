@@ -20,7 +20,7 @@ module Ethon
 
     # :nodoc:
     def self.windows?
-      !(RbConfig::CONFIG['host_os'] !~ /mingw|mswin|bccwin/)
+      Libc.windows?
     end
 
     require 'ethon/curls/constants'

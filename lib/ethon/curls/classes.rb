@@ -13,8 +13,8 @@ module Ethon
     # :nodoc:
     class FDSet < ::FFI::Struct
       if Curl.windows?
-        layout :fd_count, :u_int,
-               :fd_array, [:u_int, 64] # 2048 FDs
+        layout :fd_count, :uint,
+               :fd_array, [:uint, 64] # 2048 FDs
 
         def clear; self[:fd_count] = 0; end
       else
@@ -29,8 +29,13 @@ module Ethon
 
     # :nodoc:
     class Timeval < ::FFI::Struct
-      layout :sec, :time_t,
-             :usec, :suseconds_t
+      if Curl.windows?
+        layout :sec, :long,
+               :usec, :long
+      else
+        layout :sec, :time_t,
+               :usec, :suseconds_t
+      end
     end
   end
 end
