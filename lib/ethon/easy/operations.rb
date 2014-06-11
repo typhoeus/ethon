@@ -13,6 +13,15 @@ module Ethon
         @handle ||= FFI::AutoPointer.new(Curl.easy_init, Curl.method(:easy_cleanup))
       end
 
+      # Assign a curl easy handle to this object.
+      #
+      # @example Clear the handle (and perform curl_easy_cleanup)
+      #   easy.handle = nil
+      #
+      def handle=(handle)
+        @handle = handle
+      end
+
       # Perform the easy request.
       #
       # @example Perform the request.

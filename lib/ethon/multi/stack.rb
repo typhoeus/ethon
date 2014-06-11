@@ -40,6 +40,7 @@ module Ethon
       def delete(easy)
         if easy_handles.delete(easy)
           code = Curl.multi_remove_handle(handle, easy.handle)
+          easy.handle = nil
           raise Errors::MultiRemove.new(code, handle) unless code == :ok
         end
       end
