@@ -24,10 +24,7 @@ describe Ethon::Easy do
 
         it "sets followlocation" do
           expect_any_instance_of(Ethon::Easy).to receive(:set_callbacks)
-          expect(Ethon::Curl).to receive(:set_option).with { |option, value, _|
-            expect(option).to be(:followlocation)
-            expect(value).to be(true)
-          }
+          expect(Ethon::Curl).to receive(:set_option).with(:followlocation, true, anything)
           easy
         end
       end
