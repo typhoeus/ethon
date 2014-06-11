@@ -21,9 +21,7 @@ describe Ethon::Easy::Options do
 
       it "sets option" do
         expect_any_instance_of(Ethon::Easy).to receive(:set_callbacks)
-        expect(Ethon::Curl).to receive(:set_option).with { |option, _, _|
-          expect(option).to be(name)
-        }
+        expect(Ethon::Curl).to receive(:set_option).with(name, anything, anything)
         value = case name
         when :http_version
           :httpv1_0

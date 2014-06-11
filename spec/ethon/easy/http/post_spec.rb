@@ -142,7 +142,7 @@ describe Ethon::Easy::Http::Post do
         end
 
         it "sets postfieldsize" do
-          expect(easy).to receive(:postfieldsize=).with{ |value| expect(value).to be(encoded.bytesize) }
+          expect(easy).to receive(:postfieldsize=).with(encoded.bytesize)
           post.setup(easy)
         end
 
