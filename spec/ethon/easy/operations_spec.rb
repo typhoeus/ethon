@@ -46,17 +46,17 @@ describe Ethon::Easy::Operations do
     end
 
     it "calls Curl.easy_perform" do
-      Ethon::Curl.should_receive(:easy_perform)
+      expect(Ethon::Curl).to receive(:easy_perform)
       easy.perform
     end
 
     it "logs" do
-      Ethon.logger.should_receive(:debug)
+      expect(Ethon.logger).to receive(:debug)
       easy.perform
     end
 
     it "doesn't log after completing because completing could reset" do
-      easy.on_complete{ Ethon.logger.should_receive(:debug).never }
+      easy.on_complete{ expect(Ethon.logger).to receive(:debug).never }
       easy.perform
     end
 

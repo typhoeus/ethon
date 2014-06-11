@@ -5,14 +5,14 @@ describe Ethon::Easy do
 
   describe ".new" do
     it "inits curl" do
-      Ethon::Curl.should_receive(:init)
+      expect(Ethon::Curl).to receive(:init)
       easy
     end
 
     context "when options are empty" do
       it "sets only callbacks" do
-        Ethon::Easy.any_instance.should_receive(:set_callbacks)
-        Ethon::Easy.should_receive(:set_option).never
+        expect_any_instance_of(Ethon::Easy).to receive(:set_callbacks)
+        expect(Ethon::Easy).to receive(:set_option).never
         easy
       end
     end
@@ -23,11 +23,11 @@ describe Ethon::Easy do
         let(:easy) { Ethon::Easy.new(options) }
 
         it "sets followlocation" do
-          Ethon::Easy.any_instance.should_receive(:set_callbacks)
-          Ethon::Curl.should_receive(:set_option).with do |option, value, _|
+          expect_any_instance_of(Ethon::Easy).to receive(:set_callbacks)
+          expect(Ethon::Curl).to receive(:set_option).with { |option, value, _|
             expect(option).to be(:followlocation)
             expect(value).to be(true)
-          end
+          }
           easy
         end
       end
@@ -37,8 +37,8 @@ describe Ethon::Easy do
   describe "#set_attributes" do
     context "when options are empty" do
       it "sets only callbacks" do
-        Ethon::Easy.any_instance.should_receive(:set_callbacks)
-        Ethon::Easy.should_receive(:set_option).never
+        expect_any_instance_of(Ethon::Easy).to receive(:set_callbacks)
+        expect(Ethon::Easy).to receive(:set_option).never
         easy
       end
     end
@@ -46,7 +46,7 @@ describe Ethon::Easy do
     context "when options aren't empty" do
       context "when valid key" do
         it "sets" do
-          easy.should_receive(:verbose=).with(true)
+          expect(easy).to receive(:verbose=).with(true)
           easy.set_attributes({:verbose => true})
         end
       end
@@ -73,7 +73,7 @@ describe Ethon::Easy do
     end
 
     it "resets easy handle" do
-      Ethon::Curl.should_receive(:easy_reset)
+      expect(Ethon::Curl).to receive(:easy_reset)
       easy.reset
     end
 
@@ -102,7 +102,7 @@ describe Ethon::Easy do
     end
 
     it "builds from easy" do
-      Ethon::Easy::Mirror.should_receive(:from_easy).with(easy)
+      expect(Ethon::Easy::Mirror).to receive(:from_easy).with(easy)
       easy.mirror
     end
   end

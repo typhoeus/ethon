@@ -52,7 +52,7 @@ describe Ethon::Multi::Operations do
       let(:timeout) { 1 }
 
       before do
-        Ethon::Curl.should_receive(:multi_timeout).and_return(:ok)
+        expect(Ethon::Curl).to receive(:multi_timeout).and_return(:ok)
         multi.instance_variable_set(:@timeout, double(:read_long => timeout))
       end
 
@@ -78,7 +78,7 @@ describe Ethon::Multi::Operations do
     end
 
     context "when code not ok" do
-      before { Ethon::Curl.should_receive(:multi_timeout).and_return(:not_ok) }
+      before { expect(Ethon::Curl).to receive(:multi_timeout).and_return(:not_ok) }
 
       it "raises MultiTimeout error" do
         expect{ multi.send(:get_timeout) }.to raise_error(Ethon::Errors::MultiTimeout)
@@ -91,10 +91,10 @@ describe Ethon::Multi::Operations do
     let(:max_fd) { 1 }
 
     context "when code ok" do
-      before { Ethon::Curl.should_receive(:multi_fdset).and_return(:ok) }
+      before { expect(Ethon::Curl).to receive(:multi_fdset).and_return(:ok) }
 
       it "doesn't raise" do
-        expect{ multi.method(:set_fds).call(timeout) }.to_not raise_error(Ethon::Errors::MultiFdset)
+        expect{ multi.method(:set_fds).call(timeout) }.to_not raise_error
       end
 
       context "when max_fd -1" do
@@ -102,7 +102,7 @@ describe Ethon::Multi::Operations do
 
         before do
           multi.instance_variable_set(:@max_fd, double(:read_int => max_fd))
-          multi.should_receive(:sleep).with(0.001)
+          expect(multi).to receive(:sleep).with(0.001)
         end
 
         it "waits 100ms" do
@@ -112,7 +112,7 @@ describe Ethon::Multi::Operations do
 
       context "when max_fd not -1" do
         context "when code smaller zero" do
-          before { Ethon::Curl.should_receive(:select).and_return(-1) }
+          before { expect(Ethon::Curl).to receive(:select).and_return(-1) }
 
           it "raises Select error" do
             expect{ multi.method(:set_fds).call(timeout) }.to raise_error(Ethon::Errors::Select)
@@ -120,17 +120,17 @@ describe Ethon::Multi::Operations do
         end
 
         context "when code bigger or equal zero" do
-          before { Ethon::Curl.should_receive(:select).and_return(0) }
+          before { expect(Ethon::Curl).to receive(:select).and_return(0) }
 
           it "doesn't raise" do
-            expect{ multi.method(:set_fds).call(timeout) }.to_not raise_error(Ethon::Errors::Select)
+            expect{ multi.method(:set_fds).call(timeout) }.to_not raise_error
           end
         end
       end
     end
 
     context "when code not ok" do
-      before { Ethon::Curl.should_receive(:multi_fdset).and_return(:not_ok) }
+      before { expect(Ethon::Curl).to receive(:multi_fdset).and_return(:not_ok) }
 
       it "raises MultiFdset error" do
         expect{ multi.method(:set_fds).call(timeout) }.to raise_error(Ethon::Errors::MultiFdset)
@@ -145,7 +145,7 @@ describe Ethon::Multi::Operations do
       end
 
       it "logs" do
-        Ethon.logger.should_receive(:debug).twice
+        expect(Ethon.logger).to receive(:debug).twice
         multi.perform
       end
     end
@@ -182,7 +182,7 @@ describe Ethon::Multi::Operations do
       end
 
       it "sets response codes" do
-        expect(easies.all?{ |e| e.response_code == 200 }).to be_true
+        expect(easies.all?{ |e| e.response_code == 200 }).to be_truthy
       end
     end
   end
@@ -195,7 +195,7 @@ describe Ethon::Multi::Operations do
         before { multi.instance_variable_set(:@running_count, 0) }
 
         it "returns true" do
-          expect(multi.method(:ongoing?).call).to be_true
+          expect(multi.method(:ongoing?).call).to be_truthy
         end
       end
 
@@ -203,7 +203,7 @@ describe Ethon::Multi::Operations do
         before { multi.instance_variable_set(:@running_count, 1) }
 
         it "returns true" do
-          expect(multi.method(:ongoing?).call).to be_true
+          expect(multi.method(:ongoing?).call).to be_truthy
         end
       end
     end
@@ -213,7 +213,7 @@ describe Ethon::Multi::Operations do
         before { multi.instance_variable_set(:@running_count, 0) }
 
         it "returns false" do
-          expect(multi.method(:ongoing?).call).to be_false
+          expect(multi.method(:ongoing?).call).to be_falsey
         end
       end
 
@@ -221,7 +221,7 @@ describe Ethon::Multi::Operations do
         before { multi.instance_variable_set(:@running_count, 1) }
 
         it "returns true" do
-          expect(multi.method(:ongoing?).call).to be_true
+          expect(multi.method(:ongoing?).call).to be_truthy
         end
       end
     end
@@ -257,29 +257,29 @@ describe Ethon::Multi::Operations do
     after { multi.method(:reset_fds).call }
 
     it "resets @fd_read" do
-      multi.instance_variable_get(:@fd_read).should_receive(:clear)
+      expect(multi.instance_variable_get(:@fd_read)).to receive(:clear)
     end
 
     it "resets @fd_write" do
-      multi.instance_variable_get(:@fd_write).should_receive(:clear)
+      expect(multi.instance_variable_get(:@fd_write)).to receive(:clear)
     end
 
     it "resets @fd_excep" do
-      multi.instance_variable_get(:@fd_excep).should_receive(:clear)
+      expect(multi.instance_variable_get(:@fd_excep)).to receive(:clear)
     end
   end
 
   describe "#check" do
-    it { pending("untested") }
+    it { skip("untested") }
   end
 
   describe "#run" do
-    it { pending("untested") }
+    it { skip("untested") }
   end
 
   describe "#trigger" do
     it "calls multi perform" do
-      Ethon::Curl.should_receive(:multi_perform)
+      expect(Ethon::Curl).to receive(:multi_perform)
       multi.send(:trigger, pointer)
     end
 
@@ -290,7 +290,7 @@ describe Ethon::Multi::Operations do
     end
 
     it "returns multi perform code" do
-      Ethon::Curl.should_receive(:multi_perform).and_return(:ok)
+      expect(Ethon::Curl).to receive(:multi_perform).and_return(:ok)
       expect(multi.send(:trigger, pointer)).to eq(:ok)
     end
   end

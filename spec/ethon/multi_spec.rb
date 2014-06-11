@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Ethon::Multi do
   describe ".new" do
     it "inits curl" do
-      Ethon::Curl.should_receive(:init)
+      expect(Ethon::Curl).to receive(:init)
       Ethon::Multi.new
     end
 
@@ -12,7 +12,7 @@ describe Ethon::Multi do
         let(:options) { { :pipelining => true } }
 
         it "sets pipelining" do
-          Ethon::Multi.any_instance.should_receive(:pipelining=).with(true)
+          expect_any_instance_of(Ethon::Multi).to receive(:pipelining=).with(true)
           Ethon::Multi.new(options)
         end
       end

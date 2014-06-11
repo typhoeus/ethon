@@ -13,9 +13,9 @@ describe Ethon::Multi::Options do
       end
 
       it "sets option" do
-        Ethon::Curl.should_receive(:set_option).with do |option, _, _|
+        expect(Ethon::Curl).to receive(:set_option).with { |option, _, _|
           expect(option).to be(name)
-        end
+        }
         multi.method("#{name}=").call(1)
       end
     end

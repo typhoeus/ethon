@@ -15,12 +15,12 @@ describe Ethon::Easy::Http::Post do
       end
 
       it "sets postfield_size" do
-        easy.should_receive(:postfieldsize=).with(0)
+        expect(easy).to receive(:postfieldsize=).with(0)
         post.setup(easy)
       end
 
       it "sets copy_postfields" do
-        easy.should_receive(:copypostfields=).with("")
+        expect(easy).to receive(:copypostfields=).with("")
         post.setup(easy)
       end
 
@@ -40,12 +40,12 @@ describe Ethon::Easy::Http::Post do
       end
 
       it "sets postfieldsize" do
-        easy.should_receive(:postfieldsize=).with(0)
+        expect(easy).to receive(:postfieldsize=).with(0)
         post.setup(easy)
       end
 
       it "sets copypostfields" do
-        easy.should_receive(:copypostfields=).with("")
+        expect(easy).to receive(:copypostfields=).with("")
         post.setup(easy)
       end
 
@@ -99,7 +99,7 @@ describe Ethon::Easy::Http::Post do
         let(:form) { {:a => File.open(__FILE__, 'r')} }
 
         it "sets httppost" do
-          easy.should_receive(:httppost=)
+          expect(easy).to receive(:httppost=)
           post.setup(easy)
         end
 
@@ -137,12 +137,12 @@ describe Ethon::Easy::Http::Post do
         let(:encoded) { "a=1%26b%3D2" }
 
         it "sets escaped copypostfields" do
-          easy.should_receive(:copypostfields=).with(encoded)
+          expect(easy).to receive(:copypostfields=).with(encoded)
           post.setup(easy)
         end
 
         it "sets postfieldsize" do
-          easy.should_receive(:postfieldsize=).with{ |value| expect(value).to be(encoded.bytesize) }
+          expect(easy).to receive(:postfieldsize=).with{ |value| expect(value).to be(encoded.bytesize) }
           post.setup(easy)
         end
 

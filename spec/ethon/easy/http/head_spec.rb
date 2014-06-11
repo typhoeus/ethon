@@ -10,7 +10,7 @@ describe Ethon::Easy::Http::Head do
   describe "#setup" do
     context "when nothing" do
       it "sets nobody" do
-        easy.should_receive(:nobody=).with(true)
+        expect(easy).to receive(:nobody=).with(true)
         head.setup(easy)
       end
 
@@ -24,7 +24,7 @@ describe Ethon::Easy::Http::Head do
       let(:params) { {:a => "1&b=2"} }
 
       it "sets nobody" do
-        easy.should_receive(:nobody=).with(true)
+        expect(easy).to receive(:nobody=).with(true)
         head.setup(easy)
       end
 

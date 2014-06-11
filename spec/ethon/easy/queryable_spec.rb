@@ -197,7 +197,7 @@ describe Ethon::Easy::Queryable do
   describe "#empty?" do
     context "when params empty" do
       it "returns true" do
-        expect(params.empty?).to be_true
+        expect(params.empty?).to be_truthy
       end
     end
 
@@ -205,7 +205,7 @@ describe Ethon::Easy::Queryable do
       let(:hash) { {:a => 1} }
 
       it "returns false" do
-        expect(params.empty?).to be_false
+        expect(params.empty?).to be_falsey
       end
     end
   end

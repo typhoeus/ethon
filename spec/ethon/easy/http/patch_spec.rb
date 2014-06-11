@@ -9,7 +9,7 @@ describe Ethon::Easy::Http::Patch do
 
   describe "#setup" do
     it "sets customrequest" do
-      easy.should_receive(:customrequest=).with("PATCH")
+      expect(easy).to receive(:customrequest=).with("PATCH")
       patch.setup(easy)
     end
 

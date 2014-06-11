@@ -17,14 +17,14 @@ describe Ethon::Easy::Http::Get do
       let(:form) { { :a => 1 } }
 
       it "sets customrequest" do
-        easy.should_receive(:customrequest=).with("GET")
+        expect(easy).to receive(:customrequest=).with("GET")
         get.setup(easy)
       end
     end
 
     context "when no body" do
       it "doesn't set customrequest" do
-        easy.should_receive(:customrequest=).never
+        expect(easy).to receive(:customrequest=).never
         get.setup(easy)
       end
     end

@@ -18,7 +18,7 @@ describe Ethon::Easy::ResponseCallbacks do
       context "when block given" do
         it "stores" do
           easy.send(callback_type) { p 1 }
-          expect(easy.instance_variable_get("@#{callback_type}")).to have(1).items
+          expect(easy.instance_variable_get("@#{callback_type}").size).to eq(1)
         end
       end
 
@@ -26,7 +26,7 @@ describe Ethon::Easy::ResponseCallbacks do
         it "stores" do
           easy.send(callback_type) { p 1 }
           easy.send(callback_type) { p 2 }
-          expect(easy.instance_variable_get("@#{callback_type}")).to have(2).items
+          expect(easy.instance_variable_get("@#{callback_type}").size).to eq(2)
         end
       end
     end
@@ -38,14 +38,14 @@ describe Ethon::Easy::ResponseCallbacks do
     end
 
     it "executes blocks and passes self" do
-      String.should_receive(:new).with(easy.url)
+      expect(String).to receive(:new).with(easy.url)
       easy.complete
     end
 
     context "when @on_complete nil" do
       it "doesn't raise" do
         easy.instance_variable_set(:@on_complete, nil)
-        expect{ easy.complete }.to_not raise_error(NoMethodError)
+        expect{ easy.complete }.to_not raise_error
       end
     end
   end
@@ -56,14 +56,14 @@ describe Ethon::Easy::ResponseCallbacks do
     end
 
     it "executes blocks and passes self" do
-      String.should_receive(:new).with(easy.url)
+      expect(String).to receive(:new).with(easy.url)
       easy.headers
     end
 
     context "when @on_headers nil" do
       it "doesn't raise" do
         easy.instance_variable_set(:@on_headers, nil)
-        expect{ easy.headers }.to_not raise_error(NoMethodError)
+        expect{ easy.headers }.to_not raise_error
       end
     end
   end
@@ -88,7 +88,7 @@ describe Ethon::Easy::ResponseCallbacks do
     context "when @on_body nil" do
       it "doesn't raise" do
         easy.instance_variable_set(:@on_body, nil)
-        expect{ easy.body("the chunk") }.to_not raise_error(NoMethodError)
+        expect{ easy.body("the chunk") }.to_not raise_error
       end
     end
   end

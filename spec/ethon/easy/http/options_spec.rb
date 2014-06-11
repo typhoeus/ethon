@@ -9,7 +9,7 @@ describe Ethon::Easy::Http::Options do
 
   describe "#setup" do
     it "sets customrequest" do
-      easy.should_receive(:customrequest=).with("OPTIONS")
+      expect(easy).to receive(:customrequest=).with("OPTIONS")
       options.setup(easy)
     end
 

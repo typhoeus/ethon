@@ -30,7 +30,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', '1'], ['b', '2']] }
 
       it "returns false" do
-        expect(form.multipart?).to be_false
+        expect(form.multipart?).to be_falsey
       end
     end
 
@@ -38,7 +38,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', '1'], ['b', ['path', 'encoding', 'abs_path']]] }
 
       it "returns true" do
-        expect(form.multipart?).to be_true
+        expect(form.multipart?).to be_truthy
       end
     end
   end
@@ -50,7 +50,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', '1']] }
 
       it "adds params to form" do
-        Ethon::Curl.should_receive(:formadd)
+        expect(Ethon::Curl).to receive(:formadd)
         form.materialize
       end
     end
@@ -59,7 +59,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', nil]] }
 
       it "adds params to form" do
-        Ethon::Curl.should_receive(:formadd)
+        expect(Ethon::Curl).to receive(:formadd)
         form.materialize
       end
     end
@@ -68,7 +68,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', ["file", "type", "path/file"]]] }
 
       it "adds file to form" do
-        Ethon::Curl.should_receive(:formadd)
+        expect(Ethon::Curl).to receive(:formadd)
         form.materialize
       end
     end

@@ -12,8 +12,8 @@ describe Ethon::Easy::Http do
     let(:get_class) { Ethon::Easy::Http::Get }
 
     it "instanciates action" do
-      get.should_receive(:setup)
-      get_class.should_receive(:new).and_return(get)
+      expect(get).to receive(:setup)
+      expect(get_class).to receive(:new).and_return(get)
       easy.http_request(url, action_name, options)
     end
 
