@@ -10,7 +10,7 @@ module Ethon
       end
 
       def self.informations_to_log
-        [:url, :response_code, :return_code, :total_time]
+        [:effective_url, :response_code, :return_code, :total_time]
       end
 
       def self.from_easy(easy)
