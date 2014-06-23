@@ -32,6 +32,12 @@ describe Ethon::Easy::Mirror do
       expect(mirror.log_informations).to be_a(Hash)
     end
 
+    it "only calls methods that exist" do
+      described_class.informations_to_log.each do |method_name|
+        expect(mirror.respond_to? method_name).to eql(true)
+      end
+    end
+
     it "includes return code" do
       expect(mirror.log_informations).to include(options)
     end
