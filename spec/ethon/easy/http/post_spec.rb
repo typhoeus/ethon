@@ -194,6 +194,26 @@ describe Ethon::Easy::Http::Post do
           end
         end
       end
+
+      context "when binary with null bytes" do
+        let(:form) { [1, 0, 1].pack('c*') }
+
+        context "when requesting" do
+          before do
+            easy.headers = { 'Expect' => '' }
+            post.setup(easy)
+            easy.perform
+          end
+
+          it "returns ok" do
+            expect(easy.return_code).to eq(:ok)
+          end
+
+          it "sends binary data" do
+            expect(easy.response_body).to include('"body":"\\u0001\\u0000\\u0001"')
+          end
+        end
+      end
     end
 
     context "when params and body" do

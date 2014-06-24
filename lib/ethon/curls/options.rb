@@ -42,6 +42,12 @@ module Ethon
         when :string
           func=:string
           value=value.to_s unless value.nil?
+        when :string_as_pointer
+          func = :ffipointer
+          s = ''
+          s = value.to_s unless value.nil?
+          value = FFI::MemoryPointer.new(:char, s.bytesize)
+          value.put_bytes(0, s)
         when :string_escape_null
           func=:string
           value=Util.escape_zero_byte(value) unless value.nil?
@@ -107,6 +113,7 @@ module Ethon
                            # :all defaults to all bits set
         :string => :objectpoint,
         :string_escape_null => :objectpoint,
+        :string_as_pointer => :objectpoint,
         :ffipointer => :objectpoint, # FFI::Pointer
         :curl_slist => :objectpoint,
         :buffer => :objectpoint, # A memory buffer of size defined in the options
@@ -302,7 +309,7 @@ module Ethon
       option :easy, :postfields, :string, 15
       option :easy, :postfieldsize, :int, 60
       option :easy, :postfieldsize_large, :off_t, 120
-      option :easy, :copypostfields, :string, 165
+      option :easy, :copypostfields, :string_as_pointer, 165
       option :easy, :httppost, :ffipointer, 24
       option :easy, :referer, :string, 16
       option :easy, :useragent, :string, 18
