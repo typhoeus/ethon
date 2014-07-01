@@ -26,6 +26,27 @@ describe Ethon::Easy::Callbacks do
       easy.set_callbacks
       expect(easy.instance_variable_get(:@debug_info).to_a).to eq([])
     end
+  end
 
+  describe "#body_write_callback" do
+    let(:body_write_callback) { easy.instance_variable_get(:@body_write_callback) }
+    let(:stream) { double(read_string: "") }
+    context "when body returns not :abort" do
+      it "returns number bigger than 0" do
+        expect(body_write_callback.call(stream, 1, 1, nil) > 0).to be(true)
+      end
+    end
+
+    context "when body returns :abort" do
+      before do
+        easy.on_body.clear
+        easy.on_body { :abort }
+      end
+      let(:body_write_callback) { easy.instance_variable_get(:@body_write_callback) }
+
+      it "returns -1 to indicate abort to libcurl" do
+        expect(body_write_callback.call(stream, 1, 1, nil)).to eq(-1)
+      end
+    end
   end
 end

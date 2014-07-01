@@ -86,7 +86,12 @@ module Ethon
       # @return [ Object ] If there are no on_body callbacks, returns the symbol :unyielded.
       def body(chunk)
         if defined?(@on_body) and not @on_body.nil?
-          @on_body.each{ |callback| callback.call(chunk, self) }
+          result = nil
+          @on_body.each do |callback|
+            result = callback.call(chunk, self)
+            break if result == :abort
+          end
+          result
         else
           :unyielded
         end
