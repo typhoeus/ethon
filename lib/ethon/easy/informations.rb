@@ -71,15 +71,27 @@ module Ethon
         eval %Q|def #{name}; Curl.send(:get_info_#{type}, :#{name}, handle); end|
       end
 
-      # Returns this curl version supports zlib.
+      # Returns true if this curl version supports zlib.
       #
       # @example Return wether zlib is supported.
       #   easy.supports_zlib?
       #
       # @return [ Boolean ] True if supported, else false.
       def supports_zlib?
-        !!(Curl.version.match(/zlib/))
+        !!(Curl.version_info[:features] & Curl::VERSION_LIBZ)
       end
+
+      # Returns true if this curl version supports AsynchDNS.
+      #
+      # @example
+      #   easy.supports_asynch_dns?
+      #
+      # @return [ Boolean ] True if supported, else false.
+      def supports_asynch_dns?
+        !!(Curl.version_info[:features] & Curl::VERSION_ASYNCHDNS)
+      end
+
+      alias :supports_timeout_ms? :supports_asynch_dns?
     end
   end
 end

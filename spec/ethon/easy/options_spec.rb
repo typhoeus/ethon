@@ -104,9 +104,9 @@ describe Ethon::Easy::Options do
       end
     end
 
-    if Ethon::Curl.version.match("c-ares")
+    if Ethon::Easy.new.supports_timeout_ms?
       context "when timeout_ms" do
-        let(:timeout_ms) { 900 }
+        let(:timeout_ms) { 100 }
 
         context "when request takes longer" do
           let(:url) { "localhost:3001?delay=1" }
@@ -118,7 +118,7 @@ describe Ethon::Easy::Options do
       end
 
       context "when connecttimeout_ms" do
-        let(:connecttimeout_ms) { 1 }
+        let(:connecttimeout_ms) { 100 }
 
         context "when cannot connect" do
           let(:url) { "localhost:3002" }
