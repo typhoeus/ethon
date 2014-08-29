@@ -124,7 +124,8 @@ describe Ethon::Easy::Options do
           let(:url) { "localhost:3002" }
 
           it "times out" do
-            expect(easy.return_code).to eq(:couldnt_connect)
+            # this can either lead to a timeout or couldnt connect depending on which happens first
+            expect([:couldnt_connect, :operation_timedout]).to include(easy.return_code)
           end
         end
       end
