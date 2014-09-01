@@ -77,21 +77,12 @@ module Ethon
       #   easy.supports_zlib?
       #
       # @return [ Boolean ] True if supported, else false.
+      # @deprecated Please use the static version instead
       def supports_zlib?
-        !!(Curl.version_info[:features] & Curl::VERSION_LIBZ)
+        Kernel.warn("Ethon: Easy#supports_zlib? is deprecated and will be removed, please use Easy#.")
+        Easy.supports_zlib?
       end
 
-      # Returns true if this curl version supports AsynchDNS.
-      #
-      # @example
-      #   easy.supports_asynch_dns?
-      #
-      # @return [ Boolean ] True if supported, else false.
-      def supports_asynch_dns?
-        !!(Curl.version_info[:features] & Curl::VERSION_ASYNCHDNS)
-      end
-
-      alias :supports_timeout_ms? :supports_asynch_dns?
     end
   end
 end

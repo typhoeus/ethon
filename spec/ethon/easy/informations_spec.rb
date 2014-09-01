@@ -82,14 +82,10 @@ describe Ethon::Easy::Informations do
 
   describe "#supports_zlib?" do
     it "returns true" do
+      Kernel.should_receive(:warn) #deprecation warning
       expect(easy.supports_zlib?).to be_truthy
     end
   end
 
-  describe "#supports_asynch_dns?" do
-    it "returns boolean" do
-      expect([true, false].include? easy.supports_asynch_dns?).to be_truthy
-    end
-  end
 
 end

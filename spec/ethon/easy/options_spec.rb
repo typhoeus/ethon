@@ -104,7 +104,7 @@ describe Ethon::Easy::Options do
       end
     end
 
-    if Ethon::Easy.new.supports_timeout_ms?
+    if Ethon::Easy.supports_timeout_ms?
       context "when timeout_ms" do
         let(:timeout_ms) { 100 }
 

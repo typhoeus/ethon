@@ -1,4 +1,5 @@
 require 'ethon/easy/informations'
+require 'ethon/easy/features'
 require 'ethon/easy/callbacks'
 require 'ethon/easy/options'
 require 'ethon/easy/header'
@@ -39,6 +40,7 @@ module Ethon
     include Ethon::Easy::Http
     include Ethon::Easy::Operations
     include Ethon::Easy::ResponseCallbacks
+    extend Ethon::Easy::Features
 
     # Returns the curl return code.
     #
