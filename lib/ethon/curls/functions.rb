@@ -21,7 +21,7 @@ module Ethon
         base.attach_function :easy_setopt_off_t,          :curl_easy_setopt,         [:pointer, :easy_option, :int64],    :easy_code
         base.instance_variable_set(:@blocking, true)
         base.attach_function :easy_perform,               :curl_easy_perform,        [:pointer],                     :easy_code
-        base.attach_function :easy_strerror,              :curl_easy_strerror,       [:int],                         :string
+        base.attach_function :easy_strerror,              :curl_easy_strerror,       [:easy_code],                   :string
         base.attach_function :easy_escape,                :curl_easy_escape,         [:pointer, :pointer, :int],     :pointer
         base.attach_function :easy_reset,                 :curl_easy_reset,          [:pointer],                     :void
 
