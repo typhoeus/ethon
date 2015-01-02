@@ -36,9 +36,8 @@ module Ethon
             opthash[option][:opts][value]
           when String
             opthash[option][:opts][value.to_sym]
-          else
-            value.to_i
           end
+          value = value.to_i
         when :bitmask
           return if value.nil?
           func=:long
@@ -47,9 +46,8 @@ module Ethon
             opthash[option][:opts][value]
           when Array
             value.inject(0) { |res,v| res|opthash[option][:opts][v] }
-          else
-            value.to_i
           end
+          value = value.to_i
         when :string
           func=:string
           value=value.to_s unless value.nil?
