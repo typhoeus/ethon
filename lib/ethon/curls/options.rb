@@ -31,14 +31,25 @@ module Ethon
         when :enum
           return if value.nil?
           func=:long
-          value=opthash[option][:opts][value] if value.is_a? Symbol
-          value=value.to_i
+          value = case value
+          when Symbol
+            opthash[option][:opts][value]
+          when String
+            opthash[option][:opts][value.to_sym]
+          else
+            value.to_i
+          end
         when :bitmask
           return if value.nil?
           func=:long
-          value=opthash[option][:opts][value] if value.is_a? Symbol
-          value=value.inject(0) { |res,v| res|opthash[option][:opts][v] } if value.is_a? Array
-          value=value.to_i
+          value = case value
+          when Symbol
+            opthash[option][:opts][value]
+          when Array
+            value.inject(0) { |res,v| res|opthash[option][:opts][v] }
+          else
+            value.to_i
+          end
         when :string
           func=:string
           value=value.to_s unless value.nil?
