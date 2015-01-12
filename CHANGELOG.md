@@ -4,6 +4,12 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.0...master)
 
+* `Ethon::Curl::FDSet`
+    * Set `:fd_array` size to the current MS Windows `FD_SETSIZE` (2048).
+        ([Tasos Laskos](https://github.com/zapotek)
+
+## 0.7.1
+
 * MS Windows determination delegated to `Gem.windows?` for better accuracy.
 * FFI data-types updated to work on MS Windows.
 

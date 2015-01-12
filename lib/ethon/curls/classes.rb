@@ -14,7 +14,8 @@ module Ethon
     class FDSet < ::FFI::Struct
       if Curl.windows?
         layout :fd_count, :uint,
-               :fd_array, [:uint, 64] # 2048 FDs
+               # TODO: Make it future proof by dynamically grabbing FD_SETSIZE.
+               :fd_array, [:uint, 2048]
 
         def clear; self[:fd_count] = 0; end
       else
