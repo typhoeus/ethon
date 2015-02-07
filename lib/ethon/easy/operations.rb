@@ -37,6 +37,8 @@ module Ethon
         end
         complete
         @return_code
+      ensure
+        finish_response_body_io
       end
 
       # Clean up the easy.
@@ -46,6 +48,7 @@ module Ethon
       #
       # @return the result of the free which is nil
       def cleanup
+        close_response_body_io
         handle.free
       end
 

@@ -143,7 +143,7 @@ module Ethon
         :ffipointer => :objectpoint, # FFI::Pointer
         :curl_slist => :objectpoint,
         :buffer => :objectpoint, # A memory buffer of size defined in the options
-        :dontuse_object => :objectpoint, # An object we don't support (e.g. FILE*)
+        :dontuse_object => :objectpoint, # An object we don't support
         :cbdata => :objectpoint,
         :callback => :functionpoint,
         :dontuse_callback => :functionpoint,

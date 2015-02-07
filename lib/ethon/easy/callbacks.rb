@@ -23,7 +23,7 @@ module Ethon
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
         Curl.set_option(:debugfunction, debug_callback, handle)
-        @response_body = String.new
+        @response_body = @response_body_io ? nil : String.new
         @response_headers = String.new
         @headers_called = false
         @debug_info = Ethon::Easy::DebugInfo.new
@@ -40,7 +40,11 @@ module Ethon
           begin
             headers_user_callback_result = headers
             result = body(chunk = stream.read_string(size * num))
-            @response_body << chunk if result == :unyielded
+            if @response_body_io
+              @response_body_io.write(chunk)
+            elsif result == :unyielded
+              @response_body << chunk
+            end
             (result != :abort && headers_user_callback_result != :abort) ? size * num : -1
           rescue Exception => e
             @callback_error ||= e
