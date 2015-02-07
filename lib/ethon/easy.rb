@@ -10,6 +10,7 @@ require 'ethon/easy/operations'
 require 'ethon/easy/response_callbacks'
 require 'ethon/easy/debug_info'
 require 'ethon/easy/mirror'
+require 'ethon/easy/files'
 
 module Ethon
 
@@ -39,6 +40,7 @@ module Ethon
     include Ethon::Easy::Http
     include Ethon::Easy::Operations
     include Ethon::Easy::ResponseCallbacks
+    include Ethon::Easy::Files
 
     # Returns the curl return code.
     #
@@ -216,7 +218,7 @@ module Ethon
     def initialize(options = {})
       Curl.init
       set_attributes(options)
-      set_callbacks
+      set_callbacks(options)
     end
 
     # Set given options.
@@ -231,6 +233,10 @@ module Ethon
     # @see initialize
     def set_attributes(options)
       options.each_pair do |key, value|
+        if key == :file || key == :writedata
+          # TODO: modes other than 'w+'
+          value = open_file(value, 'w+')
+        end
         method = "#{key}="
         unless respond_to?(method)
           raise Errors::InvalidOption.new(key)
@@ -252,6 +258,7 @@ module Ethon
       @on_body = nil
       @procs = nil
       @mirror = nil
+      close_all_files
       Curl.easy_reset(handle)
       set_callbacks
     end
