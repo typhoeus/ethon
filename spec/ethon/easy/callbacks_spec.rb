@@ -12,6 +12,13 @@ describe Ethon::Easy::Callbacks do
       easy.set_callbacks
     end
 
+    [:file, :writedata].each do |file_opt|
+      it "sets @response_body to null if file passed" do
+        easy.set_callbacks({file_opt => '/some/file'})
+        expect(easy.instance_variable_get(:@response_body)).to be_nil
+      end
+    end
+
     it "resets @response_body" do
       easy.set_callbacks
       expect(easy.instance_variable_get(:@response_body)).to eq("")
