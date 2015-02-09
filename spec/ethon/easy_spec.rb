@@ -75,9 +75,10 @@ describe Ethon::Easy do
     end
 
     it "resets on_complete" do
+      orig_size = easy.on_complete.count
       easy.on_complete { p 1 }
       easy.reset
-      expect(easy.on_complete).to be_empty
+      expect(easy.on_complete.count).to eq(orig_size)
     end
 
     it "resets on_headers" do
