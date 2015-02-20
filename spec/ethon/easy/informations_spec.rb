@@ -50,6 +50,12 @@ describe Ethon::Easy::Informations do
     end
   end
 
+  describe "#redirect_time" do
+    it "returns float" do
+      expect(easy.redirect_time).to be_a(Float)
+    end
+  end
+
   describe "#effective_url" do
     it "returns url" do
       expect(easy.effective_url).to match(/^http:\/\/localhost:3001\/?/)

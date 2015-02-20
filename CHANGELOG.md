@@ -8,6 +8,9 @@
     * Set `:fd_array` size to the current MS Windows `FD_SETSIZE` (2048).
         ([Tasos Laskos](https://github.com/zapotek)
 
+* Added `redirect_time` value to available informations and `Easy::Mirror`.
+  ([Adrien Jarthon](https://github.com/jarthod)
+
 ## 0.7.1
 
 * MS Windows determination delegated to `Gem.windows?` for better accuracy.
