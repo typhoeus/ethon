@@ -2,7 +2,11 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.0...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.3...master)
+
+## 0.7.3
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.2...v0.7.3)
 
 * `Ethon::Curl::FDSet`
     * Set `:fd_array` size to the current MS Windows `FD_SETSIZE` (2048).
@@ -10,6 +14,12 @@
 
 * Added `redirect_time` value to available informations and `Easy::Mirror`.
   ([Adrien Jarthon](https://github.com/jarthod)
+
+## 0.7.2
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.1...v0.7.2)
+
+* FFI data-types updated to be more correct.
 
 ## 0.7.1
 
