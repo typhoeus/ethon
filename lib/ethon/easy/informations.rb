@@ -46,6 +46,12 @@ module Ethon
         # start until the name resolution was completed.
         :namelookup_time => :double,
 
+        # Return the time, in seconds, it took for all redirection steps
+        # include name lookup, connect, pretransfer and transfer before the
+        # final transaction was started. time_redirect shows the complete
+        # execution time for multiple redirections. (Added in 7.12.3)
+        :redirect_time => :double,
+
         # Return the last used effective url.
         :effective_url => :string,
 

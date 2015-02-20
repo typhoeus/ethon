@@ -8,7 +8,7 @@ describe Ethon::Easy::Mirror do
     [
       :return_code, :response_code, :response_body, :response_headers,
       :total_time, :starttransfer_time, :appconnect_time,
-      :pretransfer_time, :connect_time, :namelookup_time,
+      :pretransfer_time, :connect_time, :namelookup_time, :redirect_time,
       :effective_url, :primary_ip, :redirect_count, :debug_info
     ].each do |name|
       it "contains #{name}" do
