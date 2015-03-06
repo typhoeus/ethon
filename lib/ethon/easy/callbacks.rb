@@ -18,11 +18,18 @@ module Ethon
       #
       # @example Set callbacks.
       #   easy.set_callbacks
-      def set_callbacks
-        Curl.set_option(:writefunction, body_write_callback, handle)
+      def set_callbacks(options = {})
+        if options[:file].nil? && options[:writedata].nil?
+          Curl.set_option(:writefunction, body_write_callback, handle)
+          @response_body = ""
+        else
+          # If we are writing to a file, set writefuntion to NULL
+          Curl.set_option(:writefunction, nil, handle)
+          @response_body = nil
+        end
         Curl.set_option(:headerfunction, header_write_callback, handle)
         Curl.set_option(:debugfunction, debug_callback, handle)
-        @response_body = ""
+        on_complete { close_all_files }
         @response_headers = ""
         @headers_called = false
         @debug_info = Ethon::Easy::DebugInfo.new

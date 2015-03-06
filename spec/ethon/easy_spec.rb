@@ -53,6 +53,16 @@ describe Ethon::Easy do
           expect{ easy.set_attributes({:fubar => 1}) }.to raise_error(Ethon::Errors::InvalidOption)
         end
       end
+
+      context "when file passed" do
+        it "opens the file" do
+          [:file, :writedata].each do |file_opt|
+            path = '/i/am/not/a/file'
+            expect(easy).to receive(:open_file).with(path, 'w+')
+            easy.set_attributes({file_opt => path})
+          end
+        end
+      end
     end
   end
 
@@ -75,15 +85,21 @@ describe Ethon::Easy do
     end
 
     it "resets on_complete" do
+      orig_size = easy.on_complete.count
       easy.on_complete { p 1 }
       easy.reset
-      expect(easy.on_complete).to be_empty
+      expect(easy.on_complete.count).to eq(orig_size)
     end
 
     it "resets on_headers" do
       easy.on_headers { p 1 }
       easy.reset
       expect(easy.on_headers).to be_empty
+    end
+
+    it "closes files" do
+      easy.reset
+      expect(easy.instance_variable_get(:@open_files)).to eq([])
     end
 
     it "resets on_body" do

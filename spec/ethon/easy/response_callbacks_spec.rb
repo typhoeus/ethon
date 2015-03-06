@@ -11,22 +11,24 @@ describe Ethon::Easy::ResponseCallbacks do
 
       context "when no block given" do
         it "returns @#{callback_type}" do
-          expect(easy.send("#{callback_type}")).to eq([])
+          expect(easy.send("#{callback_type}")).to be_kind_of(Array)
         end
       end
 
       context "when block given" do
         it "stores" do
+          orig_size = easy.send(callback_type).count
           easy.send(callback_type) { p 1 }
-          expect(easy.instance_variable_get("@#{callback_type}").size).to eq(1)
+          expect(easy.instance_variable_get("@#{callback_type}").size).to eq(orig_size + 1)
         end
       end
 
       context "when multiple blocks given" do
         it "stores" do
+          orig_size = easy.send(callback_type).count
           easy.send(callback_type) { p 1 }
           easy.send(callback_type) { p 2 }
-          expect(easy.instance_variable_get("@#{callback_type}").size).to eq(2)
+          expect(easy.instance_variable_get("@#{callback_type}").size).to eq(orig_size + 2)
         end
       end
     end

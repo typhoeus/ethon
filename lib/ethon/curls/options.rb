@@ -57,6 +57,9 @@ module Ethon
           s = value.to_s unless value.nil?
           value = FFI::MemoryPointer.new(:char, s.bytesize)
           value.put_bytes(0, s)
+        when :file
+          func=:ffipointer
+          # We expect that easy is passing us a FILE *
         when :string_escape_null
           func=:string
           value=Util.escape_zero_byte(value) unless value.nil?
@@ -126,7 +129,8 @@ module Ethon
         :ffipointer => :objectpoint, # FFI::Pointer
         :curl_slist => :objectpoint,
         :buffer => :objectpoint, # A memory buffer of size defined in the options
-        :dontuse_object => :objectpoint, # An object we don't support (e.g. FILE*)
+        :dontuse_object => :objectpoint, # An object we don't support
+        :file => :objectpoint,
         :cbdata => :objectpoint,
         :callback => :functionpoint,
         :debug_callback => :functionpoint,
@@ -227,7 +231,7 @@ module Ethon
       option :easy, :wildcardmatch, :bool, 197
       ## CALLBACK OPTIONS
       option :easy, :writefunction, :callback, 11
-      option :easy, :file, :cbdata, 1
+      option :easy, :file, :file, 1
       option_alias :easy, :file, :writedata
       option :easy, :readfunction, :callback, 12
       option :easy, :infile, :cbdata, 9
