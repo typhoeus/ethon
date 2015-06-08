@@ -70,7 +70,12 @@ module Ethon
         # @param [ easy ] easy the easy to setup.
         def setup(easy)
           @easy = easy
+
           if params.empty?
+            # This is called here to have the side effect of removing
+            # the :array_encoding key from options, to avoid forwarding
+            # it to Curl later. FIXME.
+            array_encoding
             easy.url = url
           else
             set_params(easy)
@@ -87,9 +92,21 @@ module Ethon
         # @param [ Easy ] easy The easy to setup.
         def set_params(easy)
           params.escape = true
+          params.rack_arrays = true if array_encoding == :rack
+
           base_url, base_params = url.split("?")
           base_params += "&" if base_params
           easy.url = "#{base_url}?#{base_params}#{params.to_s}"
+        end
+
+        # Get the requested array encoding. By default it's
+        # :typhoeus, but it can also be set to :rack.
+        #
+        # @example Get encoding from options
+        #   action.array_encoding
+        #
+        def array_encoding
+          @array_encoding ||= options.delete(:array_encoding) || :typhoeus
         end
 
         # Setup request with form.

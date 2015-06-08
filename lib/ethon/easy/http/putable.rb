@@ -14,6 +14,7 @@ module Ethon
         def set_form(easy)
           easy.upload = true
           form.escape = true
+          form.rack_arrays = true if array_encoding == :rack
           easy.infilesize = form.to_s.bytesize
           easy.set_read_callback(form.to_s)
         end
