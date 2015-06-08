@@ -8,6 +8,7 @@ module Ethon
       # :nodoc:
       def self.included(base)
         base.send(:attr_accessor, :escape)
+        base.send(:attr_accessor, :rack_arrays)
       end
 
       # Return wether there are elements in params or not.
@@ -95,15 +96,34 @@ module Ethon
       def recursively_generate_pairs(h, prefix, pairs)
         case h
         when Hash
-          h.each_pair do |k,v|
-            key = prefix.nil? ? k : "#{prefix}[#{k}]"
-            pairs_for(v, key, pairs)
-          end
+          encode_hash_pairs(h, prefix, pairs)
         when Array
-          h.each_with_index do |v, i|
-            key = "#{prefix}[#{i}]"
-            pairs_for(v, key, pairs)
+          if rack_arrays
+            encode_rack_array_pairs(h, prefix, pairs)
+          else
+            encode_indexed_array_pairs(h, prefix, pairs)
           end
+        end
+      end
+
+      def encode_hash_pairs(h, prefix, pairs)
+        h.each_pair do |k,v|
+          key = prefix.nil? ? k : "#{prefix}[#{k}]"
+          pairs_for(v, key, pairs)
+        end
+      end
+
+      def encode_indexed_array_pairs(h, prefix, pairs)
+        h.each_with_index do |v, i|
+          key = "#{prefix}[#{i}]"
+          pairs_for(v, key, pairs)
+        end
+      end
+
+      def encode_rack_array_pairs(h, prefix, pairs)
+        h.each do |v|
+          key = "#{prefix}[]"
+          pairs_for(v, key, pairs)
         end
       end
 

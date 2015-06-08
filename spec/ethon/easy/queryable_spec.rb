@@ -106,10 +106,21 @@ describe Ethon::Easy::Queryable do
     context "when params contains an array" do
       let(:hash) { {:a => 1, :b => [2, 3]} }
 
-      it "transforms" do
-        expect(pairs).to include([:a, 1])
-        expect(pairs).to include(["b[0]", 2])
-        expect(pairs).to include(["b[1]", 3])
+      context "by default" do
+        it "transforms" do
+          expect(pairs).to include([:a, 1])
+          expect(pairs).to include(["b[0]", 2])
+          expect(pairs).to include(["b[1]", 3])
+        end
+      end
+
+      context "when rack_arrays is true" do
+        before { params.rack_arrays = true }
+        it "transforms without indexes" do
+          expect(pairs).to include([:a, 1])
+          expect(pairs).to include(["b[]", 2])
+          expect(pairs).to include(["b[]", 3])
+        end
       end
     end
 
