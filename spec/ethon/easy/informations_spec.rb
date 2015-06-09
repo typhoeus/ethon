@@ -88,7 +88,10 @@ describe Ethon::Easy::Informations do
 
   describe "#supports_zlib?" do
     it "returns true" do
+      Kernel.should_receive(:warn) #deprecation warning
       expect(easy.supports_zlib?).to be_truthy
     end
   end
+
+
 end

@@ -77,15 +77,18 @@ module Ethon
         eval %Q|def #{name}; Curl.send(:get_info_#{type}, :#{name}, handle); end|
       end
 
-      # Returns this curl version supports zlib.
+      # Returns true if this curl version supports zlib.
       #
       # @example Return wether zlib is supported.
       #   easy.supports_zlib?
       #
       # @return [ Boolean ] True if supported, else false.
+      # @deprecated Please use the static version instead
       def supports_zlib?
-        !!(Curl.version.match(/zlib/))
+        Kernel.warn("Ethon: Easy#supports_zlib? is deprecated and will be removed, please use Easy#.")
+        Easy.supports_zlib?
       end
+
     end
   end
 end

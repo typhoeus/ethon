@@ -10,6 +10,18 @@ module Ethon
       layout :code, :msg_code, :easy_handle, :pointer, :data, MsgData
     end
 
+    class VersionInfoData < ::FFI::Struct
+      layout :curl_version, :uint8,
+        :version, :string,
+        :version_num, :int,
+        :host, :string,
+        :features, :int,
+        :ssl_version, :string,
+        :ssl_version_num, :long,
+        :libz_version, :string,
+        :protocols, :pointer
+    end
+
     # :nodoc:
     class FDSet < ::FFI::Struct
       if Curl.windows?

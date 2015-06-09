@@ -39,5 +39,24 @@ module Ethon
 
     # :nodoc:
     MsgCode = enum(:msg_code, msg_codes)
+
+    VERSION_IPV6 = (1<<0)  # IPv6-enabled
+    VERSION_KERBEROS4 = (1<<1)  # kerberos auth is supported
+    VERSION_SSL = (1<<2)  # SSL options are present
+    VERSION_LIBZ = (1<<3)  # libz features are present
+    VERSION_NTLM = (1<<4)  # NTLM auth is supported
+    VERSION_GSSNEGOTIATE = (1<<5) # Negotiate auth supp
+    VERSION_DEBUG = (1<<6)  # built with debug capabilities
+    VERSION_ASYNCHDNS = (1<<7)  # asynchronous dns resolves
+    VERSION_SPNEGO = (1<<8)  # SPNEGO auth is supported
+    VERSION_LARGEFILE = (1<<9)  # supports files bigger than 2GB
+    VERSION_IDN = (1<<10) # International Domain Names support
+    VERSION_SSPI = (1<<11) # SSPI is supported
+    VERSION_CONV = (1<<12) # character conversions supported
+    VERSION_CURLDEBUG = (1<<13) # debug memory tracking supported
+    VERSION_TLSAUTH_SRP = (1<<14) # TLS-SRP auth is supported
+    VERSION_NTLM_WB = (1<<15) # NTLM delegating to winbind helper
+    VERSION_HTTP2 = (1<<16) # HTTP2 support built
+    VERSION_GSSAPI = (1<<17) # GSS-API is supported
   end
 end
