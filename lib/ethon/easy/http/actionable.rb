@@ -92,7 +92,7 @@ module Ethon
         # @param [ Easy ] easy The easy to setup.
         def set_params(easy)
           params.escape = true
-          params.rack_arrays = true if array_encoding == :rack
+          params.array_encoding = array_encoding
 
           base_url, base_params = url.split("?")
           base_params += "&" if base_params

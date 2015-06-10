@@ -8,7 +8,7 @@ module Ethon
       # :nodoc:
       def self.included(base)
         base.send(:attr_accessor, :escape)
-        base.send(:attr_accessor, :rack_arrays)
+        base.send(:attr_accessor, :array_encoding)
       end
 
       # Return wether there are elements in params or not.
@@ -98,7 +98,7 @@ module Ethon
         when Hash
           encode_hash_pairs(h, prefix, pairs)
         when Array
-          if rack_arrays
+          if array_encoding == :rack
             encode_rack_array_pairs(h, prefix, pairs)
           else
             encode_indexed_array_pairs(h, prefix, pairs)

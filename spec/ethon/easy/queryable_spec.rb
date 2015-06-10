@@ -114,8 +114,8 @@ describe Ethon::Easy::Queryable do
         end
       end
 
-      context "when rack_arrays is true" do
-        before { params.rack_arrays = true }
+      context "when array_encoding is :rack" do
+        before { params.array_encoding = :rack }
         it "transforms without indexes" do
           expect(pairs).to include([:a, 1])
           expect(pairs).to include(["b[]", 2])

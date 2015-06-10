@@ -14,7 +14,7 @@ module Ethon
         # @param [ Easy ] easy The easy to setup.
         def set_form(easy)
           easy.url ||= url
-          form.rack_arrays = true if array_encoding == :rack
+          form.array_encoding = array_encoding
           if form.multipart?
             form.escape = false
             form.materialize
