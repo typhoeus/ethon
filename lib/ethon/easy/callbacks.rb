@@ -36,7 +36,7 @@ module Ethon
       # @return [ Proc ] The callback.
       def body_write_callback
         @body_write_callback ||= proc do |stream, size, num, object|
-          headers unless @headers_called
+          headers
           result = body(chunk = stream.read_string(size * num))
           @response_body << chunk if result == :unyielded
           result != :abort ? size * num : -1
