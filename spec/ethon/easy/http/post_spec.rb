@@ -50,8 +50,8 @@ describe Ethon::Easy::Http::Post do
           end
         end
 
-        context "when array_encoding is :rack" do
-          let(:options) { {:array_encoding => :rack} }
+        context "when params_encoding is :rack" do
+          let(:options) { {:params_encoding => :rack} }
           it "encodes them without indexes" do
             post.setup(easy)
             expect(easy.url).to eq("#{url}?a%5B%5D=foo&a%5B%5D=bar")
@@ -245,8 +245,8 @@ describe Ethon::Easy::Http::Post do
           end
         end
 
-        context "when array_encoding is :rack" do
-          let(:options) { {:array_encoding => :rack} }
+        context "when params_encoding is :rack" do
+          let(:options) { {:params_encoding => :rack} }
 
           it "sets copypostfields with non-indexed, escaped representation" do
             expect(easy).to receive(:copypostfields=).with('a%5B%5D=foo&a%5B%5D=bar')

@@ -14,7 +14,7 @@ module Ethon
         def set_form(easy)
           easy.upload = true
           form.escape = true
-          form.array_encoding = array_encoding
+          form.params_encoding = params_encoding
           easy.infilesize = form.to_s.bytesize
           easy.set_read_callback(form.to_s)
         end

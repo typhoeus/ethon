@@ -52,8 +52,8 @@ describe Ethon::Easy::Http::Put do
           end
         end
 
-        context "when array_encoding is :rack" do
-          let(:options) { {:array_encoding => :rack} }
+        context "when params_encoding is :rack" do
+          let(:options) { {:params_encoding => :rack} }
           it "encodes them without indexes" do
             put.setup(easy)
             expect(easy.url).to eq("#{url}?a%5B%5D=foo&a%5B%5D=bar")
@@ -152,8 +152,8 @@ describe Ethon::Easy::Http::Put do
           end
         end
 
-        context "when array_encoding is :rack" do
-          let(:options) { {:array_encoding => :rack} }
+        context "when params_encoding is :rack" do
+          let(:options) { {:params_encoding => :rack} }
 
           it "submits an non-indexed, escaped representation" do
             expect(easy.response_body).to include('"body":"a%5B%5D=foo&a%5B%5D=bar"')

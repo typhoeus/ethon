@@ -73,9 +73,9 @@ module Ethon
 
           if params.empty?
             # This is called here to have the side effect of removing
-            # the :array_encoding key from options, to avoid forwarding
+            # the :params_encoding key from options, to avoid forwarding
             # it to Curl later. FIXME.
-            array_encoding
+            params_encoding
             easy.url = url
           else
             set_params(easy)
@@ -92,7 +92,7 @@ module Ethon
         # @param [ Easy ] easy The easy to setup.
         def set_params(easy)
           params.escape = true
-          params.array_encoding = array_encoding
+          params.params_encoding = params_encoding
 
           base_url, base_params = url.split("?")
           base_params += "&" if base_params
@@ -103,10 +103,10 @@ module Ethon
         # :typhoeus, but it can also be set to :rack.
         #
         # @example Get encoding from options
-        #   action.array_encoding
+        #   action.params_encoding
         #
-        def array_encoding
-          @array_encoding ||= options.delete(:array_encoding) || :typhoeus
+        def params_encoding
+          @params_encoding ||= options.delete(:params_encoding) || :typhoeus
         end
 
         # Setup request with form.
