@@ -94,10 +94,6 @@ module Ethon
           @easy = easy
 
           if params.empty?
-            # This is called here to have the side effect of removing
-            # the :params_encoding key from options, to avoid forwarding
-            # it to Curl later. FIXME.
-            params_encoding
             easy.url = url
           else
             set_params(easy)
