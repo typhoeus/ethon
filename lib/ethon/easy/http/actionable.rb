@@ -19,7 +19,7 @@ module Ethon
         # @return [ Action ] A new action.
         def initialize(url, options)
           @url = url
-          @options = options.dup
+          @options, @query_options = parse_options(options)
         end
 
         # Return the url.
@@ -42,6 +42,16 @@ module Ethon
           @options
         end
 
+        # Returns the query options hash.
+        #
+        # @example Return query options.
+        #   action.query_options
+        #
+        # @return [ Hash ] The query options.
+        def query_options
+          @query_options
+        end
+
         # Return the params.
         #
         # @example Return params.
@@ -49,7 +59,7 @@ module Ethon
         #
         # @return [ Params ] The params.
         def params
-          @params ||= Params.new(@easy, options.delete(:params))
+          @params ||= Params.new(@easy, query_options.fetch(:params, nil))
         end
 
         # Return the form.
@@ -59,7 +69,17 @@ module Ethon
         #
         # @return [ Form ] The form.
         def form
-          @form ||= Form.new(@easy, options.delete(:body))
+          @form ||= Form.new(@easy, query_options.fetch(:body, nil))
+        end
+
+        # Get the requested array encoding. By default it's
+        # :typhoeus, but it can also be set to :rack.
+        #
+        # @example Get encoding from options
+        #   action.params_encoding
+        #
+        def params_encoding
+          @params_encoding ||= query_options.fetch(:params_encoding, :typhoeus)
         end
 
         # Setup everything necessary for a proper request.
@@ -99,16 +119,6 @@ module Ethon
           easy.url = "#{base_url}?#{base_params}#{params.to_s}"
         end
 
-        # Get the requested array encoding. By default it's
-        # :typhoeus, but it can also be set to :rack.
-        #
-        # @example Get encoding from options
-        #   action.params_encoding
-        #
-        def params_encoding
-          @params_encoding ||= options.delete(:params_encoding) || :typhoeus
-        end
-
         # Setup request with form.
         #
         # @example Setup nothing.
@@ -116,6 +126,21 @@ module Ethon
         #
         # @param [ Easy ] easy The easy to setup.
         def set_form(easy)
+        end
+
+        private
+
+        def parse_options(options)
+          query_options = {}
+          options = options.dup
+
+          [ :params, :body, :params_encoding ].each do |query_option|
+            if options.key?(query_option)
+              query_options[query_option] = options.delete(query_option)
+            end
+          end
+
+          return options, query_options
         end
       end
     end
