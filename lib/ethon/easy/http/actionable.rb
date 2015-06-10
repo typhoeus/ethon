@@ -8,6 +8,8 @@ module Ethon
       # for more real actions like GET, HEAD, POST and PUT.
       module Actionable
 
+        QUERY_OPTIONS = [ :params, :body, :params_encoding ]
+
         # Create a new action.
         #
         # @example Create a new action.
@@ -134,7 +136,7 @@ module Ethon
           query_options = {}
           options = options.dup
 
-          [ :params, :body, :params_encoding ].each do |query_option|
+          QUERY_OPTIONS.each do |query_option|
             if options.key?(query_option)
               query_options[query_option] = options.delete(query_option)
             end
