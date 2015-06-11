@@ -5,7 +5,8 @@ describe Ethon::Easy::Http::Post do
   let(:url) { "http://localhost:3001/" }
   let(:params) { nil }
   let(:form) { nil }
-  let(:post) { described_class.new(url, {:params => params, :body => form}) }
+  let(:options) { Hash.new }
+  let(:post) { described_class.new(url, options.merge({:params => params, :body => form})) }
 
   describe "#setup" do
     context "when nothing" do
@@ -37,6 +38,25 @@ describe Ethon::Easy::Http::Post do
       it "attaches escaped to url" do
         post.setup(easy)
         expect(easy.url).to eq("#{url}?a=1%26")
+      end
+
+      context "with arrays" do
+        let(:params) { {:a => %w( foo bar )} }
+
+        context "by default" do
+          it "encodes them with indexes" do
+            post.setup(easy)
+            expect(easy.url).to eq("#{url}?a%5B0%5D=foo&a%5B1%5D=bar")
+          end
+        end
+
+        context "when params_encoding is :rack" do
+          let(:options) { {:params_encoding => :rack} }
+          it "encodes them without indexes" do
+            post.setup(easy)
+            expect(easy.url).to eq("#{url}?a%5B%5D=foo&a%5B%5D=bar")
+          end
+        end
       end
 
       it "sets postfieldsize" do
@@ -211,6 +231,26 @@ describe Ethon::Easy::Http::Post do
 
           it "sends binary data" do
             expect(easy.response_body).to include('"body":"\\u0001\\u0000\\u0001"')
+          end
+        end
+      end
+
+      context "when arrays" do
+        let(:form) { {:a => %w( foo bar )} }
+
+        context "by default" do
+          it "sets copypostfields with indexed, escaped representation" do
+            expect(easy).to receive(:copypostfields=).with('a%5B0%5D=foo&a%5B1%5D=bar')
+            post.setup(easy)
+          end
+        end
+
+        context "when params_encoding is :rack" do
+          let(:options) { {:params_encoding => :rack} }
+
+          it "sets copypostfields with non-indexed, escaped representation" do
+            expect(easy).to receive(:copypostfields=).with('a%5B%5D=foo&a%5B%5D=bar')
+            post.setup(easy)
           end
         end
       end

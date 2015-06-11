@@ -14,6 +14,7 @@ module Ethon
         # @param [ Easy ] easy The easy to setup.
         def set_form(easy)
           easy.url ||= url
+          form.params_encoding = params_encoding
           if form.multipart?
             form.escape = false
             form.materialize
