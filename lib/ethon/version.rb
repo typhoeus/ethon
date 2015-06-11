@@ -1,5 +1,5 @@
 module Ethon
 
   # Ethon version.
-  VERSION = '0.7.4'
+  VERSION = '0.7.3'
 end
