@@ -2,7 +2,17 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.3...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.4...master)
+
+## 0.7.4
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.3...v0.7.4)
+
+* Support different array encodings for params.
+  ([Marcello Barnaba](https://github.com/ifad), [\#104](https://github.com/typhoeus/ethon/pull/104))
+* Programtic access to version infos.
+  ([Jonas Wagner](https://github.com/jwagner), [\#90](https://github.com/typhoeus/ethon/pull/90))
+
 
 ## 0.7.3
 
