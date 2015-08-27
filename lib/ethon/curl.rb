@@ -31,7 +31,7 @@ module Ethon
     @blocking = true
 
     @@initialized = false
-    @@init_mutex = Mutex.new
+    @@curl_mutex = Mutex.new
 
     class << self
       # This function sets up the program environment that libcurl needs.
@@ -55,7 +55,7 @@ module Ethon
       #
       # @raise [ Ethon::Errors::GlobalInit ] If Curl.global_init fails.
       def init
-        @@init_mutex.synchronize {
+        @@curl_mutex.synchronize {
           if not @@initialized
             raise Errors::GlobalInit.new if Curl.global_init(GLOBAL_ALL) != 0
             @@initialized = true
@@ -63,6 +63,27 @@ module Ethon
           end
         }
       end
+
+      # This function releases resources acquired by curl_global_init.
+      # You should call curl_global_cleanup once for each call you make to
+      # curl_global_init, after you are done using libcurl.
+      # This function is not thread safe. You must not call it when any other thread in the
+      # program (i.e. a thread sharing the same memory) is running. This doesn't just
+      # mean no other thread that is using libcurl. Because curl_global_cleanup calls functions of other
+      # libraries that are similarly thread unsafe, it could conflict with
+      # any other thread that uses these other libraries.
+      # See the description in libcurl of global environment requirements
+      # for details of how to use this function.
+      def cleanup
+        @@curl_mutex.synchronize {
+          if @@initialized
+            Curl.global_cleanup()
+            @@initialized = false
+            Ethon.logger.debug("ETHON: Libcurl cleanup") if Ethon.logger
+          end
+        }
+      end
+
     end
   end
 end
