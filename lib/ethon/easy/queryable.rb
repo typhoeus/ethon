@@ -100,6 +100,8 @@ module Ethon
         when Array
           if params_encoding == :rack
             encode_rack_array_pairs(h, prefix, pairs)
+          elsif params_encoding == :multi
+            encode_multi_array_pairs(h, prefix, pairs)
           else
             encode_indexed_array_pairs(h, prefix, pairs)
           end
@@ -126,6 +128,13 @@ module Ethon
           pairs_for(v, key, pairs)
         end
       end
+      
+    def encode_multi_array_pairs(h, prefix, pairs)
+      h.each_with_index do |v, i|
+        key = prefix
+        pairs_for(v, key, pairs)
+      end
+    end
 
       def pairs_for(v, key, pairs)
         case v
