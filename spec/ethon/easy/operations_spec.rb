@@ -50,6 +50,11 @@ describe Ethon::Easy::Operations do
       easy.perform
     end
 
+    it "calls Curl.easy_cleanup" do
+      FFI::AutoPointer.any_instance.should_receive(:free)
+      easy.cleanup
+    end
+
     it "logs" do
       expect(Ethon.logger).to receive(:debug)
       easy.perform
