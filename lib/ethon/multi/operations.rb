@@ -124,7 +124,10 @@ module Ethon
         else
           @timeval[:sec] = timeout / 1000
           @timeval[:usec] = (timeout * 1000) % 1000000
-          code = Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
+          loop do
+            code = Curl.select(max_fd + 1, @fd_read, @fd_write, @fd_excep, @timeval)
+            break unless code < 0 && ::FFI.errno == Errno::EINTR::Errno
+          end
           raise Errors::Select.new(::FFI.errno) if code < 0
         end
       end
