@@ -23,5 +23,15 @@ describe Ethon::Curl do
         Ethon::Curl.init
       end
     end
+
+    context "when global_cleanup is called" do
+      before { expect(Ethon::Curl).to receive(:global_cleanup) }
+
+      it "logs" do
+        expect(Ethon.logger).to receive(:debug).twice
+        Ethon::Curl.init
+        Ethon::Curl.cleanup
+      end
+    end
   end
 end

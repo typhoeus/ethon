@@ -26,6 +26,16 @@ module Ethon
         @return_code
       end
 
+      # Clean up the easy.
+      #
+      # @example Perform clean up.
+      #   easy.cleanup
+      #
+      # @return the result of the free which is nil
+      def cleanup
+        handle.free
+      end
+
       # Prepare the easy. Options, headers and callbacks
       # were set.
       #
