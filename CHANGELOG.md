@@ -4,6 +4,9 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.4...master)
 
+* Support optional escaping of params.
+  ([Tasos Laskos](https://github.com/zapotek)
+
 ## 0.7.4
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.3...v0.7.4)

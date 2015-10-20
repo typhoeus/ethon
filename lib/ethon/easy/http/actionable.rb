@@ -93,13 +93,18 @@ module Ethon
         def setup(easy)
           @easy = easy
 
+          # Order is important, @easy will be used to provide access to options
+          # relevant to the following operations (like whether or not to escape
+          # values).
+          easy.set_attributes(options)
+
+          set_form(easy) unless form.empty?
+
           if params.empty?
             easy.url = url
           else
             set_params(easy)
           end
-          set_form(easy) unless form.empty?
-          easy.set_attributes(options)
         end
 
         # Setup request with params.
@@ -109,12 +114,16 @@ module Ethon
         #
         # @param [ Easy ] easy The easy to setup.
         def set_params(easy)
-          params.escape = true
+          params.escape = easy.escape?
           params.params_encoding = params_encoding
 
-          base_url, base_params = url.split("?")
-          base_params += "&" if base_params
-          easy.url = "#{base_url}?#{base_params}#{params.to_s}"
+          base_url, base_params = url.split('?')
+          base_url << '?'
+          base_url << base_params.to_s
+          base_url << '&' if base_params
+          base_url << params.to_s
+
+          easy.url = base_url
         end
 
         # Setup request with form.

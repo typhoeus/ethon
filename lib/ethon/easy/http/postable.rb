@@ -20,7 +20,7 @@ module Ethon
             form.materialize
             easy.httppost = form.first.read_pointer
           else
-            form.escape = true
+            form.escape = easy.escape?
             easy.postfieldsize = form.to_s.bytesize
             easy.copypostfields = form.to_s
           end

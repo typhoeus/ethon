@@ -10,7 +10,16 @@ module Ethon
         @url = value
         Curl.set_option(:url, value, handle)
       end
-      
+
+      def escape=( b )
+        @escape = b
+      end
+
+      def escape?
+        return true if @escape
+        @escape.nil? ? true : false
+      end
+
       Curl.easy_options.each do |opt,props|
         eval %Q<
           def #{opt}=(value)

@@ -248,6 +248,7 @@ module Ethon
     #   easy.reset
     def reset
       @url = nil
+      @escape = nil
       @hash = nil
       @on_complete = nil
       @on_headers = nil
