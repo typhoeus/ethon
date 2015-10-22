@@ -4,7 +4,7 @@ describe Ethon::Easy::Mirror do
   let(:options) { nil }
   let(:mirror) { described_class.new(options) }
 
-  describe ".informations_to_mirror" do
+  describe "::INFORMATIONS_TO_LOG" do
     [
       :return_code, :response_code, :response_body, :response_headers,
       :total_time, :starttransfer_time, :appconnect_time,
@@ -12,7 +12,7 @@ describe Ethon::Easy::Mirror do
       :effective_url, :primary_ip, :redirect_count, :debug_info
     ].each do |name|
       it "contains #{name}" do
-        expect(described_class.informations_to_mirror).to include(name)
+        expect(described_class::INFORMATIONS_TO_MIRROR).to include(name)
       end
     end
   end
@@ -33,7 +33,7 @@ describe Ethon::Easy::Mirror do
     end
 
     it "only calls methods that exist" do
-      described_class.informations_to_log.each do |method_name|
+      described_class::INFORMATIONS_TO_LOG.each do |method_name|
         expect(mirror.respond_to? method_name).to eql(true)
       end
     end
