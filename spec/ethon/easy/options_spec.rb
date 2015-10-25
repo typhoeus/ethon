@@ -45,6 +45,35 @@ describe Ethon::Easy::Options do
     end
   end
 
+  describe '#escape?' do
+    context 'by default' do
+      it 'returns true' do
+        expect(easy.escape?).to be_truthy
+      end
+    end
+
+    context 'when #escape=nil' do
+      it 'returns true' do
+        easy.escape = nil
+        expect(easy.escape?).to be_truthy
+      end
+    end
+
+    context 'when #escape=true' do
+      it 'returns true' do
+        easy.escape = true
+        expect(easy.escape?).to be_truthy
+      end
+    end
+
+    context 'when #escape=false' do
+      it 'returns true' do
+        easy.escape = false
+        expect(easy.escape?).to be_falsey
+      end
+    end
+  end
+
   describe "#httppost=" do
     it "raises unless given a FFI::Pointer" do
       expect{ easy.httppost = 1 }.to raise_error(Ethon::Errors::InvalidValue)

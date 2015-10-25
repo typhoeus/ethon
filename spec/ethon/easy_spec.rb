@@ -64,6 +64,12 @@ describe Ethon::Easy do
       expect(easy.url).to be_nil
     end
 
+    it "resets escape?" do
+      easy.escape = false
+      easy.reset
+      expect(easy.escape?).to be_truthy
+    end
+
     it "resets hash" do
       easy.reset
       expect(easy.instance_variable_get(:@hash)).to be_nil

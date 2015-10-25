@@ -59,6 +59,42 @@ describe Ethon::Easy::Http::Post do
         end
       end
 
+      context "with :escape" do
+        context 'missing' do
+          it "escapes values" do
+            post.setup(easy)
+            expect(easy.url).to eq("#{url}?a=1%26")
+          end
+        end
+
+        context 'nil' do
+          let(:options) { {:escape => nil} }
+
+          it "escapes values" do
+            post.setup(easy)
+            expect(easy.url).to eq("#{url}?a=1%26")
+          end
+        end
+
+        context 'true' do
+          let(:options) { {:escape => true} }
+
+          it "escapes values" do
+            post.setup(easy)
+            expect(easy.url).to eq("#{url}?a=1%26")
+          end
+        end
+
+        context 'false' do
+          let(:options) { {:escape => false} }
+
+          it "sends raw values" do
+            post.setup(easy)
+            expect(easy.url).to eq("#{url}?a=1&")
+          end
+        end
+      end
+
       it "sets postfieldsize" do
         expect(easy).to receive(:postfieldsize=).with(0)
         post.setup(easy)
