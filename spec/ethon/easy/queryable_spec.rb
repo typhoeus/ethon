@@ -162,13 +162,14 @@ describe Ethon::Easy::Queryable do
             let(:file) { Tempfile.new("fubar") }
 
             it "sets mime type to default application/octet-stream" do
-              Object.send(:remove_const, :MIME)
               expect(mime_type).to eq("application/octet-stream")
             end
           end
         end
 
         context "when no MIME" do
+          before { hide_const("MIME") }
+
           it "sets mime type to default application/octet-stream" do
             expect(mime_type).to eq("application/octet-stream")
           end
