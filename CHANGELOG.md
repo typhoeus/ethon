@@ -2,7 +2,9 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.4...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.8.1...master)
+
+## 0.8.1
 
 * Support optional escaping of params.
   ([Tasos Laskos](https://github.com/zapotek)
