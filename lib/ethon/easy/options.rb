@@ -20,7 +20,7 @@ module Ethon
         @escape.nil? ? true : false
       end
 
-      Curl.easy_options.each do |opt, props|
+      Curl.easy_options(nil).each do |opt, props|
         method_name = "#{opt}=".freeze
         unless method_defined? method_name
           define_method(method_name) do |value|

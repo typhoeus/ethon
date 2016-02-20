@@ -13,7 +13,7 @@ module Ethon
       def set_option(option, value, handle, type = :easy)
         type = type.to_sym unless type.is_a?(Symbol)
         raise NameError, "Ethon::Curls::Options unknown type #{type}." unless respond_to?(OPTION_STRINGS[type])
-        opthash=send(OPTION_STRINGS[type])
+        opthash=send(OPTION_STRINGS[type], nil)
         raise Errors::InvalidOption.new(option) unless opthash.include?(option)
 
         case opthash[option][:type]
@@ -190,14 +190,12 @@ module Ethon
       end
 
       def self.option_type(type)
-        cname="#{type.to_s.upcase}_OPTIONS"
-        c=const_set(cname,{})
-        eval %Q<
-          def #{type.to_s.downcase}_options(rt=nil)
-            return #{cname}.map { |k,v| [k,v[:opt]] } if rt==:enum
-            #{cname}
-          end
-        >
+        cname = FOPTION_STRINGS[type]
+        const_set(cname, {})
+        define_method(OPTION_STRINGS[type]) do |rt|
+          return Ethon::Curls::Options.const_get(cname).map { |k, v| [k, v[:opt]] } if rt == :enum
+          Ethon::Curls::Options.const_get(cname)
+        end
       end
 
       # Curl multi options, refer
