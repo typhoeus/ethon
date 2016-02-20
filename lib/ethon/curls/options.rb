@@ -6,6 +6,7 @@ module Ethon
     module Options
 
       OPTION_STRINGS = { :easy => 'easy_options', :multi => 'multi_options' }.freeze
+      FOPTION_STRINGS = { :easy => 'EASY_OPTIONS', :multi => 'MULTI_OPTIONS' }.freeze
       FTYPES = [:long, :string, :ffipointer, :callback, :debug_callback, :off_t]
       FUNCS = Hash[*[:easy, :multi].zip([:easy, :multi].map { |t| Hash[*FTYPES.zip(FTYPES.map { |ft| "#{t}_setopt_#{ft}" }).flatten] }).flatten]
       # Sets appropriate option for easy, depending on value type.
@@ -177,13 +178,14 @@ module Ethon
         else
           raise ArgumentError, "Ethon::Curls::Options #{ftype} #{name} Expected no opts." unless opts.nil?
         end
-
-        opthash=const_get("#{ftype.to_s.upcase}_OPTIONS")
-        opthash[name]={:type=>type, :opt=>OPTION_TYPE_BASE[OPTION_TYPE_MAP[type]]+num, :opts=>opts}
+        opthash=const_get(FOPTION_STRINGS[ftype])
+        opthash[name] = { :type => type,
+                          :opt => OPTION_TYPE_BASE[OPTION_TYPE_MAP[type]] + num,
+                          :opts => opts }
       end
 
       def self.option_alias(ftype,name,*aliases)
-        opthash=const_get("#{ftype.to_s.upcase}_OPTIONS")
+        opthash=const_get(FOPTION_STRINGS[ftype])
         aliases.each { |a| opthash[a]=opthash[name] }
       end
 
