@@ -5,10 +5,14 @@ module Ethon
     # easy or multi interface.
     module Options
 
+      OPTION_STRINGS = { :easy => 'easy_options', :multi => 'multi_options' }.freeze
+      FTYPES = [:long, :string, :ffipointer, :callback, :debug_callback, :off_t]
+      FUNCS = Hash[*[:easy, :multi].zip([:easy, :multi].map { |t| Hash[*FTYPES.zip(FTYPES.map { |ft| "#{t}_setopt_#{ft}" }).flatten] }).flatten]
       # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle, type = :easy)
-        raise NameError, "Ethon::Curls::Options unknown type #{type}." unless respond_to?("#{type.to_s.downcase}_options")
-        opthash=send("#{type.to_s.downcase}_options")
+        type = type.to_sym unless type.is_a?(Symbol)
+        raise NameError, "Ethon::Curls::Options unknown type #{type}." unless respond_to?(OPTION_STRINGS[type])
+        opthash=send(OPTION_STRINGS[type])
         raise Errors::InvalidOption.new(option) unless opthash.include?(option)
 
         case opthash[option][:type]
@@ -90,8 +94,7 @@ module Ethon
             tv=((value<0) ? value.abs-1 : value)
             raise Errors::InvalidValue.new(option,value) unless tv<(1<<bits)
         end
-
-        send("#{type}_setopt_#{func}", handle, opthash[option][:opt], value)
+        send(FUNCS[type][func], handle, opthash[option][:opt], value)
       end
 
       OPTION_TYPE_BASE = {
