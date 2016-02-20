@@ -20,22 +20,20 @@ module Ethon
         @escape.nil? ? true : false
       end
 
-      Curl.easy_options.each do |opt,props|
-        eval %Q<
-          def #{opt}=(value)
-            Curl.set_option(:#{opt}, value, handle)
+      Curl.easy_options.each do |opt, props|
+        method_name = "#{opt}=".freeze
+        unless method_defined? method_name
+          define_method(method_name) do |value|
+            Curl.set_option(opt, value, handle)
             value
           end
-        > unless method_defined? opt.to_s+"="
-        if props[:type]==:callback then
-          eval %Q<
-            def #{opt}(&block)
-              @procs ||= {}
-              @procs[:#{opt}]=block
-              Curl.set_option(:#{opt}, block, handle)
-              nil
-            end
-          > unless method_defined? opt.to_s
+        end
+        next if props[:type] != :callback || method_defined?(opt)
+        define_method(opt) do |&block|
+          @procs ||= {}
+          @procs[opt.to_sym] = block
+          Curl.set_option(opt, block, handle)
+          nil
         end
       end
     end
