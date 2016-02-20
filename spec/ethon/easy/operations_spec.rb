@@ -25,6 +25,7 @@ describe Ethon::Easy::Operations do
     let(:password) { nil }
 
     before do
+      Ethon.logger.level = Logger::DEBUG
       easy.url = url
       easy.timeout = timeout
       easy.connecttimeout = connect_timeout
