@@ -6,7 +6,7 @@ gem "rake"
 group :development, :test do
   gem "rspec", "~> 2.11"
 
-  gem "sinatra", :git => "https://github.com/sinatra/sinatra.git"
+  gem 'sinatra'
   gem "json"
   gem "mime-types", "~> 1.18"
 
