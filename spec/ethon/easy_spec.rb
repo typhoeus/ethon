@@ -99,6 +99,61 @@ describe Ethon::Easy do
     end
   end
 
+  describe "#dup" do
+    let(:e) { easy.dup }
+    before do
+      easy.url = "http://localhost:3001/"
+      easy.on_complete { p 1 }
+      easy.on_headers { p 1 }
+      easy.response_body = "test_body"
+      easy.response_headers = "test_headers"
+    end
+
+    it "sets a new handle" do
+      expect(e.handle).not_to eq(easy.handle)
+    end
+
+    it "preserves url" do
+      expect(e.url).to eq(easy.url)
+    end
+
+    it "preserves on_complete callback" do
+      expect(e.on_complete).to be(easy.on_complete)
+    end
+
+    it "preserves on_headers callback" do
+      expect(e.on_headers).to be(easy.on_headers)
+    end
+
+    it "resets response_body" do
+      expect(e.response_body).to be_empty
+    end
+
+    it "resets response_headers" do
+      expect(e.response_headers).to be_empty
+    end
+
+    it "sets response_body for duplicated Easy" do
+      e.perform
+      expect(e.response_body).not_to be_empty
+    end
+
+    it "sets response_headers for duplicated Easy" do
+      e.perform
+      expect(e.response_headers).not_to be_empty
+    end
+
+    it "preserves response_body for original Easy" do
+      e.perform
+      expect(easy.response_body).to eq('test_body')
+    end
+
+    it "preserves response_headers for original Easy" do
+      e.perform
+      expect(easy.response_headers).to eq('test_headers')
+    end
+  end
+
   describe "#mirror" do
     it "returns a Mirror" do
       expect(easy.mirror).to be_a(Ethon::Easy::Mirror)
