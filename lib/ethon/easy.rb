@@ -259,6 +259,17 @@ module Ethon
       set_callbacks
     end
 
+    # Clones libcurl session handle. This means that all options that is set in
+    #   the current handle will be set on duplicated handle.
+    def dup
+      e = super
+      e.instance_variable_set(:@body_write_callback, nil)
+      e.instance_variable_set(:@header_write_callback, nil)
+      e.instance_variable_set(:@debug_callback, nil)
+      e.set_callbacks
+      e.handle = Curl.easy_duphandle(handle)
+      e
+    end
     # Url escapes the value.
     #
     # @example Url escape.
