@@ -17,6 +17,7 @@ group :development, :test do
 end
 
 group :perf do
-  gem "patron", "~> 0.4"
-  gem "curb", "~> 0.8.0"
+  gem "benchmark-ips"
+  gem "patron"
+  gem "curb"
 end
