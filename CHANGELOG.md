@@ -13,6 +13,9 @@
 
 ## 0.8.0
 
+* `Easy::Mirror`: Reduced object allocations and method calls during info handling.
+  ([Tasos Laskos](https://github.com/zapotek)
+
 ## 0.7.4
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.3...v0.7.4)
