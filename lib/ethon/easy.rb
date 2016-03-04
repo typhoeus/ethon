@@ -263,11 +263,11 @@ module Ethon
     #   the current handle will be set on duplicated handle.
     def dup
       e = super
+      e.handle = Curl.easy_duphandle(handle)
       e.instance_variable_set(:@body_write_callback, nil)
       e.instance_variable_set(:@header_write_callback, nil)
       e.instance_variable_set(:@debug_callback, nil)
       e.set_callbacks
-      e.handle = Curl.easy_duphandle(handle)
       e
     end
     # Url escapes the value.

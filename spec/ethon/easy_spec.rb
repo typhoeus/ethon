@@ -100,14 +100,16 @@ describe Ethon::Easy do
   end
 
   describe "#dup" do
-    let(:e) { easy.dup }
-    before do
+    let!(:easy) do
+      easy = Ethon::Easy.new
       easy.url = "http://localhost:3001/"
-      easy.on_complete { p 1 }
-      easy.on_headers { p 1 }
-      easy.response_body = "test_body"
-      easy.response_headers = "test_headers"
+      easy.on_complete { 'on_complete' }
+      easy.on_headers { 'on_headers' }
+      easy.response_body = 'test_body'
+      easy.response_headers = 'test_headers'
+      easy
     end
+    let!(:e) { easy.dup }
 
     it "sets a new handle" do
       expect(e.handle).not_to eq(easy.handle)
@@ -123,6 +125,26 @@ describe Ethon::Easy do
 
     it "preserves on_headers callback" do
       expect(e.on_headers).to be(easy.on_headers)
+    end
+
+    it 'preserves body_write_callback of original handle' do
+      expect { easy.perform }.to change { easy.response_body }
+      expect { easy.perform }.not_to change { e.response_body }
+    end
+
+    it 'sets new body_write_callback of duplicated handle' do
+      expect { e.perform }.to change { e.response_body }
+      expect { e.perform }.not_to change { easy.response_body }
+    end
+
+    it 'preserves headers_write_callback of original handle' do
+      expect { easy.perform }.to change { easy.response_headers }
+      expect { easy.perform }.not_to change { e.response_headers }
+    end
+
+    it 'sets new headers_write_callback of duplicated handle' do
+      expect { e.perform }.to change { e.response_headers }
+      expect { e.perform }.not_to change { easy.response_headers }
     end
 
     it "resets response_body" do
