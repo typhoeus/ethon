@@ -52,7 +52,7 @@ describe Ethon::Easy::Operations do
     end
 
     it "calls Curl.easy_cleanup" do
-      FFI::AutoPointer.any_instance.should_receive(:free)
+      expect_any_instance_of(FFI::AutoPointer).to receive(:free)
       easy.cleanup
     end
 
