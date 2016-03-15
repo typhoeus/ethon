@@ -8,7 +8,7 @@ else
 end
 
 group :development, :test do
-  gem "rspec", "~> 2.11"
+  gem "rspec", "~> 3.4"
 
   gem "sinatra"
   gem "json"
