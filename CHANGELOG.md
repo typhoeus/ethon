@@ -2,9 +2,15 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.8.1...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.9.0...master)
+
+## 0.9.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.8.1...v0.9.0)
 
 ## 0.8.1
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.8.0...v0.8.1)
 
 * Support optional escaping of params.
   ([Tasos Laskos](https://github.com/zapotek)
@@ -12,6 +18,8 @@
   ([Tasos Laskos](https://github.com/zapotek)
 
 ## 0.8.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.3...v0.7.4)
 
 * `Easy::Mirror`: Reduced object allocations and method calls during info handling.
   ([Tasos Laskos](https://github.com/zapotek)
