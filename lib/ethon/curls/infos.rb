@@ -104,6 +104,8 @@ module Ethon
       #
       # @return [ String ] The info.
       def get_info_string(option, handle)
+        string_ptr = ::FFI::MemoryPointer.new(:pointer)
+
         if easy_getinfo(handle, option, string_ptr) == :ok
           ptr=string_ptr.read_pointer
           ptr.null? ? nil : ptr.read_string
@@ -120,6 +122,8 @@ module Ethon
       #
       # @return [ Integer ] The info.
       def get_info_long(option, handle)
+        long_ptr = ::FFI::MemoryPointer.new(:long)
+
         if easy_getinfo(handle, option, long_ptr) == :ok
           long_ptr.read_long
         end
@@ -135,39 +139,11 @@ module Ethon
       #
       # @return [ Float ] The info.
       def get_info_double(option, handle)
+        double_ptr = ::FFI::MemoryPointer.new(:double)
+
         if easy_getinfo(handle, option, double_ptr) == :ok
           double_ptr.read_double
         end
-      end
-
-      # Return a string pointer.
-      #
-      # @example Return a string pointer.
-      #   Curl.string_ptr
-      #
-      # @return [ ::FFI::Pointer ] The string pointer.
-      def string_ptr
-        @string_ptr ||= ::FFI::MemoryPointer.new(:pointer)
-      end
-
-      # Return a long pointer.
-      #
-      # @example Return a long pointer.
-      #   Curl.long_ptr
-      #
-      # @return [ ::FFI::Pointer ] The long pointer.
-      def long_ptr
-        @long_ptr ||= ::FFI::MemoryPointer.new(:long)
-      end
-
-      # Return a double pointer.
-      #
-      # @example Return a double pointer.
-      #   Curl.double_ptr
-      #
-      # @return [ ::FFI::Pointer ] The double pointer.
-      def double_ptr
-        @double_ptr ||= ::FFI::MemoryPointer.new(:double)
       end
     end
   end
