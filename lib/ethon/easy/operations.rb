@@ -27,7 +27,7 @@ module Ethon
       # @return [ Integer ] The return code.
       def perform
         @return_code = Curl.easy_perform(handle)
-        if Ethon.logger.level.zero?
+        if Ethon.logger.debug?
           Ethon.logger.debug { "ETHON: performed #{log_inspect}" }
         end
         complete
