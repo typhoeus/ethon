@@ -39,6 +39,8 @@ module Ethon
       # @example Execute on_headers.
       #   request.headers
       def headers
+        return if @headers_called
+        @headers_called = true
         if defined?(@on_headers) and not @on_headers.nil?
           @on_headers.each{ |callback| callback.call(self) }
         end
@@ -61,6 +63,7 @@ module Ethon
       # @example Execute on_completes.
       #   request.complete
       def complete
+        headers unless @response_headers.empty?
         if defined?(@on_complete) and not @on_complete.nil?
           @on_complete.each{ |callback| callback.call(self) }
         end
