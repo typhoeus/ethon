@@ -11,7 +11,13 @@ group :development, :test do
   gem "rspec", "~> 3.4"
 
   gem "sinatra"
-  gem "json"
+
+  if Gem.ruby_version < Gem::Version.new("2.0.0")
+    gem "json", "< 2"
+  else
+    gem "json"
+  end
+
   gem "mime-types", "~> 1.18"
 
   unless ENV["CI"]
