@@ -335,7 +335,7 @@ module Ethon
       option :easy, :cookiesession, :bool, 96
       option :easy, :cookielist, :string, 135
       option :easy, :httpget, :bool, 80
-      option :easy, :http_version, :enum, 84, [:none, :httpv1_0, :httpv1_1]
+      option :easy, :http_version, :enum, 84, [:none, :httpv1_0, :httpv1_1, :httpv2_0]
       option :easy, :ignore_content_length, :bool, 136
       option :easy, :http_content_decoding, :bool, 158
       option :easy, :http_transfer_decoding, :bool, 157
