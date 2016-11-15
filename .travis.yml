@@ -18,7 +18,6 @@ rvm:
   - jruby-18mode
   - jruby-19mode
   - jruby-head
-  - rbx-2
 
 matrix:
   allow_failures:
