@@ -4,6 +4,8 @@ module Ethon
     #
     # @api private
     module Header
+      EMPTY_STRING_VALUE = "".freeze
+
       # Return headers, return empty hash if none.
       #
       # @example Return the headers.
@@ -53,7 +55,11 @@ module Ethon
       #
       # @return [ String ] The composed header.
       def compose_header(key, value)
-        Util.escape_zero_byte("#{key}: #{value}")
+        if(value == EMPTY_STRING_VALUE)
+          Util.escape_zero_byte("#{key};")
+        else
+          Util.escape_zero_byte("#{key}: #{value}")
+        end
       end
     end
   end
