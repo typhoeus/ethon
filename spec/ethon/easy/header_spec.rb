@@ -46,6 +46,36 @@ describe Ethon::Easy::Header do
           expect(easy.response_body).to include('"HTTP_USER_AGENT":"Ethon"')
         end
       end
+
+      context "when header value is empty string" do
+        let(:headers) { { 'User-Agent' => "" } }
+
+        if(Ethon::Curl.version_info[:version] >= "7.23.0")
+          it "sends header with empty value" do
+            expect(easy.response_body).to include('"HTTP_USER_AGENT":""')
+          end
+        else
+          it "does not send header (curl < 7.23.0 does not support empty values)" do
+            expect(easy.response_body).to_not include('"HTTP_USER_AGENT"')
+          end
+        end
+      end
+
+      context "when header value is nil" do
+        let(:headers) { { 'User-Agent' => nil } }
+
+        it "does not send header" do
+          expect(easy.response_body).to_not include('"HTTP_USER_AGENT"')
+        end
+      end
+
+      context "when header value is integer" do
+        let(:headers) { { 'User-Agent' => 0 } }
+
+        it "sends as string" do
+          expect(easy.response_body).to include('"HTTP_USER_AGENT":"0"')
+        end
+      end
     end
   end
 
