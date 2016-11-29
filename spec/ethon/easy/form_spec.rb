@@ -72,5 +72,23 @@ describe Ethon::Easy::Form do
         form.materialize
       end
     end
+
+    context "when query_pairs contains file and string values" do
+      let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1']] }
+
+      it "adds file to form" do
+        expect(Ethon::Curl).to receive(:formadd).twice
+        form.materialize
+      end
+    end
+
+    context "when query_pairs contains file, string and int values" do
+      let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1'], ['c', 1]] }
+
+      it "adds file to form" do
+        expect(Ethon::Curl).to receive(:formadd).exactly(3).times
+        form.materialize
+      end
+    end
   end
 end
