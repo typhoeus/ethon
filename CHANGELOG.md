@@ -2,7 +2,11 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.9.1...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.10.0...master)
+
+## 0.10.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.9.1...v0.10.0)
 
 ## 0.9.1
 
