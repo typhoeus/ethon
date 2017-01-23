@@ -1,4 +1,7 @@
-#  Ethon [![Build Status](https://secure.travis-ci.org/typhoeus/ethon.png?branch=master)](http://travis-ci.org/typhoeus/ethon) [![Gem Version](https://badge.fury.io/rb/ethon.png)](http://badge.fury.io/rb/ethon)
+[![Gem Version](https://badge.fury.io/rb/ethon.svg)](https://badge.fury.io/rb/ethon)
+[![Build Status](https://travis-ci.org/typhoeus/ethon.svg?branch=master)](https://travis-ci.org/typhoeus/ethon)
+
+#  Ethon
 
 In Greek mythology, Ethon, the son of Typhoeus and Echidna, is a gigantic eagle. So much for the history.
 In the modern world, Ethon is a very basic libcurl wrapper using ffi.
