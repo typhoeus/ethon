@@ -7,7 +7,7 @@ module Ethon
 
       OPTION_STRINGS = { :easy => 'easy_options', :multi => 'multi_options' }.freeze
       FOPTION_STRINGS = { :easy => 'EASY_OPTIONS', :multi => 'MULTI_OPTIONS' }.freeze
-      FTYPES = [:long, :string, :ffipointer, :callback, :debug_callback, :off_t]
+      FTYPES = [:long, :string, :ffipointer, :callback, :debug_callback, :progress_callback, :off_t]
       FUNCS = Hash[*[:easy, :multi].zip([:easy, :multi].map { |t| Hash[*FTYPES.zip(FTYPES.map { |ft| "#{t}_setopt_#{ft}" }).flatten] }).flatten]
       # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle, type = :easy)
@@ -85,6 +85,9 @@ module Ethon
         when :debug_callback
           func=:debug_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+        when :progress_callback
+          func=:progress_callback
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :off_t
           return if value.nil?
           func=:off_t
@@ -136,6 +139,7 @@ module Ethon
         :cbdata => :objectpoint,
         :callback => :functionpoint,
         :debug_callback => :functionpoint,
+        :progress_callback => :functionpoint,
         :off_t => :off_t,
       }
 
@@ -266,6 +270,8 @@ module Ethon
       option :easy, :chunk_data, :cbdata, 201
       option :easy, :fnmatch_function, :callback, 200
       option :easy, :fnmatch_data, :cbdata, 202
+      option :easy, :xferinfofunction, :progress_callback, 219
+      option :easy, :xferinfodata, :cbdata, 57
       ## ERROR OPTIONS
       option :easy, :errorbuffer, :buffer, 10, 256
       option :easy, :stderr, :dontuse_object, 37

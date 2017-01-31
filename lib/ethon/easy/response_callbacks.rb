@@ -99,6 +99,13 @@ module Ethon
           :unyielded
         end
       end
+    
+      def on_progress(&block)
+         puts "Ethon>>response_callback.rb: on_progress (block_given? #{block_given?})"
+        @on_progress ||= []
+        @on_progress << block if block_given?
+        @on_progress
+      end
     end
   end
 end

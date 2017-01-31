@@ -19,6 +19,7 @@ module Ethon
         base.attach_function :easy_setopt_long,           :curl_easy_setopt,         [:pointer, :easy_option, :long],     :easy_code
         base.attach_function :easy_setopt_callback,       :curl_easy_setopt,         [:pointer, :easy_option, :callback], :easy_code
         base.attach_function :easy_setopt_debug_callback, :curl_easy_setopt,         [:pointer, :easy_option, :debug_callback], :easy_code
+        base.attach_function :easy_setopt_progress_callback, :curl_easy_setopt,         [:pointer, :easy_option, :progress_callback], :easy_code
         base.attach_function :easy_setopt_off_t,          :curl_easy_setopt,         [:pointer, :easy_option, :int64],    :easy_code
         base.instance_variable_set(:@blocking, true)
         base.attach_function :easy_perform,               :curl_easy_perform,        [:pointer],                     :easy_code
