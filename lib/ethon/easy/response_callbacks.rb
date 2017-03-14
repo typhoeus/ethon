@@ -77,7 +77,10 @@ module Ethon
       # @param [ Block ] block The block to execute.
       def on_progress(&block)
         @on_progress ||= []
-        @on_progress << block if block_given?
+        if block_given?
+          @on_progress << block
+          self.noprogress = 0
+        end
         @on_progress
       end
 

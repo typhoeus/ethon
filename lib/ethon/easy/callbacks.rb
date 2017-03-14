@@ -22,9 +22,7 @@ module Ethon
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
         Curl.set_option(:debugfunction, debug_callback, handle)
-        if defined?(@on_progress) and not @on_progress.nil? and not @on_progress.empty?
-          Curl.set_option(:xferinfofunction, progress_callback, handle)
-        end
+        Curl.set_option(:xferinfofunction, progress_callback, handle)
         @response_body = ""
         @response_headers = ""
         @headers_called = false
