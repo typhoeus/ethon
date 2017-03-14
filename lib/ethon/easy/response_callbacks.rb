@@ -84,6 +84,10 @@ module Ethon
         @on_progress
       end
 
+      # Execute on_progress callbacks.
+      #
+      # @example Execute on_progress.
+      #   request.body(1, 1, 1, 1)
       def progress(dltotal, dlnow, ultotal, ulnow)
         if defined?(@on_progress) and not @on_progress.nil?
           @on_progress.each{ |callback| callback.call(dltotal, dlnow, ultotal, ulnow) }
