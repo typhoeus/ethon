@@ -105,6 +105,7 @@ describe Ethon::Easy do
       easy.url = "http://localhost:3001/"
       easy.on_complete { 'on_complete' }
       easy.on_headers { 'on_headers' }
+      easy.on_progress { 'on_progress' }
       easy.response_body = 'test_body'
       easy.response_headers = 'test_headers'
       easy
@@ -130,6 +131,10 @@ describe Ethon::Easy do
     it 'preserves body_write_callback of original handle' do
       expect { easy.perform }.to change { easy.response_body }
       expect { easy.perform }.not_to change { e.response_body }
+    end
+
+    it "preserves on_progress callback" do
+      expect(e.on_progress).to be(easy.on_progress)
     end
 
     it 'sets new body_write_callback of duplicated handle' do
