@@ -72,8 +72,9 @@ describe Ethon::Easy::ResponseCallbacks do
     context "when requesting for realz" do
       it "executes callback" do
         @called = false
-        easy.on_progress { @called = true }
         easy.url = "http://localhost:3001/"
+        easy.on_progress { @called = true }
+        puts Ethon::Curl.version_info[:version]
         expect{ easy.perform }.to change { @called }
       end
     end
