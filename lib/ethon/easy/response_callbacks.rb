@@ -79,6 +79,7 @@ module Ethon
         @on_progress ||= []
         if block_given?
           @on_progress << block
+          set_progress_callback
           self.noprogress = 0
         end
         @on_progress

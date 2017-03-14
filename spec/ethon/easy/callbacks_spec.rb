@@ -5,10 +5,10 @@ describe Ethon::Easy::Callbacks do
 
   describe "#set_callbacks" do
     before do
-      expect(Ethon::Curl).to receive(:set_option).exactly(4).times
+      expect(Ethon::Curl).to receive(:set_option).exactly(3).times
     end
 
-    it "sets write-, debug-, progress-, and headerfunction" do
+    it "sets write-, debug-, and headerfunction" do
       easy.set_callbacks
     end
 

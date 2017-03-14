@@ -22,7 +22,6 @@ module Ethon
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
         Curl.set_option(:debugfunction, debug_callback, handle)
-        Curl.set_option(:xferinfofunction, progress_callback, handle)
         @response_body = ""
         @response_headers = ""
         @headers_called = false
@@ -71,6 +70,10 @@ module Ethon
           print message unless [:data_in, :data_out].include?(type)
           0
         }
+      end
+
+      def set_progress_callback
+        Curl.set_option(:xferinfofunction, progress_callback, handle)
       end
 
       # Returns the progress callback.
