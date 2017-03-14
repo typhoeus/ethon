@@ -72,11 +72,9 @@ module Ethon
           0
         }
       end
-      
+
       def progress_callback
-         puts "Ethon>>callbacks.rb: progress_callback (defined? #{!@progress_callback.nil?}, #{@progress_callback.inspect})"
          @progress_callback ||= proc { |client, dltotal, dlnow, ultotal, ulnow|
-            puts "Ethon>>callbacks.rb: default callback called"
             progress(dltotal, dlnow, ultotal, ulnow)
          }
       end
