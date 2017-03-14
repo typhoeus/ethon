@@ -23,6 +23,7 @@ describe Ethon::Easy::DebugInfo do
       end
 
       after do
+        easy.verbose = false
         easy.reset
       end
 
