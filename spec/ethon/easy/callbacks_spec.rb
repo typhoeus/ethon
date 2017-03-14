@@ -4,25 +4,12 @@ describe Ethon::Easy::Callbacks do
   let!(:easy) { Ethon::Easy.new }
 
   describe "#set_callbacks" do
-    context "when on_progress not set" do
-      before do
-        expect(Ethon::Curl).to receive(:set_option).exactly(3).times
-      end
-
-      it "sets write-, debug- and headerfunction" do
-        easy.set_callbacks
-      end
+    before do
+      expect(Ethon::Curl).to receive(:set_option).exactly(4).times
     end
 
-    context "when on_progress set" do
-      before do
-        expect(Ethon::Curl).to receive(:set_option).exactly(4).times
-      end
-
-      it "sets write-, debug-, header- and xferinfofunction" do
-        easy.on_progress << proc {}
-        easy.set_callbacks
-      end
+    it "sets write-, debug-, progress-, and headerfunction" do
+      easy.set_callbacks
     end
 
     it "resets @response_body" do
@@ -43,7 +30,7 @@ describe Ethon::Easy::Callbacks do
 
   describe "#progress_callback" do
     it "returns 0" do
-      expect(easy.progress_callback.call()).to be(0)
+      expect(easy.progress_callback.call(1,1,1,1)).to be(0)
     end
   end
 
