@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Ethon::Easy::ResponseCallbacks do
   let(:easy) { Ethon::Easy.new }
 
-  [:on_complete, :on_headers, :on_body].each do |callback_type|
+  [:on_complete, :on_headers, :on_body, :on_progress].each do |callback_type|
     describe "##{callback_type}" do
       it "responds" do
         expect(easy).to respond_to("#{callback_type}")
@@ -64,6 +64,43 @@ describe Ethon::Easy::ResponseCallbacks do
       it "doesn't raise" do
         easy.instance_variable_set(:@on_headers, nil)
         expect{ easy.headers }.to_not raise_error
+      end
+    end
+  end
+
+  describe "#progress" do
+    before do
+      @dltotal = nil
+      @dlnow = nil
+      @ultotal = nil
+      @ulnow = nil
+      easy.on_progress { |dltotal, dlnow, ultotal, ulnow| @dltotal = dltotal ; @dlnow = dlnow; @ultotal = ultotal; @ulnow = ulnow }
+    end
+
+    it "executes blocks and passes dltotal" do
+      easy.progress(1, 2, 3, 4)
+      expect(@dltotal).to eq(1)
+    end
+
+    it "executes blocks and passes dlnow" do
+      easy.progress(1, 2, 3, 4)
+      expect(@dlnow).to eq(2)
+    end
+
+    it "executes blocks and passes ultotal" do
+      easy.progress(1, 2, 3, 4)
+      expect(@ultotal).to eq(3)
+    end
+
+    it "executes blocks and passes ulnow" do
+      easy.progress(1, 2, 3, 4)
+      expect(@ulnow).to eq(4)
+    end
+
+    context "when @on_progress nil" do
+      it "doesn't raise" do
+        easy.instance_variable_set(:@on_progress, nil)
+        expect{ easy.progress(1, 2, 3, 4) }.to_not raise_error
       end
     end
   end

@@ -22,7 +22,9 @@ module Ethon
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
         Curl.set_option(:debugfunction, debug_callback, handle)
-        Curl.set_option(:xferinfofunction, progress_callback, handle)
+        if defined?(@on_progress) and not @on_progress.nil? and not @on_progress.empty?
+          Curl.set_option(:xferinfofunction, progress_callback, handle)
+        end
         @response_body = ""
         @response_headers = ""
         @headers_called = false
@@ -73,10 +75,17 @@ module Ethon
         }
       end
 
+      # Returns the progress callback.
+      #
+      # @example Return the callback.
+      #   easy.progress_callback
+      #
+      # @return [ Proc ] The callback.
       def progress_callback
-         @progress_callback ||= proc { |client, dltotal, dlnow, ultotal, ulnow|
-            progress(dltotal, dlnow, ultotal, ulnow)
-         }
+        @progress_callback ||= proc { |_, dltotal, dlnow, ultotal, ulnow|
+          progress(dltotal, dlnow, ultotal, ulnow)
+          0
+        }
       end
 
       # Set the read callback. This callback is used by libcurl to

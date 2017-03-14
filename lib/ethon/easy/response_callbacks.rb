@@ -69,6 +69,24 @@ module Ethon
         end
       end
 
+      # Set on_progress callback.
+      #
+      # @example Set on_progress.
+      #   request.on_progress {|dltotal, dlnow, ultotal, ulnow| p "#{dltotal} #{dlnow} #{ultotal} #{ulnow}" }
+      #
+      # @param [ Block ] block The block to execute.
+      def on_progress(&block)
+        @on_progress ||= []
+        @on_progress << block if block_given?
+        @on_progress
+      end
+
+      def progress(dltotal, dlnow, ultotal, ulnow)
+        if defined?(@on_progress) and not @on_progress.nil?
+          @on_progress.each{ |callback| callback.call(dltotal, dlnow, ultotal, ulnow) }
+        end
+      end
+
       # Set on_body callback.
       #
       # @example Set on_body.
@@ -98,12 +116,6 @@ module Ethon
         else
           :unyielded
         end
-      end
-
-      def on_progress(&block)
-        @on_progress ||= []
-        @on_progress << block if block_given?
-        @on_progress
       end
     end
   end
