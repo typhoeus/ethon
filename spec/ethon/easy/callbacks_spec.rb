@@ -30,7 +30,7 @@ describe Ethon::Easy::Callbacks do
 
   describe "#progress_callback" do
     it "returns 0" do
-      expect(easy.progress_callback.call(1,1,1,1)).to be(0)
+      expect(easy.progress_callback.call(0,1,1,1,1)).to be(0)
     end
   end
 
