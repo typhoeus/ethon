@@ -251,7 +251,7 @@ module Ethon
       option :easy, :opensocketdata, :cbdata, 164
       option :easy, :closesocketfunction, :callback, 208
       option :easy, :closesocketdata, :cbdata, 209
-      option :easy, :progressfunction, :callback, 56
+      option :easy, :progressfunction, :progress_callback, 56
       option :easy, :progressdata, :cbdata, 57
       option :easy, :headerfunction, :callback, 79
       option :easy, :writeheader, :cbdata, 29

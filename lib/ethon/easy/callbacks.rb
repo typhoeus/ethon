@@ -73,7 +73,11 @@ module Ethon
       end
 
       def set_progress_callback
-        Curl.set_option(:xferinfofunction, progress_callback, handle)
+        if Curl.version_info[:version] >= "7.32.0"
+          Curl.set_option(:xferinfofunction, progress_callback, handle)
+        else
+          Curl.set_option(:progressfunction, progress_callback, handle)
+        end
       end
 
       # Returns the progress callback.

@@ -71,7 +71,6 @@ describe Ethon::Easy::ResponseCallbacks do
   describe "#progress" do
     context "when requesting for realz" do
       it "executes callback" do
-        expect(Ethon::Curl.version_info[:version]).to be >= ("7.32.0")
         post = Ethon::Easy::Http::Post.new("http://localhost:3001", {:body => "bar=fu"})
         post.setup(easy)
         @called = false
