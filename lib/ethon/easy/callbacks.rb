@@ -87,7 +87,7 @@ module Ethon
       #
       # @return [ Proc ] The callback.
       def progress_callback
-        @progress_callback ||= proc { |_, dltotal, dlnow, ultotal, ulnow|
+        @progress_callback ||= proc { |clientp, dltotal, dlnow, ultotal, ulnow|
           progress(dltotal, dlnow, ultotal, ulnow)
           0
         }
