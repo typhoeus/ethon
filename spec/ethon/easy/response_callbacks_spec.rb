@@ -72,10 +72,18 @@ describe Ethon::Easy::ResponseCallbacks do
     context "when requesting for realz" do
       it "executes callback" do
         expect(Ethon::Curl.version_info[:version]).to be >= ("7.32.0")
+        post = Ethon::Easy::Http::Post.new("http://localhost:3001", {:body => "bar=fu"})
+        post.setup(easy)
         @called = false
-        easy.url = "http://localhost:3001/"
+        @has_dltotal = false
+        @has_ultotal = false
         easy.on_progress { @called = true }
-        expect{ easy.perform }.to change { @called }
+        easy.on_progress { |dltotal, _, _, _| @has_dltotal ||= true }
+        easy.on_progress { |_, _, ultotal, _| @has_ultotal ||= true }
+        easy.perform
+        expect(@called).to be true
+        expect(@has_dltotal).to be true
+        expect(@has_ultotal).to be true
       end
     end
 
