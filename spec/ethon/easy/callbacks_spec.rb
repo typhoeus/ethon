@@ -8,7 +8,7 @@ describe Ethon::Easy::Callbacks do
       expect(Ethon::Curl).to receive(:set_option).exactly(3).times
     end
 
-    it "sets write- and headerfunction" do
+    it "sets write-, debug-, and headerfunction" do
       easy.set_callbacks
     end
 
@@ -25,6 +25,12 @@ describe Ethon::Easy::Callbacks do
     it "resets @debug_info" do
       easy.set_callbacks
       expect(easy.instance_variable_get(:@debug_info).to_a).to eq([])
+    end
+  end
+
+  describe "#progress_callback" do
+    it "returns 0" do
+      expect(easy.progress_callback.call(0,1,1,1,1)).to be(0)
     end
   end
 

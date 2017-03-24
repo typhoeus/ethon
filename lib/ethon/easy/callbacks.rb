@@ -72,6 +72,27 @@ module Ethon
         }
       end
 
+      def set_progress_callback
+        if Curl.version_info[:version] >= "7.32.0"
+          Curl.set_option(:xferinfofunction, progress_callback, handle)
+        else
+          Curl.set_option(:progressfunction, progress_callback, handle)
+        end
+      end
+
+      # Returns the progress callback.
+      #
+      # @example Return the callback.
+      #   easy.progress_callback
+      #
+      # @return [ Proc ] The callback.
+      def progress_callback
+        @progress_callback ||= proc { |_, dltotal, dlnow, ultotal, ulnow|
+          progress(dltotal, dlnow, ultotal, ulnow)
+          0
+        }
+      end
+
       # Set the read callback. This callback is used by libcurl to
       # read data when performing a PUT request.
       #

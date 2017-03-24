@@ -16,8 +16,8 @@ module Ethon
       end
 
       def escape?
-        return true if @escape
-        @escape.nil? ? true : false
+        return true if !defined?(@escape) || @escape.nil?
+        @escape
       end
 
       Curl.easy_options(nil).each do |opt, props|
