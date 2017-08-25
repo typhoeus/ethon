@@ -71,7 +71,7 @@ module Ethon
         #
         # @return [ Form ] The form.
         def form
-          @form ||= Form.new(@easy, query_options.fetch(:body, nil))
+          @form ||= Form.new(@easy, query_options.fetch(:body, nil), options.fetch(:multipart, nil))
         end
 
         # Get the requested array encoding. By default it's

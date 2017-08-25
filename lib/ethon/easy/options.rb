@@ -20,6 +20,15 @@ module Ethon
         @escape
       end
 
+      def multipart=(b)
+        @multipart = b
+      end
+
+      def multipart?
+        return false if !defined?(@multipart) || @multipart.nil?
+        @multipart
+      end
+
       Curl.easy_options(nil).each do |opt, props|
         method_name = "#{opt}=".freeze
         unless method_defined? method_name
