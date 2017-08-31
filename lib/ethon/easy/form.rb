@@ -55,11 +55,7 @@ module Ethon
       #
       # @return [ Boolean ] True if form is multipart, else false.
       def multipart?
-
-        if @multipart
-          return true
-        end
-
+        return true if @multipart
         query_pairs.any?{|pair| pair.respond_to?(:last) && pair.last.is_a?(Array)}
       end
 
