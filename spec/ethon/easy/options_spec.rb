@@ -74,6 +74,35 @@ describe Ethon::Easy::Options do
     end
   end
 
+  describe '#multipart?' do
+    context 'by default' do
+      it 'returns false' do
+        expect(easy.multipart?).to be_falsey
+      end
+    end
+
+    context 'when #multipart=nil' do
+      it 'returns false' do
+        easy.multipart = nil
+        expect(easy.multipart?).to be_falsey
+      end
+    end
+
+    context 'when #multipart=true' do
+      it 'returns true' do
+        easy.multipart = true
+        expect(easy.multipart?).to be_truthy
+      end
+    end
+
+    context 'when #multipart=false' do
+      it 'returns false' do
+        easy.multipart = false
+        expect(easy.multipart?).to be_falsey
+      end
+    end
+  end
+  
   describe "#httppost=" do
     it "raises unless given a FFI::Pointer" do
       expect{ easy.httppost = 1 }.to raise_error(Ethon::Errors::InvalidValue)
