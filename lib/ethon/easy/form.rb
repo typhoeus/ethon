@@ -24,7 +24,6 @@ module Ethon
       def initialize(easy, params, multipart = nil)
         @easy = easy
         @params = params || {}
-
         @multipart = multipart
       end
 
