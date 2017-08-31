@@ -102,7 +102,7 @@ describe Ethon::Easy::Options do
       end
     end
   end
-  
+
   describe "#httppost=" do
     it "raises unless given a FFI::Pointer" do
       expect{ easy.httppost = 1 }.to raise_error(Ethon::Errors::InvalidValue)
