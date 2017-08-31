@@ -25,8 +25,7 @@ module Ethon
       end
 
       def multipart?
-        return false if !defined?(@multipart) || @multipart.nil?
-        @multipart
+        !!@multipart
       end
 
       Curl.easy_options(nil).each do |opt, props|
