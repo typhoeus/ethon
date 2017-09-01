@@ -20,9 +20,8 @@ group :development, :test do
 
   gem "mime-types", "~> 1.18"
 
-  unless ENV["CI"]
-    gem "guard-rspec", "~> 0.7"
-    gem "rb-fsevent", "~> 0.9.1"
+  if Gem.ruby_version < Gem::Version.new("2.2.0")
+    gem "mustermann", "0.2.0"
   end
 end
 
