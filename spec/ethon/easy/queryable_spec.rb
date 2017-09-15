@@ -152,9 +152,11 @@ describe Ethon::Easy::Queryable do
         end
 
         context "when MIME" do
-          context "when mime type" do
-            it "sets mime type to text" do
-              expect(mime_type).to eq("application/x-ruby")
+          if defined?(MIME)
+            context "when mime type" do
+              it "sets mime type to text" do
+                expect(mime_type).to eq("application/x-ruby")
+              end
             end
           end
 
