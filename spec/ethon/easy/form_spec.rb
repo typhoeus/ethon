@@ -41,6 +41,15 @@ describe Ethon::Easy::Form do
         expect(form.multipart?).to be_truthy
       end
     end
+
+    context "when options contains multipart=true" do
+      before { form.instance_variable_set(:@multipart, true) }
+      let(:pairs) { [['a', '1'], ['b', '2']] }
+
+      it "returns true" do
+        expect(form.multipart?).to be_truthy
+      end
+    end
   end
 
   describe "#materialize" do
