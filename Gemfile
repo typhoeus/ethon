@@ -18,7 +18,9 @@ group :development, :test do
     gem "json"
   end
 
-  gem "mime-types", "~> 1.18"
+  if Gem.ruby_version >= Gem::Version.new("2.0.0")
+    gem "mime-types", "~> 1.18"
+  end
 
   if Gem.ruby_version >= Gem::Version.new("2.2.0")
     gem "mustermann"
@@ -26,8 +28,6 @@ group :development, :test do
     gem "mustermann", "0.4.0"
   elsif Gem.ruby_version >= Gem::Version.new("2.0.0")
     gem "mustermann", "0.3.1"
-  else
-    gem "mustermann", "0.2.0"
   end
 end
 
