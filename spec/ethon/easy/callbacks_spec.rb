@@ -54,5 +54,17 @@ describe Ethon::Easy::Callbacks do
         expect(body_write_callback.call(stream, 1, 1, nil)).to eq(-1)
       end
     end
+
+    context "when headers returns :abort" do
+      before do
+        easy.on_headers.clear
+        easy.on_headers { :abort }
+      end
+      let(:body_write_callback) { easy.instance_variable_get(:@body_write_callback) }
+
+      it "returns -1 to indicate abort to libcurl" do
+        expect(body_write_callback.call(stream, 1, 1, nil)).to eq(-1)
+      end
+    end
   end
 end
