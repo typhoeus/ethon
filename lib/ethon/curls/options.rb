@@ -292,6 +292,8 @@ module Ethon
       option :easy, :localportrange, :int, 140
       option :easy, :dns_cache_timeout, :int, 92
       option :easy, :dns_use_global_cache, :bool, 91 # Obsolete
+      option :easy, :dns_interface, :string, 221
+      option :easy, :dns_local_ip4, :string, 222
       option :easy, :buffersize, :int, 98
       option :easy, :port, :int, 3
       option :easy, :tcp_nodelay, :bool, 121
