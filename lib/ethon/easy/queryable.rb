@@ -129,16 +129,30 @@ module Ethon
         end
       end
       
-    def encode_multi_array_pairs(h, prefix, pairs)
-      h.each_with_index do |v, i|
-        key = prefix
-        pairs_for(v, key, pairs)
+      def encode_multi_array_pairs(h, prefix, pairs)
+        h.each_with_index do |v, i|
+          key = prefix
+          pairs_for(v, key, pairs)
+        end
       end
-    end
 
       def pairs_for(v, key, pairs)
         case v
-        when Hash, Array
+        when Hash
+
+          # If the hash element contains an entry named "filehandle" then we
+          # have a file with a potentially specified filename and mimetype.
+          # handle this special case.
+          if !v[:filehandle].nil? and v[:filehandle].is_a? File
+            fileinfo = file_info(v[:filehandle])
+
+            if !v[:filename].nil? then fileinfo[0] = v[:filename] end
+            if !v[:mimetype].nil? then fileinfo[1] = v[:mimetype] end
+            pairs << [key, fileinfo]
+          else
+            recursively_generate_pairs(v, key, pairs)
+          end
+        when Array
           recursively_generate_pairs(v, key, pairs)
         when File, Tempfile
           pairs << [key, file_info(v)]
