@@ -22,8 +22,8 @@ module Ethon
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
         Curl.set_option(:debugfunction, debug_callback, handle)
-        @response_body = ""
-        @response_headers = ""
+        @response_body = String.new
+        @response_headers = String.new
         @headers_called = false
         @debug_info = Ethon::Easy::DebugInfo.new
       end
