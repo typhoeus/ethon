@@ -419,6 +419,7 @@ module Ethon
       option :easy, :dns_servers, :string, 211
       option :easy, :accepttimeout_ms, :int, 212
       option :easy, :unix_socket_path, :string, 231
+      option :easy, :pipewait, :bool, 237
       option_alias :easy, :unix_socket_path, :unix_socket
       ## SSL and SECURITY OPTIONS
       option :easy, :sslcert, :string, 25
