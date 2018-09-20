@@ -211,7 +211,7 @@ module Ethon
 
       option :multi, :socketfunction, :callback, 1
       option :multi, :socketdata, :cbdata, 2
-      option :multi, :pipelining, :bool, 3
+      option :multi, :pipelining, :int, 3
       option :multi, :timerfunction, :callback, 4
       option :multi, :timerdata, :cbdata, 5
       option :multi, :maxconnects, :int, 6
