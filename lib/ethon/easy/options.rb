@@ -96,6 +96,11 @@ module Ethon
         end
       end
 
+      def debugfunction(&block)
+        @user_debug_callback = block
+        nil
+      end
+
       private
 
       def initialize_copy(other)

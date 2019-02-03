@@ -71,15 +71,20 @@ module Ethon
       # @return [ Proc ] The callback.
       def debug_callback
         @debug_callback ||= proc {|handle, type, data, size, udata|
-          message = data.read_string(size)
-          @debug_info.add type, message
+          begin
+            message = data.read_string(size)
+            @debug_info.add type, message
 
-          if [:ssl_data_in, :ssl_data_out].include?(type)
-            print "[#{size} bytes data]\n"
-          elsif [:data_in, :data_out].include?(type)
-            # print "} [#{size} bytes data]\n"
-          else
-            print message
+            if [:ssl_data_in, :ssl_data_out].include?(type)
+              print "[#{size} bytes data]\n"
+            elsif [:data_in, :data_out].include?(type)
+              # print "} [#{size} bytes data]\n"
+            else
+              print message
+            end
+            @user_debug_callback.call(handle, type, data, size, udata) if @user_debug_callback
+          rescue Exception => e
+            @callback_error ||= e
           end
           0
         }
