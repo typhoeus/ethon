@@ -60,7 +60,7 @@ module Ethon
       # write the raw http request headers.
       #
       # @example Return the callback.
-      #   easy.body_write_callback
+      #   easy.debug_callback
       #
       # @return [ Proc ] The callback.
       def debug_callback
