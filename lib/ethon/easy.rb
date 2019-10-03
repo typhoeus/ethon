@@ -159,7 +159,6 @@ module Ethon
     #   * :recv_error: Failure with receiving network data.
     #   * :ssl_certproblem: problem with the local client certificate.
     #   * :ssl_cipher: Couldn't use specified cipher.
-    #   * :ssl_cacert: Peer certificate cannot be authenticated with known CA certificates.
     #   * :bad_content_encoding: Unrecognized transfer encoding.
     #   * :ldap_invalid_url: Invalid LDAP URL.
     #   * :filesize_exceeded: Maximum file size exceeded.

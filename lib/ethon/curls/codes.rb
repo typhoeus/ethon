@@ -69,7 +69,6 @@ module Ethon
           :obsolete57,
           :ssl_certproblem,
           :ssl_cipher,
-          :ssl_cacert,
           :bad_content_encoding,
           :ldap_invalid_url,
           :filesize_exceeded,
