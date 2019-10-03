@@ -447,7 +447,7 @@ module Ethon
       option :easy, :krblevel, :string, 63
       option_alias :easy, :krblevel, :krb4level
       option :easy, :gssapi_delegation, :bitmask, 210, [:none, :policy_flag, :flag]
-      option :easy, :pinnedpublickey, 230
+      option :easy, :pinnedpublickey, :string, 230
       option_alias :easy, :pinnedpublickey, :pinned_public_key
       ## SSH OPTIONS
       option :easy, :ssh_auth_types, :bitmask, 151, [:none, :publickey, :password, :host, :keyboard, :agent, {:any => [:all], :default => [:any]}]
