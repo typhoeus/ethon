@@ -2,7 +2,18 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.10.1...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.12.0...master)
+
+## 0.12.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.11.0...v0.12.0)
+
+- Removed deprecated `CURLE_SSL_CACERT` pinned in curl v7.62.0 ([@arku](https://github.com/arku) in [#158](https://github.com/typhoeus/ethon/pull/158))
+
+
+## 0.11.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.10.1...v0.11.0)
 
 ## 0.10.1
 
