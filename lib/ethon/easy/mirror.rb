@@ -4,8 +4,21 @@ module Ethon
       attr_reader :options
       alias_method :to_hash, :options
 
-      INFORMATIONS_TO_MIRROR = Informations::AVAILABLE_INFORMATIONS.keys +
-          [:return_code, :response_headers, :response_body, :debug_info]
+      INFORMATIONS_TO_MIRROR = []
+
+      def self.mirror_information(info)
+        INFORMATIONS_TO_MIRROR << info
+        define_method(info) { options[info] }
+      end
+
+      Informations::AVAILABLE_INFORMATIONS.keys.each do |info|
+        mirror_information(info)
+      end
+
+      mirror_information(:return_code)
+      mirror_information(:response_headers)
+      mirror_information(:response_body)
+      mirror_information(:debug_info)
 
       INFORMATIONS_TO_LOG = [:effective_url, :response_code, :return_code, :total_time]
 
@@ -25,10 +38,6 @@ module Ethon
         Hash[*INFORMATIONS_TO_LOG.map do |info|
           [info, options[info]]
         end.flatten]
-      end
-
-      INFORMATIONS_TO_MIRROR.each do |info|
-        eval %Q|def #{info}; options[#{info}]; end|
       end
     end
   end
