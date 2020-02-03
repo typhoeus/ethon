@@ -42,7 +42,12 @@ module Ethon
         return if @headers_called
         @headers_called = true
         if defined?(@on_headers) and not @on_headers.nil?
-          @on_headers.each{ |callback| callback.call(self) }
+          result = nil
+          @on_headers.each do |callback|
+            result = callback.call(self)
+            break if result == :abort
+          end
+          result
         end
       end
 
