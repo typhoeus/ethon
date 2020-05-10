@@ -159,7 +159,6 @@ module Ethon
     #   * :recv_error: Failure with receiving network data.
     #   * :ssl_certproblem: problem with the local client certificate.
     #   * :ssl_cipher: Couldn't use specified cipher.
-    #   * :ssl_cacert: Peer certificate cannot be authenticated with known CA certificates.
     #   * :bad_content_encoding: Unrecognized transfer encoding.
     #   * :ldap_invalid_url: Invalid LDAP URL.
     #   * :filesize_exceeded: Maximum file size exceeded.
@@ -253,6 +252,7 @@ module Ethon
       @on_complete = nil
       @on_headers = nil
       @on_body = nil
+      @on_progress = nil
       @procs = nil
       @mirror = nil
       Curl.easy_reset(handle)
@@ -267,6 +267,7 @@ module Ethon
       e.instance_variable_set(:@body_write_callback, nil)
       e.instance_variable_set(:@header_write_callback, nil)
       e.instance_variable_set(:@debug_callback, nil)
+      e.instance_variable_set(:@progress_callback, nil)
       e.set_callbacks
       e
     end

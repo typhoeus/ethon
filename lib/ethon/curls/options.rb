@@ -7,7 +7,7 @@ module Ethon
 
       OPTION_STRINGS = { :easy => 'easy_options', :multi => 'multi_options' }.freeze
       FOPTION_STRINGS = { :easy => 'EASY_OPTIONS', :multi => 'MULTI_OPTIONS' }.freeze
-      FTYPES = [:long, :string, :ffipointer, :callback, :debug_callback, :off_t]
+      FTYPES = [:long, :string, :ffipointer, :callback, :debug_callback, :progress_callback, :off_t]
       FUNCS = Hash[*[:easy, :multi].zip([:easy, :multi].map { |t| Hash[*FTYPES.zip(FTYPES.map { |ft| "#{t}_setopt_#{ft}" }).flatten] }).flatten]
       # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle, type = :easy)
@@ -85,6 +85,9 @@ module Ethon
         when :debug_callback
           func=:debug_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+        when :progress_callback
+          func=:progress_callback
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :off_t
           return if value.nil?
           func=:off_t
@@ -136,6 +139,7 @@ module Ethon
         :cbdata => :objectpoint,
         :callback => :functionpoint,
         :debug_callback => :functionpoint,
+        :progress_callback => :functionpoint,
         :off_t => :off_t,
       }
 
@@ -207,7 +211,7 @@ module Ethon
 
       option :multi, :socketfunction, :callback, 1
       option :multi, :socketdata, :cbdata, 2
-      option :multi, :pipelining, :bool, 3
+      option :multi, :pipelining, :int, 3
       option :multi, :timerfunction, :callback, 4
       option :multi, :timerdata, :cbdata, 5
       option :multi, :maxconnects, :int, 6
@@ -247,7 +251,7 @@ module Ethon
       option :easy, :opensocketdata, :cbdata, 164
       option :easy, :closesocketfunction, :callback, 208
       option :easy, :closesocketdata, :cbdata, 209
-      option :easy, :progressfunction, :callback, 56
+      option :easy, :progressfunction, :progress_callback, 56
       option :easy, :progressdata, :cbdata, 57
       option :easy, :headerfunction, :callback, 79
       option :easy, :writeheader, :cbdata, 29
@@ -266,6 +270,8 @@ module Ethon
       option :easy, :chunk_data, :cbdata, 201
       option :easy, :fnmatch_function, :callback, 200
       option :easy, :fnmatch_data, :cbdata, 202
+      option :easy, :xferinfofunction, :progress_callback, 219
+      option :easy, :xferinfodata, :cbdata, 57
       ## ERROR OPTIONS
       option :easy, :errorbuffer, :buffer, 10, 256
       option :easy, :stderr, :dontuse_object, 37
@@ -286,6 +292,8 @@ module Ethon
       option :easy, :localportrange, :int, 140
       option :easy, :dns_cache_timeout, :int, 92
       option :easy, :dns_use_global_cache, :bool, 91 # Obsolete
+      option :easy, :dns_interface, :string, 221
+      option :easy, :dns_local_ip4, :string, 222
       option :easy, :buffersize, :int, 98
       option :easy, :port, :int, 3
       option :easy, :tcp_nodelay, :bool, 121
@@ -411,6 +419,7 @@ module Ethon
       option :easy, :dns_servers, :string, 211
       option :easy, :accepttimeout_ms, :int, 212
       option :easy, :unix_socket_path, :string, 231
+      option :easy, :pipewait, :bool, 237
       option_alias :easy, :unix_socket_path, :unix_socket
       ## SSL and SECURITY OPTIONS
       option :easy, :sslcert, :string, 25

@@ -18,11 +18,16 @@ group :development, :test do
     gem "json"
   end
 
-  gem "mime-types", "~> 1.18"
+  if Gem.ruby_version >= Gem::Version.new("2.0.0")
+    gem "mime-types", "~> 1.18"
+  end
 
-  unless ENV["CI"]
-    gem "guard-rspec", "~> 0.7"
-    gem "rb-fsevent", "~> 0.9.1"
+  if Gem.ruby_version >= Gem::Version.new("2.2.0")
+    gem "mustermann"
+  elsif Gem.ruby_version >= Gem::Version.new("2.1.0")
+    gem "mustermann", "0.4.0"
+  elsif Gem.ruby_version >= Gem::Version.new("2.0.0")
+    gem "mustermann", "0.3.1"
   end
 end
 

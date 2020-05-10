@@ -21,9 +21,10 @@ module Ethon
       # @param [ Hash ] params The parameter with which to initialize the form.
       #
       # @return [ Form ] A new Form.
-      def initialize(easy, params)
+      def initialize(easy, params, multipart = nil)
         @easy = easy
         @params = params || {}
+        @multipart = multipart
       end
 
       # Return a pointer to the first form element in libcurl.
@@ -47,13 +48,14 @@ module Ethon
       end
 
       # Return if form is multipart. The form is multipart
-      # when it contains a file.
+      # when it contains a file or multipart option is set on the form during creation.
       #
       # @example Return if form is multipart.
       #   form.multipart?
       #
       # @return [ Boolean ] True if form is multipart, else false.
       def multipart?
+        return true if @multipart
         query_pairs.any?{|pair| pair.respond_to?(:last) && pair.last.is_a?(Array)}
       end
 

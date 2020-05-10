@@ -38,7 +38,7 @@ module Ethon
       #
       # @return [ void ]
       def pipelining=(value)
-        Curl.set_option(:pipelining, value_for(value, :bool), handle, :multi)
+        Curl.set_option(:pipelining, value_for(value, :int), handle, :multi)
       end
 
       # Sets socketdata option.

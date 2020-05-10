@@ -60,7 +60,7 @@ module Ethon
       # write the raw http request headers.
       #
       # @example Return the callback.
-      #   easy.body_write_callback
+      #   easy.debug_callback
       #
       # @return [ Proc ] The callback.
       def debug_callback
@@ -68,6 +68,27 @@ module Ethon
           message = data.read_string(size)
           @debug_info.add type, message
           print message unless [:data_in, :data_out].include?(type)
+          0
+        }
+      end
+
+      def set_progress_callback
+        if Curl.version_info[:version] >= "7.32.0"
+          Curl.set_option(:xferinfofunction, progress_callback, handle)
+        else
+          Curl.set_option(:progressfunction, progress_callback, handle)
+        end
+      end
+
+      # Returns the progress callback.
+      #
+      # @example Return the callback.
+      #   easy.progress_callback
+      #
+      # @return [ Proc ] The callback.
+      def progress_callback
+        @progress_callback ||= proc { |_, dltotal, dlnow, ultotal, ulnow|
+          progress(dltotal, dlnow, ultotal, ulnow)
           0
         }
       end

@@ -122,6 +122,14 @@ describe Ethon::Easy::Queryable do
           expect(pairs).to include(["b[]", 3])
         end
       end
+
+      context "when params_encoding is :none" do
+        before { params.params_encoding = :none }
+        it "does no transformation" do
+          expect(pairs).to include([:a, 1])
+          expect(pairs).to include([:b, [2, 3]])
+        end
+      end
     end
 
     context "when params contains something nested in an array" do
@@ -152,9 +160,11 @@ describe Ethon::Easy::Queryable do
         end
 
         context "when MIME" do
-          context "when mime type" do
-            it "sets mime type to text" do
-              expect(mime_type).to eq("application/x-ruby")
+          if defined?(MIME)
+            context "when mime type" do
+              it "sets mime type to text" do
+                expect(mime_type).to eq("application/x-ruby")
+              end
             end
           end
 
