@@ -12,7 +12,7 @@ describe Ethon::Easy::Options do
     :proxyuserpwd, :readdata, :readfunction, :redir_protocols, :ssl_verifyhost,
     :ssl_verifypeer, :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion,
     :timeout, :timeout_ms, :unrestricted_auth, :upload, :url, :useragent,
-    :userpwd, :verbose, :pipewait
+    :userpwd, :verbose, :pipewait, :dns_shuffle_addresses
   ].each do |name|
     describe "#{name}=" do
       it "responds_to" do
