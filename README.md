@@ -1,5 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/ethon.svg)](https://badge.fury.io/rb/ethon)
-[![Build Status](https://travis-ci.org/typhoeus/ethon.svg?branch=master)](https://travis-ci.org/typhoeus/ethon)
+[![Build Status](https://github.com/typhoeus/ethon/workflows/Ruby/badge.svg)
 
 #  Ethon
 
