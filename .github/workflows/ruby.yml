@@ -15,19 +15,25 @@ on:
 
 jobs:
   test:
-
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}-latest
     strategy:
+      fail-fast: false
       matrix:
-        ruby-version: ['2.6', '2.7', '3.0']
-
+        os: [ubuntu, macos]
+        ruby-version: [2.5, 2.6, 2.7, 3.0, head, debug, truffleruby, truffleruby-head]
+    continue-on-error: ${{ endsWith(matrix.ruby, 'head') || matrix.ruby == 'debug' }}
     steps:
     - uses: actions/checkout@v2
+    - name: Install libcurl header
+      run: |
+        if ${{ matrix.os == 'macos' }}
+        then
+          brew install curl
+        else
+          sudo apt install -y libcurl4-openssl-dev
+        fi
     - name: Set up Ruby
-    # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
-    # change this to (see https://github.com/ruby/setup-ruby#versioning):
-    # uses: ruby/setup-ruby@v1
-      uses: ruby/setup-ruby@473e4d8fe5dd94ee328fdfca9f8c9c7afc9dae5e
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
