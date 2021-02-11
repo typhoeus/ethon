@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'ethon/easy/util'
 require 'ethon/multi/stack'
 require 'ethon/multi/operations'

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   class Multi # :nodoc
     # This module contains logic to run a multi.

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'ethon/easy/http/putable'
 require 'ethon/easy/http/postable'
 

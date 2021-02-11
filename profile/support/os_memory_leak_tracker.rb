@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class OSMemoryLeakTracker
   attr_reader :current_run
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   module Curl
     callback :callback, [:pointer, :size_t, :size_t, :pointer], :size_t
