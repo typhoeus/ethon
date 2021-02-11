@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # vim:set filetype=ruby:
 guard(
   "rspec",

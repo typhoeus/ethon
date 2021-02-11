@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class RubyObjectLeakTracker
   attr_reader :previous_count_hash, :current_count_hash
 
