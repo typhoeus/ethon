@@ -435,6 +435,8 @@ module Ethon
       option :easy, :sslengine, :string, 89
       option :easy, :sslengine_default, :none, 90
       option :easy, :sslversion, :enum, 32, [:default, :tlsv1, :sslv2, :sslv3, :tlsv1_0, :tlsv1_1, :tlsv1_2]
+      option :easy, :sslmaxversion, :enum, 32, [:default, :tlsv1, :sslv2, :sslv3, :tlsv1_0, :tlsv1_1, :tlsv1_2]
+      option :easy, :sslminversion, :enum, 32, [:default, :tlsv1, :sslv2, :sslv3, :tlsv1_0, :tlsv1_1, :tlsv1_2]
       option :easy, :ssl_verifypeer, :bool, 64
       option :easy, :cainfo, :string, 65
       option :easy, :issuercert, :string, 170
