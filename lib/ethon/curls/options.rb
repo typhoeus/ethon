@@ -8,8 +8,7 @@ module Ethon
 
       OPTION_STRINGS = { :easy => 'easy_options', :multi => 'multi_options' }.freeze
       FOPTION_STRINGS = { :easy => 'EASY_OPTIONS', :multi => 'MULTI_OPTIONS' }.freeze
-      FTYPES = [:long, :string, :ffipointer, :callback, :debug_callback, :progress_callback, :off_t]
-      FUNCS = Hash[*[:easy, :multi].zip([:easy, :multi].map { |t| Hash[*FTYPES.zip(FTYPES.map { |ft| "#{t}_setopt_#{ft}" }).flatten] }).flatten]
+      FUNCS = { :easy => 'easy_setopt', :multi => 'multi_setopt' }.freeze
       # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle, type = :easy)
         type = type.to_sym unless type.is_a?(Symbol)
@@ -21,22 +20,22 @@ module Ethon
         when :none
           return if value.nil?
           value=1
-          func=:long
+          va_type=:long
         when :int
           return if value.nil?
-          func=:long
+          va_type=:long
           value=value.to_i
         when :bool
           return if value.nil?
-          func=:long
+          va_type=:long
           value=(value&&value!=0) ? 1 : 0
         when :time
           return if value.nil?
-          func=:long
+          va_type=:long
           value=value.to_i
         when :enum
           return if value.nil?
-          func=:long
+          va_type=:long
           value = case value
           when Symbol
             opthash[option][:opts][value]
@@ -47,7 +46,7 @@ module Ethon
           end.to_i
         when :bitmask
           return if value.nil?
-          func=:long
+          va_type=:long
           value = case value
           when Symbol
             opthash[option][:opts][value]
@@ -57,22 +56,22 @@ module Ethon
             value
           end.to_i
         when :string
-          func=:string
+          va_type=:string
           value=value.to_s unless value.nil?
         when :string_as_pointer
-          func = :ffipointer
+          va_type = :pointer
           s = ''
           s = value.to_s unless value.nil?
           value = FFI::MemoryPointer.new(:char, s.bytesize)
           value.put_bytes(0, s)
         when :string_escape_null
-          func=:string
+          va_type=:string
           value=Util.escape_zero_byte(value) unless value.nil?
         when :ffipointer
-          func=:ffipointer
+          va_type=:pointer
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :curl_slist
-          func=:ffipointer
+          va_type=:pointer
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :buffer
           raise NotImplementedError, "Ethon::Curls::Options option #{option} buffer type not implemented."
@@ -81,27 +80,26 @@ module Ethon
         when :cbdata
           raise NotImplementedError, "Ethon::Curls::Options option #{option} callback data type not implemented. Use Ruby closures."
         when :callback
-          func=:callback
+          va_type=:callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :debug_callback
-          func=:debug_callback
+          va_type=:debug_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :progress_callback
-          func=:progress_callback
+          va_type=:progress_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :off_t
           return if value.nil?
-          func=:off_t
+          va_type=:int64
           value=value.to_i
         end
 
-        if func==:long or func==:off_t then
-            bits=FFI.type_size(:long)*8 if func==:long
-            bits=FFI.type_size(:int64)*8 if func==:off_t
+        if va_type==:long or va_type==:int64 then
+            bits=FFI.type_size(va_type)*8
             tv=((value<0) ? value.abs-1 : value)
             raise Errors::InvalidValue.new(option,value) unless tv<(1<<bits)
         end
-        send(FUNCS[type][func], handle, opthash[option][:opt], value)
+        send(FUNCS[type], handle, opthash[option][:opt], va_type, value)
       end
 
       OPTION_TYPE_BASE = {
