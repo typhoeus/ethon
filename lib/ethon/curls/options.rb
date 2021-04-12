@@ -282,7 +282,7 @@ module Ethon
       option :easy, :redir_protocols, :bitmask, 182, [nil, :http, :https, :ftp, :ftps, :scp, :sftp, :telnet, :ldap, :ldaps, :dict, :file, :tftp, :imap, :imaps, :pop3, :pop3s, :smtp, :smtps, :rtsp, :rtmp, :rtmpt, :rtmpe, :rtmpte, :rtmps, :rtmpts, :gopher]
       option :easy, :proxy, :string, 4
       option :easy, :proxyport, :int, 59
-      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, nil, nil, :socks4, :socks5, :socks4a, :socks5_hostname]
+      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, :https, nil, :socks4, :socks5, :socks4a, :socks5_hostname]
       option :easy, :noproxy, :string, 177
       option :easy, :httpproxytunnel, :bool, 61
       option :easy, :socks5_gssapi_service, :string, 179
