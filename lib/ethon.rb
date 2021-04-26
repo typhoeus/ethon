@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 require 'logger'
 require 'ffi'
-require 'ffi/tools/const_generator'
 require 'thread'
 begin
   require 'mime/types/columnar'
