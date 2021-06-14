@@ -12,6 +12,7 @@ describe Ethon::Easy::Options do
     :postfieldsize, :postredir, :protocols, :proxy, :proxyauth, :proxyport, :proxytype,
     :proxyuserpwd, :readdata, :readfunction, :redir_protocols, :ssl_verifyhost,
     :ssl_verifypeer, :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion,
+    :sslmaxversion, :sslminversion,
     :timeout, :timeout_ms, :unrestricted_auth, :upload, :url, :useragent,
     :userpwd, :verbose, :pipewait, :dns_shuffle_addresses, :path_as_is
   ].each do |name|
