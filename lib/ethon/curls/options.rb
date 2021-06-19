@@ -82,6 +82,12 @@ module Ethon
         when :callback
           va_type=:callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+        when :socket_callback
+          va_type=:socket_callback
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+        when :timer_callback
+          va_type=:timer_callback
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :debug_callback
           va_type=:debug_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
@@ -137,6 +143,8 @@ module Ethon
         :dontuse_object => :objectpoint, # An object we don't support (e.g. FILE*)
         :cbdata => :objectpoint,
         :callback => :functionpoint,
+        :socket_callback => :functionpoint,
+        :timer_callback => :functionpoint,
         :debug_callback => :functionpoint,
         :progress_callback => :functionpoint,
         :off_t => :off_t,
@@ -208,10 +216,10 @@ module Ethon
       # Documentation @ http://curl.haxx.se/libcurl/c/curl_multi_setopt.html
       option_type :multi
 
-      option :multi, :socketfunction, :callback, 1
+      option :multi, :socketfunction, :socket_callback, 1
       option :multi, :socketdata, :cbdata, 2
       option :multi, :pipelining, :int, 3
-      option :multi, :timerfunction, :callback, 4
+      option :multi, :timerfunction, :timer_callback, 4
       option :multi, :timerdata, :cbdata, 5
       option :multi, :maxconnects, :int, 6
       option :multi, :max_host_connections, :int, 7

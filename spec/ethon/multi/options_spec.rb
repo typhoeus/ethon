@@ -20,6 +20,108 @@ describe Ethon::Multi::Options do
     end
   end
 
+  context "socket_action mode" do
+    let(:multi) { Ethon::Multi.new(execution_mode: :socket_action) }
+
+    describe "#socketfunction callbacks" do
+      it "allows multi_code return values" do
+        calls = []
+        multi.socketfunction = proc do |handle, sock, what, userp, socketp|
+          calls << what
+          :ok
+        end
+
+        easy = Ethon::Easy.new
+        easy.url = "http://localhost:3001/?delay=1"
+        multi.add(easy)
+        expect(calls).to eq([])
+        multi.socket_action
+        expect(calls).to eq([:in])
+        multi.delete(easy)
+        expect(calls).to eq([:in, :remove])
+      end
+
+      it "allows integer return values (compatibility)" do
+        called = false
+        multi.socketfunction = proc do |handle, sock, what, userp, socketp|
+          called = true
+          0
+        end
+
+        easy = Ethon::Easy.new
+        easy.url = "http://localhost:3001/?delay=1"
+        multi.add(easy)
+        multi.socket_action
+        multi.delete(easy)
+
+        expect(called).to be_truthy
+      end
+
+      it "errors on invalid return codes" do
+        called = false
+        multi.socketfunction = proc do |handle, sock, what, userp, socketp|
+          called = true
+          "hi"
+        end
+
+        easy = Ethon::Easy.new
+        easy.url = "http://localhost:3001/?delay=1"
+        multi.add(easy)
+        expect { multi.socket_action }.to raise_error(ArgumentError)
+        expect { multi.delete(easy) }.to raise_error(ArgumentError)
+      end
+    end
+
+    describe "#timerfunction callbacks" do
+      it "allows multi_code return values" do
+        calls = []
+        multi.timerfunction = proc do |handle, timeout_ms, userp|
+          calls << timeout_ms
+          :ok
+        end
+
+        easy = Ethon::Easy.new
+        easy.url = "http://localhost:3001/?delay=1"
+        multi.add(easy)
+        expect(calls).to eq([0]) # adds an immediate timeout
+
+        multi.socket_action
+        expect(calls).to eq([0, 1]) # nothing was ready, so waits 1ms
+
+        multi.delete(easy)
+        expect(calls).to eq([0, 1, -1]) # cancels the timer
+      end
+
+      it "allows integer return values (compatibility)" do
+        called = false
+        multi.timerfunction = proc do |handle, timeout_ms, userp|
+          called = true
+          0
+        end
+
+        easy = Ethon::Easy.new
+        easy.url = "http://localhost:3001/?delay=1"
+        multi.add(easy)
+        multi.socket_action
+        multi.delete(easy)
+
+        expect(called).to be_truthy
+      end
+
+      it "errors on invalid return codes" do
+        called = false
+        multi.timerfunction = proc do |handle, timeout_ms, userp|
+          called = true
+          "hi"
+        end
+
+        easy = Ethon::Easy.new
+        easy.url = "http://localhost:3001/?delay=1"
+        expect { multi.add(easy) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
   describe "#value_for" do
     context "when option in bool" do
       context "when value true" do
