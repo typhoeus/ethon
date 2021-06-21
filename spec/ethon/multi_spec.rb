@@ -85,8 +85,6 @@ describe Ethon::Multi do
       multi.socket_action # start things off
 
       while multi.ongoing?
-        break if select_state[:readers].empty? && select_state[:writers].empty?
-        
         readers, writers, _ = IO.select(
           fds_to_ios(select_state[:readers]),
           fds_to_ios(select_state[:writers]),
@@ -112,6 +110,10 @@ describe Ethon::Multi do
 
         # if we didn't have anything to notify, then we timed out
         multi.socket_action if to_notify.empty?
+      end
+    ensure
+      multi.easy_handles.dup.each do |h|
+        multi.delete(h)
       end
     end
 
