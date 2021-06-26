@@ -94,5 +94,27 @@ describe Ethon::Easy::Informations do
     end
   end
 
+  describe "#size_upload" do
+    it "returns float" do
+      expect(easy.size_upload).to be_a(Float)
+    end
+  end
 
+  describe "#size_download" do
+    it "returns float" do
+      expect(easy.size_download).to be_a(Float)
+    end
+  end
+
+  describe "#speed_upload" do
+    it "returns float" do
+      expect(easy.speed_upload).to be_a(Float)
+    end
+  end
+
+  describe "#speed_download" do
+    it "returns float" do
+      expect(easy.speed_download).to be_a(Float)
+    end
+  end
 end
