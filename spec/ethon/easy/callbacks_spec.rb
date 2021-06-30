@@ -56,4 +56,26 @@ describe Ethon::Easy::Callbacks do
       end
     end
   end
+
+  describe "#header_write_callback" do
+    let(:header_write_callback) { easy.instance_variable_get(:@header_write_callback) }
+    let(:stream) { double(:read_string => "") }
+    context "when header returns not :abort" do
+      it "returns number bigger than 0" do
+        expect(header_write_callback.call(stream, 1, 1, nil) > 0).to be(true)
+      end
+    end
+
+    context "when header returns :abort" do
+      before do
+        easy.on_headers.clear
+        easy.on_headers { :abort }
+      end
+      let(:header_write_callback) { easy.instance_variable_get(:@header_write_callback) }
+
+      it "returns -1 to indicate abort to libcurl" do
+        expect(header_write_callback.call(stream, 1, 1, nil)).to eq(-1)
+      end
+    end
+  end
 end
