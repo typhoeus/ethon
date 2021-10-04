@@ -458,6 +458,29 @@ module Ethon
       option :easy, :gssapi_delegation, :bitmask, 210, [:none, :policy_flag, :flag]
       option :easy, :pinnedpublickey, :string, 230
       option_alias :easy, :pinnedpublickey, :pinned_public_key
+      ## PROXY SSL OPTIONS
+      option :easy, :proxy_cainfo, :string, 246
+      option :easy, :proxy_capath, :string, 247
+      option :easy, :proxy_ssl_verifypeer, :bool, 248
+      option :easy, :proxy_ssl_verifyhost, :int, 249
+      option :easy, :proxy_sslversion, :enum, 250, [:default, :tlsv1, :sslv2, :sslv3, :tlsv1_0, :tlsv1_1, :tlsv1_2]
+      option :easy, :proxy_tlsauth_username, :string, 251
+      option :easy, :proxy_tlsauth_password, :string, 252
+      option :easy, :proxy_tlsauth_type, :enum, 253, [:none, :srp]
+      option :easy, :proxy_sslcert, :string, 254
+      option :easy, :proxy_sslcerttype, :string, 255
+      option :easy, :proxy_sslkey, :string, 256
+      option :easy, :proxy_sslkeytype, :string, 257
+      option :easy, :proxy_keypasswd, :string, 258
+      option_alias :easy, :proxy_keypasswd, :proxy_sslcertpasswd
+      option_alias :easy, :proxy_keypasswd, :proxy_sslkeypasswd
+      option :easy, :proxy_ssl_cipher_list, :string, 259
+      option :easy, :proxy_crlfile, :string, 260
+      option :easy, :proxy_ssl_options, :bitmask, 261, [nil, :allow_beast]
+      option :easy, :pre_proxy, :string, 262
+      option :easy, :proxy_pinnedpublickey, :string, 263
+      option_alias :easy, :proxy_pinnedpublickey, :proxy_pinned_public_key
+      option :easy, :proxy_issuercert, :string, 296
       ## SSH OPTIONS
       option :easy, :ssh_auth_types, :bitmask, 151, [:none, :publickey, :password, :host, :keyboard, :agent, {:any => [:all], :default => [:any]}]
       option :easy, :ssh_host_public_key_md5, :string, 162
