@@ -307,6 +307,7 @@ module Ethon
       option :easy, :port, :int, 3
       option :easy, :tcp_nodelay, :bool, 121
       option :easy, :address_scope, :int, 171
+      option :easy, :tcp_fastopen, :bool, 212
       option :easy, :tcp_keepalive, :bool, 213
       option :easy, :tcp_keepidle, :int, 214
       option :easy, :tcp_keepintvl, :int, 215
