@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   module Curls
 
@@ -7,8 +8,7 @@ module Ethon
 
       OPTION_STRINGS = { :easy => 'easy_options', :multi => 'multi_options' }.freeze
       FOPTION_STRINGS = { :easy => 'EASY_OPTIONS', :multi => 'MULTI_OPTIONS' }.freeze
-      FTYPES = [:long, :string, :ffipointer, :callback, :debug_callback, :progress_callback, :off_t]
-      FUNCS = Hash[*[:easy, :multi].zip([:easy, :multi].map { |t| Hash[*FTYPES.zip(FTYPES.map { |ft| "#{t}_setopt_#{ft}" }).flatten] }).flatten]
+      FUNCS = { :easy => 'easy_setopt', :multi => 'multi_setopt' }.freeze
       # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle, type = :easy)
         type = type.to_sym unless type.is_a?(Symbol)
@@ -20,22 +20,22 @@ module Ethon
         when :none
           return if value.nil?
           value=1
-          func=:long
+          va_type=:long
         when :int
           return if value.nil?
-          func=:long
+          va_type=:long
           value=value.to_i
         when :bool
           return if value.nil?
-          func=:long
+          va_type=:long
           value=(value&&value!=0) ? 1 : 0
         when :time
           return if value.nil?
-          func=:long
+          va_type=:long
           value=value.to_i
         when :enum
           return if value.nil?
-          func=:long
+          va_type=:long
           value = case value
           when Symbol
             opthash[option][:opts][value]
@@ -46,7 +46,7 @@ module Ethon
           end.to_i
         when :bitmask
           return if value.nil?
-          func=:long
+          va_type=:long
           value = case value
           when Symbol
             opthash[option][:opts][value]
@@ -56,22 +56,22 @@ module Ethon
             value
           end.to_i
         when :string
-          func=:string
+          va_type=:string
           value=value.to_s unless value.nil?
         when :string_as_pointer
-          func = :ffipointer
+          va_type = :pointer
           s = ''
           s = value.to_s unless value.nil?
           value = FFI::MemoryPointer.new(:char, s.bytesize)
           value.put_bytes(0, s)
         when :string_escape_null
-          func=:string
+          va_type=:string
           value=Util.escape_zero_byte(value) unless value.nil?
         when :ffipointer
-          func=:ffipointer
+          va_type=:pointer
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :curl_slist
-          func=:ffipointer
+          va_type=:pointer
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :buffer
           raise NotImplementedError, "Ethon::Curls::Options option #{option} buffer type not implemented."
@@ -80,27 +80,32 @@ module Ethon
         when :cbdata
           raise NotImplementedError, "Ethon::Curls::Options option #{option} callback data type not implemented. Use Ruby closures."
         when :callback
-          func=:callback
+          va_type=:callback
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+        when :socket_callback
+          va_type=:socket_callback
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+        when :timer_callback
+          va_type=:timer_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :debug_callback
-          func=:debug_callback
+          va_type=:debug_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :progress_callback
-          func=:progress_callback
+          va_type=:progress_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :off_t
           return if value.nil?
-          func=:off_t
+          va_type=:int64
           value=value.to_i
         end
 
-        if func==:long or func==:off_t then
-            bits=FFI.type_size(:long)*8 if func==:long
-            bits=FFI.type_size(:int64)*8 if func==:off_t
+        if va_type==:long or va_type==:int64 then
+            bits=FFI.type_size(va_type)*8
             tv=((value<0) ? value.abs-1 : value)
             raise Errors::InvalidValue.new(option,value) unless tv<(1<<bits)
         end
-        send(FUNCS[type][func], handle, opthash[option][:opt], value)
+        send(FUNCS[type], handle, opthash[option][:opt], va_type, value)
       end
 
       OPTION_TYPE_BASE = {
@@ -138,6 +143,8 @@ module Ethon
         :dontuse_object => :objectpoint, # An object we don't support (e.g. FILE*)
         :cbdata => :objectpoint,
         :callback => :functionpoint,
+        :socket_callback => :functionpoint,
+        :timer_callback => :functionpoint,
         :debug_callback => :functionpoint,
         :progress_callback => :functionpoint,
         :off_t => :off_t,
@@ -209,10 +216,10 @@ module Ethon
       # Documentation @ http://curl.haxx.se/libcurl/c/curl_multi_setopt.html
       option_type :multi
 
-      option :multi, :socketfunction, :callback, 1
+      option :multi, :socketfunction, :socket_callback, 1
       option :multi, :socketdata, :cbdata, 2
       option :multi, :pipelining, :int, 3
-      option :multi, :timerfunction, :callback, 4
+      option :multi, :timerfunction, :timer_callback, 4
       option :multi, :timerdata, :cbdata, 5
       option :multi, :maxconnects, :int, 6
       option :multi, :max_host_connections, :int, 7
@@ -251,6 +258,7 @@ module Ethon
       option :easy, :opensocketdata, :cbdata, 164
       option :easy, :closesocketfunction, :callback, 208
       option :easy, :closesocketdata, :cbdata, 209
+      option :easy, :path_as_is, :bool, 234
       option :easy, :progressfunction, :progress_callback, 56
       option :easy, :progressdata, :cbdata, 57
       option :easy, :headerfunction, :callback, 79
@@ -282,7 +290,7 @@ module Ethon
       option :easy, :redir_protocols, :bitmask, 182, [nil, :http, :https, :ftp, :ftps, :scp, :sftp, :telnet, :ldap, :ldaps, :dict, :file, :tftp, :imap, :imaps, :pop3, :pop3s, :smtp, :smtps, :rtsp, :rtmp, :rtmpt, :rtmpe, :rtmpte, :rtmps, :rtmpts, :gopher]
       option :easy, :proxy, :string, 4
       option :easy, :proxyport, :int, 59
-      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, nil, nil, :socks4, :socks5, :socks4a, :socks5_hostname]
+      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, :https, nil, :socks4, :socks5, :socks4a, :socks5_hostname]
       option :easy, :noproxy, :string, 177
       option :easy, :httpproxytunnel, :bool, 61
       option :easy, :socks5_gssapi_service, :string, 179
@@ -294,6 +302,7 @@ module Ethon
       option :easy, :dns_use_global_cache, :bool, 91 # Obsolete
       option :easy, :dns_interface, :string, 221
       option :easy, :dns_local_ip4, :string, 222
+      option :easy, :dns_shuffle_addresses, :bool, 275
       option :easy, :buffersize, :int, 98
       option :easy, :port, :int, 3
       option :easy, :tcp_nodelay, :bool, 121
@@ -447,6 +456,31 @@ module Ethon
       option :easy, :krblevel, :string, 63
       option_alias :easy, :krblevel, :krb4level
       option :easy, :gssapi_delegation, :bitmask, 210, [:none, :policy_flag, :flag]
+      option :easy, :pinnedpublickey, :string, 230
+      option_alias :easy, :pinnedpublickey, :pinned_public_key
+      ## PROXY SSL OPTIONS
+      option :easy, :proxy_cainfo, :string, 246
+      option :easy, :proxy_capath, :string, 247
+      option :easy, :proxy_ssl_verifypeer, :bool, 248
+      option :easy, :proxy_ssl_verifyhost, :int, 249
+      option :easy, :proxy_sslversion, :enum, 250, [:default, :tlsv1, :sslv2, :sslv3, :tlsv1_0, :tlsv1_1, :tlsv1_2]
+      option :easy, :proxy_tlsauth_username, :string, 251
+      option :easy, :proxy_tlsauth_password, :string, 252
+      option :easy, :proxy_tlsauth_type, :enum, 253, [:none, :srp]
+      option :easy, :proxy_sslcert, :string, 254
+      option :easy, :proxy_sslcerttype, :string, 255
+      option :easy, :proxy_sslkey, :string, 256
+      option :easy, :proxy_sslkeytype, :string, 257
+      option :easy, :proxy_keypasswd, :string, 258
+      option_alias :easy, :proxy_keypasswd, :proxy_sslcertpasswd
+      option_alias :easy, :proxy_keypasswd, :proxy_sslkeypasswd
+      option :easy, :proxy_ssl_cipher_list, :string, 259
+      option :easy, :proxy_crlfile, :string, 260
+      option :easy, :proxy_ssl_options, :bitmask, 261, [nil, :allow_beast]
+      option :easy, :pre_proxy, :string, 262
+      option :easy, :proxy_pinnedpublickey, :string, 263
+      option_alias :easy, :proxy_pinnedpublickey, :proxy_pinned_public_key
+      option :easy, :proxy_issuercert, :string, 296
       ## SSH OPTIONS
       option :easy, :ssh_auth_types, :bitmask, 151, [:none, :publickey, :password, :host, :keyboard, :agent, {:any => [:all], :default => [:any]}]
       option :easy, :ssh_host_public_key_md5, :string, 162

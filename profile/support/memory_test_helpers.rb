@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative 'ruby_object_leak_tracker'
 require_relative 'os_memory_leak_tracker'
 

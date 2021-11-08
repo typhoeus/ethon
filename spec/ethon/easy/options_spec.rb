@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy::Options do
@@ -12,7 +13,7 @@ describe Ethon::Easy::Options do
     :proxyuserpwd, :readdata, :readfunction, :redir_protocols, :ssl_verifyhost,
     :ssl_verifypeer, :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion,
     :timeout, :timeout_ms, :unrestricted_auth, :upload, :url, :useragent,
-    :userpwd, :verbose, :pipewait
+    :userpwd, :verbose, :pipewait, :dns_shuffle_addresses, :path_as_is
   ].each do |name|
     describe "#{name}=" do
       it "responds_to" do

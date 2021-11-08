@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   class Easy
 
@@ -70,7 +71,25 @@ module Ethon
 
         # Return the total number of redirections that were
         # actually followed.
-        :redirect_count => :long
+        :redirect_count => :long,
+
+        # Return the bytes, the total amount of bytes that were uploaded
+        :size_upload => :double,
+
+        # Return the bytes, the total amount of bytes that were downloaded.
+        # The amount is only for the latest transfer and will be reset again
+        # for each new transfer. This counts actual payload data, what's
+        # also commonly called body. All meta and header data are excluded
+        # and will not be counted in this number.
+        :size_download => :double,
+
+        # Return the bytes/second, the average upload speed that curl
+        # measured for the complete upload
+        :speed_upload => :double,
+
+        # Return the bytes/second, the average download speed that curl
+        # measured for the complete download
+        :speed_download => :double
       }
 
       AVAILABLE_INFORMATIONS.each do |name, type|

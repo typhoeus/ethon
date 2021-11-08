@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy do
@@ -106,8 +107,8 @@ describe Ethon::Easy do
       easy.on_complete { 'on_complete' }
       easy.on_headers { 'on_headers' }
       easy.on_progress { 'on_progress' }
-      easy.response_body = 'test_body'
-      easy.response_headers = 'test_headers'
+      easy.response_body = String.new('test_body')
+      easy.response_headers = String.new('test_headers')
       easy
     end
     let!(:e) { easy.dup }

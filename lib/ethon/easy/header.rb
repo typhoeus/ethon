@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   class Easy
     # This module contains the logic around adding headers to libcurl.

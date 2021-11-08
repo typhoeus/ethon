@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 source "https://rubygems.org"
 gemspec
 
@@ -28,6 +29,10 @@ group :development, :test do
     gem "mustermann", "0.4.0"
   elsif Gem.ruby_version >= Gem::Version.new("2.0.0")
     gem "mustermann", "0.3.1"
+  end
+
+  if Gem.ruby_version >= Gem::Version.new("3.0.0")
+    gem "webrick"
   end
 end
 

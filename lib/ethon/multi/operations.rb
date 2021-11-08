@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   class Multi # :nodoc
     # This module contains logic to run a multi.
@@ -23,12 +24,16 @@ module Ethon
       #
       # @return [ void ]
       def init_vars
-        @timeout = ::FFI::MemoryPointer.new(:long)
-        @timeval = Curl::Timeval.new
-        @fd_read = Curl::FDSet.new
-        @fd_write = Curl::FDSet.new
-        @fd_excep = Curl::FDSet.new
-        @max_fd = ::FFI::MemoryPointer.new(:int)
+        if @execution_mode == :perform
+          @timeout = ::FFI::MemoryPointer.new(:long)
+          @timeval = Curl::Timeval.new
+          @fd_read = Curl::FDSet.new
+          @fd_write = Curl::FDSet.new
+          @fd_excep = Curl::FDSet.new
+          @max_fd = ::FFI::MemoryPointer.new(:int)
+        elsif @execution_mode == :socket_action
+          @running_count_pointer = FFI::MemoryPointer.new(:int)
+        end
       end
 
       # Perform multi.
@@ -38,6 +43,8 @@ module Ethon
       # @example Perform multi.
       #   multi.perform
       def perform
+        ensure_execution_mode(:perform)
+
         Ethon.logger.debug(STARTED_MULTI)
         while ongoing?
           run
@@ -66,9 +73,38 @@ module Ethon
         )
       end
 
-      private
+      # Continue execution with an external IO loop.
+      #
+      # @example When no sockets are ready yet, or to begin.
+      #   multi.socket_action
+      #
+      # @example When a socket is readable
+      #   multi.socket_action(io_object, [:in])
+      #
+      # @example When a socket is readable and writable
+      #   multi.socket_action(io_object, [:in, :out])
+      #
+      # @return [ Symbol ] The Curl.multi_socket_action return code.
+      def socket_action(io = nil, readiness = 0)
+        ensure_execution_mode(:socket_action)
 
-      # Return wether the multi still requests or not.
+        fd = if io.nil?
+          ::Ethon::Curl::SOCKET_TIMEOUT
+        elsif io.is_a?(Integer)
+          io
+        else
+          io.fileno
+        end
+
+        code = Curl.multi_socket_action(handle, fd, readiness, @running_count_pointer)
+        @running_count = @running_count_pointer.read_int
+
+        check
+
+        code
+      end
+
+      # Return whether the multi still contains requests or not.
       #
       # @example Return if ongoing.
       #   multi.ongoing?
@@ -77,6 +113,8 @@ module Ethon
       def ongoing?
         easy_handles.size > 0 || (!defined?(@running_count) || running_count > 0)
       end
+
+      private
 
       # Get timeout.
       #
