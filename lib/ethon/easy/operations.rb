@@ -11,6 +11,7 @@ module Ethon
       #
       # @return [ FFI::Pointer ] A pointer to the curl easy handle.
       def handle
+        # Use proc for cleanup to avoid segfaults.
         @handle ||= FFI::AutoPointer.new(Curl.easy_init, proc { |pointer| Curl.easy_cleanup(pointer) })
       end
 
