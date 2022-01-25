@@ -4,20 +4,6 @@ module Ethon
     # This module contains the logic to prepare and perform
     # an easy.
     module Operations
-      
-      class PointerHelper
-        class<<self
-          def synchronize( &block )
-            (@mutex ||= Mutex.new).synchronize( &block )
-          end
-
-          def release( pointer )
-            synchronize { Curl.easy_cleanup pointer }
-          end
-        end
-        synchronize{}
-      end
-
       # Returns a pointer to the curl easy handle.
       #
       # @example Return the handle.
@@ -25,8 +11,7 @@ module Ethon
       #
       # @return [ FFI::Pointer ] A pointer to the curl easy handle.
       def handle
-        # @handle ||= FFI::AutoPointer.new(Curl.easy_init, PointerHelper.method(:release) )
-        @handle ||= FFI::AutoPointer.new(Curl.easy_init, proc { |pointer| Curl.easy_cleanup(pointer) }) # works for me
+        @handle ||= FFI::AutoPointer.new(Curl.easy_init, proc { |pointer| Curl.easy_cleanup(pointer) })
       end
 
       # Sets a pointer to the curl easy handle.
