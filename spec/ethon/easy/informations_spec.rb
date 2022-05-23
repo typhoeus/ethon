@@ -81,6 +81,12 @@ describe Ethon::Easy::Informations do
     end
   end
 
+  describe "#redirect_url" do
+    it "returns nil as there is no redirect" do
+      expect(easy.redirect_url).to be(nil)
+    end
+  end
+
   describe "#request_size" do
     it "returns 53" do
       expect(easy.request_size).to eq(53)

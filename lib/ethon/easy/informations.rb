@@ -73,6 +73,9 @@ module Ethon
         # actually followed.
         :redirect_count => :long,
 
+        # URL a redirect would take you to, had you enabled redirects (Added in 7.18.2)
+        :redirect_url => :string,
+
         # Return the bytes, the total amount of bytes that were uploaded
         :size_upload => :double,
 
