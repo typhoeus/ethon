@@ -106,6 +106,7 @@ describe Ethon::Easy::Operations do
 
         it "doesn't follow" do
           expect(easy.response_code).to eq(302)
+          expect(easy.redirect_url).to eq("http://localhost:3001/")
         end
       end
 
@@ -115,6 +116,7 @@ describe Ethon::Easy::Operations do
 
         it "follows" do
           expect(easy.response_code).to eq(200)
+          expect(easy.redirect_url).to eq(nil)
         end
 
         context "when infinite redirect loop" do
@@ -124,6 +126,7 @@ describe Ethon::Easy::Operations do
           context "when max redirect set" do
             it "follows only x times" do
               expect(easy.response_code).to eq(302)
+              expect(easy.redirect_url).to eq("http://localhost:3001/bad_redirect")
             end
           end
         end
