@@ -6,3 +6,5 @@ Gemfile.lock
 doc
 coverage
 .idea
+tmp
+

@@ -9,6 +9,8 @@ else
 end
 
 group :development, :test do
+  gem 'appmap'
+
   gem "rspec", "~> 3.4"
 
   gem "sinatra"
