@@ -87,7 +87,7 @@ easy.http_request("www.example.com/get", :get, { http_version: :httpv2_0 })
 easy.http_request("www.example.com/get", :get, { http_version: :httpv2_prior_knowledge })
 
 # To set the server to use http2 with https and http1 with http, send the following:
-easy.http_request("www.example.com/get", :get, { http_version: :httpv2_tls }
+easy.http_request("www.example.com/get", :get, { http_version: :httpv2_tls })
 
 multi.add(easy)
 multi.perform
