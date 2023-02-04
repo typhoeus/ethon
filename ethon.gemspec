@@ -20,7 +20,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency('ffi', ['>= 1.15.0'])
 
-  s.files        = `git ls-files`.split("\n")
-  s.test_files   = `git ls-files -- spec/*`.split("\n")
+  s.files = Dir.chdir(__dir__) do
+    `git ls-files -z`.split("\x0").reject do |file|
+      file.start_with?(*%w[. Gemfile Guardfile Rakefile profile spec])
+    end
+  end
   s.require_path = 'lib'
 end
