@@ -70,6 +70,29 @@ easy.perform
 This is really handy when making requests since you don't have to care about setting
 everything up correctly.
 
+## Http2
+Standard http2 servers require the client to connect once and create a session (multi) and then add simple requests to the multi handler.
+The `perform` method then takes all the requests in the multi handler and sends them to the server.
+
+See the following example
+```ruby
+multi = Ethon::Multi.new
+easy = Ethon::Easy.new
+
+easy.http_request("www.example.com/get", :get, { http_version: :httpv2_0 })
+
+# Sending a request with http version 2 will send an Upgrade header to the server, which many older servers will not support
+# See below for more info: https://everything.curl.dev/http/http2
+# If this is a problem, send the below:
+easy.http_request("www.example.com/get", :get, { http_version: :httpv2_prior_knowledge })
+
+# To set the server to use http2 with https and http1 with http, send the following:
+easy.http_request("www.example.com/get", :get, { http_version: :httpv2_tls })
+
+multi.add(easy)
+multi.perform
+```
+
 ##  LICENSE
 
 (The MIT License)

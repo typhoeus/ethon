@@ -307,6 +307,7 @@ module Ethon
       option :easy, :port, :int, 3
       option :easy, :tcp_nodelay, :bool, 121
       option :easy, :address_scope, :int, 171
+      option :easy, :tcp_fastopen, :bool, 212
       option :easy, :tcp_keepalive, :bool, 213
       option :easy, :tcp_keepidle, :int, 214
       option :easy, :tcp_keepintvl, :int, 215
@@ -352,7 +353,7 @@ module Ethon
       option :easy, :cookiesession, :bool, 96
       option :easy, :cookielist, :string, 135
       option :easy, :httpget, :bool, 80
-      option :easy, :http_version, :enum, 84, [:none, :httpv1_0, :httpv1_1, :httpv2_0]
+      option :easy, :http_version, :enum, 84, [:none, :httpv1_0, :httpv1_1, :httpv2_0, :httpv2_tls, :httpv2_prior_knowledge]
       option :easy, :ignore_content_length, :bool, 136
       option :easy, :http_content_decoding, :bool, 158
       option :easy, :http_transfer_decoding, :bool, 157

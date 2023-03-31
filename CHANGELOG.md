@@ -2,7 +2,11 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.15.0...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.16.0...master)
+
+## 0.16.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.15.0...v0.16.0)
 
 * Added `redirect_url` value to available informations and `Easy::Mirror`.
   ([Adrien Rey-Jarthon](https://github.com/jarthod)
