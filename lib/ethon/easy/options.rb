@@ -37,12 +37,14 @@ module Ethon
             value
           end
         end
-        next if props[:type] != :callback || method_defined?(opt)
-        define_method(opt) do |&block|
-          @procs ||= {}
-          @procs[opt.to_sym] = block
-          Curl.set_option(opt, block, handle)
-          nil
+
+        if %i(callback debug_callback).include?(props[:type]) && !method_defined?(opt)
+          define_method(opt) do |&block|
+            @procs ||= {}
+            @procs[opt.to_sym] = block
+            Curl.set_option(opt, block, handle)
+            nil
+          end
         end
       end
     end
