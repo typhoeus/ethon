@@ -6,7 +6,7 @@ module Ethon
     module FormOptions
 
       # Form options, used by FormAdd for temporary storage, refer
-      # https://github.com/bagder/curl/blob/master/lib/formdata.h#L51 for details
+      # https://github.com/curl/curl/blob/master/lib/formdata.h#L51 for details
       def form_options
         [
           :none,
