@@ -22,7 +22,7 @@ module Ethon
       end
 
       # http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTDEBUGFUNCTION
-      # https://github.com/bagder/curl/blob/master/include/curl/curl.h#L378
+      # https://github.com/curl/curl/blob/master/include/curl/curl.h#L378
       #
       # @example Return debug info types.
       #   Ethon::Curl.debug_info_types
@@ -41,7 +41,7 @@ module Ethon
       end
 
       # Return Info details, refer
-      # https://github.com/bagder/curl/blob/master/src/tool_writeout.c#L66 for details
+      # https://github.com/curl/curl/blob/master/src/tool_writeout.c#L66 for details
       #
       # @example Return infos.
       #   Ethon::Curl.infos
