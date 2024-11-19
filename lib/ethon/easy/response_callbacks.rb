@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   class Easy
 
@@ -39,8 +40,15 @@ module Ethon
       # @example Execute on_headers.
       #   request.headers
       def headers
+        return if @headers_called
+        @headers_called = true
         if defined?(@on_headers) and not @on_headers.nil?
-          @on_headers.each{ |callback| callback.call(self) }
+          result = nil
+          @on_headers.each do |callback|
+            result = callback.call(self)
+            break if result == :abort
+          end
+          result
         end
       end
 
@@ -61,8 +69,35 @@ module Ethon
       # @example Execute on_completes.
       #   request.complete
       def complete
+        headers unless @response_headers.empty?
         if defined?(@on_complete) and not @on_complete.nil?
           @on_complete.each{ |callback| callback.call(self) }
+        end
+      end
+
+      # Set on_progress callback.
+      #
+      # @example Set on_progress.
+      #   request.on_progress {|dltotal, dlnow, ultotal, ulnow| p "#{dltotal} #{dlnow} #{ultotal} #{ulnow}" }
+      #
+      # @param [ Block ] block The block to execute.
+      def on_progress(&block)
+        @on_progress ||= []
+        if block_given?
+          @on_progress << block
+          set_progress_callback
+          self.noprogress = 0
+        end
+        @on_progress
+      end
+
+      # Execute on_progress callbacks.
+      #
+      # @example Execute on_progress.
+      #   request.body(1, 1, 1, 1)
+      def progress(dltotal, dlnow, ultotal, ulnow)
+        if defined?(@on_progress) and not @on_progress.nil?
+          @on_progress.each{ |callback| callback.call(dltotal, dlnow, ultotal, ulnow) }
         end
       end
 

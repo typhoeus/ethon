@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #### SETUP
 require 'bundler'
 Bundler.setup

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   class Multi
 
@@ -8,7 +9,7 @@ module Ethon
       # Sets max_total_connections option.
       #
       # @example Set max_total_connections option.
-      #   easy.max_total_conections = $value
+      #   multi.max_total_conections = $value
       #
       # @param [ String ] value The value to set.
       #
@@ -20,7 +21,7 @@ module Ethon
       # Sets maxconnects option.
       #
       # @example Set maxconnects option.
-      #   easy.maxconnects = $value
+      #   multi.maxconnects = $value
       #
       # @param [ String ] value The value to set.
       #
@@ -32,19 +33,19 @@ module Ethon
       # Sets pipelining option.
       #
       # @example Set pipelining option.
-      #   easy.pipelining = $value
+      #   multi.pipelining = $value
       #
       # @param [ String ] value The value to set.
       #
       # @return [ void ]
       def pipelining=(value)
-        Curl.set_option(:pipelining, value_for(value, :bool), handle, :multi)
+        Curl.set_option(:pipelining, value_for(value, :int), handle, :multi)
       end
 
       # Sets socketdata option.
       #
       # @example Set socketdata option.
-      #   easy.socketdata = $value
+      #   multi.socketdata = $value
       #
       # @param [ String ] value The value to set.
       #
@@ -56,7 +57,7 @@ module Ethon
       # Sets socketfunction option.
       #
       # @example Set socketfunction option.
-      #   easy.socketfunction = $value
+      #   multi.socketfunction = $value
       #
       # @param [ String ] value The value to set.
       #
@@ -68,7 +69,7 @@ module Ethon
       # Sets timerdata option.
       #
       # @example Set timerdata option.
-      #   easy.timerdata = $value
+      #   multi.timerdata = $value
       #
       # @param [ String ] value The value to set.
       #
@@ -80,7 +81,7 @@ module Ethon
       # Sets timerfunction option.
       #
       # @example Set timerfunction option.
-      #   easy.timerfunction = $value
+      #   multi.timerfunction = $value
       #
       # @param [ String ] value The value to set.
       #

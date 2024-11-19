@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'ethon/curls/codes'
 require 'ethon/curls/options'
 require 'ethon/curls/infos'

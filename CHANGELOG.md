@@ -2,7 +2,61 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.4...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.16.0...master)
+
+## 0.16.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.15.0...v0.16.0)
+
+* Added `redirect_url` value to available informations and `Easy::Mirror`.
+  ([Adrien Rey-Jarthon](https://github.com/jarthod)
+
+## 0.15.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.14.0...v0.15.0)
+
+## 0.12.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.11.0...v0.12.0)
+
+- Removed deprecated `CURLE_SSL_CACERT` pinned in curl v7.62.0 ([@arku](https://github.com/arku) in [#158](https://github.com/typhoeus/ethon/pull/158))
+
+
+## 0.11.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.10.1...v0.11.0)
+
+## 0.10.1
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.10.0...v0.10.1)
+
+## 0.10.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.9.1...v0.10.0)
+
+## 0.9.1
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.9.0...v0.9.1)
+
+## 0.9.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.8.1...v0.9.0)
+
+## 0.8.1
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.8.0...v0.8.1)
+
+* Support optional escaping of params.
+  ([Tasos Laskos](https://github.com/zapotek)
+* `Easy::Mirror`: Reduced object allocations and method calls during info handling.
+  ([Tasos Laskos](https://github.com/zapotek)
+
+## 0.8.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.7.3...v0.7.4)
+
+* `Easy::Mirror`: Reduced object allocations and method calls during info handling.
+  ([Tasos Laskos](https://github.com/zapotek)
 
 ## 0.7.4
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   class Easy
     # This module contains the logic to prepare and perform
@@ -13,6 +14,12 @@ module Ethon
         @handle ||= FFI::AutoPointer.new(Curl.easy_init, Curl.method(:easy_cleanup))
       end
 
+      # Sets a pointer to the curl easy handle.
+      # @param [ ::FFI::Pointer ] Easy handle that will be assigned.
+      def handle=(h)
+        @handle = h
+      end
+
       # Perform the easy request.
       #
       # @example Perform the request.
@@ -21,7 +28,9 @@ module Ethon
       # @return [ Integer ] The return code.
       def perform
         @return_code = Curl.easy_perform(handle)
-        Ethon.logger.debug { "ETHON: performed #{self.log_inspect}" }
+        if Ethon.logger.debug?
+          Ethon.logger.debug { "ETHON: performed #{log_inspect}" }
+        end
         complete
         @return_code
       end

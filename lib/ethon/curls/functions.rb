@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   module Curls
 
@@ -13,18 +14,14 @@ module Ethon
 
         base.attach_function :easy_init,                  :curl_easy_init,           [],                             :pointer
         base.attach_function :easy_cleanup,               :curl_easy_cleanup,        [:pointer],                     :void
-        base.attach_function :easy_getinfo,               :curl_easy_getinfo,        [:pointer, :info, :pointer],    :easy_code
-        base.attach_function :easy_setopt_ffipointer,     :curl_easy_setopt,         [:pointer, :easy_option, :pointer],  :easy_code
-        base.attach_function :easy_setopt_string,         :curl_easy_setopt,         [:pointer, :easy_option, :string],   :easy_code
-        base.attach_function :easy_setopt_long,           :curl_easy_setopt,         [:pointer, :easy_option, :long],     :easy_code
-        base.attach_function :easy_setopt_callback,       :curl_easy_setopt,         [:pointer, :easy_option, :callback], :easy_code
-        base.attach_function :easy_setopt_debug_callback, :curl_easy_setopt,         [:pointer, :easy_option, :debug_callback], :easy_code
-        base.attach_function :easy_setopt_off_t,          :curl_easy_setopt,         [:pointer, :easy_option, :int64],    :easy_code
+        base.attach_function :easy_getinfo,               :curl_easy_getinfo,        [:pointer, :info, :varargs],    :easy_code
+        base.attach_function :easy_setopt,                :curl_easy_setopt,         [:pointer, :easy_option, :varargs], :easy_code
         base.instance_variable_set(:@blocking, true)
         base.attach_function :easy_perform,               :curl_easy_perform,        [:pointer],                     :easy_code
         base.attach_function :easy_strerror,              :curl_easy_strerror,       [:easy_code],                   :string
         base.attach_function :easy_escape,                :curl_easy_escape,         [:pointer, :pointer, :int],     :pointer
         base.attach_function :easy_reset,                 :curl_easy_reset,          [:pointer],                     :void
+        base.attach_function :easy_duphandle,             :curl_easy_duphandle,      [:pointer],                     :pointer
 
         base.attach_function :formadd,                    :curl_formadd,             [:pointer, :pointer, :varargs], :int
         base.attach_function :formfree,                   :curl_formfree,            [:pointer],                     :void
@@ -38,11 +35,8 @@ module Ethon
         base.attach_function :multi_timeout,              :curl_multi_timeout,       [:pointer, :pointer],           :multi_code
         base.attach_function :multi_fdset,                :curl_multi_fdset,         [:pointer, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, :pointer], :multi_code
         base.attach_function :multi_strerror,             :curl_multi_strerror,      [:int],                         :string
-        base.attach_function :multi_setopt_ffipointer,    :curl_multi_setopt,        [:pointer, :multi_option, :pointer],  :multi_code
-        base.attach_function :multi_setopt_string,        :curl_multi_setopt,        [:pointer, :multi_option, :string],   :multi_code
-        base.attach_function :multi_setopt_long,          :curl_multi_setopt,        [:pointer, :multi_option, :long],     :multi_code
-        base.attach_function :multi_setopt_callback,      :curl_multi_setopt,        [:pointer, :multi_option, :callback], :multi_code
-        base.attach_function :multi_setopt_off_t,         :curl_multi_setopt,        [:pointer, :multi_option, :int64],    :multi_code
+        base.attach_function :multi_setopt,               :curl_multi_setopt,        [:pointer, :multi_option, :varargs], :multi_code
+        base.attach_function :multi_socket_action,        :curl_multi_socket_action, [:pointer, :int, :socket_readiness, :pointer], :multi_code
 
         base.attach_function :version,                    :curl_version,             [],                             :string
         base.attach_function :version_info,               :curl_version_info,        [],                             Curl::VersionInfoData.ptr

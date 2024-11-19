@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy::Options do
@@ -12,7 +13,7 @@ describe Ethon::Easy::Options do
     :proxyuserpwd, :readdata, :readfunction, :redir_protocols, :ssl_verifyhost,
     :ssl_verifypeer, :sslcert, :sslcerttype, :sslkey, :sslkeytype, :sslversion,
     :timeout, :timeout_ms, :unrestricted_auth, :upload, :url, :useragent,
-    :userpwd, :verbose
+    :userpwd, :verbose, :pipewait, :dns_shuffle_addresses, :path_as_is
   ].each do |name|
     describe "#{name}=" do
       it "responds_to" do
@@ -41,6 +42,64 @@ describe Ethon::Easy::Options do
           1
         end
         easy.method("#{name}=").call(value)
+      end
+    end
+  end
+
+  describe '#escape?' do
+    context 'by default' do
+      it 'returns true' do
+        expect(easy.escape?).to be_truthy
+      end
+    end
+
+    context 'when #escape=nil' do
+      it 'returns true' do
+        easy.escape = nil
+        expect(easy.escape?).to be_truthy
+      end
+    end
+
+    context 'when #escape=true' do
+      it 'returns true' do
+        easy.escape = true
+        expect(easy.escape?).to be_truthy
+      end
+    end
+
+    context 'when #escape=false' do
+      it 'returns true' do
+        easy.escape = false
+        expect(easy.escape?).to be_falsey
+      end
+    end
+  end
+
+  describe '#multipart?' do
+    context 'by default' do
+      it 'returns false' do
+        expect(easy.multipart?).to be_falsey
+      end
+    end
+
+    context 'when #multipart=nil' do
+      it 'returns false' do
+        easy.multipart = nil
+        expect(easy.multipart?).to be_falsey
+      end
+    end
+
+    context 'when #multipart=true' do
+      it 'returns true' do
+        easy.multipart = true
+        expect(easy.multipart?).to be_truthy
+      end
+    end
+
+    context 'when #multipart=false' do
+      it 'returns false' do
+        easy.multipart = false
+        expect(easy.multipart?).to be_falsey
       end
     end
   end

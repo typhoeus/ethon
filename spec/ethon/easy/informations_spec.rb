@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy::Informations do
@@ -80,6 +81,12 @@ describe Ethon::Easy::Informations do
     end
   end
 
+  describe "#redirect_url" do
+    it "returns nil as there is no redirect" do
+      expect(easy.redirect_url).to be(nil)
+    end
+  end
+
   describe "#request_size" do
     it "returns 53" do
       expect(easy.request_size).to eq(53)
@@ -88,10 +95,32 @@ describe Ethon::Easy::Informations do
 
   describe "#supports_zlib?" do
     it "returns true" do
-      Kernel.should_receive(:warn) #deprecation warning
+      expect(Kernel).to receive(:warn)
       expect(easy.supports_zlib?).to be_truthy
     end
   end
 
+  describe "#size_upload" do
+    it "returns float" do
+      expect(easy.size_upload).to be_a(Float)
+    end
+  end
 
+  describe "#size_download" do
+    it "returns float" do
+      expect(easy.size_download).to be_a(Float)
+    end
+  end
+
+  describe "#speed_upload" do
+    it "returns float" do
+      expect(easy.speed_upload).to be_a(Float)
+    end
+  end
+
+  describe "#speed_download" do
+    it "returns float" do
+      expect(easy.speed_download).to be_a(Float)
+    end
+  end
 end

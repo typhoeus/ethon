@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy::Http::Get do
@@ -5,7 +6,8 @@ describe Ethon::Easy::Http::Get do
   let(:url) { "http://localhost:3001/" }
   let(:params) { nil }
   let(:form) { nil }
-  let(:get) { described_class.new(url, {:params => params, :body => form}) }
+  let(:options) { {} }
+  let(:get) { described_class.new(url, {:params => params, :body => form}.merge(options)) }
 
   describe "#setup" do
     it "sets url" do
@@ -84,6 +86,41 @@ describe Ethon::Easy::Http::Get do
           expect(easy.effective_url).to eq("http://localhost:3001/?a=1%26b%3D2")
         end
       end
+
+      context "with :escape" do
+        let(:params) { {:a => "1&b=2"} }
+
+        context 'missing' do
+          it "escapes values" do
+            expect(easy.url).to eq("#{url}?a=1%26b%3D2")
+          end
+        end
+
+        context 'nil' do
+          let(:options) { {:escape => nil} }
+
+          it "escapes values" do
+            expect(easy.url).to eq("#{url}?a=1%26b%3D2")
+          end
+        end
+
+        context 'true' do
+          let(:options) { {:escape => true} }
+
+          it "escapes values" do
+            expect(easy.url).to eq("#{url}?a=1%26b%3D2")
+          end
+        end
+
+        context 'false' do
+          let(:options) { {:escape => false} }
+
+          it "sends raw values" do
+            expect(easy.url).to eq("#{url}?a=1&b=2")
+          end
+        end
+      end
+
     end
   end
 end

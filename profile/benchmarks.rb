@@ -1,113 +1,82 @@
 # encoding: utf-8
+# frozen_string_literal: true
 require 'ethon'
 require 'open-uri'
 require 'patron'
 require 'curb'
-require "net/http"
+require 'net/http'
 require 'cgi'
-require 'benchmark'
+require 'benchmark/ips'
 
-Benchmark.bm do |bm|
+require_relative '../spec/support/server'
+require_relative '../spec/support/localhost_server'
 
-  [100_000].each do |i|
-    puts "[ #{i} Creations]"
+LocalhostServer.new(TESTSERVER.new, 3000)
+LocalhostServer.new(TESTSERVER.new, 3001)
+LocalhostServer.new(TESTSERVER.new, 3002)
 
-    bm.report("String.new        ") do
-      i.times { String.new }
-    end
+url = 'http://localhost:3000/'.freeze
+uri = URI.parse('http://localhost:3000/').freeze
+ethon = Ethon::Easy.new(url: url)
+patron = Patron::Session.new
+patron_url = Patron::Session.new(base_url: url)
+curb = Curl::Easy.new(url)
 
-    bm.report("Easy.new          ") do
-      i.times { Ethon::Easy.new }
-    end
+puts '[Creation]'
+Benchmark.ips do |x|
+  x.report('String.new') { '' }
+  x.report('Easy.new') { Ethon::Easy.new }
+end
+
+puts '[Escape]'
+Benchmark.ips do |x|
+  x.report('CGI.escape') { CGI.escape("まつもと") }
+  x.report('Easy.escape') { ethon.escape("まつもと") }
+end
+
+puts '[Requests]'
+Benchmark.ips do |x|
+  x.report('net/http') { Net::HTTP.get_response(uri) }
+  x.report('open-uri') { open url }
+
+  x.report('patron') do
+    patron.base_url = url
+    patron.get('/')
   end
 
-  GC.start
+  x.report('patron reuse') { patron_url.get('/') }
 
-  [100_000].each do |i|
-    puts "[ #{i} Escapes]"
-
-    bm.report("CGI::escape       ") do
-      i.times { CGI::escape("まつもと") }
-    end
-
-    bm.report("Easy.escape       ") do
-      e = Ethon::Easy.new
-      i.times { e.escape("まつもと") }
-    end
+  x.report('curb') do
+    curb.url = url
+    curb.perform
   end
 
-  GC.start
+  x.report('curb reuse') { curb.perform }
 
-  [1000].each do |i|
-    puts "[ #{i} Requests]"
-
-    bm.report("net/http          ") do
-      uri = URI.parse("http://localhost:3001/")
-      i.times { Net::HTTP.get_response(uri) }
-    end
-
-    bm.report("open-uri          ") do
-      i.times { open "http://localhost:3001/" }
-    end
-
-    bm.report("patron            ") do
-      sess = Patron::Session.new
-      i.times do
-        sess.base_url = "http://localhost:3001"
-        sess.get("/")
-      end
-    end
-
-    bm.report("patron reuse      ") do
-      sess = Patron::Session.new
-      sess.base_url = "http://localhost:3001"
-      i.times do
-        sess.get("/")
-      end
-    end
-
-    bm.report("curb reuse        ") do
-      easy = Curl::Easy.new("http://localhost:3001")
-      i.times do
-        easy.perform
-      end
-    end
-
-    bm.report("Easy.perform      ") do
-      easy = Ethon::Easy.new
-      i.times do
-        easy.url = "http://localhost:3001/"
-        easy.prepare
-        easy.perform
-      end
-    end
-
-    bm.report("Easy.perform reuse") do
-      easy = Ethon::Easy.new
-      easy.url = "http://localhost:3001/"
-      easy.prepare
-      i.times { easy.perform }
-    end
+  x.report('Easy.perform') do
+    ethon.url = url
+    ethon.perform
   end
 
-  GC.start
+  x.report('Easy.perform reuse') { ethon.perform }
+end
 
-  puts "[ 4 delayed Requests ]"
-
-  bm.report("net/http          ") do
+puts "[ 4 delayed Requests ]"
+Benchmark.ips do |x|
+  x.report('net/http') do
     3.times do |i|
       uri = URI.parse("http://localhost:300#{i}/?delay=1")
       Net::HTTP.get_response(uri)
     end
   end
 
-  bm.report("open-uri          ") do
+  x.report("open-uri") do
     3.times do |i|
       open("http://localhost:300#{i}/?delay=1")
     end
   end
 
-  bm.report("patron            ") do
+  x.report("patron") do
     sess = Patron::Session.new
     3.times do |i|
       sess.base_url = "http://localhost:300#{i}/?delay=1"
@@ -115,21 +84,19 @@ Benchmark.bm do |bm|
     end
   end
 
-  bm.report("Easy.perform      ") do
+  x.report("Easy.perform") do
     easy = Ethon::Easy.new
     3.times do |i|
       easy.url = "http://localhost:300#{i}/?delay=1"
-      easy.prepare
       easy.perform
     end
   end
 
-  bm.report("Multi.perform     ") do
+  x.report("Multi.perform") do
     multi = Ethon::Multi.new
     3.times do |i|
       easy = Ethon::Easy.new
       easy.url = "http://localhost:300#{i}/?delay=1"
-      easy.prepare
       multi.add(easy)
     end
     multi.perform

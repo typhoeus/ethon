@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'ethon/easy/informations'
 require 'ethon/easy/features'
 require 'ethon/easy/callbacks'
@@ -159,7 +160,6 @@ module Ethon
     #   * :recv_error: Failure with receiving network data.
     #   * :ssl_certproblem: problem with the local client certificate.
     #   * :ssl_cipher: Couldn't use specified cipher.
-    #   * :ssl_cacert: Peer certificate cannot be authenticated with known CA certificates.
     #   * :bad_content_encoding: Unrecognized transfer encoding.
     #   * :ldap_invalid_url: Invalid LDAP URL.
     #   * :filesize_exceeded: Maximum file size exceeded.
@@ -248,16 +248,30 @@ module Ethon
     #   easy.reset
     def reset
       @url = nil
+      @escape = nil
       @hash = nil
       @on_complete = nil
       @on_headers = nil
       @on_body = nil
+      @on_progress = nil
       @procs = nil
       @mirror = nil
       Curl.easy_reset(handle)
       set_callbacks
     end
 
+    # Clones libcurl session handle. This means that all options that is set in
+    #   the current handle will be set on duplicated handle.
+    def dup
+      e = super
+      e.handle = Curl.easy_duphandle(handle)
+      e.instance_variable_set(:@body_write_callback, nil)
+      e.instance_variable_set(:@header_write_callback, nil)
+      e.instance_variable_set(:@debug_callback, nil)
+      e.instance_variable_set(:@progress_callback, nil)
+      e.set_callbacks
+      e
+    end
     # Url escapes the value.
     #
     # @example Url escape.

@@ -1,9 +1,14 @@
+# frozen_string_literal: true
 require 'logger'
 require 'ffi'
 require 'thread'
 begin
-  require 'mime/types'
+  require 'mime/types/columnar'
 rescue LoadError
+  begin
+    require 'mime/types'
+  rescue LoadError
+  end
 end
 require 'tempfile'
 

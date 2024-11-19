@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   module Curl
     # :nodoc:
@@ -58,5 +59,22 @@ module Ethon
     VERSION_NTLM_WB = (1<<15) # NTLM delegating to winbind helper
     VERSION_HTTP2 = (1<<16) # HTTP2 support built
     VERSION_GSSAPI = (1<<17) # GSS-API is supported
+
+    SOCKET_BAD = -1
+    SOCKET_TIMEOUT = SOCKET_BAD
+
+    PollAction = enum(:poll_action, [
+      :none,
+      :in,
+      :out,
+      :inout,
+      :remove
+    ])
+
+    SocketReadiness = bitmask(:socket_readiness, [
+      :in,  # CURL_CSELECT_IN  - 0x01 (bit 0)
+      :out, # CURL_CSELECT_OUT - 0x02 (bit 1)
+      :err, # CURL_CSELECT_ERR - 0x04 (bit 2)
+    ])
   end
 end

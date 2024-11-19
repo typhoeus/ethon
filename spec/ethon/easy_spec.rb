@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy do
@@ -64,6 +65,12 @@ describe Ethon::Easy do
       expect(easy.url).to be_nil
     end
 
+    it "resets escape?" do
+      easy.escape = false
+      easy.reset
+      expect(easy.escape?).to be_truthy
+    end
+
     it "resets hash" do
       easy.reset
       expect(easy.instance_variable_get(:@hash)).to be_nil
@@ -90,6 +97,88 @@ describe Ethon::Easy do
       easy.on_body { p 1 }
       easy.reset
       expect(easy.on_body).to be_empty
+    end
+  end
+
+  describe "#dup" do
+    let!(:easy) do
+      easy = Ethon::Easy.new
+      easy.url = "http://localhost:3001/"
+      easy.on_complete { 'on_complete' }
+      easy.on_headers { 'on_headers' }
+      easy.on_progress { 'on_progress' }
+      easy.response_body = String.new('test_body')
+      easy.response_headers = String.new('test_headers')
+      easy
+    end
+    let!(:e) { easy.dup }
+
+    it "sets a new handle" do
+      expect(e.handle).not_to eq(easy.handle)
+    end
+
+    it "preserves url" do
+      expect(e.url).to eq(easy.url)
+    end
+
+    it "preserves on_complete callback" do
+      expect(e.on_complete).to be(easy.on_complete)
+    end
+
+    it "preserves on_headers callback" do
+      expect(e.on_headers).to be(easy.on_headers)
+    end
+
+    it 'preserves body_write_callback of original handle' do
+      expect { easy.perform }.to change { easy.response_body }
+      expect { easy.perform }.not_to change { e.response_body }
+    end
+
+    it "preserves on_progress callback" do
+      expect(e.on_progress).to be(easy.on_progress)
+    end
+
+    it 'sets new body_write_callback of duplicated handle' do
+      expect { e.perform }.to change { e.response_body }
+      expect { e.perform }.not_to change { easy.response_body }
+    end
+
+    it 'preserves headers_write_callback of original handle' do
+      expect { easy.perform }.to change { easy.response_headers }
+      expect { easy.perform }.not_to change { e.response_headers }
+    end
+
+    it 'sets new headers_write_callback of duplicated handle' do
+      expect { e.perform }.to change { e.response_headers }
+      expect { e.perform }.not_to change { easy.response_headers }
+    end
+
+    it "resets response_body" do
+      expect(e.response_body).to be_empty
+    end
+
+    it "resets response_headers" do
+      expect(e.response_headers).to be_empty
+    end
+
+    it "sets response_body for duplicated Easy" do
+      e.perform
+      expect(e.response_body).not_to be_empty
+    end
+
+    it "sets response_headers for duplicated Easy" do
+      e.perform
+      expect(e.response_headers).not_to be_empty
+    end
+
+    it "preserves response_body for original Easy" do
+      e.perform
+      expect(easy.response_body).to eq('test_body')
+    end
+
+    it "preserves response_headers for original Easy" do
+      e.perform
+      expect(easy.response_headers).to eq('test_headers')
     end
   end
 

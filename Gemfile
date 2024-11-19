@@ -1,22 +1,43 @@
+# frozen_string_literal: true
 source "https://rubygems.org"
 gemspec
 
-gem "rake"
+if Gem.ruby_version < Gem::Version.new("1.9.3")
+  gem "rake", "< 11"
+else
+  gem "rake"
+end
 
 group :development, :test do
-  gem "rspec", "~> 2.11"
+  gem "rspec", "~> 3.4"
 
-  gem "sinatra", :git => "https://github.com/sinatra/sinatra.git"
-  gem "json"
-  gem "mime-types", "~> 1.18"
+  gem "sinatra"
 
-  unless ENV["CI"]
-    gem "guard-rspec", "~> 0.7"
-    gem 'rb-fsevent', '~> 0.9.1'
+  if Gem.ruby_version < Gem::Version.new("2.0.0")
+    gem "json", "< 2"
+  else
+    gem "json"
+  end
+
+  if Gem.ruby_version >= Gem::Version.new("2.0.0")
+    gem "mime-types", "~> 1.18"
+  end
+
+  if Gem.ruby_version >= Gem::Version.new("2.2.0")
+    gem "mustermann"
+  elsif Gem.ruby_version >= Gem::Version.new("2.1.0")
+    gem "mustermann", "0.4.0"
+  elsif Gem.ruby_version >= Gem::Version.new("2.0.0")
+    gem "mustermann", "0.3.1"
+  end
+
+  if Gem.ruby_version >= Gem::Version.new("3.0.0")
+    gem "webrick"
   end
 end
 
 group :perf do
-  gem "patron", "~> 0.4"
-  gem "curb", "~> 0.8.0"
+  gem "benchmark-ips"
+  gem "patron"
+  gem "curb"
 end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy::Form do
@@ -41,6 +42,15 @@ describe Ethon::Easy::Form do
         expect(form.multipart?).to be_truthy
       end
     end
+
+    context "when options contains multipart=true" do
+      before { form.instance_variable_set(:@multipart, true) }
+      let(:pairs) { [['a', '1'], ['b', '2']] }
+
+      it "returns true" do
+        expect(form.multipart?).to be_truthy
+      end
+    end
   end
 
   describe "#materialize" do
@@ -69,6 +79,24 @@ describe Ethon::Easy::Form do
 
       it "adds file to form" do
         expect(Ethon::Curl).to receive(:formadd)
+        form.materialize
+      end
+    end
+
+    context "when query_pairs contains file and string values" do
+      let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1']] }
+
+      it "adds file to form" do
+        expect(Ethon::Curl).to receive(:formadd).twice
+        form.materialize
+      end
+    end
+
+    context "when query_pairs contains file, string and int values" do
+      let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1'], ['c', 1]] }
+
+      it "adds file to form" do
+        expect(Ethon::Curl).to receive(:formadd).exactly(3).times
         form.materialize
       end
     end

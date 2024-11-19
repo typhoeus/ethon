@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy::Operations do
@@ -25,6 +26,7 @@ describe Ethon::Easy::Operations do
     let(:password) { nil }
 
     before do
+      Ethon.logger.level = Logger::DEBUG
       easy.url = url
       easy.timeout = timeout
       easy.connecttimeout = connect_timeout
@@ -51,7 +53,7 @@ describe Ethon::Easy::Operations do
     end
 
     it "calls Curl.easy_cleanup" do
-      FFI::AutoPointer.any_instance.should_receive(:free)
+      expect_any_instance_of(FFI::AutoPointer).to receive(:free)
       easy.cleanup
     end
 
@@ -104,6 +106,7 @@ describe Ethon::Easy::Operations do
 
         it "doesn't follow" do
           expect(easy.response_code).to eq(302)
+          expect(easy.redirect_url).to eq("http://localhost:3001/")
         end
       end
 
@@ -113,6 +116,7 @@ describe Ethon::Easy::Operations do
 
         it "follows" do
           expect(easy.response_code).to eq(200)
+          expect(easy.redirect_url).to eq(nil)
         end
 
         context "when infinite redirect loop" do
@@ -122,6 +126,7 @@ describe Ethon::Easy::Operations do
           context "when max redirect set" do
             it "follows only x times" do
               expect(easy.response_code).to eq(302)
+              expect(easy.redirect_url).to eq("http://localhost:3001/bad_redirect")
             end
           end
         end

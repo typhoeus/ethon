@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'ethon/easy/util'
 require 'ethon/multi/stack'
 require 'ethon/multi/operations'
@@ -73,10 +74,21 @@ module Ethon
     # is 1 will not be treated as unlimited. Instead it will open only 1 
     # connection and try to pipeline on it.
     # (Added in 7.30.0)
+    # @option options :execution_mode [Boolean]
+    #  Either :perform (default) or :socket_action, specifies the usage
+    #  method that will be used on this multi object. The default :perform
+    #  mode provides a #perform function that uses curl_multi_perform
+    #  behind the scenes to automatically continue execution until all
+    #  requests have completed. The :socket_action mode provides an API
+    #  that allows the {Multi} object to be integrated into an external
+    #  IO loop, by calling #socket_action and responding to the 
+    #  socketfunction and timerfunction callbacks, using the underlying
+    #  curl_multi_socket_action semantics.
     #
     # @return [ Multi ] The new multi.
     def initialize(options = {})
       Curl.init
+      @execution_mode = options.delete(:execution_mode) || :perform
       set_attributes(options)
       init_vars
     end
@@ -98,6 +110,17 @@ module Ethon
         end
         method("#{key}=").call(value)
       end
+    end
+
+    private
+
+    # Internal function to gate functions to a specific execution mode
+    #
+    # @raise ArgumentError
+    #
+    # @api private
+    def ensure_execution_mode(expected_mode)
+      raise ArgumentError, "Expected the Multi to be in #{expected_mode} but it was in #{@execution_mode}" if expected_mode != @execution_mode
     end
   end
 end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Ethon::Easy::DebugInfo do
@@ -23,6 +24,7 @@ describe Ethon::Easy::DebugInfo do
       end
 
       after do
+        easy.verbose = false
         easy.reset
       end
 

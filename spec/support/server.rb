@@ -1,10 +1,11 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 require 'json'
 require 'zlib'
 require 'sinatra/base'
 
 TESTSERVER = Sinatra.new do
-  set :logging, false
+  set :logging, nil
 
   fail_count = 0
 

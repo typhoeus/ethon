@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Ethon
   class Easy
 
@@ -22,8 +23,8 @@ module Ethon
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
         Curl.set_option(:debugfunction, debug_callback, handle)
-        @response_body = ""
-        @response_headers = ""
+        @response_body = String.new
+        @response_headers = String.new
         @headers_called = false
         @debug_info = Ethon::Easy::DebugInfo.new
       end
@@ -35,15 +36,12 @@ module Ethon
       #
       # @return [ Proc ] The callback.
       def body_write_callback
-        @body_write_callback ||= proc {|stream, size, num, object|
-          unless @headers_called
-            @headers_called = true
-            headers
-          end
+        @body_write_callback ||= proc do |stream, size, num, object|
+          headers
           result = body(chunk = stream.read_string(size * num))
           @response_body << chunk if result == :unyielded
-          result != :abort ? size*num : -1
-        }
+          result != :abort ? size * num : -1
+        end
       end
 
       # Returns the header write callback.
@@ -54,8 +52,9 @@ module Ethon
       # @return [ Proc ] The callback.
       def header_write_callback
         @header_write_callback ||= proc {|stream, size, num, object|
+          result = headers
           @response_headers << stream.read_string(size * num)
-          size * num
+          result != :abort ? size * num : -1
         }
       end
 
@@ -63,7 +62,7 @@ module Ethon
       # write the raw http request headers.
       #
       # @example Return the callback.
-      #   easy.body_write_callback
+      #   easy.debug_callback
       #
       # @return [ Proc ] The callback.
       def debug_callback
@@ -71,6 +70,27 @@ module Ethon
           message = data.read_string(size)
           @debug_info.add type, message
           print message unless [:data_in, :data_out].include?(type)
+          0
+        }
+      end
+
+      def set_progress_callback
+        if Curl.version_info[:version] >= "7.32.0"
+          Curl.set_option(:xferinfofunction, progress_callback, handle)
+        else
+          Curl.set_option(:progressfunction, progress_callback, handle)
+        end
+      end
+
+      # Returns the progress callback.
+      #
+      # @example Return the callback.
+      #   easy.progress_callback
+      #
+      # @return [ Proc ] The callback.
+      def progress_callback
+        @progress_callback ||= proc { |_, dltotal, dlnow, ultotal, ulnow|
+          progress(dltotal, dlnow, ultotal, ulnow)
           0
         }
       end
