@@ -13,6 +13,8 @@ group :development, :test do
 
   gem "sinatra"
 
+  gem "rackup"
+
   if Gem.ruby_version < Gem::Version.new("2.0.0")
     gem "json", "< 2"
   else
