@@ -33,6 +33,7 @@ group :development, :test do
 
   if Gem.ruby_version >= Gem::Version.new("3.0.0")
     gem "webrick"
+    gem "rackup"
   end
 end
 
