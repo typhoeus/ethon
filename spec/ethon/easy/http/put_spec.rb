@@ -163,6 +163,39 @@ describe Ethon::Easy::Http::Put do
       end
     end
 
-    context "when params and body"
+    context "when params and body" do
+      # TODO: Add tests for params + body
+    end
+
+    context "when multipart body" do
+      let(:file) { File.open(__FILE__) }
+      let(:form) { {:a => "1", :b => file} }
+
+      it "sets httppost instead of upload" do
+        expect(easy).to receive(:httppost=)
+        expect(easy).not_to receive(:upload=)
+        put.setup(easy)
+      end
+
+      it "materializes form" do
+        put.setup(easy)
+        expect(put.form.first.read_pointer).not_to be_nil
+      end
+
+      context "when requesting" do
+        before do
+          put.setup(easy)
+          easy.perform
+        end
+
+        it "makes a put request" do
+          expect(easy.response_body).to include('"REQUEST_METHOD":"PUT"')
+        end
+
+        it "submits multipart form data" do
+          expect(easy.response_body).to include("multipart/form-data")
+        end
+      end
+    end
   end
 end
