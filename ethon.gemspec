@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.summary      = "Libcurl wrapper."
   s.description  = "Very lightweight libcurl wrapper."
 
-  s.required_rubygems_version = ">= 1.3.6"
+  required_ruby_version = ">= 2.6"
   s.license = 'MIT'
 
   s.add_dependency('ffi', ['>= 1.15.0'])
