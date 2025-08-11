@@ -5,6 +5,8 @@ require 'zlib'
 require 'sinatra/base'
 
 TESTSERVER = Sinatra.new do
+  use Rack::RewindableInput::Middleware
+
   set :logging, nil
 
   fail_count = 0
@@ -94,7 +96,7 @@ TESTSERVER = Sinatra.new do
   end
 
   post '/**' do
-    request.env.merge!(:body => request.body.read).to_json
+    request.env.merge!(:body => request.body.tap {|b| b.rewind }.read).to_json
   end
 
   delete '/**' do
@@ -110,6 +112,6 @@ TESTSERVER = Sinatra.new do
   end
 
   route 'PURGE', '/**' do
-    request.env.merge!(:body => request.body.read).to_json
+    request.env.merge!(:body => request.body.tap {|b| b.rewind }.read).to_json
   end
 end
