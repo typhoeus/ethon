@@ -40,10 +40,10 @@ class LocalhostServer
   end
 
   def boot
+    # Use WEBrick since it's part of the ruby standard library and is available on all ruby interpreters.
     options = { :Port => port }
-    options.merge!(:AccessLog => [], :Logger => Rack::NullLogger.new(@rack_app)) unless ENV['VERBOSE_SERVER']
-    # This allows to use whatever web server is available. The Gemfile currently specifies WEBrick.
-    Rackup::Handler.default.run(Identify.new(@rack_app), **options)
+    options.merge!(:AccessLog => [], :Logger => WEBrick::BasicLog.new(StringIO.new)) unless ENV['VERBOSE_SERVER']
+    Rackup::Handler::WEBrick.run(Identify.new(@rack_app), **options)
   end
 
   def booted?
@@ -58,7 +58,7 @@ class LocalhostServer
   def concurrently
     if should_use_subprocess?
       pid = Process.fork do
-        trap(:INT) { ::Rackup::Handler.default.shutdown }
+        trap(:INT) { ::Rack::Handler::WEBrick.shutdown }
         yield
         exit # manually exit; otherwise this sub-process will re-run the specs that haven't run yet.
       end
