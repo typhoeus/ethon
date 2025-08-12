@@ -88,8 +88,15 @@ describe Ethon::Easy::Informations do
   end
 
   describe "#request_size" do
-    it "returns 53" do
-      expect(easy.request_size).to eq(53)
+    libcurl_version = Ethon::Curl.version_info[:version]
+    if libcurl_version.start_with?('8.7.')
+      it 'skips request_size on libcurl 8.7.x due to upstream bug' do
+        skip 'libcurl 8.7.x returns 0 due to curl bug #13269'
+      end
+    else
+      it 'returns 53' do
+        expect(easy.request_size).to eq(53)
+      end
     end
   end
 
