@@ -24,18 +24,18 @@ module Ethon
     MultiOption = enum(:multi_option, multi_options(:enum).to_a.flatten)
 
     # Used by curl_debug_callback when setting CURLOPT_DEBUGFUNCTION
-    # https://github.com/bagder/curl/blob/master/include/curl/curl.h#L378 for details
+    # https://github.com/curl/curl/blob/master/include/curl/curl.h#L378 for details
     DebugInfoType = enum(:debug_info_type, debug_info_types)
 
     # :nodoc:
     InfoType = enum(info_types.to_a.flatten)
 
     # Info details, refer
-    # https://github.com/bagder/curl/blob/master/src/tool_writeout.c#L66 for details
+    # https://github.com/curl/curl/blob/master/src/tool_writeout.c#L66 for details
     Info = enum(:info, infos.to_a.flatten)
 
     # Form options, used by FormAdd for temporary storage, refer
-    # https://github.com/bagder/curl/blob/master/lib/formdata.h#L51 for details
+    # https://github.com/curl/curl/blob/master/lib/formdata.h#L51 for details
     FormOption = enum(:form_option, form_options)
 
     # :nodoc:

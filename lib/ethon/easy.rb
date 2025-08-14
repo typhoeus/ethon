@@ -16,7 +16,7 @@ require 'ethon/easy/mirror'
 module Ethon
 
   # This is the class representing the libcurl easy interface
-  # See http://curl.haxx.se/libcurl/c/libcurl-easy.html for more informations.
+  # See https://curl.se/libcurl/c/libcurl-easy.html for more informations.
   #
   # @example You can access the libcurl easy interface through this class, every request is based on it. The simplest setup looks like that:
   #
@@ -197,7 +197,7 @@ module Ethon
     #   * :obsolete: These error codes will never be returned. They were used in an old
     #     libcurl version and are currently unused.
     #
-    # @see http://curl.haxx.se/libcurl/c/libcurl-errors.html
+    # @see https://curl.se/libcurl/c/libcurl-errors.html
     attr_accessor :return_code
 
     # Initialize a new Easy.
@@ -214,7 +214,7 @@ module Ethon
     # @return [ Easy ] A new Easy.
     #
     # @see Ethon::Easy::Options
-    # @see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html
+    # @see https://curl.se/libcurl/c/curl_easy_setopt.html
     def initialize(options = {})
       Curl.init
       set_attributes(options)
