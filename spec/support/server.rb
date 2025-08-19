@@ -5,7 +5,7 @@ require 'zlib'
 require 'sinatra/base'
 
 TESTSERVER = Sinatra.new do
-  use Rack::RewindableInput::Middleware
+  use Rack::RewindableInput::Middleware if defined?(Rack::RewindableInput::Middleware)
 
   set :logging, nil
 
