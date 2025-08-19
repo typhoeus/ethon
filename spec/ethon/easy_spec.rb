@@ -200,4 +200,11 @@ describe Ethon::Easy do
       end
     end
   end
+
+  # Prevent regression of #253
+  describe "easy_codes array" do
+    it "has peer_failed_verification at index 60" do
+      expect(easy.extend(Ethon::Curls::Codes).easy_codes[60]).to eq(:peer_failed_verification)
+    end
+  end
 end
