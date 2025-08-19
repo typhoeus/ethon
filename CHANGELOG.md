@@ -2,10 +2,28 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.16.0...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.17.0...master)
 
+## 0.17.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.16.0...v0.17.0)
+
+* Require Ruby 2.6+ and simplify Gemfile.
+  ([Felipe Mesquita](https://github.com/felipedmesquita), [#255](https://github.com/typhoeus/ethon/pull/255))
 * Fixed mismatched libcurl error codes in `easy_codes` array.
   ([Felipe Mesquita](https://github.com/felipedmesquita), [#253](https://github.com/typhoeus/ethon/pull/253))
+* Add Ruby 3.3 and 3.4, remove Ruby 2.5 from CI matrix.
+  ([Felipe Mesquita](https://github.com/felipedmesquita), [#252](https://github.com/typhoeus/ethon/pull/252))
+* Skip test due to libcurl 8.7.x bug in CURLINFO_REQUEST_SIZE.
+  ([Felipe Mesquita](https://github.com/felipedmesquita), [#251](https://github.com/typhoeus/ethon/pull/251))
+* Use `Rackup::Handler.default` for Rack 3 compatibility.
+  ([Vít Ondruch](https://github.com/voxik), [#244](https://github.com/typhoeus/ethon/pull/244))
+* Add Ruby 3.1 and 3.2 to the test matrix.
+  ([Orien Madgwick](https://github.com/orien), [#228](https://github.com/typhoeus/ethon/pull/228))
+* Remove development and test files from the gem package.
+  ([Orien Madgwick](https://github.com/orien), [#227](https://github.com/typhoeus/ethon/pull/227))
+* Fix missing parenthesis in example.
+  ([Aleksey Tsalolikhin](https://github.com/atsalolikhin-spokeo), [#226](https://github.com/typhoeus/ethon/pull/226))
 
 ## 0.16.0
 
