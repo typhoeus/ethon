@@ -4,6 +4,9 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.16.0...master)
 
+* Fixed mismatched libcurl error codes in `easy_codes` array.
+  ([Felipe Mesquita](https://github.com/felipedmesquita), [#253](https://github.com/typhoeus/ethon/pull/253))
+
 ## 0.16.0
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.15.0...v0.16.0)
