@@ -6,7 +6,13 @@ gem "rake"
 
 group :development, :test do
   gem "rspec", "~> 3.4"
-  gem "sinatra"
+  
+  if Gem.ruby_version < Gem::Version.new("3.0.0")
+    gem "sinatra", "~> 2.2"
+  else
+    gem "sinatra"
+  end
+  
   gem "rackup"
   gem "json"
   gem "mime-types", "~> 1.18"
