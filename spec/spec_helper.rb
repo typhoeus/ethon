@@ -7,13 +7,8 @@ Bundler.setup
 require "ethon"
 require 'rspec'
 
-if defined? require_relative
-  require_relative 'support/localhost_server'
-  require_relative 'support/server'
-else
-  require 'support/localhost_server'
-  require 'support/server'
-end
+require_relative 'support/localhost_server'
+require_relative 'support/server'
 
 # Ethon.logger = Logger.new($stdout).tap do |log|
 #   log.level = Logger::DEBUG
