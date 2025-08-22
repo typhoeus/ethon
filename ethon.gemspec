@@ -26,4 +26,12 @@ Gem::Specification.new do |s|
     end
   end
   s.require_path = 'lib'
+
+  s.metadata              = {
+    'bug_tracker_uri'       => 'https://github.com/typhoeus/ethon/issues',
+    'changelog_uri'         => "https://github.com/typhoeus/ethon/blob/v#{s.version}/CHANGELOG.md",
+    'documentation_uri'     => "https://www.rubydoc.info/gems/ethon/#{s.version}",
+    'rubygems_mfa_required' => 'true',
+    'source_code_uri'       => "https://github.com/typhoeus/ethon/tree/v#{s.version}"
+  }
 end
