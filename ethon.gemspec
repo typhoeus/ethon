@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
 
   s.add_dependency('ffi', ['>= 1.15.0'])
+  s.add_dependency('logger')
 
   s.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |file|
