@@ -7,6 +7,7 @@ Bundler.setup
 require "ethon"
 require 'rspec'
 
+puts `pwd`
 # require_relative 'support/localhost_server'
 # require_relative 'support/server'
 #
