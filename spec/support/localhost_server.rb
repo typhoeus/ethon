@@ -2,11 +2,21 @@
 require 'rack'
 require 'webrick'
 require 'net/http'
+require 'rackup'
+require 'timeout'
 
 # The code for this is inspired by Capybara's server:
 #   http://github.com/jnicklas/capybara/blob/0.3.9/lib/capybara/server.rb
 class LocalhostServer
   READY_MESSAGE = "Server ready"
+
+  # Fallback to older Rack handler if rackup is not available
+  RACKUP_HANDLER =
+    if defined?(Rackup::Handler)
+      Rackup::Handler::WEBrick
+    else
+      Rack::Handler::WEBrick
+    end
 
   class Identify
     def initialize(app)
@@ -41,20 +51,18 @@ class LocalhostServer
   end
 
   def boot
-    # Use WEBrick since it's part of the ruby standard library and is available on all ruby interpreters.
-    options = { :Port => port }
+    options = { :Port => port, :Host => 'localhost' }
+    # Use WEBrick for tests since it supports all HTTP methods including custom ones like PURGE
+    # Puma is stricter about HTTP methods and rejects custom methods with 501 "method not supported"
+    app = Identify.new(@rack_app)
+
     options.merge!(:AccessLog => [], :Logger => WEBrick::BasicLog.new(StringIO.new)) unless ENV['VERBOSE_SERVER']
-    
-    handler = if defined?(Rackup::Handler)
-      Rackup::Handler::WEBrick
-    else
-      Rack::Handler::WEBrick
-    end
-    handler.run(Identify.new(@rack_app), **options)
+
+    RACKUP_HANDLER.run(app, **options)
   end
 
   def booted?
-    res = ::Net::HTTP.get_response("localhost", '/__identify__', port)
+    res = ::Net::HTTP.get_response("127.0.0.1", '/__identify__', port)
     if res.is_a?(::Net::HTTPSuccess) or res.is_a?(::Net::HTTPRedirection)
       return res.body == READY_MESSAGE
     end
@@ -65,8 +73,7 @@ class LocalhostServer
   def concurrently
     if should_use_subprocess?
       pid = Process.fork do
-        handler = defined?(Rackup::Handler) ? Rackup::Handler::WEBrick : Rack::Handler::WEBrick
-        trap(:INT) { handler.shutdown }
+        trap(:INT) { RACKUP_HANDLER.shutdown }
         yield
         exit # manually exit; otherwise this sub-process will re-run the specs that haven't run yet.
       end
@@ -94,7 +101,7 @@ class LocalhostServer
 
     while true
       return if yield
-      raise TimeoutError.new(error_message) if (Time.now - start_time) > timeout
+      raise Timeout::Error.new(error_message) if (Time.now - start_time) > timeout
       sleep(0.05)
     end
   end
