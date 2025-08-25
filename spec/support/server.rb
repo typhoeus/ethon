@@ -1,8 +1,20 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'sinatra'
+  gem 'rackup'
+  gem 'webrick'
+end
+
 require 'json'
 require 'zlib'
 require 'sinatra/base'
+require 'webrick'
+require 'rackup'
 
 TESTSERVER = Sinatra.new do
   use Rack::RewindableInput::Middleware if defined?(Rack::RewindableInput::Middleware)
@@ -115,3 +127,14 @@ TESTSERVER = Sinatra.new do
     request.env.merge!(:body => request.body.tap {|b| b.rewind }.read).to_json
   end
 end
+
+puts "Starting test server on port 3001..."
+
+options = { 
+  :Port => 3001, 
+  :Host => 'localhost',
+  :AccessLog => [],
+  :Logger => WEBrick::BasicLog.new(StringIO.new)
+}
+
+Rackup::Handler::WEBrick.run(TESTSERVER, **options)
