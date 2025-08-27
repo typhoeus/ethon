@@ -69,7 +69,14 @@ module Ethon
         @debug_callback ||= proc {|handle, type, data, size, udata|
           message = data.read_string(size)
           @debug_info.add type, message
-          print message unless [:data_in, :data_out].include?(type)
+
+          if [:ssl_data_in, :ssl_data_out].include?(type)
+            print "[#{size} bytes data]\n"
+          elsif [:data_in, :data_out].include?(type)
+            # print "} [#{size} bytes data]\n"
+          else
+            print message
+          end
           0
         }
       end
