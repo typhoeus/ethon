@@ -71,10 +71,12 @@ describe Ethon::Easy::Callbacks do
         easy.on_headers.clear
         easy.on_headers { :abort }
       end
-      let(:header_write_callback) { easy.instance_variable_get(:@header_write_callback) }
-
+      let(:body_write_callback) { easy.instance_variable_get(:@body_write_callback) }
+      # on_headers callbacks are expected to be called exactly one time, once all headers are in.
+      # We can't abort exactly on receiving the headers, as we might need to follow redirects,
+      # so we do the next best thing, which is aborting on the first body chunk.
       it "returns -1 to indicate abort to libcurl" do
-        expect(header_write_callback.call(stream, 1, 1, nil)).to eq(-1)
+        expect(body_write_callback.call(stream, 1, 1, nil)).to eq(-1)
       end
     end
   end
