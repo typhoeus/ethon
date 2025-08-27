@@ -45,7 +45,7 @@ describe Ethon::Easy::Http do
 
           it "notifies when headers are ready" do
             headers = []
-            easy.on_headers { |r| headers << r.response_headers }
+            easy.on_headers { |r| headers << r.response_headers.dup }
             easy.http_request(url, action, options)
             easy.perform
             expect(headers).to eq([easy.response_headers])
