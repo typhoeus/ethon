@@ -211,7 +211,7 @@ Enhancements:
 Enhancements:
 
 * Add support for protocols and redir_protocols(
-  [libcurl SASL buffer overflow vulnerability](http://curl.haxx.se/docs/adv_20130206.html)).
+  [libcurl SASL buffer overflow vulnerability](https://curl.se/docs/adv_20130206.html)).
 * Add max_send_speed_large and max_recv_speed_large([Paul Schuegraf](https://github.com/pschuegr), [\#33](https://github.com/typhoeus/ethon/pull/33))
 
 ## 0.5.7

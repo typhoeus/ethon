@@ -31,6 +31,6 @@ require 'ethon/version'
 #
 # @note Please update to the latest libcurl version in order
 #   to benefit from all features and bugfixes.
-#   http://curl.haxx.se/download.html
+#   https://curl.se/download.html
 module Ethon
 end
