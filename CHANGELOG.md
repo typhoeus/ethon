@@ -2,7 +2,24 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.17.0...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...master)
+
+## 0.18.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.17.0...v0.18.0)
+
+* Fixed verbose mode attempting to print binary SSL data by replacing it with a summary.
+  ([Felipe Mesquita](https://github.com/felipedmesquita), [#265](https://github.com/typhoeus/ethon/pull/265))
+* Fixed `on_headers` callbacks being called once per header line instead of once for all headers.
+  ([Felipe Mesquita](https://github.com/felipedmesquita), [#264](https://github.com/typhoeus/ethon/pull/264))
+* Stabilized test server boot on macOS by fixing IPv6/IPv4 localhost resolution and preventing orphaned processes.
+  ([Geremia Taglialatela](https://github.com/tagliala), [#261](https://github.com/typhoeus/ethon/pull/261))
+* Added `logger` to runtime dependencies for Ruby 3.5+ compatibility.
+  ([Geremia Taglialatela](https://github.com/tagliala), [#259](https://github.com/typhoeus/ethon/pull/259))
+* Opted-in for MFA requirement explicitly by adding `rubygems_mfa_required` metadata.
+  ([Geremia Taglialatela](https://github.com/tagliala), [#257](https://github.com/typhoeus/ethon/pull/257))
+* Removed redundant encoding and require_relative checks.
+  ([Geremia Taglialatela](https://github.com/tagliala), [#258](https://github.com/typhoeus/ethon/pull/258))
 
 ## 0.17.0
 
