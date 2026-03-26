@@ -37,7 +37,8 @@ module Ethon
       #
       # @see Ethon::Easy::Options
       def http_request(url, action_name, options = {})
-        fabricate(url, action_name, options).setup(self)
+        @active_action = fabricate(url, action_name, options)
+        @active_action.setup(self)
       end
 
       private

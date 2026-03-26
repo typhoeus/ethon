@@ -60,5 +60,48 @@ describe Ethon::Easy::Http do
         expect(easy.response_body).to include(%{"REQUEST_METHOD":"PURGE"})
       end
     end
+
+    context "when posting multipart form data" do
+      it "retains a reference to the action to prevent GC of form data" do
+        easy.http_request(url, :post, body: { text: "value" })
+        expect(easy.instance_variable_get(:@active_action)).to_not be_nil
+      end
+
+      it "clears the action reference on reset" do
+        easy.http_request(url, :post, body: { text: "value" })
+        easy.reset
+        expect(easy.instance_variable_get(:@active_action)).to be_nil
+      end
+
+      it "does not segfault when GC runs during multipart perform" do
+        # Reproducer for GC use-after-free: without the fix, the Form
+        # object (and its FFI::AutoPointer to curl_formfree) becomes
+        # unreachable after http_request returns. Since easy_perform
+        # releases the GVL (@blocking=true), GC can finalize the Form
+        # mid-request, freeing the curl_httppost chain that libcurl is
+        # reading → SIGSEGV.
+        #
+        # We force GC between http_request and perform to maximize the
+        # chance of triggering the bug. With the fix, @active_action
+        # prevents collection.
+        tmpfile = Tempfile.new(["ethon_test", ".bin"])
+        tmpfile.write("x" * 50_000)
+        tmpfile.rewind
+
+        10.times do
+          e = Ethon::Easy.new
+          e.http_request(url, :post, {
+            body: { file: [File.basename(tmpfile.path), "application/octet-stream", tmpfile.path] },
+            multipart: true
+          })
+          GC.start(full_mark: true, immediate_sweep: true)
+          e.perform
+          expect(e.return_code).to eq(:ok)
+        end
+
+        tmpfile.close
+        tmpfile.unlink
+      end
+    end
   end
 end

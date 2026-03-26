@@ -256,6 +256,7 @@ module Ethon
       @on_progress = nil
       @procs = nil
       @mirror = nil
+      @active_action = nil
       Curl.easy_reset(handle)
       set_callbacks
     end
