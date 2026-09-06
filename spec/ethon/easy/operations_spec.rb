@@ -179,7 +179,7 @@ describe Ethon::Easy::Operations do
         end
       end
 
-      context "when ntlm" do
+      context "when ntlm", :if => (Ethon::Curl.version_info[:features] & Ethon::Curl::VERSION_NTLM) != 0 do
         let(:url) { "http://localhost:3001/auth_ntlm" }
         let(:http_auth) { :ntlm }
 
