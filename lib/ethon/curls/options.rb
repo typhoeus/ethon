@@ -74,7 +74,8 @@ module Ethon
           va_type=:pointer
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
         when :buffer
-          raise NotImplementedError, "Ethon::Curls::Options option #{option} buffer type not implemented."
+          va_type=:pointer
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or (value.is_a?(FFI::Pointer) and value.size >= opthash[option][:opts])
         when :dontuse_object
           raise NotImplementedError, "Ethon::Curls::Options option #{option} type not implemented."
         when :dontuse_callback

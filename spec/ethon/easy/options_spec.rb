@@ -198,6 +198,17 @@ describe Ethon::Easy::Options do
     end
   end
 
+  describe "#errorbuffer=" do
+    it "raises when setting a buffer smaller than CURL_ERROR_SIZE" do
+      expect{ Ethon::Curl.set_option(:errorbuffer, FFI::MemoryPointer.new(:char, 10), easy.handle) }.to raise_error(Ethon::Errors::InvalidValue)
+    end
+
+    it "accepts a large enough buffer" do
+      expect(Ethon::Curl.set_option(:errorbuffer, FFI::MemoryPointer.new(:char, 256), easy.handle)).to eq(:ok)
+      expect(Ethon::Curl.set_option(:errorbuffer, nil, easy.handle)).to eq(:ok)
+    end
+  end
+
   context "when requesting" do
     let(:url) { "localhost:3001" }
     let(:timeout) { nil }
