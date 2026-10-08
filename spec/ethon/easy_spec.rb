@@ -110,6 +110,26 @@ describe Ethon::Easy do
       easy.reset
       expect(easy.on_body).to be_empty
     end
+
+    it "resets errorbuffer" do
+      easy.url = "http://localhost:3009/"
+      easy.errorbuffer = true
+      easy.perform
+      expect(easy.error_message).not_to be_nil
+      easy.reset
+      expect(easy.error_message).to be_nil
+    end
+
+    it "reuses the error buffer when enabled again" do
+      easy.errorbuffer = true
+      buffer = easy.instance_variable_get(:@error_buffer)
+      easy.reset
+      easy.url = "http://localhost:3009/"
+      easy.errorbuffer = true
+      easy.perform
+      expect(easy.instance_variable_get(:@error_buffer)).to be(buffer)
+      expect(easy.error_message).to match(/Failed to connect/)
+    end
   end
 
   describe "#dup" do
@@ -201,6 +221,22 @@ describe Ethon::Easy do
     it "preserves response_headers for original Easy" do
       e.perform
       expect(easy.response_headers).to eq('test_headers')
+    end
+
+    context "when errorbuffer is enabled" do
+      let!(:easy) do
+        easy = Ethon::Easy.new
+        easy.url = "http://localhost:3009/"
+        easy.errorbuffer = true
+        easy
+      end
+
+      it "sets a new error buffer for duplicated Easy" do
+        expect(e.instance_variable_get(:@error_buffer)).not_to be(easy.instance_variable_get(:@error_buffer))
+        e.perform
+        expect(e.error_message).to match(/Failed to connect/)
+        expect(easy.error_message).to be_nil
+      end
     end
   end
 

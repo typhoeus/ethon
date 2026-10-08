@@ -11,7 +11,8 @@ describe Ethon::Easy::Mirror do
       :total_time, :starttransfer_time, :appconnect_time,
       :pretransfer_time, :connect_time, :namelookup_time, :redirect_time,
       :size_upload, :size_download, :speed_upload, :speed_upload,
-      :effective_url, :primary_ip, :redirect_count, :redirect_url, :debug_info
+      :effective_url, :primary_ip, :redirect_count, :redirect_url, :debug_info,
+      :error_message
     ].each do |name|
       it "contains #{name}" do
         expect(described_class::INFORMATIONS_TO_MIRROR).to include(name)

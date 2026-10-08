@@ -209,6 +209,65 @@ describe Ethon::Easy::Options do
     end
   end
 
+  describe "#error_message" do
+    let(:url) { "http://localhost:3001/bad_redirect" }
+
+    before do
+      easy.url = url
+      easy.followlocation = true
+      easy.maxredirs = 1
+    end
+
+    context "when errorbuffer is not enabled" do
+      it "returns nil" do
+        easy.perform
+        expect(easy.return_code).to eq(:too_many_redirects)
+        expect(easy.error_message).to be_nil
+      end
+    end
+
+    context "when errorbuffer is enabled" do
+      before { easy.errorbuffer = true }
+
+      it "returns the detailed error" do
+        easy.perform
+        expect(easy.return_code).to eq(:too_many_redirects)
+        expect(easy.error_message).to eq("Maximum (1) redirects followed")
+        expect(easy.mirror.options[:error_message]).to eq("Maximum (1) redirects followed")
+      end
+
+      it "returns nil when the request succeeds" do
+        easy.url = "http://localhost:3001/"
+        easy.perform
+        expect(easy.return_code).to eq(:ok)
+        expect(easy.error_message).to be_nil
+      end
+
+      it "is cleared between requests" do
+        easy.perform
+        expect(easy.error_message).not_to be_nil
+        easy.url = "http://localhost:3001/"
+        easy.perform
+        expect(easy.error_message).to be_nil
+      end
+
+      it "returns nil once disabled" do
+        easy.perform
+        easy.errorbuffer = false
+        expect(easy.error_message).to be_nil
+      end
+
+      it "works with multi" do
+        easy.url = "http://localhost:3009/"
+        multi = Ethon::Multi.new
+        multi.add(easy)
+        multi.perform
+        expect(easy.return_code).to eq(:couldnt_connect)
+        expect(easy.error_message).to match(/Failed to connect to localhost port 3009/)
+      end
+    end
+  end
+
   context "when requesting" do
     let(:url) { "localhost:3001" }
     let(:timeout) { nil }

@@ -6,7 +6,7 @@ module Ethon
       alias_method :to_hash, :options
 
       INFORMATIONS_TO_MIRROR = Informations::AVAILABLE_INFORMATIONS.keys +
-          [:return_code, :response_headers, :response_body, :debug_info]
+          [:return_code, :response_headers, :response_body, :debug_info, :error_message]
 
       INFORMATIONS_TO_LOG = [:effective_url, :response_code, :return_code, :total_time]
 

@@ -2,6 +2,8 @@
 module Ethon
   module Curl
     class EasyHandle < ::FFI::AutoPointer
+      attr_accessor :error_buffer
+
       def self.release(pointer)
         Curl.easy_cleanup(pointer)
       end
