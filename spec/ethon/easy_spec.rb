@@ -206,5 +206,27 @@ describe Ethon::Easy do
     it "has peer_failed_verification at index 60" do
       expect(easy.extend(Ethon::Curls::Codes).easy_codes[60]).to eq(:peer_failed_verification)
     end
+
+    {
+      :chunk_failed => 88,
+      :no_connection_available => 89,
+      :ssl_pinnedpubkeynotmatch => 90,
+      :ssl_invalidcertstatus => 91,
+      :http2_stream => 92,
+      :recursive_api_call => 93,
+      :auth_error => 94,
+      :http3 => 95,
+      :quic_connect_error => 96,
+      :proxy => 97,
+      :ssl_clientcert => 98,
+      :unrecoverable_poll => 99,
+      :too_large => 100,
+      :ech_required => 101
+    }.each do |code, value|
+      it "maps #{code} to #{value}" do
+        expect(Ethon::Curl::EasyCode[code]).to eq(value)
+        expect(Ethon::Curl::EasyCode[value]).to eq(code)
+      end
+    end
   end
 end
