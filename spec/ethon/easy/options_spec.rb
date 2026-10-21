@@ -34,6 +34,37 @@ describe Ethon::Easy::Options do
     end
   end
 
+  describe "callback signatures" do
+    let(:unsupported_callbacks) do
+      [
+        :ioctlfunction, :seekfunction, :sockoptfunction, :opensocketfunction,
+        :closesocketfunction, :ssl_ctx_function, :conv_to_network_function,
+        :conv_from_network_function, :conv_from_utf8_function,
+        :chunk_bgn_function, :chunk_end_function, :fnmatch_function,
+        :ssh_keyfunction
+      ]
+    end
+
+    it "keeps callbacks with the read/write ABI supported" do
+      supported_callbacks = [:writefunction, :readfunction, :headerfunction, :interleavefunction]
+
+      supported_callbacks.each do |option|
+        expect(Ethon::Curl.easy_options(nil)[option][:type]).to eq(:callback)
+      end
+    end
+
+    it "does not register callbacks with unsupported ABIs" do
+      easy
+      expect(Ethon::Curl).not_to receive(:easy_setopt)
+
+      unsupported_callbacks.each do |option|
+        expect {
+          easy.public_send("#{option}=", proc {})
+        }.to raise_error(NotImplementedError, /#{option} callback type not implemented/)
+      end
+    end
+  end
+
   [
     :accept_encoding, :cainfo, :capath, :connecttimeout, :connecttimeout_ms, :cookie,
     :cookiejar, :cookiefile, :copypostfields, :customrequest, :dns_cache_timeout,
