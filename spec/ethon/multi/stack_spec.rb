@@ -33,6 +33,17 @@ describe Ethon::Multi::Stack do
       it "raises multi add error" do
         expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:bad_easy_handle)
         expect{ multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
+        expect(multi.easy_handles).to_not include(easy)
+      end
+    end
+
+    context "when a callback raises while adding" do
+      it "keeps the easy tracked" do
+        error = RuntimeError.new("callback failed")
+        expect(Ethon::Curl).to receive(:multi_add_handle).and_raise(error)
+
+        expect { multi.add(easy) }.to raise_error(error)
+        expect(multi.easy_handles).to include(easy)
       end
     end
 
@@ -76,6 +87,19 @@ describe Ethon::Multi::Stack do
           :bad_easy_handle
         end
         expect{ multi.delete(easy) }.to raise_error(Ethon::Errors::MultiRemove)
+        expect(multi.easy_handles).to include(easy)
+      end
+    end
+
+    context "when a callback raises while removing" do
+      before { multi.easy_handles << easy }
+
+      it "keeps the easy removed" do
+        error = RuntimeError.new("callback failed")
+        expect(Ethon::Curl).to receive(:multi_remove_handle).and_raise(error)
+
+        expect { multi.delete(easy) }.to raise_error(error)
+        expect(multi.easy_handles).to_not include(easy)
       end
     end
   end
