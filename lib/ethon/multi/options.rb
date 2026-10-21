@@ -64,6 +64,8 @@ module Ethon
       # @return [ void ]
       def socketfunction=(value)
         Curl.set_option(:socketfunction, value_for(value, :string), handle, :multi)
+        retain_callback(:socketfunction, value)
+        value
       end
 
       # Sets timerdata option.
@@ -88,9 +90,19 @@ module Ethon
       # @return [ void ]
       def timerfunction=(value)
         Curl.set_option(:timerfunction, value_for(value, :string), handle, :multi)
+        retain_callback(:timerfunction, value)
+        value
       end
 
       private
+
+      def retain_callback(option, callback)
+        if callback.nil?
+          @procs.delete(option) if @procs
+        else
+          (@procs ||= {})[option] = callback
+        end
+      end
 
       # Return the value to set to multi handle. It is converted with the help
       # of bool_options, enum_options and int_options.

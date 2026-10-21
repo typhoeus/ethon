@@ -5,6 +5,8 @@ module Ethon
     # This module contains the logic and knowledge about the
     # available options on easy.
     module Options
+      CALLBACK_TYPES = [:callback, :debug_callback, :progress_callback].freeze
+
       attr_reader :url
 
       def url=(value)
@@ -32,17 +34,38 @@ module Ethon
       Curl.easy_options(nil).each do |opt, props|
         method_name = "#{opt}=".freeze
         unless method_defined? method_name
-          define_method(method_name) do |value|
-            Curl.set_option(opt, value, handle)
-            value
+          if CALLBACK_TYPES.include?(props[:type])
+            define_method(method_name) do |value|
+              Curl.set_option(opt, value, handle)
+              retain_callback(opt, value)
+              value
+            end
+          else
+            define_method(method_name) do |value|
+              Curl.set_option(opt, value, handle)
+              value
+            end
           end
         end
         next if props[:type] != :callback || method_defined?(opt)
         define_method(opt) do |&block|
-          @procs ||= {}
-          @procs[opt.to_sym] = block
-          Curl.set_option(opt, block, handle)
+          send(method_name, block)
           nil
+        end
+      end
+
+      private
+
+      def initialize_copy(other)
+        super
+        @procs = @procs.dup if @procs
+      end
+
+      def retain_callback(option, callback)
+        if callback.nil?
+          @procs.delete(option) if @procs
+        else
+          (@procs ||= {})[option] = callback
         end
       end
     end

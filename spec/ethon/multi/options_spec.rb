@@ -8,6 +8,25 @@ describe Ethon::Multi::Options do
     expect(Ethon::Curl.multi_options(nil)[:max_total_connections][:opt]).to eq(13)
   end
 
+  describe "callback retention" do
+    [:socketfunction, :timerfunction].each do |name|
+      it "retains #{name}" do
+        callback = proc { :ok }
+
+        multi.public_send("#{name}=", callback)
+
+        expect(multi.instance_variable_get(:@procs)[name]).to be(callback)
+      end
+
+      it "removes #{name} when set to nil" do
+        multi.public_send("#{name}=", proc { :ok })
+
+        multi.public_send("#{name}=", nil)
+
+        expect(multi.instance_variable_get(:@procs)).not_to have_key(name)
+      end
+  end
+
   [
     :maxconnects, :pipelining, :socketdata, :socketfunction,
     :timerdata, :timerfunction, :max_total_connections
