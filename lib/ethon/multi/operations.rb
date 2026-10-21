@@ -199,6 +199,8 @@ module Ethon
       def run
         running_count_pointer = FFI::MemoryPointer.new(:int)
         begin code = trigger(running_count_pointer) end while code == :call_multi_perform
+        raise Errors::MultiPerform.new(code) unless code == :ok
+
         check
       end
 
