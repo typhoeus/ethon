@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'spec_helper'
+require 'tmpdir'
 
 describe Ethon::Multi::Operations do
   let(:multi) { Ethon::Multi.new }
@@ -188,6 +189,38 @@ describe Ethon::Multi::Operations do
 
       it "sets response codes" do
         expect(easies.all?{ |e| e.response_code == 200 }).to be_truthy
+      end
+    end
+
+    context "when libcurl blocks inside curl_multi_perform" do
+      # A file:// read of a FIFO blocks in open() until the writer shows up. A resolver thread stuck
+      # in getaddrinfo blocks curl_multi_perform the same way when libcurl joins it on timeout.
+      it "lets other threads run" do
+        Dir.mktmpdir do |dir|
+          fifo = File.join(dir, "fifo")
+          File.mkfifo(fifo)
+          clock = -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) }
+          last = clock.call
+          max_gap = 0.0
+          heartbeat = Thread.new do
+            loop do
+              now = clock.call
+              max_gap = [max_gap, now - last].max
+              last = now
+              sleep 0.02
+            end
+          end
+          writer = Process.spawn("sh", "-c", "sleep 1; echo ok > #{fifo}")
+
+          easy.url = "file://#{fifo}"
+          multi.add(easy)
+          multi.perform
+
+          Process.wait(writer)
+          heartbeat.kill
+          expect(easy.response_body).to eq("ok\n")
+          expect(max_gap).to be < 0.5
+        end
       end
     end
   end
