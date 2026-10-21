@@ -2,6 +2,20 @@
 require 'spec_helper'
 
 describe Ethon::Curl do
+  describe ".version_info" do
+    it "requests the current version info structure" do
+      version_info = instance_double(Ethon::Curl::VersionInfoData)
+      expect(Ethon::Curl).to receive(:curl_version_info).with(Ethon::Curl::VERSION_NOW).and_return(version_info)
+
+      expect(Ethon::Curl.version_info).to be(version_info)
+    end
+
+    it "uses the native enum size for curl_version" do
+      expect(Ethon::Curl::VersionInfoData.members.first).to eq(:curl_version)
+      expect(Ethon::Curl::VersionInfoData.offset_of(:version)).to eq(FFI.type_size(:pointer))
+    end
+  end
+
   describe ".init" do
     before { Ethon::Curl.send(:class_variable_set, :@@initialized, false) }
 

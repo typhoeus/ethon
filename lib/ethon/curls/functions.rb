@@ -39,7 +39,7 @@ module Ethon
         base.attach_function :multi_socket_action,        :curl_multi_socket_action, [:pointer, :int, :socket_readiness, :pointer], :multi_code
 
         base.attach_function :version,                    :curl_version,             [],                             :string
-        base.attach_function :version_info,               :curl_version_info,        [],                             Curl::VersionInfoData.ptr
+        base.attach_function :curl_version_info,          :curl_version_info,        [:int],                         Curl::VersionInfoData.ptr
 
         base.attach_function :slist_append,               :curl_slist_append,        [:pointer, :string],            :pointer
         base.attach_function :slist_free_all,             :curl_slist_free_all,      [:pointer],                     :void

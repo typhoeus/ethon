@@ -36,7 +36,7 @@ module Ethon
     end
 
     class VersionInfoData < ::FFI::Struct
-      layout :curl_version, :uint8,
+      layout :curl_version, :int,
         :version, :string,
         :version_num, :int,
         :host, :string,
