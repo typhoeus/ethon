@@ -257,6 +257,7 @@ module Ethon
       @procs = nil
       @mirror = nil
       Curl.easy_reset(handle)
+      @multipart_form = nil
       set_callbacks
     end
 

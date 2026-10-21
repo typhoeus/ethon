@@ -81,6 +81,18 @@ describe Ethon::Easy do
       easy.reset
     end
 
+    it "releases the multipart form after resetting the handle" do
+      form = double(:form)
+      easy.instance_variable_set(:@multipart_form, form)
+      expect(Ethon::Curl).to receive(:easy_reset) do
+        expect(easy.instance_variable_get(:@multipart_form)).to be(form)
+      end
+
+      easy.reset
+
+      expect(easy.instance_variable_get(:@multipart_form)).to be_nil
+    end
+
     it "resets on_complete" do
       easy.on_complete { p 1 }
       easy.reset

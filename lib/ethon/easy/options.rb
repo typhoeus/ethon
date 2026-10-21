@@ -31,6 +31,11 @@ module Ethon
         !!@multipart
       end
 
+      def multipart_form=(form)
+        self.httppost = form ? form.first.read_pointer : nil
+        @multipart_form = form
+      end
+
       Curl.easy_options(nil).each do |opt, props|
         method_name = "#{opt}=".freeze
         unless method_defined? method_name
