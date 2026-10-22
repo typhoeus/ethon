@@ -11,7 +11,9 @@ module Ethon
       #
       # @return [ FFI::Pointer ] A pointer to the curl easy handle.
       def handle
-        @handle ||= Curl::EasyHandle.new(Curl.easy_init)
+        handle = @handle ||= Curl::EasyHandle.new(Curl.easy_init)
+        handle.check_pid!
+        handle
       end
 
       # Sets a pointer to the curl easy handle.

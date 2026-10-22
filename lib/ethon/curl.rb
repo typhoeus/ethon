@@ -32,6 +32,7 @@ module Ethon
     @blocking = true
 
     @@initialized = false
+    @@loaded_pid = Process.pid
     @@curl_mutex = Mutex.new
 
     class << self
@@ -60,6 +61,7 @@ module Ethon
       #
       # @raise [ Ethon::Errors::GlobalInit ] If Curl.global_init fails.
       def init
+        check_pid!
         @@curl_mutex.synchronize {
           if not @@initialized
             raise Errors::GlobalInit.new if Curl.global_init(GLOBAL_ALL) != 0
@@ -80,6 +82,7 @@ module Ethon
       # See the description in libcurl of global environment requirements
       # for details of how to use this function.
       def cleanup
+        check_pid!
         @@curl_mutex.synchronize {
           if @@initialized
             Curl.global_cleanup()
@@ -87,6 +90,15 @@ module Ethon
             Ethon.logger.debug("ETHON: Libcurl cleanup") if Ethon.logger
           end
         }
+      end
+
+      def check_pid!
+        return if @@loaded_pid == Process.pid
+
+        raise Errors::ForkSafety.new if @@initialized
+
+        @@loaded_pid = Process.pid
+        @@curl_mutex = Mutex.new
       end
 
     end

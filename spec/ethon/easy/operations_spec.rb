@@ -8,6 +8,56 @@ describe Ethon::Easy::Operations do
     it "returns a pointer" do
       expect(easy.handle).to be_a(FFI::Pointer)
     end
+
+    it "rejects a handle inherited across a fork" do
+      easy.handle
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          easy.perform
+        rescue Exception => e
+          writer.write(Marshal.dump([e.class.name, e.message]))
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+      error_class, message = Marshal.load(reader.read)
+      Process.wait(pid)
+      pid = nil
+
+      expect(error_class).to eq("Ethon::Errors::ForkSafety")
+      expect(message).to include("initialized before a fork")
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "rejects cleanup of a handle inherited across a fork" do
+      easy.handle
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          easy.cleanup
+        rescue Exception => e
+          writer.write(e.class.name)
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("Ethon::Errors::ForkSafety")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
   end
 
 

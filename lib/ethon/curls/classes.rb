@@ -1,28 +1,49 @@
 # frozen_string_literal: true
 module Ethon
   module Curl
-    class EasyHandle < ::FFI::AutoPointer
-      attr_accessor :error_buffer
+    class OwnedPointer < ::FFI::AutoPointer
+      def initialize(pointer)
+        super
+        @pid = Process.pid
+        self.class.owners[pointer.address] = @pid
+      end
+
+      def check_pid!
+        raise Errors::ForkSafety.new if @pid != Process.pid
+      end
+
+      def self.owners
+        @owners ||= {}
+      end
 
       def self.release(pointer)
+        owner_pid = owners.delete(pointer.address)
+        native_release(pointer) if owner_pid == Process.pid
+      end
+    end
+
+    class EasyHandle < OwnedPointer
+      attr_accessor :error_buffer
+
+      def self.native_release(pointer)
         Curl.easy_cleanup(pointer)
       end
     end
 
-    class MultiHandle < ::FFI::AutoPointer
-      def self.release(pointer)
+    class MultiHandle < OwnedPointer
+      def self.native_release(pointer)
         Curl.multi_cleanup(pointer)
       end
     end
 
-    class Slist < ::FFI::AutoPointer
-      def self.release(pointer)
+    class Slist < OwnedPointer
+      def self.native_release(pointer)
         Curl.slist_free_all(pointer)
       end
     end
 
-    class FormData < ::FFI::AutoPointer
-      def self.release(pointer)
+    class FormData < OwnedPointer
+      def self.native_release(pointer)
         Curl.formfree(pointer)
       end
     end

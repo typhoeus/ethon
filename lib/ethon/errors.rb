@@ -9,6 +9,7 @@ require 'ethon/errors/multi_perform'
 require 'ethon/errors/select'
 require 'ethon/errors/invalid_option'
 require 'ethon/errors/invalid_value'
+require 'ethon/errors/fork_safety'
 
 module Ethon
 
