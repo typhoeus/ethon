@@ -118,7 +118,7 @@ describe Ethon::Easy do
     end
 
     it "owns the duplicated handle" do
-      expect(e.handle).to be_a(FFI::AutoPointer)
+      expect(e.handle).to be_a(Ethon::Curl::EasyHandle)
     end
 
     it "raises when libcurl cannot duplicate the handle" do

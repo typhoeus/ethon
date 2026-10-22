@@ -267,7 +267,7 @@ module Ethon
       duplicated_handle = Curl.easy_duphandle(handle)
       raise NoMemoryError, "curl_easy_duphandle failed" if duplicated_handle.null?
 
-      e.handle = FFI::AutoPointer.new(duplicated_handle, Curl.method(:easy_cleanup))
+      e.handle = Curl::EasyHandle.new(duplicated_handle)
       e.instance_variable_set(:@body_write_callback, nil)
       e.instance_variable_set(:@header_write_callback, nil)
       e.instance_variable_set(:@debug_callback, nil)
