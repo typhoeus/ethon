@@ -18,7 +18,7 @@ module Ethon
           :couldnt_resolve_proxy,
           :couldnt_resolve_host,
           :couldnt_connect,
-          :ftp_weird_server_reply,
+          :ftp_weird_server_reply, # CURLE_WEIRD_SERVER_REPLY since 7.51.0
           :remote_access_denied,
           :ftp_accept_failed,
           :ftp_weird_pass_reply,
@@ -44,14 +44,14 @@ module Ethon
           :ftp_couldnt_use_rest,
           :obsolete32,
           :range_error,
-          :http_post_error,
+          :http_post_error, # CURLE_OBSOLETE34 since 7.56.0
           :ssl_connect_error,
           :bad_download_resume,
           :file_couldnt_read_file,
           :ldap_cannot_bind,
           :ldap_search_failed,
           :obsolete40,
-          :function_not_found,
+          :function_not_found, # CURLE_OBSOLETE41 since 7.53.0
           :aborted_by_callback,
           :bad_function_argument,
           :obsolete44,
@@ -59,7 +59,7 @@ module Ethon
           :obsolete46,
           :too_many_redirects ,
           :unknown_option,
-          :telnet_option_syntax ,
+          :telnet_option_syntax, # CURLE_SETOPT_OPTION_SYNTAX since 7.78.0
           :obsolete50,
           :obsolete51,
           :got_nothing,
@@ -72,7 +72,7 @@ module Ethon
           :ssl_cipher,
           :peer_failed_verification,
           :bad_content_encoding,
-          :ldap_invalid_url,
+          :ldap_invalid_url, # CURLE_OBSOLETE62 since 7.82.0
           :filesize_exceeded,
           :use_ssl_failed,
           :send_fail_rewind,
@@ -85,8 +85,8 @@ module Ethon
           :tftp_unknownid,
           :remote_file_exists,
           :tftp_nosuchuser,
-          :conv_failed,
-          :conv_reqd,
+          :conv_failed, # CURLE_OBSOLETE75 since 7.82.0
+          :conv_reqd, # CURLE_OBSOLETE76 since 7.82.0
           :ssl_cacert_badfile,
           :remote_file_not_found,
           :ssh,
@@ -99,6 +99,19 @@ module Ethon
           :rtsp_session_error,
           :ftp_bad_file_list,
           :chunk_failed,
+          :no_connection_available,
+          :ssl_pinnedpubkeynotmatch,
+          :ssl_invalidcertstatus,
+          :http2_stream,
+          :recursive_api_call,
+          :auth_error,
+          :http3,
+          :quic_connect_error,
+          :proxy,
+          :ssl_clientcert,
+          :unrecoverable_poll,
+          :too_large,
+          :ech_required,
           :last
         ]
       end
