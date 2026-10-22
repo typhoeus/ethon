@@ -25,6 +25,7 @@ describe Ethon::Multi::Options do
 
         expect(multi.instance_variable_get(:@procs)).not_to have_key(name)
       end
+    end
   end
 
   [

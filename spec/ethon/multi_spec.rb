@@ -82,6 +82,7 @@ describe Ethon::Multi do
     end
 
     def perform_socket_action_until_complete
+      GC.start
       multi.socket_action # start things off
 
       while multi.ongoing?
