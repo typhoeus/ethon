@@ -35,6 +35,10 @@ module Ethon
     @@curl_mutex = Mutex.new
 
     class << self
+      def version_info
+        curl_version_info(VERSION_NOW)
+      end
+
       # This function sets up the program environment that libcurl needs.
       # Think of it as an extension of the library loader.
       #
