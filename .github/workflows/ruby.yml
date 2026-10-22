@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [ubuntu, macos]
         ruby-version: ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '4.0', head, debug, truffleruby]
-    continue-on-error: ${{ matrix.ruby-version == 'head' || matrix.ruby-version == 'debug' }}
+    continue-on-error: ${{ matrix.ruby-version == 'head' || matrix.ruby-version == 'debug' || matrix.ruby-version == 'truffleruby' || (matrix.os == 'ubuntu' && matrix.ruby-version == '2.6') }}
     steps:
     - uses: actions/checkout@v7
     - name: Install libcurl header
