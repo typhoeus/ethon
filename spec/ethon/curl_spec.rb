@@ -74,4 +74,44 @@ describe Ethon::Curl do
       Process.wait(pid) if pid
     end
   end
+
+  describe ".get_info_slist" do
+    it "copies and frees caller-owned slists" do
+      node = FFI::MemoryPointer.new(Ethon::Curl::SlistNode)
+      data = FFI::MemoryPointer.from_string("value")
+      struct = Ethon::Curl::SlistNode.new(node)
+      struct[:data] = data
+      struct[:next] = nil
+      result = FFI::MemoryPointer.new(:pointer)
+      result.write_pointer(node)
+      allow(FFI::MemoryPointer).to receive(:new).with(:pointer).and_return(result)
+      allow(Ethon::Curl).to receive(:easy_getinfo).and_return(:ok)
+      expect(Ethon::Curl).to receive(:slist_free_all).with(node)
+
+      expect(Ethon::Curl.get_info_slist(:cookielist, FFI::Pointer::NULL)).to eq(["value"])
+    end
+  end
+
+  describe ".get_info_certinfo" do
+    it "copies libcurl-owned certificate lists without freeing them" do
+      node = FFI::MemoryPointer.new(Ethon::Curl::SlistNode)
+      data = FFI::MemoryPointer.from_string("Subject:test")
+      slist = Ethon::Curl::SlistNode.new(node)
+      slist[:data] = data
+      slist[:next] = nil
+      lists = FFI::MemoryPointer.new(:pointer)
+      lists.write_pointer(node)
+      certinfo = FFI::MemoryPointer.new(Ethon::Curl::Certinfo)
+      struct = Ethon::Curl::Certinfo.new(certinfo)
+      struct[:num_of_certs] = 1
+      struct[:certinfo] = lists
+      result = FFI::MemoryPointer.new(:pointer)
+      result.write_pointer(certinfo)
+      allow(FFI::MemoryPointer).to receive(:new).with(:pointer).and_return(result)
+      allow(Ethon::Curl).to receive(:easy_getinfo).and_return(:ok)
+      expect(Ethon::Curl).not_to receive(:slist_free_all)
+
+      expect(Ethon::Curl.get_info_certinfo(:certinfo, FFI::Pointer::NULL)).to eq([["Subject:test"]])
+    end
+  end
 end

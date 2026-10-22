@@ -47,14 +47,14 @@ module Ethon
     end
 
     class SlistNode < ::FFI::Struct
-      layout :data, :string,
+      layout :data, :pointer,
         :next, :pointer
 
       def self.to_a(pointer)
         values = []
         until pointer.null?
           node = new(pointer)
-          values << node[:data]
+          values << node[:data].read_string unless node[:data].null?
           pointer = node[:next]
         end
         values

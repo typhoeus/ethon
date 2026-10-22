@@ -130,4 +130,24 @@ describe Ethon::Easy::Informations do
       expect(easy.speed_download).to be_a(Float)
     end
   end
+
+  describe "#cookielist" do
+    it "returns cookies known by libcurl" do
+      easy.cookielist = "example.com\tFALSE\t/\tFALSE\t0\tname\tvalue"
+
+      expect(easy.cookielist).to include(/name\tvalue/)
+    end
+  end
+
+  describe "#ssl_engines" do
+    it "returns an array" do
+      expect(easy.ssl_engines).to be_a(Array)
+    end
+  end
+
+  describe "#certinfo" do
+    it "returns an empty array when certificate collection was not enabled" do
+      expect(easy.certinfo).to eq([])
+    end
+  end
 end
