@@ -96,6 +96,19 @@ module Ethon
         end
       end
 
+      # Observe libcurl debug messages without replacing Ethon's internal
+      # debug callback. The block receives the native CURL_DEBUGFUNCTION
+      # arguments and is called only when verbose mode is enabled.
+      #
+      # @example Observe debug messages.
+      #   easy.debugfunction { |handle, type, data, size, user_data| }
+      #
+      # @param [ Block ] block The block to execute, or no block to clear it.
+      def debugfunction(&block)
+        @user_debug_callback = block
+        nil
+      end
+
       private
 
       def initialize_copy(other)

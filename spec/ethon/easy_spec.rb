@@ -111,6 +111,14 @@ describe Ethon::Easy do
       expect(easy.on_body).to be_empty
     end
 
+    it "resets the user debug callback" do
+      easy.debugfunction {}
+
+      easy.reset
+
+      expect(easy.instance_variable_get(:@user_debug_callback)).to be_nil
+    end
+
     it "resets errorbuffer" do
       easy.url = "http://localhost:3009/"
       easy.errorbuffer = true
