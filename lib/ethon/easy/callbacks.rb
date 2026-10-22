@@ -37,10 +37,15 @@ module Ethon
       # @return [ Proc ] The callback.
       def body_write_callback
         @body_write_callback ||= proc do |stream, size, num, object|
-          headers_user_callback_result = headers
-          result = body(chunk = stream.read_string(size * num))
-          @response_body << chunk if result == :unyielded
-          (result != :abort && headers_user_callback_result != :abort) ? size * num : -1
+          begin
+            headers_user_callback_result = headers
+            result = body(chunk = stream.read_string(size * num))
+            @response_body << chunk if result == :unyielded
+            (result != :abort && headers_user_callback_result != :abort) ? size * num : -1
+          rescue Exception => e
+            @callback_error ||= e
+            0
+          end
         end
       end
 
@@ -99,6 +104,18 @@ module Ethon
           progress(dltotal, dlnow, ultotal, ulnow)
           0
         }
+      end
+
+      def clear_callback_error
+        @callback_error = nil
+      end
+
+      def raise_callback_error
+        return unless @callback_error
+
+        error = @callback_error
+        @callback_error = nil
+        raise error
       end
 
       # Set the read callback. This callback is used by libcurl to

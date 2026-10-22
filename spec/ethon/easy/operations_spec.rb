@@ -267,5 +267,16 @@ describe Ethon::Easy::Operations do
         expect(easy.perform).to eq(:url_malformat)
       end
     end
+
+    [false, true].each do |verbose|
+      it "raises on_body exceptions when verbose is #{verbose}" do
+        easy.url = "http://localhost:3001/"
+        easy.verbose = verbose
+        error = RuntimeError.new("body callback failed")
+        easy.on_body { raise error }
+
+        expect { easy.perform }.to raise_error(error)
+      end
+    end
   end
 end

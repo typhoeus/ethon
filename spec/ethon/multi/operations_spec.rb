@@ -170,6 +170,14 @@ describe Ethon::Multi::Operations do
         multi.perform
         expect(easy.response_code).to eq(200)
       end
+
+      it "raises callback exceptions with verbose output enabled" do
+        easy.verbose = true
+        error = RuntimeError.new("body callback failed")
+        easy.on_body { raise error }
+
+        expect { multi.perform }.to raise_error(error)
+      end
     end
 
     context "when four easy handles" do
