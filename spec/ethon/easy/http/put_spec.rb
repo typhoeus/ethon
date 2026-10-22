@@ -164,5 +164,49 @@ describe Ethon::Easy::Http::Put do
     end
 
     context "when params and body"
+
+    context "when multipart body" do
+      let(:url) { "http://localhost:3001/file" }
+      let(:file) { File.open(__FILE__) }
+      let(:form) { {:field => "value", :file => file} }
+
+      after { file.close }
+
+      it "retains the multipart form" do
+        put.setup(easy)
+
+        expect(easy.instance_variable_get(:@multipart_form)).to be(put.form)
+      end
+
+      it "uses PUT without upload mode" do
+        expect(easy).to receive(:customrequest=).with("PUT")
+        expect(easy).not_to receive(:upload=)
+
+        put.setup(easy)
+      end
+
+      context "when requesting" do
+        before do
+          put.setup(easy)
+          GC.start
+          easy.perform
+        end
+
+        let(:response) { JSON.parse(easy.response_body) }
+
+        it "submits the field" do
+          expect(response["field"]).to eq("value")
+        end
+
+        it "submits the file" do
+          expect(response["filename"]).to eq("put_spec.rb")
+          expect(response["content"]).to include("when multipart body")
+        end
+
+        it "uses multipart form data" do
+          expect(response["request-content-type"]).to start_with("multipart/form-data")
+        end
+      end
+    end
   end
 end
