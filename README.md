@@ -93,6 +93,30 @@ multi.add(easy)
 multi.perform
 ```
 
+## Thread and fork safety
+
+Ethon can be used from multiple threads, but it does not synchronize access to
+individual handles. Follow [libcurl's thread-safety rules](https://curl.se/libcurl/c/threadsafe.html):
+
+* Separate `Ethon::Easy` and `Ethon::Multi` instances may run concurrently in
+  different threads.
+* Do not use the same `Easy` or `Multi` instance from more than one thread at a
+  time. This includes changing its options while a transfer is running.
+* Callbacks run on the thread performing the transfer. Synchronize any shared
+  application state accessed by a callback.
+* When using threads, set `nosignal: true` unless your libcurl uses a threaded
+  or c-ares resolver. See libcurl's signal guidance for the associated DNS
+  timeout and `SIGPIPE` considerations.
+
+With libcurl older than 7.84.0, create an Ethon handle before starting other
+application threads so libcurl's global initialization happens while the
+process is still single-threaded.
+
+Ethon handles and initialized libcurl state must not be inherited across a
+`fork`. Create all `Easy` and `Multi` instances after worker processes fork, or
+use `fork` followed by `exec`. Ethon raises `Ethon::Errors::ForkSafety` when a
+child process tries to use a handle created by its parent.
+
 ##  LICENSE
 
 (The MIT License)
