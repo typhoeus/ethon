@@ -4,6 +4,36 @@ require 'spec_helper'
 describe Ethon::Easy::Options do
   let(:easy) { Ethon::Easy.new }
 
+  describe "callback retention" do
+    it "retains callbacks assigned through setters" do
+      callback = proc { 0 }
+
+      easy.readfunction = callback
+
+      expect(easy.instance_variable_get(:@procs)[:readfunction]).to be(callback)
+    end
+
+    it "removes callbacks set to nil" do
+      easy.readfunction = proc { 0 }
+
+      easy.readfunction = nil
+
+      expect(easy.instance_variable_get(:@procs)).not_to have_key(:readfunction)
+    end
+
+    it "tracks callbacks independently after duplication" do
+      callback = proc { 0 }
+      replacement = proc { 0 }
+      easy.readfunction = callback
+
+      copy = easy.dup
+      copy.readfunction = replacement
+
+      expect(easy.instance_variable_get(:@procs)[:readfunction]).to be(callback)
+      expect(copy.instance_variable_get(:@procs)[:readfunction]).to be(replacement)
+    end
+  end
+
   [
     :accept_encoding, :cainfo, :capath, :connecttimeout, :connecttimeout_ms, :cookie,
     :cookiejar, :cookiefile, :copypostfields, :customrequest, :dns_cache_timeout,
