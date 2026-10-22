@@ -118,6 +118,7 @@ describe Ethon::Easy do
       expect(easy.error_message).not_to be_nil
       easy.reset
       expect(easy.error_message).to be_nil
+      expect(easy.handle.error_buffer).to be_nil
     end
 
     it "reuses the error buffer when enabled again" do

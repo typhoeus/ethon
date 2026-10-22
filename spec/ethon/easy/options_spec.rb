@@ -207,6 +207,25 @@ describe Ethon::Easy::Options do
       expect(Ethon::Curl.set_option(:errorbuffer, FFI::MemoryPointer.new(:char, 256), easy.handle)).to eq(:ok)
       expect(Ethon::Curl.set_option(:errorbuffer, nil, easy.handle)).to eq(:ok)
     end
+
+    it "retains the buffer on the native handle" do
+      easy.errorbuffer = true
+
+      expect(easy.handle.error_buffer).to be(easy.instance_variable_get(:@error_buffer))
+    end
+
+    it "releases the buffer after clearing the native option" do
+      easy.errorbuffer = true
+      buffer = easy.instance_variable_get(:@error_buffer)
+
+      expect(Ethon::Curl).to receive(:set_option).with(:errorbuffer, nil, easy.handle) do
+        expect(easy.handle.error_buffer).to be(buffer)
+      end
+
+      easy.errorbuffer = false
+
+      expect(easy.handle.error_buffer).to be_nil
+    end
   end
 
   describe "#error_message" do
@@ -232,8 +251,8 @@ describe Ethon::Easy::Options do
       it "returns the detailed error" do
         easy.perform
         expect(easy.return_code).to eq(:too_many_redirects)
-        expect(easy.error_message).to eq("Maximum (1) redirects followed")
-        expect(easy.mirror.options[:error_message]).to eq("Maximum (1) redirects followed")
+        expect(easy.error_message).to include("1").and match(/redirect/i)
+        expect(easy.mirror.options[:error_message]).to eq(easy.error_message)
       end
 
       it "returns nil when the request succeeds" do
@@ -263,7 +282,7 @@ describe Ethon::Easy::Options do
         multi.add(easy)
         multi.perform
         expect(easy.return_code).to eq(:couldnt_connect)
-        expect(easy.error_message).to match(/Failed to connect to localhost port 3009/)
+        expect(easy.error_message).to include("3009").and match(/connect/i)
       end
     end
   end

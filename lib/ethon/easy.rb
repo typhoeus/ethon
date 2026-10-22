@@ -256,8 +256,9 @@ module Ethon
       @on_progress = nil
       @procs = nil
       @mirror = nil
-      @error_buffer_enabled = nil
       Curl.easy_reset(handle)
+      handle.error_buffer = nil
+      @error_buffer_enabled = nil
       @multipart_form = nil
       set_callbacks
     end
