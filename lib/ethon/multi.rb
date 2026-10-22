@@ -25,13 +25,13 @@ module Ethon
     #  curl_socket_callback's forth argument, the userp pointer. This is not
     #  used by libcurl but only passed-thru as-is. Set the callback pointer
     #  with CURLMOPT_SOCKETFUNCTION.
-    # @option options :pipelining [Boolean]
-    #  Pass a long set to 1 to enable or 0 to disable. Enabling pipelining
-    #  on a multi handle will make it attempt to perform HTTP Pipelining as
-    #  far as possible for transfers using this handle. This means that if
-    #  you add a second request that can use an already existing connection,
-    #  the second request will be "piped" on the same connection rather than
-    #  being executed in parallel. (Added in 7.16.0)
+    # @option options :pipelining [Integer]
+    #  Pass a bitmask: 0 for CURLPIPE_NOTHING, 1 for CURLPIPE_HTTP1, or 2 for
+    #  CURLPIPE_MULTIPLEX. CURLPIPE_HTTP1 is deprecated and has no effect
+    #  since libcurl 7.62.0. CURLPIPE_MULTIPLEX allows libcurl to multiplex a
+    #  new transfer over an existing HTTP/2 or HTTP/3 connection when
+    #  possible, and is the default since libcurl 7.62.0. (Added in 7.16.0;
+    #  multiplex support added in 7.43.0.)
     # @option options :timerfunction [Proc]
     #  Pass a pointer to a function matching the curl_multi_timer_callback
     #  prototype. This function will then be called when the timeout value
