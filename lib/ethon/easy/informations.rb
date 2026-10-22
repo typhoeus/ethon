@@ -3,7 +3,7 @@ module Ethon
   class Easy
 
     # This module contains the methods to return informations
-    # from the easy handle. See http://curl.haxx.se/libcurl/c/curl_easy_getinfo.html
+    # from the easy handle. See https://curl.se/libcurl/c/curl_easy_getinfo.html
     # for more information.
     module Informations
 
