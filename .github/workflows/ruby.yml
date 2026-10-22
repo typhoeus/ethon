@@ -64,6 +64,6 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Verify latest curl
       if: ${{ matrix.latest_curl }}
-      run: bundle exec ruby -Ilib -e 'require "ethon"; abort Ethon::Curl.version unless Ethon::Curl.version.start_with?(ENV.fetch("CURL_VERSION"))'
+      run: bundle exec ruby -Ilib -e 'require "ethon"; abort Ethon::Curl.version unless Ethon::Curl.version.start_with?("libcurl/#{ENV.fetch("CURL_VERSION")}")'
     - name: Run tests
       run: bundle exec rake
