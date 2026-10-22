@@ -54,7 +54,12 @@ module Ethon
       #
       # @return [ String ] The composed header.
       def compose_header(key, value)
-        Util.escape_zero_byte("#{key}: #{value}")
+        header = if key.to_s.end_with?(';') && value.to_s.empty?
+          key.to_s
+        else
+          "#{key}: #{value}"
+        end
+        Util.escape_zero_byte(header)
       end
     end
   end
