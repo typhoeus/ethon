@@ -279,7 +279,29 @@ describe Ethon::Multi::Operations do
   end
 
   describe "#run" do
-    it { skip("untested") }
+    it "checks for completed requests" do
+      expect(multi).to receive(:trigger).and_return(:ok)
+      expect(multi).to receive(:check)
+
+      multi.send(:run)
+    end
+
+    it "retries while libcurl requests another perform" do
+      expect(multi).to receive(:trigger).twice.and_return(:call_multi_perform, :ok)
+      expect(multi).to receive(:check).once
+
+      multi.send(:run)
+    end
+
+    it "raises on fatal errors" do
+      expect(multi).to receive(:trigger).and_return(:internal_error)
+      expect(multi).not_to receive(:check)
+
+      expect { multi.send(:run) }.to raise_error(
+        Ethon::Errors::MultiPerform,
+        /internal_error/
+      )
+    end
   end
 
   describe "#trigger" do
