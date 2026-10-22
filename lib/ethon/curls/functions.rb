@@ -13,7 +13,7 @@ module Ethon
         base.attach_function :free,                       :curl_free,                [:pointer],                     :void
 
         base.attach_function :easy_init,                  :curl_easy_init,           [],                             :pointer
-        base.attach_function :easy_cleanup,               :curl_easy_cleanup,        [:pointer],                     :void
+        base.attach_function :easy_cleanup,               :curl_easy_cleanup,        [:pointer],                     :void, blocking: true
         base.attach_function :easy_getinfo,               :curl_easy_getinfo,        [:pointer, :info, :varargs],    :easy_code
         base.attach_function :easy_setopt,                :curl_easy_setopt,         [:pointer, :easy_option, :varargs], :easy_code
         base.instance_variable_set(:@blocking, true)
@@ -27,16 +27,16 @@ module Ethon
         base.attach_function :formfree,                   :curl_formfree,            [:pointer],                     :void
 
         base.attach_function :multi_init,                 :curl_multi_init,          [],                             :pointer
-        base.attach_function :multi_cleanup,              :curl_multi_cleanup,       [:pointer],                     :void
+        base.attach_function :multi_cleanup,              :curl_multi_cleanup,       [:pointer],                     :void, blocking: true
         base.attach_function :multi_add_handle,           :curl_multi_add_handle,    [:pointer, :pointer],           :multi_code
-        base.attach_function :multi_remove_handle,        :curl_multi_remove_handle, [:pointer, :pointer],           :multi_code
+        base.attach_function :multi_remove_handle,        :curl_multi_remove_handle, [:pointer, :pointer],           :multi_code, blocking: true
         base.attach_function :multi_info_read,            :curl_multi_info_read,     [:pointer, :pointer],           Curl::Msg.ptr
-        base.attach_function :multi_perform,              :curl_multi_perform,       [:pointer, :pointer],           :multi_code
+        base.attach_function :multi_perform,              :curl_multi_perform,       [:pointer, :pointer],           :multi_code, blocking: true
         base.attach_function :multi_timeout,              :curl_multi_timeout,       [:pointer, :pointer],           :multi_code
         base.attach_function :multi_fdset,                :curl_multi_fdset,         [:pointer, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, :pointer], :multi_code
         base.attach_function :multi_strerror,             :curl_multi_strerror,      [:int],                         :string
         base.attach_function :multi_setopt,               :curl_multi_setopt,        [:pointer, :multi_option, :varargs], :multi_code
-        base.attach_function :multi_socket_action,        :curl_multi_socket_action, [:pointer, :int, :socket_readiness, :pointer], :multi_code
+        base.attach_function :multi_socket_action,        :curl_multi_socket_action, [:pointer, :int, :socket_readiness, :pointer], :multi_code, blocking: true
 
         base.attach_function :version,                    :curl_version,             [],                             :string
         base.attach_function :curl_version_info,          :curl_version_info,        [:int],                         Curl::VersionInfoData.ptr
