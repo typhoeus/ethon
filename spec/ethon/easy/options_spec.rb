@@ -134,6 +134,33 @@ describe Ethon::Easy::Options do
     end
   end
 
+  describe "#multipart_form=" do
+    it "retains the form after installing its pointer" do
+      form = double(:form, :first => double(:first, :read_pointer => FFI::Pointer::NULL))
+
+      expect(easy).to receive(:httppost=) do
+        expect(easy.instance_variable_get(:@multipart_form)).to be_nil
+      end
+
+      easy.multipart_form = form
+
+      expect(easy.instance_variable_get(:@multipart_form)).to be(form)
+    end
+
+    it "clears the native pointer before releasing the form" do
+      form = double(:form)
+      easy.instance_variable_set(:@multipart_form, form)
+
+      expect(easy).to receive(:httppost=).with(nil) do
+        expect(easy.instance_variable_get(:@multipart_form)).to be(form)
+      end
+
+      easy.multipart_form = nil
+
+      expect(easy.instance_variable_get(:@multipart_form)).to be_nil
+    end
+  end
+
   describe "#httppost=" do
     it "raises unless given a FFI::Pointer" do
       expect{ easy.httppost = 1 }.to raise_error(Ethon::Errors::InvalidValue)

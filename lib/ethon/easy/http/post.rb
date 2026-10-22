@@ -16,6 +16,7 @@ module Ethon
         def setup(easy)
           super
           if form.empty?
+            easy.multipart_form = nil
             easy.postfieldsize = 0
             easy.copypostfields = ""
           end
