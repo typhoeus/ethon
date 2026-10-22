@@ -49,6 +49,19 @@ describe Ethon::Easy::DebugInfo do
       it "saves debug text" do
         expect(easy.debug_info.text.length).to be > 0
       end
+
+      it "invokes a user debug callback with native arguments" do
+        arguments = []
+        easy.debugfunction { |*args| arguments << args }
+
+        easy.perform
+
+        expect(arguments).not_to be_empty
+        expect(arguments.first.length).to eq(5)
+        expect(arguments.first[1]).to be_a(Symbol)
+        expect(arguments.first[2]).to be_a(FFI::Pointer)
+        expect(easy.debug_info.to_a).not_to be_empty
+      end
     end
   end
 end

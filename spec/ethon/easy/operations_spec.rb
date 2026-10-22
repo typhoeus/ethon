@@ -328,5 +328,14 @@ describe Ethon::Easy::Operations do
         expect { easy.perform }.to raise_error(error)
       end
     end
+
+    it "raises debug callback exceptions" do
+      easy.url = "http://localhost:3001/"
+      easy.verbose = true
+      error = RuntimeError.new("debug callback failed")
+      easy.debugfunction { raise error }
+
+      expect { easy.perform }.to raise_error(error)
+    end
   end
 end

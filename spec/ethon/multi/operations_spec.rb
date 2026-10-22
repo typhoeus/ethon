@@ -202,6 +202,14 @@ describe Ethon::Multi::Operations do
 
         expect { multi.perform }.to raise_error(error)
       end
+
+      it "raises debug callback exceptions" do
+        easy.verbose = true
+        error = RuntimeError.new("debug callback failed")
+        easy.debugfunction { raise error }
+
+        expect { multi.perform }.to raise_error(error)
+      end
     end
 
     context "when four easy handles" do

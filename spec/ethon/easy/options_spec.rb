@@ -34,6 +34,38 @@ describe Ethon::Easy::Options do
     end
   end
 
+  describe "#debugfunction" do
+    it "stores the callback without replacing Ethon's native callback" do
+      callback = proc {}
+      easy
+
+      expect(Ethon::Curl).not_to receive(:set_option)
+      easy.debugfunction(&callback)
+
+      expect(easy.instance_variable_get(:@user_debug_callback)).to be(callback)
+    end
+
+    it "clears the callback when no block is given" do
+      easy.debugfunction {}
+
+      easy.debugfunction
+
+      expect(easy.instance_variable_get(:@user_debug_callback)).to be_nil
+    end
+
+    it "tracks callbacks independently after duplication" do
+      original = proc {}
+      replacement = proc {}
+      easy.debugfunction(&original)
+
+      copy = easy.dup
+      copy.debugfunction(&replacement)
+
+      expect(easy.instance_variable_get(:@user_debug_callback)).to be(original)
+      expect(copy.instance_variable_get(:@user_debug_callback)).to be(replacement)
+    end
+  end
+
   describe "callback signatures" do
     let(:unsupported_callbacks) do
       [
