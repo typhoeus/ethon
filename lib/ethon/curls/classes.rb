@@ -83,11 +83,11 @@ module Ethon
         FD_SETSIZE = begin
           # Allow to override the (new) default cap
           if ENV['ETHON_FD_SIZE']
-            ENV['ETHON_FD_SIZE']
+            ENV['ETHON_FD_SIZE'].to_i
 
           # auto-detect ulimit, but cap at 2^16
           else
-            [::Ethon::Libc.getdtablesize, 65_536].min
+            [::Ethon::Libc.open_max, 65_536].min
           end
         end
 
