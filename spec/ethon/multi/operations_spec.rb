@@ -6,6 +6,10 @@ describe Ethon::Multi::Operations do
   let(:easy) { Ethon::Easy.new }
   let(:pointer) { FFI::MemoryPointer.new(:int) }
 
+  after do
+    multi.easy_handles.grep(Ethon::Easy).each { |handle| multi.delete(handle) }
+  end
+
   describe "#handle" do
     it "returns a pointer" do
       expect(multi.handle).to be_a(FFI::Pointer)

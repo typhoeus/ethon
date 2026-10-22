@@ -8,6 +8,7 @@ describe Ethon::Multi::Stack do
   describe "#add" do
     context "when easy already added" do
       before { multi.add(easy) }
+      after { multi.delete(easy) }
 
       it "returns nil" do
         expect(multi.add(easy)).to be_nil
@@ -18,11 +19,13 @@ describe Ethon::Multi::Stack do
       it "adds easy to multi" do
         expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:ok)
         multi.add(easy)
+        multi.easy_handles.delete(easy)
       end
 
       it "adds easy to easy_handles" do
         multi.add(easy)
         expect(multi.easy_handles).to include(easy)
+        multi.delete(easy)
       end
     end
 
@@ -40,7 +43,7 @@ describe Ethon::Multi::Stack do
       before { multi.add(easy) }
 
       it "deletes easy from multi" do
-        expect(Ethon::Curl).to receive(:multi_remove_handle).and_return(:ok)
+        expect(Ethon::Curl).to receive(:multi_remove_handle).and_call_original
         multi.delete(easy)
       end
 
@@ -54,11 +57,13 @@ describe Ethon::Multi::Stack do
       it "does nothing" do
         expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:ok)
         multi.add(easy)
+        multi.easy_handles.delete(easy)
       end
 
       it "adds easy to easy_handles" do
         multi.add(easy)
         expect(multi.easy_handles).to include(easy)
+        multi.delete(easy)
       end
     end
 
@@ -66,7 +71,10 @@ describe Ethon::Multi::Stack do
       before { multi.add(easy) }
 
       it "raises multi remove error" do
-        expect(Ethon::Curl).to receive(:multi_remove_handle).and_return(:bad_easy_handle)
+        expect(Ethon::Curl).to receive(:multi_remove_handle).and_wrap_original do |method, *args|
+          method.call(*args)
+          :bad_easy_handle
+        end
         expect{ multi.delete(easy) }.to raise_error(Ethon::Errors::MultiRemove)
       end
     end
