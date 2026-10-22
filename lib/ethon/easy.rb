@@ -259,7 +259,7 @@ module Ethon
       @user_debug_callback = nil
       @procs = nil
       @mirror = nil
-      close_response_body_io
+      clear_response_body_io
       Curl.easy_reset(handle)
       handle.error_buffer = nil
       @error_buffer_enabled = nil
@@ -281,6 +281,7 @@ module Ethon
       e.instance_variable_set(:@progress_callback, nil)
       e.instance_variable_set(:@user_debug_callback, @user_debug_callback)
       e.instance_variable_set(:@response_body_io, nil)
+      e.instance_variable_set(:@response_body_path, nil)
       e.instance_variable_set(:@owns_response_body_io, false)
       e.set_callbacks
       # curl_easy_duphandle copies the error buffer pointer, give the copy its own

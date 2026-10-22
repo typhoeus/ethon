@@ -40,7 +40,7 @@ module Ethon
           begin
             headers_user_callback_result = headers
             result = body(chunk = stream.read_string(size * num))
-            if @response_body_io
+            if @response_body_io && result != :abort && headers_user_callback_result != :abort
               @response_body_io.write(chunk)
             elsif result == :unyielded
               @response_body << chunk
@@ -125,6 +125,8 @@ module Ethon
         error = @callback_error
         @callback_error = nil
         raise error
+      ensure
+        finish_response_body_io if error
       end
 
       # Set the read callback. This callback is used by libcurl to

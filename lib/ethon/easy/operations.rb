@@ -29,6 +29,7 @@ module Ethon
       #
       # @return [ Integer ] The return code.
       def perform
+        prepare_response_body_io
         clear_callback_error
         @return_code = Curl.easy_perform(handle)
         raise_callback_error
@@ -48,7 +49,7 @@ module Ethon
       #
       # @return the result of the free which is nil
       def cleanup
-        close_response_body_io
+        clear_response_body_io
         handle.free
       end
 

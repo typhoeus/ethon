@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'spec_helper'
+require 'stringio'
 require 'tmpdir'
 
 describe Ethon::Multi::Operations do
@@ -209,6 +210,16 @@ describe Ethon::Multi::Operations do
         easy.debugfunction { raise error }
 
         expect { multi.perform }.to raise_error(error)
+      end
+
+      it "streams the response to a caller-owned IO" do
+        io = StringIO.new
+        easy.file = io
+
+        multi.perform
+
+        expect(io.string).to include('"REQUEST_METHOD":"GET"')
+        expect(io).not_to be_closed
       end
     end
 
