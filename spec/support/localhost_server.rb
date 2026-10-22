@@ -2,7 +2,7 @@
 require 'rack'
 require 'webrick'
 require 'net/http'
-require 'rackup'
+require 'rackup' if Gem.ruby_version >= Gem::Version.new("3.0.0")
 require 'timeout'
 
 # The code for this is inspired by Capybara's server:
