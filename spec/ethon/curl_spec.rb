@@ -49,4 +49,29 @@ describe Ethon::Curl do
       end
     end
   end
+
+  describe ".check_pid!" do
+    it "resets process state after a fork when libcurl is not initialized" do
+      Ethon::Curl.send(:class_variable_set, :@@initialized, false)
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Curl.check_pid!
+          writer.write("ok")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("ok")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+  end
 end

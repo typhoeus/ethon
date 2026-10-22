@@ -14,7 +14,9 @@ module Ethon
       #
       # @return [ FFI::Pointer ] The multi handle.
       def handle
-        @handle ||= Curl::MultiHandle.new(Curl.multi_init)
+        handle = @handle ||= Curl::MultiHandle.new(Curl.multi_init)
+        handle.check_pid!
+        handle
       end
 
       # Initialize variables.
