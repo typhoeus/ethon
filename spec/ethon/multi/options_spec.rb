@@ -87,6 +87,10 @@ describe Ethon::Multi::Options do
           end
         }.to raise_error(ArgumentError)
         expect { multi.delete(easy) }.to raise_error(ArgumentError)
+      ensure
+        multi.socketfunction = proc { 0 }
+        Ethon::Curl.multi_remove_handle(multi.handle, easy.handle)
+        multi.easy_handles.delete(easy)
       end
     end
 
@@ -133,6 +137,10 @@ describe Ethon::Multi::Options do
         easy = Ethon::Easy.new
         easy.url = "http://localhost:3001/?delay=1"
         expect { multi.add(easy) }.to raise_error(ArgumentError)
+      ensure
+        multi.timerfunction = proc { 0 }
+        Ethon::Curl.multi_remove_handle(multi.handle, easy.handle)
+        multi.easy_handles.delete(easy)
       end
     end
   end
