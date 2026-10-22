@@ -1,6 +1,30 @@
 # frozen_string_literal: true
 module Ethon
   module Curl
+    class EasyHandle < ::FFI::AutoPointer
+      def self.release(pointer)
+        Curl.easy_cleanup(pointer)
+      end
+    end
+
+    class MultiHandle < ::FFI::AutoPointer
+      def self.release(pointer)
+        Curl.multi_cleanup(pointer)
+      end
+    end
+
+    class Slist < ::FFI::AutoPointer
+      def self.release(pointer)
+        Curl.slist_free_all(pointer)
+      end
+    end
+
+    class FormData < ::FFI::AutoPointer
+      def self.release(pointer)
+        Curl.formfree(pointer)
+      end
+    end
+
     # :nodoc:
     class MsgData < ::FFI::Union
       layout :whatever, :pointer, :code, :easy_code

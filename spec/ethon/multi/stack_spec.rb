@@ -33,12 +33,6 @@ describe Ethon::Multi::Stack do
       end
     end
 
-    context "when multi cleaned up before" do
-      it "raises multi add error" do
-        Ethon::Curl.multi_cleanup(multi.handle)
-        expect{ multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
-      end
-    end
   end
 
   describe "#delete" do

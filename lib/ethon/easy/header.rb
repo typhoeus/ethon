@@ -29,7 +29,7 @@ module Ethon
         end
         Curl.set_option(:httpheader, header_list, handle)
 
-        @header_list = header_list && FFI::AutoPointer.new(header_list, Curl.method(:slist_free_all))
+        @header_list = header_list && Curl::Slist.new(header_list)
       end
 
       # Return header_list.

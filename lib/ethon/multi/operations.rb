@@ -14,7 +14,7 @@ module Ethon
       #
       # @return [ FFI::Pointer ] The multi handle.
       def handle
-        @handle ||= FFI::AutoPointer.new(Curl.multi_init, Curl.method(:multi_cleanup))
+        @handle ||= Curl::MultiHandle.new(Curl.multi_init)
       end
 
       # Initialize variables.
