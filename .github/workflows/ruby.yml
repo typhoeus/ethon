@@ -16,51 +16,54 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}-latest
+    env:
+      BUNDLE_WITHOUT: perf
+      CURL_VERSION: 8.23.0
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos]
-        ruby-version: ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '4.0', head, debug, truffleruby]
         include:
-        - os: ubuntu
-          ruby-version: head
-          allowed-failure: true
-        - os: macos
-          ruby-version: head
-          allowed-failure: true
-        - os: ubuntu
-          ruby-version: debug
-          allowed-failure: true
-        - os: macos
-          ruby-version: debug
-          allowed-failure: true
-        - os: ubuntu
-          ruby-version: truffleruby
-          allowed-failure: true
-        - os: macos
-          ruby-version: truffleruby
-          allowed-failure: true
+        - { os: ubuntu, ruby-version: '2.6' }
+        - { os: ubuntu, ruby-version: '2.7' }
+        - { os: ubuntu, ruby-version: '3.0' }
+        - { os: ubuntu, ruby-version: '3.1' }
+        - { os: ubuntu, ruby-version: '3.2' }
+        - { os: ubuntu, ruby-version: '3.3' }
+        - { os: ubuntu, ruby-version: '3.4' }
+        - { os: ubuntu, ruby-version: '4.0', latest_curl: true }
+        - { os: macos, ruby-version: '2.6' }
+        - { os: macos, ruby-version: '3.2' }
+        - { os: macos, ruby-version: '4.0' }
     steps:
     - uses: actions/checkout@v7
-    - name: Install libcurl header
+    - name: Build latest curl
+      if: ${{ matrix.latest_curl }}
       run: |
-        if ${{ matrix.os == 'macos' }}
-        then
-          brew install curl
-        else
-          sudo apt update && sudo apt install -y --no-install-recommends libcurl4-openssl-dev
-        fi
+        curl --fail --location --output curl.tar.xz "https://curl.se/download/curl-${CURL_VERSION}.tar.xz"
+        tar --extract --file curl.tar.xz
+        mkdir curl-build
+        cd curl-build
+        "../curl-${CURL_VERSION}/configure" \
+          --prefix="${RUNNER_TEMP}/curl" \
+          --disable-static \
+          --enable-shared \
+          --disable-ldap \
+          --without-brotli \
+          --without-libidn2 \
+          --without-libpsl \
+          --without-libssh2 \
+          --without-zstd \
+          --with-openssl
+        make --jobs="$(nproc)"
+        make install
+        printf 'ETHON_CURL_LIBS=%s/curl/lib/libcurl.so\n' "${RUNNER_TEMP}" >> "${GITHUB_ENV}"
     - name: Set up Ruby
-      id: setup-ruby
-      continue-on-error: ${{ matrix.allowed-failure || false }}
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Verify latest curl
+      if: ${{ matrix.latest_curl }}
+      run: bundle exec ruby -Ilib -e 'require "ethon"; abort Ethon::Curl.version unless Ethon::Curl.version.start_with?("libcurl/#{ENV.fetch("CURL_VERSION")}")'
     - name: Run tests
-      id: tests
-      continue-on-error: ${{ matrix.allowed-failure || false }}
       run: bundle exec rake
-    - name: Report allowed failure
-      if: ${{ always() && matrix.allowed-failure && (steps.setup-ruby.outcome == 'failure' || steps.tests.outcome == 'failure') }}
-      run: printf '::warning::Allowed failure on %s Ruby %s\n' '${{ matrix.os }}' '${{ matrix.ruby-version }}'
