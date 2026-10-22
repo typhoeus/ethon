@@ -47,6 +47,22 @@ describe Ethon::Easy::Header do
           expect(easy.response_body).to include('"HTTP_USER_AGENT":"Ethon"')
         end
       end
+
+      context "when removing a default header" do
+        let(:headers) { { 'Accept' => '' } }
+
+        it "does not send the header" do
+          expect(easy.response_body).not_to include('"HTTP_ACCEPT"')
+        end
+      end
+
+      context "when sending an empty header" do
+        let(:headers) { { 'X-Empty;' => '' } }
+
+        it "sends the header with an empty value" do
+          expect(easy.response_body).to include('"HTTP_X_EMPTY":""')
+        end
+      end
     end
   end
 
@@ -58,6 +74,16 @@ describe Ethon::Easy::Header do
     context "when value is a symbol" do
       it "works" do
         expect{ easy.compose_header('a', :b) }.to_not raise_error
+      end
+    end
+
+    context "when value is empty" do
+      it "composes a header that removes libcurl's default" do
+        expect(easy.compose_header('Accept', '')).to eq('Accept: ')
+      end
+
+      it "composes a header that forces an empty value" do
+        expect(easy.compose_header('X-Empty;', '')).to eq('X-Empty;')
       end
     end
   end
