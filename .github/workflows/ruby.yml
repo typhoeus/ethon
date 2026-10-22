@@ -15,6 +15,7 @@ on:
 
 jobs:
   test:
+    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }})
     runs-on: ${{ matrix.os }}-latest
     env:
       BUNDLE_WITHOUT: perf
