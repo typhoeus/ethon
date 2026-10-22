@@ -117,6 +117,16 @@ describe Ethon::Easy do
       expect(e.handle).not_to eq(easy.handle)
     end
 
+    it "owns the duplicated handle" do
+      expect(e.handle).to be_a(Ethon::Curl::EasyHandle)
+    end
+
+    it "raises when libcurl cannot duplicate the handle" do
+      allow(Ethon::Curl).to receive(:easy_duphandle).and_return(FFI::Pointer::NULL)
+
+      expect { easy.dup }.to raise_error(NoMemoryError, "curl_easy_duphandle failed")
+    end
+
     it "preserves url" do
       expect(e.url).to eq(easy.url)
     end
