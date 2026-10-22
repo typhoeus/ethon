@@ -26,9 +26,14 @@ module Ethon
       def add(easy)
         return nil if easy_handles.include?(easy)
 
-        code = Curl.multi_add_handle(handle, easy.handle)
-        raise Errors::MultiAdd.new(code, easy) unless code == :ok
         easy_handles << easy
+        code = Curl.multi_add_handle(handle, easy.handle)
+        unless code == :ok
+          easy_handles.delete(easy)
+          raise Errors::MultiAdd.new(code, easy)
+        end
+
+        easy_handles
       end
 
       # Delete an easy from stack.
@@ -39,9 +44,13 @@ module Ethon
       #
       # @raise [ Ethon::Errors::MultiRemove ] If removing an easy failed.
       def delete(easy)
-        if easy_handles.delete(easy)
+        if (index = easy_handles.index(easy))
+          easy_handles.delete_at(index)
           code = Curl.multi_remove_handle(handle, easy.handle)
-          raise Errors::MultiRemove.new(code, handle) unless code == :ok
+          unless code == :ok
+            easy_handles.insert(index, easy)
+            raise Errors::MultiRemove.new(code, easy)
+          end
         end
       end
     end
