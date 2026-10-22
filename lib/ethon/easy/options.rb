@@ -36,6 +36,43 @@ module Ethon
         @multipart_form = form
       end
 
+      # Enables or disables libcurl's error buffer (CURLOPT_ERRORBUFFER),
+      # which holds a more detailed error description than #return_message.
+      # Read it with #error_message.
+      #
+      # @example Enable the error buffer.
+      #   easy.errorbuffer = true
+      #
+      # @param [ Boolean ] value True to enable, false to disable.
+      #
+      # @return [ Boolean ] The value.
+      def errorbuffer=(value)
+        if value
+          @error_buffer ||= FFI::MemoryPointer.new(:char, Curl.easy_options(nil)[:errorbuffer][:opts])
+          @error_buffer.put_char(0, 0)
+          Curl.set_option(:errorbuffer, @error_buffer, handle)
+          handle.error_buffer = @error_buffer
+        else
+          Curl.set_option(:errorbuffer, nil, handle)
+          handle.error_buffer = nil
+        end
+        @error_buffer_enabled = !!value
+        value
+      end
+
+      # Returns the error message libcurl stored in the error buffer during
+      # the last transfer, or nil if it is empty or #errorbuffer= isn't enabled.
+      #
+      # @example Get the error message.
+      #   easy.error_message
+      #
+      # @return [ String, nil ] The error message.
+      def error_message
+        return unless @error_buffer_enabled
+        message = @error_buffer.read_string
+        message unless message.empty?
+      end
+
       Curl.easy_options(nil).each do |opt, props|
         method_name = "#{opt}=".freeze
         unless method_defined? method_name

@@ -257,6 +257,8 @@ module Ethon
       @procs = nil
       @mirror = nil
       Curl.easy_reset(handle)
+      handle.error_buffer = nil
+      @error_buffer_enabled = nil
       @multipart_form = nil
       set_callbacks
     end
@@ -274,6 +276,9 @@ module Ethon
       e.instance_variable_set(:@debug_callback, nil)
       e.instance_variable_set(:@progress_callback, nil)
       e.set_callbacks
+      # curl_easy_duphandle copies the error buffer pointer, give the copy its own
+      e.instance_variable_set(:@error_buffer, nil)
+      e.errorbuffer = true if @error_buffer_enabled
       e
     end
     # Url escapes the value.
