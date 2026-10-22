@@ -24,8 +24,8 @@ module Ethon
       def headers=(headers)
         headers ||= {}
         header_list = nil
-        headers.each do |k, v|
-          header_list = Curl.slist_append(header_list, compose_header(k,v))
+        headers.each do |key, value|
+          header_list = Curl.slist_append(header_list, compose_header(key, value))
         end
         Curl.set_option(:httpheader, header_list, handle)
 

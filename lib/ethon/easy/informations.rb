@@ -95,8 +95,18 @@ module Ethon
         :speed_download => :double
       }
 
+      LIST_INFORMATIONS = [:ssl_engines, :cookielist].freeze
+
       AVAILABLE_INFORMATIONS.each do |name, type|
         eval %Q|def #{name}; Curl.send(:get_info_#{type}, :#{name}, handle); end|
+      end
+
+      LIST_INFORMATIONS.each do |name|
+        define_method(name) { Curl.get_info_slist(name, handle) }
+      end
+
+      def certinfo
+        Curl.get_info_certinfo(:certinfo, handle)
       end
 
       # Returns true if this curl version supports zlib.

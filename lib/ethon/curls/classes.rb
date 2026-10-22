@@ -37,8 +37,27 @@ module Ethon
     end
 
     class Slist < OwnedPointer
+      def to_a
+        SlistNode.to_a(self)
+      end
+
       def self.native_release(pointer)
         Curl.slist_free_all(pointer)
+      end
+    end
+
+    class SlistNode < ::FFI::Struct
+      layout :data, :pointer,
+        :next, :pointer
+
+      def self.to_a(pointer)
+        values = []
+        until pointer.null?
+          node = new(pointer)
+          values << node[:data].read_string unless node[:data].null?
+          pointer = node[:next]
+        end
+        values
       end
     end
 
@@ -106,6 +125,19 @@ module Ethon
       else
         layout :sec, :time_t,
                :usec, :suseconds_t
+      end
+    end
+
+    # :nodoc:
+    class Certinfo < ::FFI::Struct
+      layout :num_of_certs, :int,
+             :certinfo, :pointer
+             
+      def to_a
+        return [] if self[:num_of_certs] == 0
+        self[:certinfo].read_array_of_pointer(self[:num_of_certs]).map do |pointer|
+          SlistNode.to_a(pointer)
+        end
       end
     end
   end
