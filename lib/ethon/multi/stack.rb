@@ -44,10 +44,11 @@ module Ethon
       #
       # @raise [ Ethon::Errors::MultiRemove ] If removing an easy failed.
       def delete(easy)
-        if easy_handles.delete(easy)
+        if (index = easy_handles.index(easy))
+          easy_handles.delete_at(index)
           code = Curl.multi_remove_handle(handle, easy.handle)
           unless code == :ok
-            easy_handles << easy
+            easy_handles.insert(index, easy)
             raise Errors::MultiRemove.new(code, easy)
           end
         end
