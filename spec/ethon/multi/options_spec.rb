@@ -4,6 +4,10 @@ require 'spec_helper'
 describe Ethon::Multi::Options do
   let(:multi) { Ethon::Multi.new }
 
+  it "uses CURLMOPT_MAX_TOTAL_CONNECTIONS" do
+    expect(Ethon::Curl.multi_options(nil)[:max_total_connections][:opt]).to eq(13)
+  end
+
   [
     :maxconnects, :pipelining, :socketdata, :socketfunction,
     :timerdata, :timerfunction, :max_total_connections

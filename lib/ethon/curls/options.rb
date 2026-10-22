@@ -228,7 +228,7 @@ module Ethon
       option :multi, :chunk_length_penalty_size, :off_t, 10
       option :multi, :pipelining_site_bl, :dontuse_object, 11
       option :multi, :pipelining_server_bl, :dontuse_object, 12
-      option :multi, :max_total_connections, :int, 3
+      option :multi, :max_total_connections, :int, 13
 
       # Curl easy options
       # Defined @ https://github.com/curl/curl/blob/master/include/curl/curl.h
