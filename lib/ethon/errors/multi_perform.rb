@@ -5,7 +5,7 @@ module Ethon
     # Raises when multi_perform failed.
     class MultiPerform < EthonError
       def initialize(code)
-        super("An error occured performing the multi: #{code}")
+        super("An error occurred performing the multi: #{code}")
       end
     end
   end
