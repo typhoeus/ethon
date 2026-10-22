@@ -54,6 +54,7 @@ describe Ethon::Easy do
           expect{ easy.set_attributes({:fubar => 1}) }.to raise_error(Ethon::Errors::InvalidOption)
         end
       end
+
     end
   end
 

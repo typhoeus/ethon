@@ -73,6 +73,8 @@ module Ethon
         if defined?(@on_complete) and not @on_complete.nil?
           @on_complete.each{ |callback| callback.call(self) }
         end
+      ensure
+        finish_response_body_io
       end
 
       # Set on_progress callback.

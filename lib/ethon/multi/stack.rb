@@ -26,6 +26,7 @@ module Ethon
       def add(easy)
         return nil if easy_handles.include?(easy)
 
+        easy.prepare_response_body_io
         easy.clear_callback_error
         easy_handles << easy
         code = Curl.multi_add_handle(handle, easy.handle)
