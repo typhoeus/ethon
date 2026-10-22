@@ -13,11 +13,20 @@ module Ethon
         #
         # @param [ Easy ] easy The easy to setup.
         def set_form(easy)
-          easy.upload = true
-          form.escape = true
+          easy.url ||= url
           form.params_encoding = params_encoding
-          easy.infilesize = form.to_s.bytesize
-          easy.set_read_callback(form.to_s)
+          if form.multipart?
+            form.escape = false
+            form.materialize
+            easy.multipart_form = form
+            easy.customrequest = "PUT"
+          else
+            easy.multipart_form = nil
+            easy.upload = true
+            form.escape = true
+            easy.infilesize = form.to_s.bytesize
+            easy.set_read_callback(form.to_s)
+          end
         end
       end
     end
