@@ -97,6 +97,65 @@ describe Ethon::Easy::Options do
     end
   end
 
+  describe "named option values" do
+    it "accepts enum strings and symbols equally" do
+      expect(Ethon::Curl).to receive(:easy_setopt).with(easy.handle, anything, :long, 1).twice.and_return(:ok)
+
+      Ethon::Curl.set_option(:netrc, :optional, easy.handle)
+      Ethon::Curl.set_option(:netrc, "optional", easy.handle)
+    end
+
+    it "accepts bitmask strings and symbols equally" do
+      expect(Ethon::Curl).to receive(:easy_setopt).with(easy.handle, anything, :long, 2).twice.and_return(:ok)
+
+      Ethon::Curl.set_option(:httpauth, :digest, easy.handle)
+      Ethon::Curl.set_option(:httpauth, "digest", easy.handle)
+    end
+
+    it "combines mixed string and symbol bitmask arrays" do
+      expect(Ethon::Curl).to receive(:easy_setopt).with(easy.handle, anything, :long, 3).and_return(:ok)
+
+      Ethon::Curl.set_option(:httpauth, ["basic", :digest], easy.handle)
+    end
+
+    it "resolves named bitmask aliases" do
+      expect(Ethon::Curl).to receive(:easy_setopt).with(easy.handle, anything, :long, 7).and_return(:ok)
+
+      Ethon::Curl.set_option(:postredir, "post_all", easy.handle)
+    end
+
+    it "preserves integer enum and bitmask values" do
+      expect(Ethon::Curl).to receive(:easy_setopt).with(easy.handle, anything, :long, 123).twice.and_return(:ok)
+
+      Ethon::Curl.set_option(:netrc, 123, easy.handle)
+      Ethon::Curl.set_option(:httpauth, 123, easy.handle)
+    end
+
+    it "rejects unknown enum values" do
+      easy
+      expect(Ethon::Curl).not_to receive(:easy_setopt)
+
+      expect { Ethon::Curl.set_option(:netrc, "unknown", easy.handle) }.
+        to raise_error(Ethon::Errors::InvalidValue, /unknown.*netrc/)
+    end
+
+    it "rejects unknown bitmask values" do
+      easy
+      expect(Ethon::Curl).not_to receive(:easy_setopt)
+
+      expect { Ethon::Curl.set_option(:httpauth, :unknown, easy.handle) }.
+        to raise_error(Ethon::Errors::InvalidValue, /unknown.*httpauth/)
+    end
+
+    it "rejects unknown values in bitmask arrays" do
+      easy
+      expect(Ethon::Curl).not_to receive(:easy_setopt)
+
+      expect { Ethon::Curl.set_option(:httpauth, [:basic, "unknown"], easy.handle) }.
+        to raise_error(Ethon::Errors::InvalidValue, /unknown.*httpauth/)
+    end
+  end
+
   [
     :accept_encoding, :cainfo, :capath, :connecttimeout, :connecttimeout_ms, :cookie,
     :cookiejar, :cookiefile, :copypostfields, :customrequest, :dns_cache_timeout,

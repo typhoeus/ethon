@@ -36,25 +36,13 @@ module Ethon
         when :enum
           return if value.nil?
           va_type=:long
-          value = case value
-          when Symbol
-            opthash[option][:opts][value]
-          when String
-            opthash[option][:opts][value.to_sym]
-          else
-            value
-          end.to_i
+          value = named_option_value(option, value, opthash[option][:opts])
         when :bitmask
           return if value.nil?
           va_type=:long
-          value = case value
-          when Symbol
-            opthash[option][:opts][value]
-          when Array
-            value.inject(0) { |res,v| res|opthash[option][:opts][v] }
-          else
-            value
-          end.to_i
+          value = Array(value).inject(0) do |mask, item|
+            mask | named_option_value(option, item, opthash[option][:opts])
+          end
         when :string
           va_type=:string
           value=value.to_s unless value.nil?
@@ -109,6 +97,25 @@ module Ethon
             raise Errors::InvalidValue.new(option,value) unless tv<(1<<bits)
         end
         send(FUNCS[type], handle, opthash[option][:opt], va_type, value)
+      end
+
+      def named_option_value(option, value, values, seen = [])
+        return value if value.is_a?(Integer)
+
+        name = value.is_a?(String) ? value.to_sym : value
+        raise Errors::InvalidValue.new(option, value) unless name.is_a?(Symbol) && values.key?(name)
+        raise Errors::InvalidValue.new(option, value) if seen.include?(name)
+
+        resolved = values[name]
+        if resolved.is_a?(Array)
+          resolved.inject(0) do |mask, item|
+            mask | named_option_value(option, item, values, seen + [name])
+          end
+        elsif resolved.is_a?(Symbol) || resolved.is_a?(String)
+          named_option_value(option, resolved, values, seen + [name])
+        else
+          resolved
+        end
       end
 
       OPTION_TYPE_BASE = {
