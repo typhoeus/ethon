@@ -15,6 +15,7 @@ on:
 
 jobs:
   test:
+    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }})
     runs-on: ${{ matrix.os }}-latest
     env:
       BUNDLE_WITHOUT: perf
@@ -37,7 +38,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Build latest curl
-      if: ${{ matrix.latest_curl }}
+      if: ${{ matrix.latest_curl && github.event_name == 'push' }}
       run: |
         curl --fail --location --output curl.tar.xz "https://curl.se/download/curl-${CURL_VERSION}.tar.xz"
         tar --extract --file curl.tar.xz
@@ -63,7 +64,7 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Verify latest curl
-      if: ${{ matrix.latest_curl }}
+      if: ${{ matrix.latest_curl && github.event_name == 'push' }}
       run: bundle exec ruby -Ilib -e 'require "ethon"; abort Ethon::Curl.version unless Ethon::Curl.version.start_with?("libcurl/#{ENV.fetch("CURL_VERSION")}")'
     - name: Run tests
       run: bundle exec rake
