@@ -210,16 +210,26 @@ describe Ethon::Multi::Operations do
               sleep 0.02
             end
           end
-          writer = Process.spawn("sh", "-c", "sleep 1; echo ok > #{fifo}")
+          writer = fork do
+            sleep 1
+            File.write(fifo, "ok\n")
+          end
 
-          easy.url = "file://#{fifo}"
-          multi.add(easy)
-          multi.perform
+          begin
+            easy.url = "file://#{fifo}"
+            multi.add(easy)
+            multi.perform
 
-          Process.wait(writer)
-          heartbeat.kill
-          expect(easy.response_body).to eq("ok\n")
-          expect(max_gap).to be < 0.5
+            expect(easy.response_body).to eq("ok\n")
+            expect(max_gap).to be < 0.5
+          ensure
+            heartbeat.kill
+            heartbeat.join
+            unless Process.waitpid(writer, Process::WNOHANG)
+              Process.kill(:TERM, writer)
+              Process.wait(writer)
+            end
+          end
         end
       end
     end
