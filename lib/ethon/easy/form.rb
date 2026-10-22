@@ -100,10 +100,7 @@ module Ethon
         # to. So this results in (pseudo-c):
         #   form_data_cleanup_handler = *first
         #   curl_form_free(form_data_cleanup_handler)
-        @form_data_cleanup_handler ||= FFI::AutoPointer.new(
-          @first.get_pointer(0),
-          proc { |pointer| Curl.formfree(pointer) }
-        )
+        @form_data_cleanup_handler ||= Curl::FormData.new(@first.get_pointer(0))
       end
     end
   end
