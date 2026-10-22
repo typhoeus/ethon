@@ -77,6 +77,8 @@ module Ethon
           raise NotImplementedError, "Ethon::Curls::Options option #{option} buffer type not implemented."
         when :dontuse_object
           raise NotImplementedError, "Ethon::Curls::Options option #{option} type not implemented."
+        when :dontuse_callback
+          raise NotImplementedError, "Ethon::Curls::Options option #{option} callback type not implemented."
         when :cbdata
           raise NotImplementedError, "Ethon::Curls::Options option #{option} callback data type not implemented. Use Ruby closures."
         when :callback
@@ -143,6 +145,7 @@ module Ethon
         :dontuse_object => :objectpoint, # An object we don't support (e.g. FILE*)
         :cbdata => :objectpoint,
         :callback => :functionpoint,
+        :dontuse_callback => :functionpoint,
         :socket_callback => :functionpoint,
         :timer_callback => :functionpoint,
         :debug_callback => :functionpoint,
@@ -248,15 +251,15 @@ module Ethon
       option :easy, :readfunction, :callback, 12
       option :easy, :infile, :cbdata, 9
       option_alias :easy, :infile, :readdata
-      option :easy, :ioctlfunction, :callback, 130
+      option :easy, :ioctlfunction, :dontuse_callback, 130
       option :easy, :ioctldata, :cbdata, 131
-      option :easy, :seekfunction, :callback, 167
+      option :easy, :seekfunction, :dontuse_callback, 167
       option :easy, :seekdata, :cbdata, 168
-      option :easy, :sockoptfunction, :callback, 148
+      option :easy, :sockoptfunction, :dontuse_callback, 148
       option :easy, :sockoptdata, :cbdata, 149
-      option :easy, :opensocketfunction, :callback, 163
+      option :easy, :opensocketfunction, :dontuse_callback, 163
       option :easy, :opensocketdata, :cbdata, 164
-      option :easy, :closesocketfunction, :callback, 208
+      option :easy, :closesocketfunction, :dontuse_callback, 208
       option :easy, :closesocketdata, :cbdata, 209
       option :easy, :path_as_is, :bool, 234
       option :easy, :progressfunction, :progress_callback, 56
@@ -266,17 +269,17 @@ module Ethon
       option_alias :easy, :writeheader, :headerdata
       option :easy, :debugfunction, :debug_callback, 94
       option :easy, :debugdata, :cbdata, 95
-      option :easy, :ssl_ctx_function, :callback, 108
+      option :easy, :ssl_ctx_function, :dontuse_callback, 108
       option :easy, :ssl_ctx_data, :cbdata, 109
-      option :easy, :conv_to_network_function, :callback, 143
-      option :easy, :conv_from_network_function, :callback, 142
-      option :easy, :conv_from_utf8_function, :callback, 144
+      option :easy, :conv_to_network_function, :dontuse_callback, 143
+      option :easy, :conv_from_network_function, :dontuse_callback, 142
+      option :easy, :conv_from_utf8_function, :dontuse_callback, 144
       option :easy, :interleavefunction, :callback, 196
       option :easy, :interleavedata, :cbdata, 195
-      option :easy, :chunk_bgn_function, :callback, 198
-      option :easy, :chunk_end_function, :callback, 199
+      option :easy, :chunk_bgn_function, :dontuse_callback, 198
+      option :easy, :chunk_end_function, :dontuse_callback, 199
       option :easy, :chunk_data, :cbdata, 201
-      option :easy, :fnmatch_function, :callback, 200
+      option :easy, :fnmatch_function, :dontuse_callback, 200
       option :easy, :fnmatch_data, :cbdata, 202
       option :easy, :xferinfofunction, :progress_callback, 219
       option :easy, :xferinfodata, :cbdata, 57
@@ -488,7 +491,7 @@ module Ethon
       option :easy, :ssh_public_keyfile, :string, 152
       option :easy, :ssh_private_keyfile, :string, 153
       option :easy, :ssh_knownhosts, :string, 183
-      option :easy, :ssh_keyfunction, :callback, 184
+      option :easy, :ssh_keyfunction, :dontuse_callback, 184
       option :easy, :khstat, :enum, -1, [:fine_add_to_file, :fine, :reject, :defer] # Kludge to make this enum available... Access via CurL::EASY_OPTIONS[:khstat][:opt]
       option :easy, :ssh_keydata, :cbdata, 185
       ## OTHER OPTIONS
