@@ -316,7 +316,7 @@ module Ethon
     end
 
     def mirror
-      @mirror ||= Mirror.from_easy(self)
+      Mirror.from_easy(self)
     end
 
     # Return pretty log out.
