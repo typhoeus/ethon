@@ -273,6 +273,7 @@ module Ethon
       handle.error_buffer = nil
       @error_buffer_enabled = nil
       @multipart_form = nil
+      @curlu = nil
       set_callbacks
     end
 

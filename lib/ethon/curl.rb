@@ -27,6 +27,7 @@ module Ethon
     require 'ethon/curls/constants'
     require 'ethon/curls/settings'
     require 'ethon/curls/classes'
+    require 'ethon/curls/url_constants'
     extend Ethon::Curls::Functions
 
     @blocking = true
@@ -104,3 +105,5 @@ module Ethon
     end
   end
 end
+
+require 'ethon/curls/url'
