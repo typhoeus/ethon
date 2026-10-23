@@ -12,6 +12,19 @@ module Ethon
         base.attach_function :global_cleanup,             :curl_global_cleanup,      [],                             :void
         base.attach_function :free,                       :curl_free,                [:pointer],                     :void
 
+        introspect_attach = lambda do |name, func, args, returns|
+          begin
+            base.attach_function(name, func, args, returns, blocking: false)
+          rescue ::FFI::NotFoundError
+            nil
+          end
+        end
+        introspect_attach.call(:easy_header, :curl_easy_header, [:pointer, :string, :size_t, :uint, :int, :pointer], :header_code)
+        introspect_attach.call(:easy_nextheader, :curl_easy_nextheader, [:pointer, :uint, :int, :pointer], Curl::HeaderData.ptr)
+        introspect_attach.call(:easy_option_by_name, :curl_easy_option_by_name, [:string], Curl::EasyOptionInfo.ptr)
+        introspect_attach.call(:easy_option_by_id, :curl_easy_option_by_id, [:easy_option], Curl::EasyOptionInfo.ptr)
+        introspect_attach.call(:easy_option_next, :curl_easy_option_next, [:pointer], Curl::EasyOptionInfo.ptr)
+
         base.attach_function :easy_init,                  :curl_easy_init,           [],                             :pointer
         base.attach_function :easy_cleanup,               :curl_easy_cleanup,        [:pointer],                     :void, blocking: true
         base.attach_function :easy_getinfo,               :curl_easy_getinfo,        [:pointer, :info, :varargs],    :easy_code

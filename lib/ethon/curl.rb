@@ -25,6 +25,7 @@ module Ethon
     end
 
     require 'ethon/curls/constants'
+    require 'ethon/curls/introspection_constants'
     require 'ethon/curls/settings'
     require 'ethon/curls/classes'
     extend Ethon::Curls::Functions

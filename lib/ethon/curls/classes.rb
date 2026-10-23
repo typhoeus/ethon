@@ -91,6 +91,81 @@ module Ethon
         :protocols, :pointer
     end
 
+    # curl_version_info_data through CURLVERSION_ELEVENTH. Only safe to use
+    # when the runtime age is at least CURLVERSION_ELEVENTH.
+    class VersionInfoDataFull < ::FFI::Struct
+      layout :curl_version, :int,
+        :version, :string,
+        :version_num, :int,
+        :host, :string,
+        :features, :int,
+        :ssl_version, :string,
+        :ssl_version_num, :long,
+        :libz_version, :string,
+        :protocols, :pointer,
+        :ares, :string,
+        :ares_num, :int,
+        :libidn, :string,
+        :iconv_ver_num, :int,
+        :libssh_version, :string,
+        :brotli_ver_num, :uint,
+        :brotli_version, :string,
+        :nghttp2_ver_num, :uint,
+        :nghttp2_version, :string,
+        :quic_version, :string,
+        :cainfo, :string,
+        :capath, :string,
+        :zstd_ver_num, :uint,
+        :zstd_version, :string,
+        :hyper_version, :string,
+        :gsasl_version, :string,
+        :feature_names, :pointer
+    end
+
+    # struct curl_header.
+    class HeaderData < ::FFI::Struct
+      layout :name, :string,
+        :value, :string,
+        :amount, :size_t,
+        :index, :size_t,
+        :origin, :uint,
+        :anchor, :pointer
+
+      def name; self[:name]; end
+      def value; self[:value]; end
+      def amount; self[:amount]; end
+      def index; self[:index]; end
+      def origin; self[:origin]; end
+    end
+
+    # Immutable copy of a curl_header. libcurl reuses the backing struct
+    # between curl_easy_nextheader calls, so values must be copied eagerly.
+    class Header
+      attr_reader :name, :value, :amount, :index, :origin
+
+      def initialize(data)
+        @name = data.name
+        @value = data.value
+        @amount = data.amount
+        @index = data.index
+        @origin = data.origin
+      end
+    end
+
+    # struct curl_easyoption.
+    class EasyOptionInfo < ::FFI::Struct
+      layout :name, :string,
+        :id, :easy_option,
+        :type, :easy_type,
+        :flags, :uint
+
+      def name; self[:name]; end
+      def id; self[:id]; end
+      def type; self[:type]; end
+      def flags; self[:flags]; end
+      def alias?; (flags & 1) != 0; end
+    end
+
     # :nodoc:
     class FDSet < ::FFI::Struct
       if Curl.windows?
