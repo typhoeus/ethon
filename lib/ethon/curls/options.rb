@@ -24,7 +24,7 @@ module Ethon
         when :int
           return if value.nil?
           va_type=:long
-          value=value.to_i
+          value = integer_value(option, value)
         when :bool
           return if value.nil?
           va_type=:long
@@ -32,7 +32,7 @@ module Ethon
         when :time
           return if value.nil?
           va_type=:long
-          value=value.to_i
+          value = integer_value(option, value)
         when :enum
           return if value.nil?
           va_type=:long
@@ -88,7 +88,7 @@ module Ethon
         when :off_t
           return if value.nil?
           va_type=:int64
-          value=value.to_i
+          value = integer_value(option, value)
         end
 
         if va_type==:long or va_type==:int64 then
@@ -115,6 +115,20 @@ module Ethon
           named_option_value(option, resolved, values, seen + [name])
         else
           resolved
+        end
+      end
+
+      private
+
+      def integer_value(option, value)
+        return value if value.is_a?(Integer)
+        return 1 if value == true
+        return 0 if value == false
+
+        begin
+          Integer(value)
+        rescue ArgumentError, TypeError
+          raise Errors::InvalidValue.new(option, value)
         end
       end
 
