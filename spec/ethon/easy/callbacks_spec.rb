@@ -75,6 +75,20 @@ describe Ethon::Easy::Callbacks do
       end
     end
 
+    context "when streaming to an IO and the headers abort" do
+      before do
+        easy.url = "http://localhost:3001/"
+        easy.file = StringIO.new
+        easy.on_headers.clear
+        easy.on_headers { :abort }
+      end
+
+      it "aborts without raising a NoMethodError" do
+        expect { easy.perform }.not_to raise_error
+        expect(easy.return_code).to eq(:write_error)
+      end
+    end
+
     context "when appending a header raises" do
       before do
         headers = Object.new
