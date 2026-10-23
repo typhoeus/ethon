@@ -90,6 +90,16 @@ describe Ethon::Curl::Share do
         to raise_error(Ethon::Errors::InvalidValue)
     end
 
+    it "drops the retained callbacks when the handle is freed" do
+      value = described_class.new
+      value.lockfunction = proc { |*| }
+      address = value.address
+
+      value.free
+
+      expect(described_class.callbacks).not_to have_key(address)
+    end
+
     it "calls the callbacks while sharing cookies" do
       locks = 0
       unlocks = 0

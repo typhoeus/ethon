@@ -24,6 +24,15 @@ module Ethon
         CALLBACKS_MUTEX.synchronize { callbacks.delete(pointer.address) }
       end
 
+      # Build the dispatcher on the class so the closure does not retain the
+      # Share instance; otherwise the callback registry itself would keep every
+      # share handle alive.
+      def self.callback_function(callback)
+        FFI::Function.new(:void, [:pointer, :int, :int, :pointer], proc do |handle, data, access, userp|
+          callback.call(handle, Curl::LockData[data], Curl::LockAccess[access], userp)
+        end)
+      end
+
       def initialize
         unless Curl.respond_to?(:share_init)
           raise NotImplementedError, "curl_share_init is not supported by this libcurl"
@@ -102,11 +111,7 @@ module Ethon
 
         # libcurl calls the lock and unlock callbacks again during
         # curl_share_cleanup, so the FFI::Function itself must stay alive.
-        function = if callback
-          FFI::Function.new(:void, [:pointer, :int, :int, :pointer], proc do |handle, data, access, userp|
-            callback.call(handle, Curl::LockData[data], Curl::LockAccess[access], userp)
-          end)
-        end
+        function = self.class.callback_function(callback) if callback
 
         code = Curl.share_setopt(self, option, :pointer, function)
         raise Errors::Share.new(code) unless code == :ok
