@@ -49,6 +49,24 @@ module Ethon
         base.attach_function :version,                    :curl_version,             [],                             :string
         base.attach_function :curl_version_info,          :curl_version_info,        [:int],                         Curl::VersionInfoData.ptr
 
+        mime_attach = lambda do |name, func, args, returns|
+          begin
+            base.attach_function(name, func, args, returns, blocking: false)
+          rescue ::FFI::NotFoundError
+            nil
+          end
+        end
+        mime_attach.call(:mime_init, :curl_mime_init, [:pointer], :pointer)
+        mime_attach.call(:mime_free, :curl_mime_free, [:pointer], :void)
+        mime_attach.call(:mime_addpart, :curl_mime_addpart, [:pointer], :pointer)
+        mime_attach.call(:mime_name, :curl_mime_name, [:pointer, :string], :easy_code)
+        mime_attach.call(:mime_filename, :curl_mime_filename, [:pointer, :string], :easy_code)
+        mime_attach.call(:mime_type, :curl_mime_type, [:pointer, :string], :easy_code)
+        mime_attach.call(:mime_encoder, :curl_mime_encoder, [:pointer, :string], :easy_code)
+        mime_attach.call(:mime_data, :curl_mime_data, [:pointer, :pointer, :size_t], :easy_code)
+        mime_attach.call(:mime_filedata, :curl_mime_filedata, [:pointer, :string], :easy_code)
+        mime_attach.call(:mime_headers, :curl_mime_headers, [:pointer, :pointer, :int], :easy_code)
+
         base.attach_function :slist_append,               :curl_slist_append,        [:pointer, :string],            :pointer
         base.attach_function :slist_free_all,             :curl_slist_free_all,      [:pointer],                     :void
         base.instance_variable_set(:@blocking, true)
