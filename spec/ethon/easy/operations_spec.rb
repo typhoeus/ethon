@@ -9,6 +9,13 @@ describe Ethon::Easy::Operations do
       expect(easy.handle).to be_a(FFI::Pointer)
     end
 
+    it "raises when easy_init returns a null pointer" do
+      easy.instance_variable_set(:@handle, nil)
+      expect(Ethon::Curl).to receive(:easy_init).and_return(FFI::Pointer::NULL)
+
+      expect { easy.handle }.to raise_error(NoMemoryError, "curl_easy_init failed")
+    end
+
     it "rejects a handle inherited across a fork" do
       easy.handle
       reader, writer = IO.pipe

@@ -11,7 +11,11 @@ module Ethon
       #
       # @return [ FFI::Pointer ] A pointer to the curl easy handle.
       def handle
-        handle = @handle ||= Curl::EasyHandle.new(Curl.easy_init)
+        handle = @handle ||= begin
+          pointer = Curl.easy_init
+          raise NoMemoryError, "curl_easy_init failed" if pointer.null?
+          Curl::EasyHandle.new(pointer)
+        end
         handle.check_pid!
         handle
       end

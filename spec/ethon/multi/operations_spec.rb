@@ -17,6 +17,12 @@ describe Ethon::Multi::Operations do
       expect(multi.handle).to be_a(FFI::Pointer)
     end
 
+    it "raises when multi_init returns a null pointer" do
+      expect(Ethon::Curl).to receive(:multi_init).and_return(FFI::Pointer::NULL)
+
+      expect { multi.handle }.to raise_error(NoMemoryError, "curl_multi_init failed")
+    end
+
     it "rejects a handle inherited across a fork" do
       multi.handle
       reader, writer = IO.pipe

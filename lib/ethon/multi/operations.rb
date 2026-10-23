@@ -14,7 +14,11 @@ module Ethon
       #
       # @return [ FFI::Pointer ] The multi handle.
       def handle
-        handle = @handle ||= Curl::MultiHandle.new(Curl.multi_init)
+        handle = @handle ||= begin
+          pointer = Curl.multi_init
+          raise NoMemoryError, "curl_multi_init failed" if pointer.null?
+          Curl::MultiHandle.new(pointer)
+        end
         handle.check_pid!
         handle
       end
