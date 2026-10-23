@@ -271,11 +271,11 @@ describe Ethon::Easy do
     it "reflects the latest perform" do
       easy.url = "http://localhost:3001/?first"
       easy.perform
-      first = easy.mirror.options[:response_body]
+      first = easy.mirror.options[:response_body].dup
 
       easy.url = "http://localhost:3001/?second"
       easy.perform
-      second = easy.mirror.options[:response_body]
+      second = easy.mirror.options[:response_body].dup
 
       expect(second).not_to eq(first)
     end
