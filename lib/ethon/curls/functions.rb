@@ -34,6 +34,11 @@ module Ethon
         base.attach_function :formadd,                    :curl_formadd,             [:pointer, :pointer, :varargs], :int
         base.attach_function :formfree,                   :curl_formfree,            [:pointer],                     :void
 
+        Ethon::Curls::Optional.attach(base, :share_init, :curl_share_init, [], :pointer, blocking: false)
+        Ethon::Curls::Optional.attach(base, :share_cleanup, :curl_share_cleanup, [:pointer], :share_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :share_setopt, :curl_share_setopt, [:pointer, :share_option, :varargs], :share_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :share_strerror, :curl_share_strerror, [:share_code], :string, blocking: false)
+
         base.attach_function :multi_init,                 :curl_multi_init,          [],                             :pointer
         base.attach_function :multi_cleanup,              :curl_multi_cleanup,       [:pointer],                     :void, blocking: true
         base.attach_function :multi_add_handle,           :curl_multi_add_handle,    [:pointer, :pointer],           :multi_code

@@ -538,7 +538,7 @@ module Ethon
       option :easy, :ssh_keydata, :cbdata, 185
       ## OTHER OPTIONS
       option :easy, :private, :cbdata, 103
-      option :easy, :share, :dontuse_object, 100
+      option :easy, :share, :ffipointer, 100
       option :easy, :new_file_perms, :int, 159
       option :easy, :new_directory_perms, :int, 160
       ## NEWER OPTIONS
