@@ -123,13 +123,22 @@ module Ethon
       # Associate an arbitrary pointer with a socket in the multi handle.
       #
       # @param [ Integer, IO ] io The socket descriptor.
-      # @param [ FFI::Pointer ] pointer The pointer to associate.
+      # @param [ FFI::Pointer, nil ] pointer The pointer to associate, or nil
+      #   to clear it.
       #
       # @return [ Symbol ] The Curl multi return code.
       def assign(io, pointer)
         socket = io.respond_to?(:fileno) ? io.fileno : io
         code = Curl.multi_assign(handle, socket, pointer)
         raise Errors::MultiAssign.new(code) unless code == :ok
+
+        # libcurl keeps the pointer until the socket is removed or assigned
+        # again, so keep it alive from Ruby as well.
+        if pointer.nil? || pointer.null?
+          (@assigned_sockets ||= {}).delete(socket)
+        else
+          (@assigned_sockets ||= {})[socket] = pointer
+        end
 
         code
       end

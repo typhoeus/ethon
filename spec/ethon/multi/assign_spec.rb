@@ -23,6 +23,23 @@ describe Ethon::Multi do
       multi.assign(io, pointer)
     end
 
+    it "retains the pointer until it is cleared" do
+      allow(Ethon::Curl).to receive(:multi_assign).and_return(:ok)
+
+      multi.assign(42, pointer)
+
+      expect(multi.instance_variable_get(:@assigned_sockets)[42]).to be(pointer)
+    end
+
+    it "clears the retained pointer with nil" do
+      allow(Ethon::Curl).to receive(:multi_assign).and_return(:ok)
+      multi.assign(42, pointer)
+
+      multi.assign(42, nil)
+
+      expect(multi.instance_variable_get(:@assigned_sockets)).to be_empty
+    end
+
     it "raises on errors" do
       allow(Ethon::Curl).to receive(:multi_assign).and_return(:bad_socket)
 
