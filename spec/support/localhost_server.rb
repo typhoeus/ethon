@@ -51,7 +51,17 @@ class LocalhostServer
   end
 
   def boot
-    options = { :Port => port, :Host => 'localhost' }
+    # The suite makes many requests without cleaning up easy handles, so every
+    # client connection can stay idle in WEBrick's keep-alive state. With the
+    # default MaxClients (100) and RequestTimeout (30) the server eventually
+    # stops accepting connections until an idle one times out. Close idle
+    # connections quickly and leave plenty of room for concurrent tests.
+    options = {
+      :Port => port,
+      :Host => 'localhost',
+      :MaxClients => 1000,
+      :RequestTimeout => 5
+    }
     # Use WEBrick for tests since it supports all HTTP methods including custom ones like PURGE
     # Puma is stricter about HTTP methods and rejects custom methods with 501 "method not supported"
     app = Identify.new(@rack_app)

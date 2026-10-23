@@ -16,7 +16,10 @@ module Ethon
     end
 
     def self.open_max
-      Etc.sysconf(Etc::SC_OPEN_MAX) || Process.getrlimit(:NOFILE).first
+      value = Etc.sysconf(Etc::SC_OPEN_MAX)
+      return value if value && value > 0
+
+      Process.getrlimit(:NOFILE).first
     rescue NameError, NotImplementedError
       Process.getrlimit(:NOFILE).first
     end

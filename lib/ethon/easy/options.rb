@@ -5,7 +5,7 @@ module Ethon
     # This module contains the logic and knowledge about the
     # available options on easy.
     module Options
-      CALLBACK_TYPES = [:callback, :debug_callback, :progress_callback].freeze
+      CALLBACK_TYPES = [:callback, :debug_callback, :progress_callback, :xferinfo_callback].freeze
 
       attr_reader :url
 
@@ -73,6 +73,19 @@ module Ethon
         message unless message.empty?
       end
 
+      # CURLOPT_TLSAUTH_TYPE and CURLOPT_PROXY_TLSAUTH_TYPE take a string, not
+      # an enum. Normalize the historical symbol API and libcurl's required
+      # "SRP" spelling.
+      def tlsauth_type=(value)
+        Curl.set_option(:tlsauth_type, tlsauth_type_value(value), handle)
+        value
+      end
+
+      def proxy_tlsauth_type=(value)
+        Curl.set_option(:proxy_tlsauth_type, tlsauth_type_value(value), handle)
+        value
+      end
+
       Curl.easy_options(nil).each do |opt, props|
         method_name = "#{opt}=".freeze
         unless method_defined? method_name
@@ -116,7 +129,20 @@ module Ethon
         @procs = @procs.dup if @procs
       end
 
+      def tlsauth_type_value(value)
+        case value.to_s.downcase
+        when "", "none"
+          nil
+        when "srp"
+          "SRP"
+        else
+          value
+        end
+      end
+
       def retain_callback(option, callback)
+        @read_callback = callback if option == :readfunction
+
         if callback.nil?
           @procs.delete(option) if @procs
         else

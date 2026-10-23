@@ -21,6 +21,10 @@ describe Ethon::Easy::Options do
       expect(easy.instance_variable_get(:@procs)).not_to have_key(:readfunction)
     end
 
+    it "allows clearing a callback before any were set" do
+      expect { easy.writefunction = nil }.not_to raise_error
+    end
+
     it "tracks callbacks independently after duplication" do
       callback = proc { 0 }
       replacement = proc { 0 }
@@ -159,6 +163,13 @@ describe Ethon::Easy::Options do
       easy
 
       expect { Ethon::Curl.set_option(:timeout, "abc", easy.handle) }.
+        to raise_error(Ethon::Errors::InvalidValue, /timeout/)
+    end
+
+    it "rejects non-finite integer values" do
+      easy
+
+      expect { Ethon::Curl.set_option(:timeout, Float::INFINITY, easy.handle) }.
         to raise_error(Ethon::Errors::InvalidValue, /timeout/)
     end
   end
@@ -463,6 +474,148 @@ describe Ethon::Easy::Options do
           end
         end
       end
+    end
+  end
+
+  describe "libcurl option table" do
+    let(:options) { Ethon::Curl.easy_options(nil) }
+
+    it "maps tcp_fastopen to CURLOPT_TCP_FASTOPEN (244), not accepttimeout_ms" do
+      expect(options[:tcp_fastopen][:opt]).to eq(244)
+      expect(options[:accepttimeout_ms][:opt]).to eq(212)
+    end
+
+    it "declares TLS auth types as string options" do
+      expect(options[:tlsauth_type][:type]).to eq(:string)
+      expect(options[:proxy_tlsauth_type][:type]).to eq(:string)
+    end
+
+    it "uses the curl_off_t callback ABI for xferinfo" do
+      expect(options[:xferinfofunction][:type]).to eq(:xferinfo_callback)
+      expect(options[:progressfunction][:type]).to eq(:progress_callback)
+    end
+  end
+
+  describe "#tlsauth_type=" do
+    before { easy }
+
+    it "normalizes :srp to the string libcurl expects" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :string, "SRP").and_return(:ok)
+
+      expect(easy.tlsauth_type = :srp).to eq(:srp)
+    end
+
+    it "normalizes lowercase strings" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :string, "SRP").and_return(:ok)
+
+      easy.tlsauth_type = "srp"
+    end
+
+    it "clears the option for :none" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :string, nil).and_return(:ok)
+
+      easy.tlsauth_type = :none
+    end
+
+    it "passes through other values" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :string, "custom").and_return(:ok)
+
+      easy.tlsauth_type = "custom"
+    end
+
+    it "normalizes the proxy type as well" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :string, "SRP").and_return(:ok)
+
+      easy.proxy_tlsauth_type = :srp
+    end
+  end
+
+  describe "option coercion branches" do
+    before { easy }
+
+    it "sets :none options to one" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :long, 1).and_return(:ok)
+
+      Ethon::Curl.set_option(:sslengine_default, false, easy.handle)
+    end
+
+    it "sets :time options as longs" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :long, 42).and_return(:ok)
+
+      Ethon::Curl.set_option(:timevalue, "42", easy.handle)
+    end
+
+    it "sets :off_t options as int64" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :int64, 2**40).and_return(:ok)
+
+      Ethon::Curl.set_option(:maxfilesize_large, 2**40, easy.handle)
+    end
+
+    it "rejects unsupported object options" do
+      expect { easy.stderr = 1 }.to raise_error(NotImplementedError, /stderr/)
+    end
+
+    it "rejects unsupported callback data options" do
+      expect { easy.writeheader = 1 }.to raise_error(NotImplementedError, /writeheader/)
+    end
+
+    it "rejects an unknown option namespace" do
+      expect { Ethon::Curl.set_option(:url, "http://example.com", easy.handle, :bogus) }.
+        to raise_error(NameError, /unknown type bogus/)
+    end
+
+    it "rejects enum options without valid metadata" do
+      expect {
+        Ethon::Curls::Options.option(:easy, :bogus_enum, :enum, 999, nil)
+      }.to raise_error(TypeError, /Expected opts/)
+    end
+
+    it "rejects bitmask options without valid metadata" do
+      expect {
+        Ethon::Curls::Options.option(:easy, :bogus_bitmask, :bitmask, 999, nil)
+      }.to raise_error(TypeError, /Expected opts/)
+    end
+
+    it "detects cyclic named option aliases" do
+      values = { :a => :b, :b => :a }
+
+      expect { Ethon::Curl.named_option_value(:bogus, :a, values) }.
+        to raise_error(Ethon::Errors::InvalidValue)
+    end
+
+    it "resolves named arrays of aliases" do
+      values = { :all => [:a, :b], :a => 1, :b => 2 }
+
+      expect(Ethon::Curl.named_option_value(:bogus, :all, values)).to eq(3)
+    end
+
+    it "accepts progress callbacks" do
+      callback = proc { 0 }
+
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :progress_callback, callback).and_return(:ok)
+
+      Ethon::Curl.set_option(:progressfunction, callback, easy.handle)
+    end
+
+    it "rejects non-proc progress callbacks" do
+      expect {
+        Ethon::Curl.set_option(:progressfunction, 1, easy.handle)
+      }.to raise_error(Ethon::Errors::InvalidValue)
+    end
+
+    it "rejects non-proc xferinfo callbacks" do
+      expect {
+        Ethon::Curl.set_option(:xferinfofunction, 1, easy.handle)
+      }.to raise_error(Ethon::Errors::InvalidValue)
     end
   end
 end

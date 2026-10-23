@@ -117,7 +117,7 @@ module Ethon
       #
       # @return [ Boolean ] True if ongoing, else false.
       def ongoing?
-        easy_handles.size > 0 || (!defined?(@running_count) || running_count > 0)
+        easy_handles.size > 0 || (running_count || 0) > 0
       end
 
       private
@@ -189,6 +189,9 @@ module Ethon
           break if msg.null?
           next if msg[:code] != :done
           easy = easy_handles.find{ |e| e.handle == msg[:easy_handle] }
+          # The handle may have been removed between the transfer finishing and
+          # the completion message being read.
+          next unless easy
           easy.return_code = msg[:data][:code]
           Ethon.logger.debug { "ETHON:         performed #{easy.log_inspect}" }
           delete(easy)
@@ -230,7 +233,7 @@ module Ethon
       #
       # @return [ Integer ] Number running requests.
       def running_count
-        @running_count ||= nil
+        @running_count
       end
     end
   end

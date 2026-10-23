@@ -102,4 +102,23 @@ describe Ethon::Easy::Header do
       end
     end
   end
+
+  describe "#request_headers" do
+    it "returns an empty hash by default" do
+      expect(easy.request_headers).to eq({})
+    end
+
+    it "returns the headers that were set" do
+      headers = { 'User-Agent' => 'Ethon' }
+      easy.headers = headers
+
+      expect(easy.request_headers).to eq(headers)
+    end
+
+    it "can be set through request_headers=" do
+      easy.request_headers = { 'X-Test' => 'yes' }
+
+      expect(easy.request_headers).to eq('X-Test' => 'yes')
+    end
+  end
 end

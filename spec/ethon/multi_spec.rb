@@ -48,6 +48,32 @@ describe Ethon::Multi do
           multi.socket_action
         end
       end
+
+      it "does not mutate the caller's options" do
+        options = { :execution_mode => :socket_action, :maxconnects => 2 }
+
+        Ethon::Multi.new(options)
+
+        expect(options).to eq(:execution_mode => :socket_action, :maxconnects => 2)
+      end
+
+      it "raises for unknown options" do
+        expect { Ethon::Multi.new(:bogus => 1) }.
+          to raise_error(Ethon::Errors::InvalidOption)
+      end
+
+      it "raises for an unknown execution mode" do
+        expect { Ethon::Multi.new(:execution_mode => :bogus) }.
+          to raise_error(ArgumentError, /Unknown execution mode/)
+      end
+    end
+  end
+
+  describe "#prepare" do
+    it "warns and does nothing" do
+      expect(Ethon.logger).to receive(:warn).with(/no longer necessay/)
+
+      Ethon::Multi.new.prepare
     end
   end
 

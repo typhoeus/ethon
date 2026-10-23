@@ -12,7 +12,7 @@ module Ethon
       # Sets appropriate option for easy, depending on value type.
       def set_option(option, value, handle, type = :easy)
         type = type.to_sym unless type.is_a?(Symbol)
-        raise NameError, "Ethon::Curls::Options unknown type #{type}." unless respond_to?(OPTION_STRINGS[type])
+        raise NameError, "Ethon::Curls::Options unknown type #{type}." unless OPTION_STRINGS.key?(type)
         opthash=send(OPTION_STRINGS[type], nil)
         raise Errors::InvalidOption.new(option) unless opthash.include?(option)
 
@@ -85,6 +85,9 @@ module Ethon
         when :progress_callback
           va_type=:progress_callback
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
+        when :xferinfo_callback
+          va_type=:xferinfo_callback
+          raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? Proc
         when :off_t
           return if value.nil?
           va_type=:int64
@@ -125,7 +128,7 @@ module Ethon
 
         begin
           Integer(value)
-        rescue ArgumentError, TypeError
+        rescue ArgumentError, TypeError, RangeError
           raise Errors::InvalidValue.new(option, value)
         end
       end
@@ -170,6 +173,7 @@ module Ethon
         :timer_callback => :functionpoint,
         :debug_callback => :functionpoint,
         :progress_callback => :functionpoint,
+        :xferinfo_callback => :functionpoint,
         :off_t => :off_t,
       }
 
@@ -301,7 +305,7 @@ module Ethon
       option :easy, :chunk_data, :cbdata, 201
       option :easy, :fnmatch_function, :dontuse_callback, 200
       option :easy, :fnmatch_data, :cbdata, 202
-      option :easy, :xferinfofunction, :progress_callback, 219
+      option :easy, :xferinfofunction, :xferinfo_callback, 219
       option :easy, :xferinfodata, :cbdata, 57
       ## ERROR OPTIONS
       option :easy, :errorbuffer, :buffer, 10, 256
@@ -330,7 +334,7 @@ module Ethon
       option :easy, :port, :int, 3
       option :easy, :tcp_nodelay, :bool, 121
       option :easy, :address_scope, :int, 171
-      option :easy, :tcp_fastopen, :bool, 212
+      option :easy, :tcp_fastopen, :bool, 244
       option :easy, :tcp_keepalive, :bool, 213
       option :easy, :tcp_keepidle, :int, 214
       option :easy, :tcp_keepintvl, :int, 215
@@ -344,7 +348,7 @@ module Ethon
       option :easy, :proxyusername, :string, 175
       option :easy, :proxypassword, :string, 176
       option :easy, :httpauth, :bitmask, 107, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11, :auto => 0x1f}]
-      option :easy, :tlsauth_type, :enum, 206, [:none, :srp]
+      option :easy, :tlsauth_type, :string, 206
       option :easy, :tlsauth_username, :string, 204
       option :easy, :tlsauth_password, :string, 205
       option :easy, :proxyauth, :bitmask, 111, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11, :auto => 0x1f}]
@@ -490,7 +494,7 @@ module Ethon
       option :easy, :proxy_sslversion, :enum, 250, [:default, :tlsv1, :sslv2, :sslv3, :tlsv1_0, :tlsv1_1, :tlsv1_2, :tlsv1_3]
       option :easy, :proxy_tlsauth_username, :string, 251
       option :easy, :proxy_tlsauth_password, :string, 252
-      option :easy, :proxy_tlsauth_type, :enum, 253, [:none, :srp]
+      option :easy, :proxy_tlsauth_type, :string, 253
       option :easy, :proxy_sslcert, :string, 254
       option :easy, :proxy_sslcerttype, :string, 255
       option :easy, :proxy_sslkey, :string, 256

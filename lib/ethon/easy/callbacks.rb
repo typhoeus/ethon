@@ -95,7 +95,9 @@ module Ethon
       end
 
       def set_progress_callback
-        if Curl.version_info[:version] >= "7.32.0"
+        # CURLOPT_XFERINFOFUNCTION was added in libcurl 7.32.0. Compare the
+        # numeric version; string comparison breaks for versions like 7.9.x.
+        if Curl.version_info[:version_num] >= 0x072000
           Curl.set_option(:xferinfofunction, progress_callback, handle)
         else
           Curl.set_option(:progressfunction, progress_callback, handle)
@@ -143,35 +145,39 @@ module Ethon
       # @param [ String ] body The body.
       def set_read_callback(body)
         @request_body_read = 0
-        readfunction do |stream, size, num, object|
+        @read_callback = proc do |stream, size, num, object|
           size = size * num
-          body_size = if body.respond_to?(:bytesize)
-            body.bytesize
+          remaining = if body.respond_to?(:byteslice)
+            body.bytesize - @request_body_read
+          elsif body.respond_to?(:read)
+            # IO-like bodies advance their own position.
+            body.size - body.pos if body.respond_to?(:size) && body.respond_to?(:pos)
           elsif body.respond_to?(:size)
-            body.size
-          elsif body.is_a?(File)
-            File.size(body.path)
+            body.size - @request_body_read
           end
 
-          left = body_size - @request_body_read
-          size = left if size > left
+          size = remaining if remaining && size > remaining
 
-          if size > 0
-            chunk = if body.respond_to?(:byteslice)
+          chunk = if size > 0
+            if body.respond_to?(:byteslice)
               body.byteslice(@request_body_read, size)
             elsif body.respond_to?(:read)
               body.read(size)
             else
               body[@request_body_read, size]
             end
-
-            stream.write_string(
-              chunk, size
-            )
-            @request_body_read += size
           end
-          size
+
+          # libcurl expects the number of bytes actually copied into the
+          # buffer. IO-like bodies may return fewer bytes than requested.
+          chunk_size = chunk ? chunk.bytesize : 0
+          if chunk_size > 0
+            stream.write_string(chunk, chunk_size)
+            @request_body_read += chunk_size
+          end
+          chunk_size
         end
+        readfunction(&@read_callback)
       end
 
       # Returns the body read callback.

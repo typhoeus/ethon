@@ -12,6 +12,8 @@ module Ethon
     include Ethon::Multi::Operations
     include Ethon::Multi::Options
 
+    EXECUTION_MODES = [:perform, :socket_action].freeze
+
     # Create a new multi. Initialize curl in case
     # it didn't happen before.
     #
@@ -88,7 +90,11 @@ module Ethon
     # @return [ Multi ] The new multi.
     def initialize(options = {})
       Curl.init
+      options = options.dup
       @execution_mode = options.delete(:execution_mode) || :perform
+      unless EXECUTION_MODES.include?(@execution_mode)
+        raise ArgumentError, "Unknown execution mode #{@execution_mode.inspect}"
+      end
       set_attributes(options)
       init_vars
     end

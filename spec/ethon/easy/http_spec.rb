@@ -59,6 +59,13 @@ describe Ethon::Easy::Http do
         easy.perform
         expect(easy.response_body).to include(%{"REQUEST_METHOD":"PURGE"})
       end
+
+      it "treats verbs matching top-level constants as custom verbs" do
+        action = easy.send(:fabricate, url, :string, options)
+
+        expect(action).to be_a(Ethon::Easy::Http::Custom)
+        expect { action.setup(easy) }.not_to raise_error
+      end
     end
   end
 end

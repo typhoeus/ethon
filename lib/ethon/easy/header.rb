@@ -5,13 +5,13 @@ module Ethon
     #
     # @api private
     module Header
-      # Return headers, return empty hash if none.
+      # Return the request headers, return empty hash if none.
       #
-      # @example Return the headers.
-      #   easy.headers
+      # @example Return the request headers.
+      #   easy.request_headers
       #
-      # @return [ Hash ] The headers.
-      def headers
+      # @return [ Hash ] The request headers.
+      def request_headers
         @headers ||= {}
       end
 
@@ -29,8 +29,10 @@ module Ethon
         end
         Curl.set_option(:httpheader, header_list, handle)
 
+        @headers = headers
         @header_list = header_list && Curl::Slist.new(header_list)
       end
+      alias request_headers= headers=
 
       # Return header_list.
       #

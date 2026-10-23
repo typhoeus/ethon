@@ -79,15 +79,9 @@ describe Ethon::Multi::Stack do
 
     context "when easy is not in easy_handles" do
       it "does nothing" do
-        expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:ok)
-        multi.add(easy)
-        multi.easy_handles.delete(easy)
-      end
+        expect(Ethon::Curl).not_to receive(:multi_remove_handle)
 
-      it "adds easy to easy_handles" do
-        multi.add(easy)
-        expect(multi.easy_handles).to include(easy)
-        multi.delete(easy)
+        expect(multi.delete(easy)).to be_nil
       end
     end
 

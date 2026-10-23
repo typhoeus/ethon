@@ -17,5 +17,19 @@ describe Ethon::Libc do
 
       expect(Ethon::Libc.open_max).to eq(1024)
     end
+
+    it "uses the process limit when sysconf is not implemented" do
+      allow(Etc).to receive(:sysconf).and_raise(NotImplementedError)
+      allow(Process).to receive(:getrlimit).with(:NOFILE).and_return([2048, 2048])
+
+      expect(Ethon::Libc.open_max).to eq(2048)
+    end
+
+    it "uses the process limit when sysconf is not positive" do
+      allow(Etc).to receive(:sysconf).with(Etc::SC_OPEN_MAX).and_return(0)
+      allow(Process).to receive(:getrlimit).with(:NOFILE).and_return([4096, 4096])
+
+      expect(Ethon::Libc.open_max).to eq(4096)
+    end
   end
 end
