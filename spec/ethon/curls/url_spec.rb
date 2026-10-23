@@ -78,6 +78,12 @@ describe Ethon::Curl::Url do
     expect(copy.get(:path)).to eq("/wrapped")
   end
 
+  it "rejects a URL handle created before fork" do
+    allow(url).to receive(:check_pid!).and_raise(Ethon::Errors::ForkSafety.new)
+
+    expect { described_class.new(url) }.to raise_error(Ethon::Errors::ForkSafety)
+  end
+
   it "raises for missing parts" do
     url.set(:fragment, nil)
 

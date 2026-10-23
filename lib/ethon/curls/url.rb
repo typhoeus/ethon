@@ -18,7 +18,8 @@ module Ethon
           raise NotImplementedError, "curl_url is not supported by this libcurl"
         end
 
-        if url.is_a?(self.class)
+        if url.is_a?(Ethon::Curl::Url)
+          url.check_pid!
           pointer = Curl.url_dup(url)
           raise NoMemoryError, "curl_url_dup failed" if pointer.null?
         elsif url.is_a?(::FFI::Pointer)
