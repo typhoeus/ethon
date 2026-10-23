@@ -279,28 +279,37 @@ describe Ethon::Multi::Operations do
           fifo = File.join(dir, "fifo")
           File.mkfifo(fifo)
           clock = -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) }
-          last = clock.call
-          max_gap = 0.0
+          beats = []
+          beats_lock = Mutex.new
           heartbeat = Thread.new do
             loop do
-              now = clock.call
-              max_gap = [max_gap, now - last].max
-              last = now
+              beats_lock.synchronize { beats << clock.call }
               sleep 0.02
             end
           end
           writer = fork do
-            sleep 1
+            sleep 1.5
             File.write(fifo, "ok\n")
           end
 
           begin
             easy.url = "file://#{fifo}"
             multi.add(easy)
+
+            started = clock.call
             multi.perform
+            finished = clock.call
 
             expect(easy.response_body).to eq("ok\n")
-            expect(max_gap).to be < 0.5
+            expect(finished - started).to be >= 0.5
+
+            # The point is that the heartbeat ran while libcurl blocked, not
+            # that it ran at a perfectly steady interval. A single delayed
+            # heartbeat made this flaky on loaded CI runners.
+            during = beats_lock.synchronize do
+              beats.count { |beat| beat > started + 0.25 && beat < finished - 0.1 }
+            end
+            expect(during).to be > 0
           ensure
             heartbeat.kill
             heartbeat.join
