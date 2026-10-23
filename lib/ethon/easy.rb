@@ -259,6 +259,7 @@ module Ethon
       @on_progress = nil
       @user_debug_callback = nil
       @procs = nil
+      @blobs = nil
       @mirror = nil
       clear_response_body_io
       Curl.easy_reset(handle)

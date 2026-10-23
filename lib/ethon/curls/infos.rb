@@ -17,7 +17,10 @@ module Ethon
           :string =>0x100000,
           :long =>  0x200000,
           :double =>0x300000,
-          :slist => 0x400000
+          :slist => 0x400000,
+          :ptr =>   0x400000,
+          :socket =>0x500000,
+          :off_t => 0x600000
         }
       end
 
@@ -49,6 +52,35 @@ module Ethon
       # @return [ Hash ] The infos.
       def infos
         {
+          :size_upload_t =>          info_types[:off_t]  + 7,
+          :size_download_t =>        info_types[:off_t]  + 8,
+          :speed_download_t =>       info_types[:off_t]  + 9,
+          :speed_upload_t =>         info_types[:off_t]  + 10,
+          :filetime_t =>             info_types[:off_t]  + 14,
+          :content_length_download_t =>info_types[:off_t] + 15,
+          :content_length_upload_t =>info_types[:off_t]  + 16,
+          :http_version =>           info_types[:long]   + 46,
+          :proxy_ssl_verifyresult => info_types[:long]   + 47,
+          :scheme =>                 info_types[:string] + 49,
+          :total_time_t =>           info_types[:off_t]  + 50,
+          :namelookup_time_t =>      info_types[:off_t]  + 51,
+          :connect_time_t =>         info_types[:off_t]  + 52,
+          :pretransfer_time_t =>     info_types[:off_t]  + 53,
+          :starttransfer_time_t =>   info_types[:off_t]  + 54,
+          :redirect_time_t =>        info_types[:off_t]  + 55,
+          :appconnect_time_t =>      info_types[:off_t]  + 56,
+          :retry_after =>            info_types[:off_t]  + 57,
+          :effective_method =>       info_types[:string] + 58,
+          :proxy_error =>            info_types[:long]   + 59,
+          :referer =>                info_types[:string] + 60,
+          :cainfo =>                 info_types[:string] + 61,
+          :capath =>                 info_types[:string] + 62,
+          :xfer_id =>                info_types[:off_t]  + 63,
+          :conn_id =>                info_types[:off_t]  + 64,
+          :queue_time_t =>           info_types[:off_t]  + 65,
+          :used_proxy =>             info_types[:long]   + 66,
+          :activesocket =>           info_types[:socket] + 44,
+          :tls_ssl_ptr =>            info_types[:ptr]    + 45,
           :effective_url =>          info_types[:string] + 1,
           :response_code =>          info_types[:long]   + 2,
           :total_time =>             info_types[:double] + 3,
@@ -146,6 +178,38 @@ module Ethon
           double_ptr.read_double
         end
       end
+
+      # Return info as a 64-bit integer (curl_off_t).
+      def get_info_off_t(option, handle)
+        int64_ptr = ::FFI::MemoryPointer.new(:int64)
+
+        if easy_getinfo(handle, option, :pointer, int64_ptr) == :ok
+          int64_ptr.read_int64
+        end
+      end
+
+      # Return info as a curl_socket_t.
+      def get_info_socket(option, handle)
+        if Curl.windows?
+          ptr = ::FFI::MemoryPointer.new(:size_t)
+          return unless easy_getinfo(handle, option, :pointer, ptr) == :ok
+          ::FFI.type_size(:size_t) == 8 ? ptr.read_uint64 : ptr.read_uint32
+        else
+          ptr = ::FFI::MemoryPointer.new(:int)
+          ptr.read_int if easy_getinfo(handle, option, :pointer, ptr) == :ok
+        end
+      end
+
+      # Return info as a raw pointer.
+      def get_info_ptr(option, handle)
+        ptr = ::FFI::MemoryPointer.new(:pointer)
+
+        if easy_getinfo(handle, option, :pointer, ptr) == :ok
+          value = ptr.read_pointer
+          value unless value.null?
+        end
+      end
+
       # Return info as array of strings.
       #
       # @example Return info.

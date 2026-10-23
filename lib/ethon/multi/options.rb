@@ -18,6 +18,18 @@ module Ethon
         Curl.set_option(:max_total_connections, value_for(value, :int, :max_total_connections), handle, :multi)
       end
 
+      # Sets max_concurrent_streams option.
+      #
+      # @example Set max_concurrent_streams option.
+      #   multi.max_concurrent_streams = $value
+      #
+      # @param [ Integer ] value The value to set.
+      #
+      # @return [ void ]
+      def max_concurrent_streams=(value)
+        Curl.set_option(:max_concurrent_streams, value_for(value, :int, :max_concurrent_streams), handle, :multi)
+      end
+
       # Sets maxconnects option.
       #
       # @example Set maxconnects option.

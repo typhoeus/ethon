@@ -69,6 +69,28 @@ module Ethon
       end
     end
 
+    # struct curl_blob, used by the CURLOPT_*_BLOB options.
+    class Blob < ::FFI::Struct
+      layout :data, :pointer,
+             :len, :size_t,
+             :flags, :uint
+
+      # Copy a Ruby String into native memory and return a blob that keeps the
+      # copied buffer alive for as long as the blob is retained.
+      def self.from_string(value, flags = 0)
+        string = value.to_s
+        data = ::FFI::MemoryPointer.new(:char, string.bytesize)
+        data.put_bytes(0, string)
+
+        blob = new
+        blob[:data] = data
+        blob[:len] = string.bytesize
+        blob[:flags] = flags
+        blob.instance_variable_set(:@data, data)
+        blob
+      end
+    end
+
     # :nodoc:
     class MsgData < ::FFI::Union
       layout :whatever, :pointer, :code, :easy_code
