@@ -259,4 +259,23 @@ describe Ethon::Easy::Queryable do
       end
     end
   end
+
+  describe ".mime_types_available?" do
+    before { described_class.instance_variable_set(:@mime_types_available, nil) }
+    after { described_class.instance_variable_set(:@mime_types_available, nil) }
+
+    it "loads mime-types only once after a successful load" do
+      expect(described_class).to receive(:require).once.and_return(false)
+
+      expect(described_class.mime_types_available?).to be(true)
+      expect(described_class.mime_types_available?).to be(true)
+    end
+
+    it "does not retry after mime-types cannot be loaded" do
+      expect(described_class).to receive(:require).twice.and_raise(LoadError)
+
+      expect(described_class.mime_types_available?).to be(false)
+      expect(described_class.mime_types_available?).to be(false)
+    end
+  end
 end
