@@ -40,6 +40,11 @@ describe Ethon::Multi do
       expect(multi.instance_variable_get(:@assigned_sockets)).to be_empty
     end
 
+    it "rejects values that are not pointers" do
+      expect { multi.assign(42, "not a pointer") }.
+        to raise_error(Ethon::Errors::InvalidValue)
+    end
+
     it "raises on errors" do
       allow(Ethon::Curl).to receive(:multi_assign).and_return(:bad_socket)
 

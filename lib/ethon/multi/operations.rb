@@ -128,6 +128,10 @@ module Ethon
       #
       # @return [ Symbol ] The Curl multi return code.
       def assign(io, pointer)
+        unless pointer.nil? || pointer.is_a?(::FFI::Pointer)
+          raise Errors::InvalidValue.new(:assign, pointer)
+        end
+
         socket = io.respond_to?(:fileno) ? io.fileno : io
         code = Curl.multi_assign(handle, socket, pointer)
         raise Errors::MultiAssign.new(code) unless code == :ok
