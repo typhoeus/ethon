@@ -204,6 +204,17 @@ describe Ethon::Multi::Operations do
         expect { multi.perform }.to raise_error(error)
       end
 
+      it "completes and removes the easy before raising callback exceptions" do
+        completed = false
+        error = RuntimeError.new("body callback failed")
+        easy.on_body { raise error }
+        easy.on_complete { completed = true }
+
+        expect { multi.perform }.to raise_error(error)
+        expect(completed).to be(true)
+        expect(multi.easy_handles).not_to include(easy)
+      end
+
       it "raises debug callback exceptions" do
         easy.verbose = true
         error = RuntimeError.new("debug callback failed")
