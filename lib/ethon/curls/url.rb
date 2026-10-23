@@ -14,6 +14,7 @@ module Ethon
       #   to copy, or a native handle.
       # @param [ Integer, Symbol, Array ] flags CURLU_* flags.
       def initialize(url = nil, flags = 0)
+        Curl.init
         unless Curl.respond_to?(:url)
           raise NotImplementedError, "curl_url is not supported by this libcurl"
         end
