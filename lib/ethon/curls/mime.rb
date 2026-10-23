@@ -14,6 +14,7 @@ module Ethon
       # @param [ Ethon::Easy, FFI::Pointer ] easy The easy handle used to
       #   create the MIME structure.
       def initialize(easy)
+        Curl.init
         unless Curl.respond_to?(:mime_init)
           raise NotImplementedError, "curl_mime_init is not supported by this libcurl"
         end
