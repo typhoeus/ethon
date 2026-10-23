@@ -3,13 +3,13 @@ require 'rbconfig'
 
 describe "require 'ethon' memory usage" do
   # Retained Ruby heap memory that requiring ethon is allowed to add.
-  # This intentionally stays tight: eagerly loading large optional
-  # dependencies here makes every process that loads ethon pay for them.
-  # Update it deliberately when the baseline changes. The current baseline
-  # after removing the eager dependency load is just under 1 MB.
-  MAX_RETAINED_BYTES = 1024 * 1024
+  # This stays tight enough to catch eagerly loading a large optional
+  # dependency: mime-types adds about 1.6-1.8 MB. The extra headroom is for
+  # per-Ruby accounting differences. Update it deliberately when the baseline
+  # changes.
+  MAX_RETAINED_BYTES = 1536 * 1024
 
-  it "retains less than 1 MB" do
+  it "retains less than 1.5 MB" do
     script = <<~RUBY
       require 'objspace'
 

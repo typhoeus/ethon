@@ -17,6 +17,17 @@ describe "mime-types loading" do
     expect(run_ethon(script)).to be(true)
   end
 
+  it "does not load mime-types when an easy handle is created" do
+    script = <<~RUBY
+      require 'ethon'
+      Ethon::Easy.new
+      abort 'mime-types feature loaded by easy creation' if $LOADED_FEATURES.any? { |file| file.include?('mime/types') }
+      abort 'MIME::Types loaded by easy creation' if defined?(MIME::Types)
+    RUBY
+
+    expect(run_ethon(script)).to be(true)
+  end
+
   it "loads mime-types on the first upload" do
     skip "mime-types is not installed" unless Gem::Specification.find_all_by_name("mime-types").any?
 
