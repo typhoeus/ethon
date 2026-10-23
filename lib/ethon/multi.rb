@@ -22,11 +22,12 @@ module Ethon
     #
     # @param [ Hash ] options The options.
     #
-    # @option options :socketdata [String]
+    # @option options :socketdata [FFI::Pointer]
     #  Pass a pointer to whatever you want passed to the
     #  curl_socket_callback's forth argument, the userp pointer. This is not
     #  used by libcurl but only passed-thru as-is. Set the callback pointer
-    #  with CURLMOPT_SOCKETFUNCTION.
+    #  with CURLMOPT_SOCKETFUNCTION. Keep the pointer alive for as long as the
+    #  Multi may invoke the callback.
     # @option options :pipelining [Integer]
     #  Pass a bitmask: 0 for CURLPIPE_NOTHING, 1 for CURLPIPE_HTTP1, or 2 for
     #  CURLPIPE_MULTIPLEX. CURLPIPE_HTTP1 is deprecated and has no effect
@@ -46,11 +47,12 @@ module Ethon
     #  only when the fixed future timeout time actually changes. See also
     #  CURLMOPT_TIMERDATA. This callback can be used instead of, or in
     #  addition to, curl_multi_timeout(3). (Added in 7.16.0)
-    # @option options :timerdata [String]
+    # @option options :timerdata [FFI::Pointer]
     #  Pass a pointer to whatever you want passed to the
     #  curl_multi_timer_callback's third argument, the userp pointer. This
     #  is not used by libcurl but only passed-thru as-is. Set the callback
-    #  pointer with CURLMOPT_TIMERFUNCTION. (Added in 7.16.0)
+    #  pointer with CURLMOPT_TIMERFUNCTION. Keep the pointer alive for as long
+    #  as the Multi may invoke the callback. (Added in 7.16.0)
     # @option options :maxconnects [Integer]
     #  Pass a long. The set number will be used as the maximum amount of
     #  simultaneously open connections that libcurl may cache. Default is

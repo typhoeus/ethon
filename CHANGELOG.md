@@ -11,8 +11,40 @@
   relying on ethon to load `MIME::Types` must now require it itself.
   ([Clément Joubert](https://github.com/czj))
 
+### New libcurl bindings
+
+* Added a URL API wrapper (`Ethon::Curl::Url`) with `get`, `set`, `dup`, and
+  `to_s`, plus the `CURLU_*` part, code, and flag enums.
+  ([#311](https://github.com/typhoeus/ethon/pull/311))
+* Added a MIME API wrapper (`Ethon::Curl::Mime`, `Ethon::Curl::MimePart`) and
+  `Easy#mime=`/`#mimepost=` for multipart bodies, including per-part headers.
+  ([#312](https://github.com/typhoeus/ethon/pull/312))
+* Added a share API wrapper (`Ethon::Curl::Share`) with `Easy#share=` and
+  lock/unlock callbacks for multi-threaded sharing.
+  ([#313](https://github.com/typhoeus/ethon/pull/313))
+* Added structured response headers (`Easy#header`, `Easy#each_header`,
+  `Easy#headers_list`), option introspection (`Curl.easy_option`,
+  `Curl.option_by_id`, `Curl.each_easy_option`), and version introspection
+  (`Curl.protocols`, `Curl.feature_names`, `Curl.version_info_full`).
+  ([#314](https://github.com/typhoeus/ethon/pull/314))
+* Added `Easy#unescape`, `Easy#pause`, `Easy#upkeep`, `Multi#wait`,
+  `Multi#poll`, and `Multi#wakeup`.
+  ([#310](https://github.com/typhoeus/ethon/pull/310))
+* Added `Multi#assign`, `Multi#native_handles`, the `Curl::SslBackend` enum,
+  and optional `curl_global_sslset`/`curl_global_trace` bindings.
+  ([#315](https://github.com/typhoeus/ethon/pull/315))
+
+Functions that are not exported by the loaded libcurl are attached
+conditionally. Wrappers raise `NotImplementedError` when the function they need
+is unavailable; introspection helpers return `nil` or an empty array.
+
 ### Fixes and hardening
 
+* Exceptions raised while buffering response headers are now captured and
+  re-raised after the transfer, matching the body and debug callbacks.
+  ([#316](https://github.com/typhoeus/ethon/pull/316))
+* `Easy.supports_timeout_ms?` now checks the libcurl version instead of async
+  DNS support. ([#319](https://github.com/typhoeus/ethon/pull/319))
 * Corrected the native option number for `tcp_fastopen` (`CURLOPT_TCP_FASTOPEN`,
   244) and the string ABI used by `tlsauth_type` and `proxy_tlsauth_type`.
   `:srp` and `"srp"` are normalized to libcurl's required `"SRP"` value.

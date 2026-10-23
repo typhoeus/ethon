@@ -93,6 +93,45 @@ multi.add(easy)
 multi.perform
 ```
 
+## Lower-level libcurl APIs
+
+Ethon exposes wrappers for some of libcurl's newer APIs. Optional bindings are
+attached only when the loaded libcurl exports them. Wrappers for the URL, MIME,
+share, header, and transfer helpers raise `NotImplementedError` when the
+underlying function is missing; introspection helpers return `nil` or `[]`.
+
+```ruby
+# URL API
+url = Ethon::Curl::Url.new("https://example.com/a")
+url.get(:host) #=> "example.com"
+url.set(:path, "/b")
+url.to_s       #=> "https://example.com/b"
+
+# MIME API
+easy = Ethon::Easy.new(url: "http://example.com/upload")
+mime = Ethon::Curl::Mime.new(easy)
+part = mime.addpart
+part.name = "file"
+part.file = "/tmp/example.txt"
+part.headers = { "X-Checksum" => "abc123" }
+easy.mime = mime
+
+# Share cookies or DNS data between easy handles
+share = Ethon::Curl::Share.new.share(:cookie)
+easy.share = share
+
+# Structured response headers and option metadata
+easy.perform
+easy.header("Content-Type")
+easy.each_header { |header| puts "#{header.name}: #{header.value}" }
+Ethon::Curl.easy_option("URL")
+Ethon::Curl.protocols
+```
+
+When a share handle is used from more than one thread, set
+`Share#lockfunction=` and `Share#unlockfunction=` so libcurl can synchronize
+access to the shared data.
+
 ## Thread and fork safety
 
 Ethon can be used from multiple threads, but it does not synchronize access to
