@@ -2,10 +2,12 @@
 module Ethon
   module Curl
     class OwnedPointer < ::FFI::AutoPointer
+      OWNERS_MUTEX = Mutex.new
+
       def initialize(pointer)
         super
         @pid = Process.pid
-        self.class.owners[pointer.address] = @pid
+        OWNERS_MUTEX.synchronize { self.class.owners[pointer.address] = @pid }
       end
 
       def check_pid!
@@ -17,7 +19,7 @@ module Ethon
       end
 
       def self.release(pointer)
-        owner_pid = owners.delete(pointer.address)
+        owner_pid = OWNERS_MUTEX.synchronize { owners.delete(pointer.address) }
         native_release(pointer) if owner_pid == Process.pid
       end
     end
