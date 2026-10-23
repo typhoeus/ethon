@@ -51,6 +51,8 @@ module Ethon
       def cleanup
         clear_response_body_io
         handle.free
+      ensure
+        @handle = nil
       end
 
       # Prepare the easy. Options, headers and callbacks
