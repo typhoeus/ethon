@@ -113,9 +113,12 @@ application threads so libcurl's global initialization happens while the
 process is still single-threaded.
 
 Ethon handles and initialized libcurl state must not be inherited across a
-`fork`. Create all `Easy` and `Multi` instances after worker processes fork, or
-use `fork` followed by `exec`. Ethon raises `Ethon::Errors::ForkSafety` when a
-child process tries to use a handle created by its parent.
+`fork`. If any `Easy` or `Multi` was created before forking, libcurl is already
+initialized and the child cannot create new handles either; use `fork` followed
+by `exec` in that case. If libcurl was not initialized before forking, create
+all `Easy` and `Multi` instances after the fork. Ethon raises
+`Ethon::Errors::ForkSafety` when a child process tries to use inherited libcurl
+state.
 
 ##  LICENSE
 

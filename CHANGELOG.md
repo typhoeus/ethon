@@ -23,8 +23,9 @@ upgrading.
   with invalid state. ([#286](https://github.com/typhoeus/ethon/pull/286))
 * Easy and Multi handles created before a `fork` can no longer be used or
   cleaned up in the child process. Ethon now raises
-  `Ethon::Errors::ForkSafety`; create handles after forking or use `fork` plus
-  `exec`. ([#295](https://github.com/typhoeus/ethon/pull/295))
+  `Ethon::Errors::ForkSafety`; if libcurl was initialized before forking, use
+  `fork` plus `exec`, otherwise create handles after forking.
+  ([#295](https://github.com/typhoeus/ethon/pull/295))
 * Unknown named enum and bitmask option values now raise
   `Ethon::Errors::InvalidValue` instead of silently becoming `0`. Strings and
   symbols are accepted equivalently, and direct integer values remain
