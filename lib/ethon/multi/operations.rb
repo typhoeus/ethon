@@ -171,6 +171,60 @@ module Ethon
         easy_handles.size > 0 || (running_count || 0) > 0
       end
 
+      # Associate an arbitrary pointer with a socket in the multi handle.
+      #
+      # @param [ Integer, IO ] io The socket descriptor.
+      # @param [ FFI::Pointer, nil ] pointer The pointer to associate, or nil
+      #   to clear it.
+      #
+      # @return [ Symbol ] The Curl multi return code.
+      def assign(io, pointer)
+        unless pointer.nil? || pointer.is_a?(::FFI::Pointer)
+          raise Errors::InvalidValue.new(:assign, pointer)
+        end
+
+        socket = io.respond_to?(:fileno) ? io.fileno : io
+        code = Curl.multi_assign(handle, socket, pointer)
+        raise Errors::MultiAssign.new(code) unless code == :ok
+
+        # libcurl keeps the pointer until the socket is removed or assigned
+        # again, so keep it alive from Ruby as well.
+        if pointer.nil? || pointer.null?
+          (@assigned_sockets ||= {}).delete(socket)
+        else
+          (@assigned_sockets ||= {})[socket] = pointer
+        end
+
+        code
+      end
+
+      # Return the easy handles currently attached natively.
+      #
+      # @return [ Array<FFI::Pointer> ] Native easy handles.
+      def native_handles
+        unless Curl.respond_to?(:multi_get_handles)
+          raise NotImplementedError, "curl_multi_get_handles is not supported by this libcurl"
+        end
+
+        pointer = Curl.multi_get_handles(handle)
+        raise NoMemoryError, "curl_multi_get_handles failed" if pointer.null?
+
+        begin
+          handles = []
+          offset = 0
+          loop do
+            easy = pointer.get_pointer(offset)
+            break if easy.null?
+
+            handles << easy
+            offset += ::FFI.type_size(:pointer)
+          end
+          handles
+        ensure
+          Curl.free(pointer)
+        end
+      end
+
       private
 
       # Get timeout.

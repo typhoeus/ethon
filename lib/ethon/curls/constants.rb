@@ -4,6 +4,25 @@ module Ethon
     # :nodoc:
     VERSION_NOW = 3
 
+    # curl_sslbackend values used by curl_global_sslset.
+    SslBackend = enum(:ssl_backend, [
+      :none,
+      :openssl,
+      :gnutls,
+      :nss,
+      :obsolete4,
+      :gskit,
+      :polarssl,
+      :wolfssl,
+      :schannel,
+      :securetransport,
+      :axtls,
+      :mbedtls,
+      :mesalink,
+      :bearssl,
+      :rustls
+    ])
+
     # Flag. Initialize SSL.
     GLOBAL_SSL     = 0x01
     # Flag. Initialize win32 socket libraries.
