@@ -23,6 +23,20 @@ module Ethon
         base.attach_function :easy_reset,                 :curl_easy_reset,          [:pointer],                     :void
         base.attach_function :easy_duphandle,             :curl_easy_duphandle,      [:pointer],                     :pointer
 
+        url_attach = lambda do |name, func, args, returns|
+          begin
+            base.attach_function(name, func, args, returns, blocking: false)
+          rescue ::FFI::NotFoundError
+            nil
+          end
+        end
+        url_attach.call(:url, :curl_url, [], :pointer)
+        url_attach.call(:url_cleanup, :curl_url_cleanup, [:pointer], :void)
+        url_attach.call(:url_dup, :curl_url_dup, [:pointer], :pointer)
+        url_attach.call(:url_get, :curl_url_get, [:pointer, :url_part, :pointer, :url_flags], :url_code)
+        url_attach.call(:url_set, :curl_url_set, [:pointer, :url_part, :string, :url_flags], :url_code)
+        url_attach.call(:url_strerror, :curl_url_strerror, [:url_code], :string)
+
         base.attach_function :formadd,                    :curl_formadd,             [:pointer, :pointer, :varargs], :int
         base.attach_function :formfree,                   :curl_formfree,            [:pointer],                     :void
 
