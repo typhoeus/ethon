@@ -22,7 +22,12 @@ module Ethon
         super
       ensure
         key = [Process.pid, pointer.address]
-        CALLBACKS_MUTEX.synchronize { callbacks.delete(key) }
+        begin
+          CALLBACKS_MUTEX.synchronize { callbacks.delete(key) }
+        rescue ThreadError, SignalException
+          # Finalizers can run in a trap context where locking is forbidden.
+          callbacks.delete(key)
+        end
       end
 
       # Build the dispatcher on the class so the closure does not retain the
@@ -35,6 +40,7 @@ module Ethon
       end
 
       def initialize
+        Curl.init
         unless Curl.respond_to?(:share_init)
           raise NotImplementedError, "curl_share_init is not supported by this libcurl"
         end
