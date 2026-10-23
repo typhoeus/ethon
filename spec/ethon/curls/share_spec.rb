@@ -168,6 +168,12 @@ describe Ethon::Easy do
     expect(easy.share).to be_nil
   end
 
+  it "rejects a share handle created before fork" do
+    allow(share).to receive(:check_pid!).and_raise(Ethon::Errors::ForkSafety.new)
+
+    expect { easy.share = share }.to raise_error(Ethon::Errors::ForkSafety)
+  end
+
   it "reattaches the share handle when duplicating an Easy" do
     shared = share.share(:cookie)
     first = Ethon::Easy.new

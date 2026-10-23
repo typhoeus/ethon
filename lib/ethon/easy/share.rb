@@ -10,6 +10,7 @@ module Ethon
       #
       # @return [ Ethon::Curl::Share, nil ] The share handle.
       def share=(share)
+        share.check_pid! if share.respond_to?(:check_pid!)
         Curl.set_option(:share, share, handle)
         @share = share
         share
