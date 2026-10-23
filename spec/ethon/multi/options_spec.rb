@@ -165,6 +165,24 @@ describe Ethon::Multi::Options do
     end
   end
 
+  describe "#pipelining=" do
+    it "maps true to 1" do
+      expect(Ethon::Curl).to receive(:set_option).with(:pipelining, 1, anything, :multi)
+
+      multi.pipelining = true
+    end
+
+    it "maps false to 0" do
+      expect(Ethon::Curl).to receive(:set_option).with(:pipelining, 0, anything, :multi)
+
+      multi.pipelining = false
+    end
+
+    it "rejects invalid values" do
+      expect { multi.pipelining = :multiplex }.to raise_error(Ethon::Errors::InvalidValue)
+    end
+  end
+
   describe "#value_for" do
     context "when option in bool" do
       context "when value true" do

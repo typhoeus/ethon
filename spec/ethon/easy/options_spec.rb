@@ -154,6 +154,13 @@ describe Ethon::Easy::Options do
       expect { Ethon::Curl.set_option(:httpauth, [:basic, "unknown"], easy.handle) }.
         to raise_error(Ethon::Errors::InvalidValue, /unknown.*httpauth/)
     end
+
+    it "rejects non-numeric integer values" do
+      easy
+
+      expect { Ethon::Curl.set_option(:timeout, "abc", easy.handle) }.
+        to raise_error(Ethon::Errors::InvalidValue, /timeout/)
+    end
   end
 
   [

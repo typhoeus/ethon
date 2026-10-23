@@ -37,6 +37,15 @@ describe Ethon::Multi::Stack do
       end
     end
 
+    context "when easy.handle raises" do
+      it "does not track the easy" do
+        allow(easy).to receive(:handle).and_raise(Ethon::Errors::ForkSafety.new)
+
+        expect { multi.add(easy) }.to raise_error(Ethon::Errors::ForkSafety)
+        expect(multi.easy_handles).not_to include(easy)
+      end
+    end
+
     context "when a callback raises while adding" do
       it "keeps the easy tracked" do
         error = RuntimeError.new("callback failed")

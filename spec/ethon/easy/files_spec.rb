@@ -42,6 +42,18 @@ describe Ethon::Easy::Files do
     end
   end
 
+  it "closes an owned file when on_complete raises" do
+    Tempfile.create do |file|
+      file.close
+      easy.file = file.path
+      io = easy.instance_variable_get(:@response_body_io)
+      easy.on_complete { raise "complete failed" }
+
+      expect { easy.perform }.to raise_error("complete failed")
+      expect(io).to be_closed
+    end
+  end
+
   it "closes an owned file on reset" do
     Tempfile.create do |file|
       file.close

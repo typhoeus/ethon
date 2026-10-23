@@ -51,6 +51,17 @@ describe Ethon::Easy::Form do
         expect(form.multipart?).to be_truthy
       end
     end
+
+    context "when params_encoding is :none and a value is an array" do
+      let(:hash) { { :a => [1, 2] } }
+      let(:pairs) { nil }
+
+      before { form.params_encoding = :none }
+
+      it "returns false" do
+        expect(form.multipart?).to be_falsey
+      end
+    end
   end
 
   describe "#materialize" do

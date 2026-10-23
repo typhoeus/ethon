@@ -26,6 +26,14 @@ describe Ethon::Multi do
           expect_any_instance_of(Ethon::Multi).to receive(:pipelining=).with(true)
           Ethon::Multi.new(options)
         end
+
+        it "accepts true" do
+          expect { Ethon::Multi.new(:pipelining => true) }.not_to raise_error
+        end
+
+        it "accepts false" do
+          expect { Ethon::Multi.new(:pipelining => false) }.not_to raise_error
+        end
       end
 
       context "when execution_mode option is :socket_action" do

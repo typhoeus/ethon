@@ -58,6 +58,31 @@ describe Ethon::Easy::Operations do
       writer.close if writer && !writer.closed?
       Process.wait(pid) if pid
     end
+
+    it "rejects creating a new handle after a fork when libcurl was initialized" do
+      easy.handle
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Easy.new
+          writer.write("ok")
+        rescue Exception => e
+          writer.write(e.class.name)
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("Ethon::Errors::ForkSafety")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
   end
 
 
@@ -105,6 +130,12 @@ describe Ethon::Easy::Operations do
     it "calls Curl.easy_cleanup" do
       expect_any_instance_of(FFI::AutoPointer).to receive(:free)
       easy.cleanup
+    end
+
+    it "forgets the handle after cleanup" do
+      easy.cleanup
+
+      expect(easy.instance_variable_get(:@handle)).to be_nil
     end
 
     it "logs" do
@@ -336,6 +367,17 @@ describe Ethon::Easy::Operations do
       easy.debugfunction { raise error }
 
       expect { easy.perform }.to raise_error(error)
+    end
+
+    it "calls on_complete before raising on_progress exceptions" do
+      easy.url = "http://localhost:3001/"
+      completed = false
+      error = RuntimeError.new("progress callback failed")
+      easy.on_progress { raise error }
+      easy.on_complete { completed = true }
+
+      expect { easy.perform }.to raise_error(error)
+      expect(completed).to be(true)
     end
   end
 end
