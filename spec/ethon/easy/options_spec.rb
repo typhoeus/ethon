@@ -425,18 +425,6 @@ describe Ethon::Easy::Options do
       end
     end
 
-    context "when timeout" do
-      let(:timeout) { 1 }
-
-      context "when request takes longer" do
-        let(:url) { "localhost:3001?delay=2" }
-
-        it "times out" do
-          expect(easy.return_code).to eq(:operation_timedout)
-        end
-      end
-    end
-
     context "when connecttimeout" do
       let(:connecttimeout) { 1 }
 

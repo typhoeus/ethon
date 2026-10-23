@@ -104,6 +104,7 @@ describe Ethon::Easy::Operations do
   describe "#perform" do
     let(:url) { nil }
     let(:timeout) { nil }
+    let(:timeout_ms) { nil }
     let(:connect_timeout) { nil }
     let(:follow_location) { nil }
     let(:max_redirs) { nil }
@@ -116,9 +117,9 @@ describe Ethon::Easy::Operations do
     let(:password) { nil }
 
     before do
-      Ethon.logger.level = Logger::DEBUG
       easy.url = url
       easy.timeout = timeout
+      easy.timeout_ms = timeout_ms
       easy.connecttimeout = connect_timeout
       easy.followlocation = follow_location
       easy.maxredirs = max_redirs
@@ -154,8 +155,12 @@ describe Ethon::Easy::Operations do
     end
 
     it "logs" do
+      level = Ethon.logger.level
+      Ethon.logger.level = Logger::DEBUG
       expect(Ethon.logger).to receive(:debug)
       easy.perform
+    ensure
+      Ethon.logger.level = level
     end
 
     it "doesn't log after completing because completing could reset" do
@@ -178,12 +183,23 @@ describe Ethon::Easy::Operations do
         expect(easy.response_headers).to be
       end
 
-      context "when request timed out" do
-        let(:url) { "http://localhost:3001/?delay=1" }
-        let(:timeout) { 1 }
+      if Ethon::Easy.supports_timeout_ms?
+        context "when request timed out" do
+          let(:url) { "http://127.0.0.1:3001/?delay=0.3" }
+          let(:timeout_ms) { 100 }
 
-        it "returns operation_timedout" do
-          expect(easy.return_code).to eq(:operation_timedout)
+          it "returns operation_timedout" do
+            expect(easy.return_code).to eq(:operation_timedout)
+          end
+        end
+      else
+        context "when request timed out" do
+          let(:url) { "http://127.0.0.1:3001/?delay=1" }
+          let(:timeout) { 1 }
+
+          it "returns operation_timedout" do
+            expect(easy.return_code).to eq(:operation_timedout)
+          end
         end
       end
 

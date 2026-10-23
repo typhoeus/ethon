@@ -2,42 +2,29 @@
 require 'rbconfig'
 
 describe "mime-types loading" do
-  def run_ethon(script)
-    lib = File.expand_path('../../lib', __dir__)
-    system(RbConfig.ruby, '-I', lib, '-e', script)
-  end
-
-  it "does not load mime-types when ethon is required" do
+  it "is deferred until a file is uploaded" do
+    has_mime_types = Gem::Specification.find_all_by_name("mime-types").any?
     script = <<~RUBY
       require 'ethon'
-      abort 'mime-types feature loaded by require' if $LOADED_FEATURES.any? { |file| file.include?('mime/types') }
-      abort 'MIME::Types loaded by require' if defined?(MIME::Types)
-    RUBY
 
-    expect(run_ethon(script)).to be(true)
-  end
+      mime_loaded = -> { $LOADED_FEATURES.any? { |file| file.include?('mime/types') } }
+      abort 'mime-types loaded by require' if mime_loaded.call
+      abort 'MIME::Types defined by require' if defined?(MIME::Types)
 
-  it "does not load mime-types when an easy handle is created" do
-    script = <<~RUBY
-      require 'ethon'
       Ethon::Easy.new
-      abort 'mime-types feature loaded by easy creation' if $LOADED_FEATURES.any? { |file| file.include?('mime/types') }
-      abort 'MIME::Types loaded by easy creation' if defined?(MIME::Types)
-    RUBY
+      abort 'mime-types loaded by easy creation' if mime_loaded.call
+      abort 'MIME::Types defined by easy creation' if defined?(MIME::Types)
 
-    expect(run_ethon(script)).to be(true)
-  end
-
-  it "loads mime-types on the first upload" do
-    skip "mime-types is not installed" unless Gem::Specification.find_all_by_name("mime-types").any?
-
-    script = <<~RUBY
-      require 'ethon'
       Ethon::Easy::Form.new(nil, {}).send(:mime_type, 'a.rb')
-      abort 'mime-types not loaded on upload' unless $LOADED_FEATURES.any? { |file| file.include?('mime/types') }
-      abort 'MIME::Types not defined on upload' unless defined?(MIME::Types)
+      if #{has_mime_types}
+        abort 'mime-types not loaded on upload' unless mime_loaded.call
+        abort 'MIME::Types not defined on upload' unless defined?(MIME::Types)
+      else
+        abort 'mime-types loaded without being installed' if mime_loaded.call
+      end
     RUBY
 
-    expect(run_ethon(script)).to be(true)
+    lib = File.expand_path('../../lib', __dir__)
+    expect(system(RbConfig.ruby, '-I', lib, '-e', script)).to be(true)
   end
 end

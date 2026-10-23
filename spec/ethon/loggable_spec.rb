@@ -4,6 +4,12 @@ require "spec_helper"
 describe Ethon::Loggable do
 
   describe "#logger=" do
+    around do |example|
+      original = Ethon.logger
+      example.run
+    ensure
+      Ethon.logger = original
+    end
 
     let(:logger) do
       Logger.new($stdout).tap do |log|

@@ -15,7 +15,7 @@ require_relative 'support/server'
 # end
 
 RSpec.configure do |config|
-  # config.order = :rand
+  config.order = :random
 
   config.before(:suite) do
     LocalhostServer.new(TESTSERVER.new, 3001)

@@ -2,6 +2,13 @@
 require 'spec_helper'
 
 describe Ethon::Curl do
+  around do |example|
+    initialized = Ethon::Curl.class_variable_get(:@@initialized)
+    example.run
+  ensure
+    Ethon::Curl.class_variable_set(:@@initialized, initialized)
+  end
+
   describe ".version_info" do
     it "requests the current version info structure" do
       version_info = instance_double(Ethon::Curl::VersionInfoData)

@@ -56,7 +56,7 @@ describe Ethon::Multi::Options do
         end
 
         easy = Ethon::Easy.new
-        easy.url = "http://localhost:3001/?delay=1"
+        easy.url = "http://127.0.0.1:3001/?delay=0.2"
         multi.add(easy)
         expect(calls).to eq([])
         5.times do
@@ -77,7 +77,7 @@ describe Ethon::Multi::Options do
         end
 
         easy = Ethon::Easy.new
-        easy.url = "http://localhost:3001/?delay=1"
+        easy.url = "http://127.0.0.1:3001/?delay=0.2"
         multi.add(easy)
         5.times do
           multi.socket_action
@@ -97,7 +97,7 @@ describe Ethon::Multi::Options do
         end
 
         easy = Ethon::Easy.new
-        easy.url = "http://localhost:3001/?delay=1"
+        easy.url = "http://127.0.0.1:3001/?delay=0.2"
         multi.add(easy)
         expect {
           5.times do
@@ -123,7 +123,7 @@ describe Ethon::Multi::Options do
         end
 
         easy = Ethon::Easy.new
-        easy.url = "http://localhost:3001/?delay=1"
+        easy.url = "http://127.0.0.1:3001/?delay=0.2"
         multi.add(easy)
         expect(calls.last).to be >= 0 # adds an immediate timeout
 
@@ -139,7 +139,7 @@ describe Ethon::Multi::Options do
         end
 
         easy = Ethon::Easy.new
-        easy.url = "http://localhost:3001/?delay=1"
+        easy.url = "http://127.0.0.1:3001/?delay=0.2"
         multi.add(easy)
         multi.socket_action
         multi.delete(easy)
@@ -153,7 +153,7 @@ describe Ethon::Multi::Options do
         end
 
         easy = Ethon::Easy.new
-        easy.url = "http://localhost:3001/?delay=1"
+        easy.url = "http://127.0.0.1:3001/?delay=0.2"
         expect { multi.add(easy) }.to raise_error(ArgumentError)
       ensure
         multi.timerfunction = proc { 0 }
