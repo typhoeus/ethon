@@ -9,7 +9,7 @@ describe "require 'ethon' memory usage" do
   # after removing the eager dependency load is just under 1 MB.
   MAX_RETAINED_BYTES = 1024 * 1024
 
-  it "retains less than #{MAX_RETAINED_BYTES} bytes" do
+  it "retains less than 1 MB" do
     script = <<~RUBY
       require 'objspace'
 
