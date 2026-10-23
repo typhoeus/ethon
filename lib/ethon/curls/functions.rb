@@ -37,6 +37,18 @@ module Ethon
         base.attach_function :multi_strerror,             :curl_multi_strerror,      [:int],                         :string
         base.attach_function :multi_setopt,               :curl_multi_setopt,        [:pointer, :multi_option, :varargs], :multi_code
         base.attach_function :multi_socket_action,        :curl_multi_socket_action, [:pointer, :curl_socket_t, :socket_readiness, :pointer], :multi_code, blocking: true
+        base.attach_function :multi_assign,               :curl_multi_assign,        [:pointer, :curl_socket_t, :pointer], :multi_code
+
+        helper_attach = lambda do |name, func, args, returns|
+          begin
+            base.attach_function(name, func, args, returns, blocking: false)
+          rescue ::FFI::NotFoundError
+            nil
+          end
+        end
+        helper_attach.call(:multi_get_handles, :curl_multi_get_handles, [:pointer], :pointer)
+        helper_attach.call(:global_sslset, :curl_global_sslset, [:ssl_backend, :string, :pointer], :easy_code)
+        helper_attach.call(:global_trace, :curl_global_trace, [:string], :easy_code)
 
         base.attach_function :version,                    :curl_version,             [],                             :string
         base.attach_function :curl_version_info,          :curl_version_info,        [:int],                         Curl::VersionInfoData.ptr
