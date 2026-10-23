@@ -172,10 +172,14 @@ describe Ethon::Easy::Http::Put do
 
       after { file.close }
 
-      it "retains the multipart form" do
+      it "retains the multipart body" do
         put.setup(easy)
 
-        expect(easy.instance_variable_get(:@multipart_form)).to be(put.form)
+        if Ethon::Curl.respond_to?(:mime_init)
+          expect(easy.mime).to be(put.form.mime)
+        else
+          expect(easy.instance_variable_get(:@multipart_form)).to be(put.form)
+        end
       end
 
       it "uses PUT without upload mode" do

@@ -68,6 +68,31 @@ module Ethon
         query_pairs.each { |pair| form_add(pair.first.to_s, pair.last) }
       end
 
+      # Build a MIME structure for this form.
+      #
+      # @example Build a MIME structure.
+      #   form.mime
+      #
+      # @return [ Ethon::Curl::Mime ] The MIME structure.
+      def mime
+        @mime ||= begin
+          structure = Ethon::Curl::Mime.new(@easy)
+          query_pairs.each do |pair|
+            part = structure.addpart
+            name, content = pair
+            part.name = name.to_s
+            if content.is_a?(Array)
+              part.file = content[2]
+              part.filename = content[0]
+              part.type = content[1]
+            else
+              part.data = content.to_s
+            end
+          end
+          structure
+        end
+      end
+
       private
 
       def contains_file?(value)
