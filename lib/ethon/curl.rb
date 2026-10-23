@@ -27,6 +27,7 @@ module Ethon
     end
 
     require 'ethon/curls/constants'
+    require 'ethon/curls/introspection_constants'
     require 'ethon/curls/settings'
     require 'ethon/curls/classes'
     require 'ethon/curls/url_constants'
