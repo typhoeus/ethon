@@ -11,6 +11,9 @@ require 'ethon/errors/select'
 require 'ethon/errors/invalid_option'
 require 'ethon/errors/invalid_value'
 require 'ethon/errors/fork_safety'
+require 'ethon/errors/multi_wait'
+require 'ethon/errors/multi_poll'
+require 'ethon/errors/multi_wakeup'
 
 module Ethon
 

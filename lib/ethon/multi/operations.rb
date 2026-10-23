@@ -79,6 +79,57 @@ module Ethon
         )
       end
 
+      # Wait for activity on the multi's sockets.
+      #
+      # @example Wait up to one second.
+      #   multi.wait(1000)
+      #
+      # @param [ Integer ] timeout_ms Maximum time to wait in milliseconds.
+      #
+      # @return [ Integer ] Number of file descriptors with activity.
+      def wait(timeout_ms = 1000)
+        unless Curl.respond_to?(:multi_wait)
+          raise NotImplementedError, "curl_multi_wait is not supported by this libcurl"
+        end
+
+        numfds = ::FFI::MemoryPointer.new(:int)
+        code = Curl.multi_wait(handle, ::FFI::Pointer::NULL, 0, timeout_ms, numfds)
+        raise Errors::MultiWait.new(code) unless code == :ok
+
+        numfds.read_int
+      end
+
+      # Wait for activity using curl_multi_poll.
+      #
+      # @param [ Integer ] timeout_ms Maximum time to wait in milliseconds.
+      #
+      # @return [ Integer ] Number of file descriptors with activity.
+      def poll(timeout_ms = 1000)
+        unless Curl.respond_to?(:multi_poll)
+          raise NotImplementedError, "curl_multi_poll is not supported by this libcurl"
+        end
+
+        numfds = ::FFI::MemoryPointer.new(:int)
+        code = Curl.multi_poll(handle, ::FFI::Pointer::NULL, 0, timeout_ms, numfds)
+        raise Errors::MultiPoll.new(code) unless code == :ok
+
+        numfds.read_int
+      end
+
+      # Wake up a multi handle blocked in curl_multi_poll.
+      #
+      # @return [ Symbol ] The Curl multi return code.
+      def wakeup
+        unless Curl.respond_to?(:multi_wakeup)
+          raise NotImplementedError, "curl_multi_wakeup is not supported by this libcurl"
+        end
+
+        code = Curl.multi_wakeup(handle)
+        raise Errors::MultiWakeup.new(code) unless code == :ok
+
+        code
+      end
+
       # Continue execution with an external IO loop.
       #
       # @example When no sockets are ready yet, or to begin.
