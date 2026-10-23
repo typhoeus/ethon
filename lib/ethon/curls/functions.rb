@@ -34,17 +34,10 @@ module Ethon
         base.attach_function :formadd,                    :curl_formadd,             [:pointer, :pointer, :varargs], :int
         base.attach_function :formfree,                   :curl_formfree,            [:pointer],                     :void
 
-        share_attach = lambda do |name, func, args, returns|
-          begin
-            base.attach_function(name, func, args, returns, blocking: false)
-          rescue ::FFI::NotFoundError
-            nil
-          end
-        end
-        share_attach.call(:share_init, :curl_share_init, [], :pointer)
-        share_attach.call(:share_cleanup, :curl_share_cleanup, [:pointer], :share_code)
-        share_attach.call(:share_setopt, :curl_share_setopt, [:pointer, :share_option, :varargs], :share_code)
-        share_attach.call(:share_strerror, :curl_share_strerror, [:share_code], :string)
+        Ethon::Curls::Optional.attach(base, :share_init, :curl_share_init, [], :pointer, blocking: false)
+        Ethon::Curls::Optional.attach(base, :share_cleanup, :curl_share_cleanup, [:pointer], :share_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :share_setopt, :curl_share_setopt, [:pointer, :share_option, :varargs], :share_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :share_strerror, :curl_share_strerror, [:share_code], :string, blocking: false)
 
         base.attach_function :multi_init,                 :curl_multi_init,          [],                             :pointer
         base.attach_function :multi_cleanup,              :curl_multi_cleanup,       [:pointer],                     :void, blocking: true
