@@ -299,6 +299,8 @@ module Ethon
       # curl_easy_duphandle copies the error buffer pointer, give the copy its own
       e.instance_variable_set(:@error_buffer, nil)
       e.errorbuffer = true if @error_buffer_enabled
+      # curl_easy_duphandle does not inherit share state, so reattach it.
+      e.share = e.share if e.share
       e
     end
     # Url escapes the value.

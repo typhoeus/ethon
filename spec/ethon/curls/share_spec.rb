@@ -168,6 +168,19 @@ describe Ethon::Easy do
     expect(easy.share).to be_nil
   end
 
+  it "reattaches the share handle when duplicating an Easy" do
+    shared = share.share(:cookie)
+    first = Ethon::Easy.new
+    first.cookiefile = ""
+    first.share = shared
+    first.cookielist = "example.com\tFALSE\t/\tFALSE\t0\tname\tvalue"
+
+    copy = first.dup
+
+    expect(copy.share).to be(shared)
+    expect(copy.cookielist).to include(/name\tvalue/)
+  end
+
   it "shares cookies between easy handles" do
     shared = share.share(:cookie)
     first = Ethon::Easy.new
