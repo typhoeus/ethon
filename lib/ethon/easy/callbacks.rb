@@ -42,7 +42,7 @@ module Ethon
             result = body(chunk = stream.read_string(size * num))
             if @response_body_io && result != :abort && headers_user_callback_result != :abort
               @response_body_io.write(chunk)
-            elsif result == :unyielded
+            elsif result == :unyielded && !@response_body_io
               @response_body << chunk
             end
             (result != :abort && headers_user_callback_result != :abort) ? size * num : -1
@@ -61,8 +61,13 @@ module Ethon
       # @return [ Proc ] The callback.
       def header_write_callback
         @header_write_callback ||= proc {|stream, size, num, object|
-          @response_headers << stream.read_string(size * num)
-          size * num
+          begin
+            @response_headers << stream.read_string(size * num)
+            size * num
+          rescue Exception => e
+            @callback_error ||= e
+            0
+          end
         }
       end
 
