@@ -90,6 +90,7 @@ module Ethon
       # @return [ Object ] The value.
       def headers=(value)
         @mime.check_pid!
+        @headers_list = nil
 
         if value.nil?
           list = nil
