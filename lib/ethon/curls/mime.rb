@@ -90,15 +90,15 @@ module Ethon
       # @return [ Object ] The value.
       def headers=(value)
         @mime.check_pid!
-        @headers_list = nil
+        list = nil
+        retained = nil
+        owned = false
 
         if value.nil?
-          list = nil
-          owned = false
+          # Clear the headers.
         elsif value.is_a?(Curl::Slist)
-          @headers_list = value
           list = value
-          owned = false
+          retained = value
         else
           lines = value.is_a?(Hash) ? value.map { |key, item| "#{key}: #{item}" } : Array(value)
           list = lines.inject(nil) { |result, line| Curl.slist_append(result, line.to_s) }
@@ -112,6 +112,8 @@ module Ethon
           raise Errors::Mime.new(code)
         end
 
+        # The previous list must stay reachable until libcurl replaces it.
+        @headers_list = retained
         value
       end
 

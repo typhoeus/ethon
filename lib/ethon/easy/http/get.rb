@@ -16,8 +16,11 @@ module Ethon
         # @param [ Easy ] easy The easy to setup.
         def setup(easy)
           super
-          easy.httpget = true
-          easy.customrequest = "GET" unless form.empty?
+          if form.empty?
+            easy.httpget = true
+          else
+            easy.customrequest = "GET"
+          end
         end
       end
     end

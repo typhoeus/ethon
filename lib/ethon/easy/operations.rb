@@ -11,6 +11,8 @@ module Ethon
       #
       # @return [ FFI::Pointer ] A pointer to the curl easy handle.
       def handle
+        raise Errors::EthonError, "Easy has been cleaned up" if @cleaned_up
+
         handle = @handle ||= begin
           pointer = Curl.easy_init
           raise NoMemoryError, "curl_easy_init failed" if pointer.null?
@@ -48,6 +50,9 @@ module Ethon
 
       # Clean up the easy.
       #
+      # Cleanup is terminal: the native handle is freed and the Easy cannot be
+      # used again. Reusing it raises Ethon::Errors::EthonError.
+      #
       # @example Perform clean up.
       #   easy.cleanup
       #
@@ -57,6 +62,7 @@ module Ethon
         handle.free
       ensure
         @handle = nil
+        @cleaned_up = true
       end
 
       # Prepare the easy. Options, headers and callbacks

@@ -10,8 +10,9 @@ describe Ethon::Easy::Http::Options do
 
   describe "#setup" do
     it "sets customrequest" do
-      expect(easy).to receive(:customrequest=).with("OPTIONS")
+      allow(easy).to receive(:customrequest=)
       options.setup(easy)
+      expect(easy).to have_received(:customrequest=).with("OPTIONS")
     end
 
     it "sets url" do

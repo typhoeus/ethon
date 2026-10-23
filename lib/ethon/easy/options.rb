@@ -10,6 +10,11 @@ module Ethon
       attr_reader :url
 
       def url=(value)
+        if @curlu
+          Curl.set_option(:curlu, nil, handle)
+          @curlu = nil
+        end
+
         @url = value
         Curl.set_option(:url, value, handle)
       end
@@ -87,6 +92,9 @@ module Ethon
       end
 
       Curl.easy_options(nil).each do |opt, props|
+        # postfields= is defined below because libcurl does not copy the string.
+        next if opt == :postfields
+
         method_name = "#{opt}=".freeze
         unless method_defined? method_name
           if CALLBACK_TYPES.include?(props[:type])

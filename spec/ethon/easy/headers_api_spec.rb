@@ -30,6 +30,10 @@ describe Ethon::Easy::HeadersApi do
         to raise_error(Ethon::Errors::Header, /missing/)
     end
 
+    it "accepts an array of origins" do
+      expect(easy.header("Content-Type", 0, [:header]).value).to eq("text/plain")
+    end
+
   end
 
   describe "#each_header" do
@@ -42,6 +46,10 @@ describe Ethon::Easy::HeadersApi do
 
     it "supports headers_list as an alias" do
       expect(easy.headers_list.to_a).not_to be_empty
+    end
+
+    it "accepts an array of origins" do
+      expect(easy.each_header([:header]).to_a).not_to be_empty
     end
 
   end

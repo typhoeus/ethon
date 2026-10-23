@@ -275,7 +275,8 @@ module Ethon
       @multipart_form = nil
       @curlu = nil
       @mime = nil
-      @share = nil
+      # curl_easy_reset preserves CURLOPT_SHARE, so detach it explicitly.
+      self.share = nil if @share
       set_callbacks
     end
 

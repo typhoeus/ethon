@@ -57,6 +57,17 @@ describe Ethon::Curl::Mime do
       expect { part.headers = ["X-Test: 1"] }.
         to raise_error(Ethon::Errors::Mime, /memory/i)
     end
+
+    it "keeps a caller-owned header list alive until it is replaced" do
+      list = Ethon::Curl::Slist.new(Ethon::Curl.slist_append(nil, "X-Test: 1"))
+      part.headers = list
+      expect(part.instance_variable_get(:@headers_list)).to be(list)
+
+      allow(Ethon::Curl).to receive(:mime_headers).and_return(:out_of_memory)
+      expect { part.headers = { "X-Other" => "2" } }.
+        to raise_error(Ethon::Errors::Mime)
+      expect(part.instance_variable_get(:@headers_list)).to be(list)
+    end
   end
 
   describe "#initialize" do

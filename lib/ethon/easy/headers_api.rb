@@ -17,7 +17,7 @@ module Ethon
         end
 
         output = ::FFI::MemoryPointer.new(:pointer)
-        code = Curl.easy_header(handle, name.to_s, index, origin, request, output)
+        code = Curl.easy_header(handle, name.to_s, index, header_origin(origin), request, output)
         raise Errors::Header.new(code) unless code == :ok
 
         Curl::Header.new(Curl::HeaderData.new(output.read_pointer))
@@ -33,6 +33,8 @@ module Ethon
         unless Curl.respond_to?(:easy_nextheader)
           raise NotImplementedError, "curl_easy_nextheader is not supported by this libcurl"
         end
+
+        origin = header_origin(origin)
         return enum_for(:each_header, origin, request) unless block_given?
 
         previous = nil
@@ -46,6 +48,19 @@ module Ethon
         self
       end
       alias headers_list each_header
+
+      private
+
+      def header_origin(origin)
+        case origin
+        when Array
+          origin.inject(0) { |mask, item| mask | Curl::HeaderOrigin[item] }
+        when Symbol
+          Curl::HeaderOrigin[origin]
+        else
+          origin
+        end
+      end
     end
 
     include HeadersApi
