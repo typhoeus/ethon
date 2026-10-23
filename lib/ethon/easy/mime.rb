@@ -10,6 +10,7 @@ module Ethon
       #
       # @return [ Ethon::Curl::Mime, nil ] The MIME structure.
       def mime=(mime)
+        mime.check_pid! if mime.respond_to?(:check_pid!)
         Curl.set_option(:mimepost, mime, handle)
         @mime = mime
         mime

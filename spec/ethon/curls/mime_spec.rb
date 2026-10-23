@@ -135,5 +135,11 @@ describe Ethon::Curl::Mime do
 
       expect(easy.mime).to be_nil
     end
+
+    it "rejects a MIME structure created before fork" do
+      allow(mime).to receive(:check_pid!).and_raise(Ethon::Errors::ForkSafety.new)
+
+      expect { easy.mime = mime }.to raise_error(Ethon::Errors::ForkSafety)
+    end
   end
 end
