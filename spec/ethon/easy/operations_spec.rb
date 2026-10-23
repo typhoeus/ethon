@@ -327,6 +327,18 @@ describe Ethon::Easy::Operations do
 
         expect { easy.perform }.to raise_error(error)
       end
+
+      it "calls on_complete before raising on_body exceptions when verbose is #{verbose}" do
+        easy.url = "http://localhost:3001/"
+        easy.verbose = verbose
+        completed = false
+        error = RuntimeError.new("body callback failed")
+        easy.on_body { raise error }
+        easy.on_complete { completed = true }
+
+        expect { easy.perform }.to raise_error(error)
+        expect(completed).to be(true)
+      end
     end
 
     it "raises debug callback exceptions" do

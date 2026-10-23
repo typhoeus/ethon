@@ -32,11 +32,11 @@ module Ethon
         prepare_response_body_io
         clear_callback_error
         @return_code = Curl.easy_perform(handle)
-        raise_callback_error
         if Ethon.logger.debug?
           Ethon.logger.debug { "ETHON: performed #{log_inspect}" }
         end
         complete
+        raise_callback_error
         @return_code
       ensure
         finish_response_body_io
