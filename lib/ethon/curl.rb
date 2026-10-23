@@ -19,6 +19,8 @@ module Ethon
     extend Ethon::Curls::FormOptions
     extend Ethon::Curls::Messages
 
+    require 'ethon/curls/share_constants'
+
     # :nodoc:
     def self.windows?
       Libc.windows?
