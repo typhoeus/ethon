@@ -50,6 +50,13 @@ describe Ethon::Curl::Mime do
 
       expect { part.name = "field" }.to raise_error(Ethon::Errors::Mime, /memory/i)
     end
+
+    it "raises when curl_mime_headers fails" do
+      allow(Ethon::Curl).to receive(:mime_headers).and_return(:out_of_memory)
+
+      expect { part.headers = ["X-Test: 1"] }.
+        to raise_error(Ethon::Errors::Mime, /memory/i)
+    end
   end
 
   describe "#initialize" do
@@ -108,6 +115,25 @@ describe Ethon::Curl::Mime do
       expect(easy.perform).to eq(:ok)
       expect(easy.response_body).to include("field")
       expect(easy.response_body).to include("value")
+    end
+
+    it "posts a part with extra headers" do
+      easy.url = "http://localhost:3001/"
+      part = mime.addpart
+      part.name = "field"
+      part.data = "value"
+      part.headers = { "X-Test" => "1" }
+      easy.mime = mime
+
+      expect(easy.perform).to eq(:ok)
+    end
+
+    it "clears the MIME structure on reset" do
+      easy.mime = mime
+
+      easy.reset
+
+      expect(easy.mime).to be_nil
     end
   end
 end

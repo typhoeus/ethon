@@ -30,6 +30,7 @@ module Ethon
       #
       # @return [ MimePart ] The new part.
       def addpart
+        check_pid!
         pointer = Curl.mime_addpart(self)
         raise NoMemoryError, "curl_mime_addpart failed" if pointer.null?
 
@@ -79,9 +80,35 @@ module Ethon
         value
       end
 
+      # Set extra headers for this part.
+      #
+      # @param [ String, Array<String>, Hash, Curl::Slist, nil ] value The
+      #   headers to add. Strings, arrays and hashes are converted into a
+      #   curl_slist owned by libcurl.
+      #
+      # @return [ Object ] The value.
       def headers=(value)
-        code = Curl.mime_headers(@handle, value, 0)
-        raise Errors::Mime.new(code) unless code == :ok
+        @mime.check_pid!
+
+        if value.nil?
+          list = nil
+          owned = false
+        elsif value.is_a?(Curl::Slist)
+          @headers_list = value
+          list = value
+          owned = false
+        else
+          lines = value.is_a?(Hash) ? value.map { |key, item| "#{key}: #{item}" } : Array(value)
+          list = lines.inject(nil) { |result, line| Curl.slist_append(result, line.to_s) }
+          raise NoMemoryError, "curl_slist_append failed" if !lines.empty? && list.nil?
+          owned = !list.nil?
+        end
+
+        code = Curl.mime_headers(@handle, list, owned ? 1 : 0)
+        unless code == :ok
+          Curl.slist_free_all(list) if owned
+          raise Errors::Mime.new(code)
+        end
 
         value
       end
@@ -89,6 +116,7 @@ module Ethon
       private
 
       def call(function, *args)
+        @mime.check_pid!
         code = Curl.public_send(function, @handle, *args)
         raise Errors::Mime.new(code) unless code == :ok
 

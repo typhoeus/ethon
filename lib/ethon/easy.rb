@@ -274,6 +274,7 @@ module Ethon
       @error_buffer_enabled = nil
       @multipart_form = nil
       @curlu = nil
+      @mime = nil
       set_callbacks
     end
 
