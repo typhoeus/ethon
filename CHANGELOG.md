@@ -35,8 +35,8 @@
   ([#315](https://github.com/typhoeus/ethon/pull/315))
 
 Functions that are not exported by the loaded libcurl are attached
-conditionally; the Ruby wrappers raise `NotImplementedError` when the
-corresponding function is unavailable.
+conditionally. Wrappers raise `NotImplementedError` when the function they need
+is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 

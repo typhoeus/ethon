@@ -95,9 +95,10 @@ multi.perform
 
 ## Lower-level libcurl APIs
 
-Ethon exposes wrappers for some of libcurl's newer APIs. Functions that are not
-available in the loaded libcurl are attached only when supported, and the Ruby
-wrappers raise `NotImplementedError` when the feature is missing.
+Ethon exposes wrappers for some of libcurl's newer APIs. Optional bindings are
+attached only when the loaded libcurl exports them. Wrappers for the URL, MIME,
+share, header, and transfer helpers raise `NotImplementedError` when the
+underlying function is missing; introspection helpers return `nil` or `[]`.
 
 ```ruby
 # URL API
