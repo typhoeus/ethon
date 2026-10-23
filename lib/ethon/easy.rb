@@ -313,7 +313,7 @@ module Ethon
       raise NoMemoryError, "curl_easy_escape failed" if string_pointer.null?
 
       begin
-        string_pointer.read_string
+        string_pointer.read_string.force_encoding(value.encoding)
       ensure
         Curl.free(string_pointer)
       end
@@ -352,12 +352,16 @@ module Ethon
     #
     # @return [ String ] The unescaped value.
     def unescape(value)
+      unless Curl.respond_to?(:easy_unescape)
+        raise NotImplementedError, "curl_easy_unescape is not supported by this libcurl"
+      end
+
       out_length = FFI::MemoryPointer.new(:int)
       string_pointer = Curl.easy_unescape(handle, value, value.bytesize, out_length)
       raise NoMemoryError, "curl_easy_unescape failed" if string_pointer.null?
 
       begin
-        string_pointer.read_string(out_length.read_int).force_encoding(Encoding::UTF_8)
+        string_pointer.read_string(out_length.read_int).force_encoding(value.encoding)
       ensure
         Curl.free(string_pointer)
       end

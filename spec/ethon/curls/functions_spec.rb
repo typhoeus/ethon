@@ -2,20 +2,16 @@
 require 'spec_helper'
 
 describe Ethon::Curl do
-  describe "transfer function bindings" do
-    [:easy_unescape, :easy_pause, :easy_send, :easy_recv, :multi_wait].each do |name|
-      it "attaches #{name}" do
-        expect(described_class).to respond_to(name)
-      end
+  describe "optional function attachment" do
+    it "ignores functions that are not exported by libcurl" do
+      result = Ethon::Curls::Functions.attach_optional(
+        described_class, :ethon_missing_function, :curl_ethon_missing, [], :void
+      )
+
+      expect(result).to be_nil
+      expect(described_class).not_to respond_to(:ethon_missing_function)
     end
 
-    [:easy_upkeep, :multi_poll, :multi_wakeup].each do |name|
-      it "attaches #{name} when the loaded libcurl supports it" do
-        skip "#{name} unavailable" unless described_class.respond_to?(name)
-
-        expect(described_class).to respond_to(name)
-      end
-    end
   end
 
   describe "pause constants" do

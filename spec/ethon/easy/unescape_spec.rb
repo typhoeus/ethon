@@ -19,6 +19,21 @@ describe Ethon::Easy do
       expect(easy.unescape("a%00b")).to eq("a\0b")
     end
 
+    it "preserves the input encoding" do
+      utf8 = String.new("%C3%A9", :encoding => Encoding::UTF_8)
+      binary = "%FF".b
+
+      expect(easy.unescape(utf8).encoding).to eq(Encoding::UTF_8)
+      expect(easy.unescape(binary).encoding).to eq(Encoding::ASCII_8BIT)
+    end
+
+    it "raises when curl_easy_unescape is unavailable" do
+      allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+      allow(Ethon::Curl).to receive(:respond_to?).with(:easy_unescape).and_return(false)
+
+      expect { easy.unescape("a") }.to raise_error(NotImplementedError, /curl_easy_unescape/)
+    end
+
     it "raises when libcurl cannot allocate the result" do
       allow(Ethon::Curl).to receive(:easy_unescape).and_return(FFI::Pointer::NULL)
 
