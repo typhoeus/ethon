@@ -32,6 +32,10 @@ end
 describe Ethon::Curl::Url do
   let(:url) { described_class.new("https://user:pass@example.com:8080/a/b?c=d#e") }
 
+  before do
+    skip "curl_url is unavailable" unless Ethon::Curl.respond_to?(:url)
+  end
+
   it "parses a URL" do
     expect(url.get(:scheme)).to eq("https")
     expect(url.get(:user)).to eq("user")
@@ -66,6 +70,14 @@ describe Ethon::Curl::Url do
     expect(copy.get(:path)).to eq("/copy")
   end
 
+  it "copies an existing URL handle" do
+    copy = described_class.new(url)
+    copy.set(:path, "/wrapped")
+
+    expect(url.get(:path)).to eq("/a/b")
+    expect(copy.get(:path)).to eq("/wrapped")
+  end
+
   it "raises for missing parts" do
     url.set(:fragment, nil)
 
@@ -85,7 +97,10 @@ describe Ethon::Curl::Url do
     expect(value.get(:path)).to eq("/a b")
   end
 
-  it "raises when the URL API is unavailable" do
+end
+
+describe Ethon::Curl::Url, "when the URL API is unavailable" do
+  it "raises a NotImplementedError" do
     allow(Ethon::Curl).to receive(:respond_to?).and_call_original
     allow(Ethon::Curl).to receive(:respond_to?).with(:url).and_return(false)
 

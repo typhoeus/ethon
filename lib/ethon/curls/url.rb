@@ -10,14 +10,18 @@ module Ethon
 
       # Create a URL handle, optionally parsing a URL string.
       #
-      # @param [ String, FFI::Pointer, nil ] url The URL or native handle.
+      # @param [ String, Url, FFI::Pointer, nil ] url The URL, a URL handle
+      #   to copy, or a native handle.
       # @param [ Integer, Symbol, Array ] flags CURLU_* flags.
       def initialize(url = nil, flags = 0)
         unless Curl.respond_to?(:url)
           raise NotImplementedError, "curl_url is not supported by this libcurl"
         end
 
-        if url.is_a?(::FFI::Pointer)
+        if url.is_a?(self.class)
+          pointer = Curl.url_dup(url)
+          raise NoMemoryError, "curl_url_dup failed" if pointer.null?
+        elsif url.is_a?(::FFI::Pointer)
           pointer = url
         else
           pointer = Curl.url
