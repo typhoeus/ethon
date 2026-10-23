@@ -24,7 +24,10 @@ module Ethon
         !!(Curl.version_info[:features] & Curl::VERSION_ASYNCHDNS)
       end
 
-      alias :supports_timeout_ms? :supports_asynch_dns?
+      # CURLOPT_TIMEOUT_MS was added in libcurl 7.16.2.
+      def supports_timeout_ms?
+        Curl.version_info[:version_num] >= 0x071002
+      end
 
     end
   end
