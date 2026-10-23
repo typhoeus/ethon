@@ -15,6 +15,26 @@ describe Ethon::Easy::Http::Get do
       expect(easy.url).to eq(url)
     end
 
+    context "when url has a fragment" do
+      let(:url) { "http://localhost:3001/#frag" }
+      let(:params) { { :a => 1 } }
+
+      it "puts params before the fragment" do
+        get.setup(easy)
+        expect(easy.url).to eq("http://localhost:3001/?a=1#frag")
+      end
+    end
+
+    context "when url has a query and a fragment" do
+      let(:url) { "http://localhost:3001/?query=here#frag" }
+      let(:params) { { :a => 1 } }
+
+      it "puts params before the fragment" do
+        get.setup(easy)
+        expect(easy.url).to eq("http://localhost:3001/?query=here&a=1#frag")
+      end
+    end
+
     context "when body" do
       let(:form) { { :a => 1 } }
 

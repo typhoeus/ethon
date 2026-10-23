@@ -140,6 +140,14 @@ describe Ethon::Easy do
       expect(easy.instance_variable_get(:@error_buffer)).to be(buffer)
       expect(easy.error_message).to match(/Failed to connect/)
     end
+
+    it "resets return_code" do
+      easy.return_code = :ok
+
+      easy.reset
+
+      expect(easy.return_code).to be_nil
+    end
   end
 
   describe "#dup" do
@@ -258,6 +266,28 @@ describe Ethon::Easy do
     it "builds from easy" do
       expect(Ethon::Easy::Mirror).to receive(:from_easy).with(easy)
       easy.mirror
+    end
+
+    it "reflects the latest perform" do
+      easy.url = "http://localhost:3001/?first"
+      easy.perform
+      first = easy.mirror.options[:response_body].dup
+
+      easy.url = "http://localhost:3001/?second"
+      easy.perform
+      second = easy.mirror.options[:response_body].dup
+
+      expect(second).not_to eq(first)
+    end
+
+    it "is not shared with a duplicate" do
+      easy.url = "http://localhost:3001/"
+      easy.perform
+      original = easy.mirror
+
+      copy = easy.dup
+
+      expect(copy.mirror).not_to be(original)
     end
   end
 

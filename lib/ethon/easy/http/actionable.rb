@@ -118,11 +118,15 @@ module Ethon
           params.escape = easy.escape?
           params.params_encoding = params_encoding
 
-          base_url, base_params = url.split('?')
+          url_without_fragment, fragment_separator, fragment = url.partition('#')
+          fragment = fragment_separator.empty? ? nil : "#{fragment_separator}#{fragment}"
+          base_url, query_separator, base_params = url_without_fragment.partition('?')
+
           base_url << '?'
-          base_url << base_params.to_s
-          base_url << '&' if base_params
+          base_url << base_params
+          base_url << '&' if query_separator == '?' && !base_params.empty?
           base_url << params.to_s
+          base_url << fragment.to_s
 
           easy.url = base_url
         end

@@ -15,7 +15,7 @@ module Ethon
       #
       # @return [ void ]
       def max_total_connections=(value)
-        Curl.set_option(:max_total_connections, value_for(value, :int), handle, :multi)
+        Curl.set_option(:max_total_connections, value_for(value, :int, :max_total_connections), handle, :multi)
       end
 
       # Sets maxconnects option.
@@ -27,7 +27,7 @@ module Ethon
       #
       # @return [ void ]
       def maxconnects=(value)
-        Curl.set_option(:maxconnects, value_for(value, :int), handle, :multi)
+        Curl.set_option(:maxconnects, value_for(value, :int, :maxconnects), handle, :multi)
       end
 
       # Sets pipelining option.
@@ -39,7 +39,7 @@ module Ethon
       #
       # @return [ void ]
       def pipelining=(value)
-        Curl.set_option(:pipelining, value_for(value, :int), handle, :multi)
+        Curl.set_option(:pipelining, value_for(value, :int, :pipelining), handle, :multi)
       end
 
       # Sets socketdata option.
@@ -117,13 +117,14 @@ module Ethon
         if type == :bool
           value ? 1 : 0
         elsif type == :int
-          value.to_i
+          Ethon::Curls::Options.integer_value(option, value)
         elsif value.is_a?(String)
           Ethon::Easy::Util.escape_zero_byte(value)
         else
           value
         end
       end
+
     end
   end
 end

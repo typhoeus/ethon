@@ -29,7 +29,7 @@ module Ethon
       end
 
       INFORMATIONS_TO_MIRROR.each do |info|
-        eval %Q|def #{info}; options[#{info}]; end|
+        define_method(info) { options[info] }
       end
     end
   end

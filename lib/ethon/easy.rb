@@ -252,6 +252,7 @@ module Ethon
       @url = nil
       @escape = nil
       @hash = nil
+      @return_code = nil
       @on_complete = nil
       @on_headers = nil
       @on_body = nil
@@ -316,7 +317,7 @@ module Ethon
     end
 
     def mirror
-      @mirror ||= Mirror.from_easy(self)
+      Mirror.from_easy(self)
     end
 
     # Return pretty log out.

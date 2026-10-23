@@ -20,6 +20,21 @@ describe Ethon::Easy::Mirror do
     end
   end
 
+  describe "accessors" do
+    let(:options) do
+      described_class::INFORMATIONS_TO_MIRROR.each_with_object({}) do |name, hash|
+        hash[name] = name.to_s
+      end
+    end
+    let(:mirror) { described_class.new(options) }
+
+    it "reads every information from options" do
+      described_class::INFORMATIONS_TO_MIRROR.each do |name|
+        expect(mirror.public_send(name)).to eq(name.to_s)
+      end
+    end
+  end
+
   describe "#to_hash" do
     let(:options) { {:return_code => 1} }
 

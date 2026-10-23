@@ -28,8 +28,9 @@ module Ethon
 
         easy.prepare_response_body_io
         easy.clear_callback_error
+        easy_handle = easy.handle
         easy_handles << easy
-        code = Curl.multi_add_handle(handle, easy.handle)
+        code = Curl.multi_add_handle(handle, easy_handle)
         unless code == :ok
           easy_handles.delete(easy)
           raise Errors::MultiAdd.new(code, easy)

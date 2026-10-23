@@ -109,10 +109,15 @@ module Ethon
       #
       # @return [ Proc ] The callback.
       def progress_callback
-        @progress_callback ||= proc { |_, dltotal, dlnow, ultotal, ulnow|
-          progress(dltotal, dlnow, ultotal, ulnow)
-          0
-        }
+        @progress_callback ||= proc do |_, dltotal, dlnow, ultotal, ulnow|
+          begin
+            progress(dltotal, dlnow, ultotal, ulnow)
+            0
+          rescue Exception => e
+            @callback_error ||= e
+            0
+          end
+        end
       end
 
       def clear_callback_error
