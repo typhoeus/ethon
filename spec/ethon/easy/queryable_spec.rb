@@ -177,11 +177,9 @@ describe Ethon::Easy::Queryable do
         end
 
         context "when MIME" do
-          if defined?(MIME)
-            context "when mime type" do
-              it "sets mime type to text" do
-                expect(mime_type).to eq("application/x-ruby")
-              end
+          context "when mime type" do
+            it "sets mime type to text" do
+              expect(mime_type).to eq("application/x-ruby")
             end
           end
 
@@ -196,6 +194,19 @@ describe Ethon::Easy::Queryable do
 
         context "when no MIME" do
           before { hide_const("MIME") }
+
+          it "sets mime type to default application/octet-stream" do
+            expect(mime_type).to eq("application/octet-stream")
+          end
+        end
+
+        context "when mime-types is not installed" do
+          before do
+            hide_const("MIME")
+            Ethon::Easy::Queryable.instance_variable_set(:@mime_types_available, nil)
+            allow(Ethon::Easy::Queryable).to receive(:require).and_raise(LoadError)
+          end
+          after { Ethon::Easy::Queryable.instance_variable_set(:@mime_types_available, nil) }
 
           it "sets mime type to default application/octet-stream" do
             expect(mime_type).to eq("application/octet-stream")

@@ -4,6 +4,13 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...master)
 
+### Behavior changes
+
+* `require 'ethon'` no longer loads mime-types: the registry is loaded on the
+  first file upload instead, saving about 2.4 MB and 100 ms per process. Code
+  relying on ethon to load `MIME::Types` must now require it itself.
+  ([Clément Joubert](https://github.com/czj))
+
 ### Fixes and hardening
 
 * Corrected the native option number for `tcp_fastopen` (`CURLOPT_TCP_FASTOPEN`,
