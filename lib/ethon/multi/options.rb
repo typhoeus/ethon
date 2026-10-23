@@ -117,7 +117,7 @@ module Ethon
         if type == :bool
           value ? 1 : 0
         elsif type == :int
-          integer_value(value, option)
+          Ethon::Curls::Options.integer_value(option, value)
         elsif value.is_a?(String)
           Ethon::Easy::Util.escape_zero_byte(value)
         else
@@ -125,17 +125,6 @@ module Ethon
         end
       end
 
-      def integer_value(value, option)
-        return value if value.is_a?(Integer)
-        return 1 if value == true
-        return 0 if value == false
-
-        begin
-          Integer(value)
-        rescue ArgumentError, TypeError
-          raise Ethon::Errors::InvalidValue.new(option, value)
-        end
-      end
     end
   end
 end
