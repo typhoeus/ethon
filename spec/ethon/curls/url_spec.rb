@@ -105,6 +105,43 @@ describe Ethon::Curl::Url do
 
 end
 
+describe Ethon::Easy, "with CURLOPT_CURLU" do
+  let(:easy) { Ethon::Easy.new }
+  let(:url) { Ethon::Curl::Url.new("http://localhost:3001/") }
+
+  before do
+    skip "curl_url is unavailable" unless Ethon::Curl.respond_to?(:url)
+  end
+
+  it "retains the URL handle" do
+    easy.curlu = url
+
+    expect(easy.curlu).to be(url)
+    expect(easy.instance_variable_get(:@curlu)).to be(url)
+  end
+
+  it "uses the URL handle for the request" do
+    easy.curlu = url
+
+    expect(easy.perform).to eq(:ok)
+    expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
+  end
+
+  it "clears the URL handle on reset" do
+    easy.curlu = url
+
+    easy.reset
+
+    expect(easy.curlu).to be_nil
+  end
+
+  it "rejects a URL handle created before fork" do
+    allow(url).to receive(:check_pid!).and_raise(Ethon::Errors::ForkSafety.new)
+
+    expect { easy.curlu = url }.to raise_error(Ethon::Errors::ForkSafety)
+  end
+end
+
 describe Ethon::Curl::Url, "when the URL API is unavailable" do
   it "raises a NotImplementedError" do
     allow(Ethon::Curl).to receive(:respond_to?).and_call_original

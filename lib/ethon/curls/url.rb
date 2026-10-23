@@ -2,6 +2,9 @@
 module Ethon
   module Curl
 
+    # CURLOPT_CURLU takes a CURLU handle.
+    Ethon::Curls::Options.option(:easy, :curlu, :ffipointer, 282)
+
     # Thin wrapper around libcurl's URL API (curl_url).
     class Url < OwnedPointer
       def self.native_release(pointer)
