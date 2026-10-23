@@ -97,7 +97,7 @@ describe Ethon::Curl::Share do
 
       value.free
 
-      expect(described_class.callbacks).not_to have_key(address)
+      expect(described_class.callbacks).not_to have_key([Process.pid, address])
     end
 
     it "calls the callbacks while sharing cookies" do

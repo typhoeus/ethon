@@ -21,7 +21,8 @@ module Ethon
       def self.release(pointer)
         super
       ensure
-        CALLBACKS_MUTEX.synchronize { callbacks.delete(pointer.address) }
+        key = [Process.pid, pointer.address]
+        CALLBACKS_MUTEX.synchronize { callbacks.delete(key) }
       end
 
       # Build the dispatcher on the class so the closure does not retain the
@@ -116,13 +117,14 @@ module Ethon
         code = Curl.share_setopt(self, option, :pointer, function)
         raise Errors::Share.new(code) unless code == :ok
 
+        key = [Process.pid, address]
         CALLBACKS_MUTEX.synchronize do
-          registry = self.class.callbacks[address] ||= {}
+          registry = self.class.callbacks[key] ||= {}
           if function
             registry[option] = function
           else
             registry.delete(option)
-            self.class.callbacks.delete(address) if registry.empty?
+            self.class.callbacks.delete(key) if registry.empty?
           end
         end
 
