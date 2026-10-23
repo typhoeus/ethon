@@ -341,5 +341,50 @@ module Ethon
     def log_inspect
       "EASY #{mirror.log_informations.map{|k, v| "#{k}=#{v}"}.flatten.join(' ')}"
     end
+
+    # Url unescapes the value.
+    #
+    # @example Url unescape.
+    #   easy.unescape("a%20b")
+    #   #=> "a b"
+    #
+    # @param [ String ] value The value to unescape.
+    #
+    # @return [ String ] The unescaped value.
+    def unescape(value)
+      out_length = FFI::MemoryPointer.new(:int)
+      string_pointer = Curl.easy_unescape(handle, value, value.bytesize, out_length)
+      raise NoMemoryError, "curl_easy_unescape failed" if string_pointer.null?
+
+      begin
+        string_pointer.read_string(out_length.read_int).force_encoding(Encoding::UTF_8)
+      ensure
+        Curl.free(string_pointer)
+      end
+    end
+
+    # Pause or resume a transfer. See Curl::PAUSE_*.
+    #
+    # @param [ Integer ] bitmask The parts to pause.
+    #
+    # @return [ Symbol ] The Curl return code.
+    def pause(bitmask = 0)
+      unless Curl.respond_to?(:easy_pause)
+        raise NotImplementedError, "curl_easy_pause is not supported by this libcurl"
+      end
+
+      Curl.easy_pause(handle, bitmask)
+    end
+
+    # Let libcurl perform connection upkeep tasks.
+    #
+    # @return [ Symbol ] The Curl return code.
+    def upkeep
+      unless Curl.respond_to?(:easy_upkeep)
+        raise NotImplementedError, "curl_easy_upkeep is not supported by this libcurl"
+      end
+
+      Curl.easy_upkeep(handle)
+    end
   end
 end

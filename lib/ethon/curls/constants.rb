@@ -94,5 +94,16 @@ module Ethon
       :out, # CURL_CSELECT_OUT - 0x02 (bit 1)
       :err, # CURL_CSELECT_ERR - 0x04 (bit 2)
     ])
+
+    # Bitmasks for curl_easy_pause.
+    PAUSE_RECV = (1<<0)
+    PAUSE_SEND = (1<<2)
+    PAUSE_ALL = (PAUSE_RECV | PAUSE_SEND)
+    PAUSE_CONT = 0
+
+    # Event bits for curl_multi_wait/curl_multi_poll.
+    WAIT_POLLIN = 0x0001
+    WAIT_POLLPRI = 0x0002
+    WAIT_POLLOUT = 0x0004
   end
 end
