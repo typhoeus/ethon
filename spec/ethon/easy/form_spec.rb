@@ -35,8 +35,12 @@ describe Ethon::Easy::Form do
       end
     end
 
-    context "when query_pairs contains file" do
-      let(:pairs) { [['a', '1'], ['b', ['path', 'encoding', 'abs_path']]] }
+    context "when params contain a file" do
+      let(:pairs) { nil }
+      let(:file) { File.open(__FILE__) }
+      let(:hash) { { :file => file } }
+
+      after { file.close }
 
       it "returns true" do
         expect(form.multipart?).to be_truthy

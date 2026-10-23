@@ -57,7 +57,7 @@ module Ethon
       # @return [ Boolean ] True if form is multipart, else false.
       def multipart?
         return true if @multipart
-        query_pairs.any?{|pair| pair.respond_to?(:last) && pair.last.is_a?(Array)}
+        contains_file?(@params)
       end
 
       # Add form elements to libcurl.
@@ -69,6 +69,17 @@ module Ethon
       end
 
       private
+
+      def contains_file?(value)
+        case value
+        when Hash
+          value.values.any? { |item| contains_file?(item) }
+        when Array
+          value.any? { |item| contains_file?(item) }
+        else
+          value.is_a?(File) || (defined?(Tempfile) && value.is_a?(Tempfile))
+        end
+      end
 
       def form_add(name, content)
         case content
