@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'ethon/curls/optional'
 module Ethon
   module Curls
 
@@ -45,14 +46,14 @@ module Ethon
         base.attach_function :slist_free_all,             :curl_slist_free_all,      [:pointer],                     :void
         base.instance_variable_set(:@blocking, true)
 
-        attach_optional(base, :easy_unescape, :curl_easy_unescape, [:pointer, :pointer, :int, :pointer], :pointer, blocking: false)
-        attach_optional(base, :easy_pause, :curl_easy_pause, [:pointer, :int], :easy_code, blocking: false)
-        attach_optional(base, :easy_send, :curl_easy_send, [:pointer, :pointer, :size_t, :pointer], :easy_code, blocking: false)
-        attach_optional(base, :easy_recv, :curl_easy_recv, [:pointer, :pointer, :size_t, :pointer], :easy_code, blocking: false)
-        attach_optional(base, :multi_wait, :curl_multi_wait, [:pointer, :pointer, :uint, :int, :pointer], :multi_code, blocking: true)
-        attach_optional(base, :easy_upkeep, :curl_easy_upkeep, [:pointer], :easy_code, blocking: false)
-        attach_optional(base, :multi_poll, :curl_multi_poll, [:pointer, :pointer, :uint, :int, :pointer], :multi_code, blocking: true)
-        attach_optional(base, :multi_wakeup, :curl_multi_wakeup, [:pointer], :multi_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :easy_unescape, :curl_easy_unescape, [:pointer, :pointer, :int, :pointer], :pointer, blocking: false)
+        Ethon::Curls::Optional.attach(base, :easy_pause, :curl_easy_pause, [:pointer, :int], :easy_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :easy_send, :curl_easy_send, [:pointer, :pointer, :size_t, :pointer], :easy_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :easy_recv, :curl_easy_recv, [:pointer, :pointer, :size_t, :pointer], :easy_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :multi_wait, :curl_multi_wait, [:pointer, :pointer, :uint, :int, :pointer], :multi_code, blocking: true)
+        Ethon::Curls::Optional.attach(base, :easy_upkeep, :curl_easy_upkeep, [:pointer], :easy_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :multi_poll, :curl_multi_poll, [:pointer, :pointer, :uint, :int, :pointer], :multi_code, blocking: true)
+        Ethon::Curls::Optional.attach(base, :multi_wakeup, :curl_multi_wakeup, [:pointer], :multi_code, blocking: false)
 
         if Curl.windows?
             base.ffi_lib 'ws2_32'
@@ -63,12 +64,6 @@ module Ethon
         base.attach_function :select,                                            [:int, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::Timeval.ptr], :int
       end
 
-      # Attach a function that may not exist in the loaded libcurl.
-      def self.attach_optional(base, name, func, args, returns, options = {})
-        base.attach_function(name, func, args, returns, options)
-      rescue ::FFI::NotFoundError
-        nil
-      end
     end
   end
 end

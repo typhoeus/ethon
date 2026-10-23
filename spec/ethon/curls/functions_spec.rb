@@ -4,7 +4,7 @@ require 'spec_helper'
 describe Ethon::Curl do
   describe "optional function attachment" do
     it "ignores functions that are not exported by libcurl" do
-      result = Ethon::Curls::Functions.attach_optional(
+      result = Ethon::Curls::Optional.attach(
         described_class, :ethon_missing_function, :curl_ethon_missing, [], :void
       )
 
