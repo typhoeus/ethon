@@ -75,7 +75,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', '1']] }
 
       it "adds params to form" do
-        expect(Ethon::Curl).to receive(:formadd)
+        expect(Ethon::Curl).to receive(:formadd).and_return(0)
         form.materialize
       end
     end
@@ -84,7 +84,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', nil]] }
 
       it "adds params to form" do
-        expect(Ethon::Curl).to receive(:formadd)
+        expect(Ethon::Curl).to receive(:formadd).and_return(0)
         form.materialize
       end
     end
@@ -93,7 +93,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', ["file", "type", "path/file"]]] }
 
       it "adds file to form" do
-        expect(Ethon::Curl).to receive(:formadd)
+        expect(Ethon::Curl).to receive(:formadd).and_return(0)
         form.materialize
       end
     end
@@ -102,7 +102,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1']] }
 
       it "adds file to form" do
-        expect(Ethon::Curl).to receive(:formadd).twice
+        expect(Ethon::Curl).to receive(:formadd).twice.and_return(0)
         form.materialize
       end
     end
@@ -111,7 +111,7 @@ describe Ethon::Easy::Form do
       let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1'], ['c', 1]] }
 
       it "adds file to form" do
-        expect(Ethon::Curl).to receive(:formadd).exactly(3).times
+        expect(Ethon::Curl).to receive(:formadd).exactly(3).times.and_return(0)
         form.materialize
       end
     end

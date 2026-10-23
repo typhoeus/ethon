@@ -249,6 +249,7 @@ module Ethon
     # @example Reset.
     #   easy.reset
     def reset
+      @postfields = nil
       @url = nil
       @escape = nil
       @hash = nil

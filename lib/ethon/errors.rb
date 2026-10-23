@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'ethon/errors/ethon_error'
 require 'ethon/errors/global_init'
+require 'ethon/errors/form_add'
 require 'ethon/errors/multi_timeout'
 require 'ethon/errors/multi_fdset'
 require 'ethon/errors/multi_add'
