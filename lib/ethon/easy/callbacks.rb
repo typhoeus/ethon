@@ -61,8 +61,13 @@ module Ethon
       # @return [ Proc ] The callback.
       def header_write_callback
         @header_write_callback ||= proc {|stream, size, num, object|
-          @response_headers << stream.read_string(size * num)
-          size * num
+          begin
+            @response_headers << stream.read_string(size * num)
+            size * num
+          rescue Exception => e
+            @callback_error ||= e
+            0
+          end
         }
       end
 

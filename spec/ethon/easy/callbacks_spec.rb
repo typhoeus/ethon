@@ -75,6 +75,21 @@ describe Ethon::Easy::Callbacks do
       end
     end
 
+    context "when appending a header raises" do
+      before do
+        headers = Object.new
+        def headers.<<(*)
+          raise "header failure"
+        end
+        easy.response_headers = headers
+      end
+
+      it "returns 0 and re-raises after the transfer" do
+        expect(header_write_callback.call(stream, 1, 1, nil)).to eq(0)
+        expect { easy.raise_callback_error }.to raise_error("header failure")
+      end
+    end
+
     context "when header returns :abort" do
       before do
         easy.on_headers.clear
