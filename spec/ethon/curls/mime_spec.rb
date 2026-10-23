@@ -136,6 +136,23 @@ describe Ethon::Curl::Mime do
       expect(easy.mime).to be_nil
     end
 
+    it "clears a previous MIME body when setting up an empty request" do
+      easy.mime = mime
+      post = Ethon::Easy::Http::Post.new("http://localhost:3001/", {})
+
+      post.setup(easy)
+
+      expect(easy.mime).to be_nil
+    end
+
+    it "resets the method after clearing a MIME body on a reused handle" do
+      easy.mime = mime
+      easy.http_request("http://localhost:3001/", :get, {})
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
+    end
+
     it "rejects a MIME structure created before fork" do
       allow(mime).to receive(:check_pid!).and_raise(Ethon::Errors::ForkSafety.new)
 

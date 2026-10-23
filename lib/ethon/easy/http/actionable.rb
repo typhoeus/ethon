@@ -100,6 +100,9 @@ module Ethon
           easy.set_attributes(options)
 
           set_form(easy) unless form.empty?
+          if form.empty? && easy.mime && Ethon::Curl.respond_to?(:mime_init)
+            easy.mime = nil
+          end
 
           if params.empty?
             easy.url = url

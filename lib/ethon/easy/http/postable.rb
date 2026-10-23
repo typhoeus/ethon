@@ -18,10 +18,16 @@ module Ethon
           form.params_encoding = params_encoding
           if form.multipart?
             form.escape = false
-            form.materialize
-            easy.multipart_form = form
+            if Ethon::Curl.respond_to?(:mime_init)
+              easy.multipart_form = nil
+              easy.mime = form.mime
+            else
+              form.materialize
+              easy.multipart_form = form
+            end
           else
             easy.multipart_form = nil
+            easy.mime = nil if Ethon::Curl.respond_to?(:mime_init)
             form.escape = easy.escape?
             easy.postfieldsize = form.to_s.bytesize
             easy.copypostfields = form.to_s
