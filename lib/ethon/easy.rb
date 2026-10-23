@@ -263,6 +263,7 @@ module Ethon
       @on_progress = nil
       @user_debug_callback = nil
       @procs = nil
+      @blobs = nil
       @mirror = nil
       @read_callback = nil
       clear_response_body_io

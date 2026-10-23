@@ -95,6 +95,16 @@ module Ethon
               retain_callback(opt, value)
               value
             end
+          elsif props[:type] == :blob
+            define_method(method_name) do |value|
+              Curl.set_option(opt, value, handle)
+              if value
+                (@blobs ||= {})[opt] = value
+              elsif @blobs
+                @blobs.delete(opt)
+              end
+              value
+            end
           else
             define_method(method_name) do |value|
               Curl.set_option(opt, value, handle)
@@ -135,6 +145,7 @@ module Ethon
       def initialize_copy(other)
         super
         @procs = @procs.dup if @procs
+        @blobs = @blobs.dup if @blobs
       end
 
       def tlsauth_type_value(value)

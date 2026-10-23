@@ -10,6 +10,40 @@ module Ethon
       # Holds available informations and their type, which is needed to
       # request the informations from libcurl.
       AVAILABLE_INFORMATIONS = {
+        # The _T variants use curl_off_t and do not lose precision for large
+        # values or long-running transfers.
+        :size_upload_t => :off_t,
+        :size_download_t => :off_t,
+        :speed_download_t => :off_t,
+        :speed_upload_t => :off_t,
+        :filetime_t => :off_t,
+        :content_length_download_t => :off_t,
+        :content_length_upload_t => :off_t,
+        :total_time_t => :off_t,
+        :namelookup_time_t => :off_t,
+        :connect_time_t => :off_t,
+        :pretransfer_time_t => :off_t,
+        :starttransfer_time_t => :off_t,
+        :redirect_time_t => :off_t,
+        :appconnect_time_t => :off_t,
+        :retry_after => :off_t,
+        :xfer_id => :off_t,
+        :conn_id => :off_t,
+        :queue_time_t => :off_t,
+
+        # Connection/request metadata.
+        :http_version => :long,
+        :proxy_ssl_verifyresult => :long,
+        :proxy_error => :long,
+        :used_proxy => :long,
+        :scheme => :string,
+        :effective_method => :string,
+        :referer => :string,
+        :cainfo => :string,
+        :capath => :string,
+        :activesocket => :socket,
+        :tls_ssl_ptr => :ptr,
+
         # Return the available HTTP auth methods.
         :httpauth_avail => :long,
 

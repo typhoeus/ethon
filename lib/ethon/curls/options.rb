@@ -64,6 +64,12 @@ module Ethon
         when :buffer
           va_type=:pointer
           raise Errors::InvalidValue.new(option,value) unless value.nil? or (value.is_a?(FFI::Pointer) and value.size >= opthash[option][:opts])
+        when :blob
+          va_type=:pointer
+          unless value.nil? || value.is_a?(FFI::Pointer) || value.is_a?(Ethon::Curl::Blob)
+            raise Errors::InvalidValue.new(option,value)
+          end
+          value = value.to_ptr if value.is_a?(Ethon::Curl::Blob)
         when :dontuse_object
           raise NotImplementedError, "Ethon::Curls::Options option #{option} type not implemented."
         when :dontuse_callback
@@ -137,7 +143,8 @@ module Ethon
         :long => 0,
         :objectpoint => 10000,
         :functionpoint => 20000,
-        :off_t => 30000
+        :off_t => 30000,
+        :blob => 40000
       }
       OPTION_TYPE_MAP = {
         :none => :long,
@@ -175,6 +182,7 @@ module Ethon
         :progress_callback => :functionpoint,
         :xferinfo_callback => :functionpoint,
         :off_t => :off_t,
+        :blob => :blob,
       }
 
       def self.option(ftype,name,type,num,opts=nil)
@@ -262,6 +270,7 @@ module Ethon
       option :multi, :pipelining_site_bl, :dontuse_object, 11
       option :multi, :pipelining_server_bl, :dontuse_object, 12
       option :multi, :max_total_connections, :int, 13
+      option :multi, :max_concurrent_streams, :int, 16
 
       # Curl easy options
       # Defined @ https://github.com/curl/curl/blob/master/include/curl/curl.h
@@ -532,6 +541,86 @@ module Ethon
       option :easy, :share, :dontuse_object, 100
       option :easy, :new_file_perms, :int, 159
       option :easy, :new_directory_perms, :int, 160
+      ## NEWER OPTIONS
+      option :easy, :curlu, :ffipointer, 282
+      option :easy, :abstract_unix_socket, :string, 264
+      option :easy, :altsvc, :string, 287
+      option :easy, :altsvc_ctrl, :bitmask, 286, [nil, nil, nil, :readonlyfile, :h1, :h2, :h3]
+      option :easy, :aws_sigv4, :string, 305
+      option :easy, :ca_cache_timeout, :int, 321
+      option :easy, :cainfo_blob, :blob, 309
+      option :easy, :connect_to, :curl_slist, 243
+      option :easy, :default_protocol, :string, 238
+      option :easy, :disallow_username_in_url, :bool, 278
+      option :easy, :dns_local_ip6, :string, 223
+      option :easy, :doh_ssl_verifyhost, :int, 307
+      option :easy, :doh_ssl_verifypeer, :bool, 306
+      option :easy, :doh_ssl_verifystatus, :bool, 308
+      option :easy, :doh_url, :string, 279
+      option :easy, :expect_100_timeout_ms, :int, 227
+      option :easy, :happy_eyeballs_timeout_ms, :int, 271
+      option :easy, :haproxy_client_ip, :string, 323
+      option :easy, :haproxyprotocol, :bool, 274
+      option :easy, :headeropt, :enum, 229, [:unified, :separate]
+      option :easy, :hsts, :string, 300
+      option :easy, :hsts_ctrl, :bitmask, 299, [nil, :enable, :readonlyfile]
+      option :easy, :hstsreaddata, :ffipointer, 302
+      option :easy, :hstsreadfunction, :dontuse_callback, 301
+      option :easy, :hstswritedata, :ffipointer, 304
+      option :easy, :hstswritefunction, :dontuse_callback, 303
+      option :easy, :http09_allowed, :bool, 285
+      option :easy, :issuercert_blob, :blob, 295
+      option :easy, :keep_sending_on_error, :bool, 245
+      option :easy, :login_options, :string, 224
+      option :easy, :mail_rcpt_allowfails, :bool, 290
+      option :easy, :maxage_conn, :int, 288
+      option :easy, :maxlifetime_conn, :int, 314
+      option :easy, :mime_options, :bitmask, 315, [nil, :formescape]
+      option :easy, :mimepost, :ffipointer, 269
+      option :easy, :prereqdata, :ffipointer, 313
+      option :easy, :prereqfunction, :dontuse_callback, 312
+      option :easy, :protocols_str, :string, 318
+      option :easy, :proxy_cainfo_blob, :blob, 310
+      option :easy, :proxy_issuercert_blob, :blob, 297
+      option :easy, :proxy_service_name, :string, 235
+      option :easy, :proxy_sslcert_blob, :blob, 293
+      option :easy, :proxy_sslkey_blob, :blob, 294
+      option :easy, :proxy_tls13_ciphers, :string, 277
+      option :easy, :proxyheader, :curl_slist, 228
+      option :easy, :quick_exit, :bool, 322
+      option :easy, :redir_protocols_str, :string, 319
+      option :easy, :request_target, :string, 266
+      option :easy, :resolver_start_data, :ffipointer, 273
+      option :easy, :resolver_start_function, :dontuse_callback, 272
+      option :easy, :sasl_authzid, :string, 289
+      option :easy, :server_response_timeout_ms, :int, 324
+      option :easy, :service_name, :string, 236
+      option :easy, :socks5_auth, :bitmask, 267, {:none => 0, :basic => 1, :gssapi => 1<<2}
+      option :easy, :ssh_compression, :bool, 268
+      option :easy, :ssh_host_public_key_sha256, :string, 311
+      option :easy, :ssh_hostkeydata, :ffipointer, 317
+      option :easy, :ssh_hostkeyfunction, :dontuse_callback, 316
+      option :easy, :ssl_ec_curves, :string, 298
+      option :easy, :ssl_enable_alpn, :bool, 226
+      option :easy, :ssl_enable_npn, :bool, 225
+      option :easy, :ssl_falsestart, :bool, 233
+      option :easy, :ssl_verifystatus, :bool, 232
+      option :easy, :sslcert_blob, :blob, 291
+      option :easy, :sslkey_blob, :blob, 292
+      option :easy, :stream_depends, :ffipointer, 240
+      option :easy, :stream_depends_e, :ffipointer, 241
+      option :easy, :stream_weight, :int, 239
+      option :easy, :suppress_connect_headers, :bool, 265
+      option :easy, :tftp_no_options, :bool, 242
+      option :easy, :timevalue_large, :off_t, 270
+      option :easy, :tls13_ciphers, :string, 276
+      option :easy, :trailerdata, :ffipointer, 284
+      option :easy, :trailerfunction, :dontuse_callback, 283
+      option :easy, :upkeep_interval_ms, :int, 281
+      option :easy, :upload_buffersize, :int, 280
+      option :easy, :ws_options, :bitmask, 320, [nil, :raw_mode]
+      option :easy, :xoauth2_bearer, :string, 220
+
       ## TELNET OPTIONS
       option :easy, :telnetoptions, :curl_slist, 70
 
