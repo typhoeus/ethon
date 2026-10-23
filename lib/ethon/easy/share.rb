@@ -10,8 +10,8 @@ module Ethon
       #
       # @return [ Ethon::Curl::Share, nil ] The share handle.
       def share=(share)
-        @share = share
         Curl.set_option(:share, share, handle)
+        @share = share
         share
       end
     end

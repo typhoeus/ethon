@@ -28,6 +28,12 @@ describe Ethon::Curl::LockData do
   end
 end
 
+describe "curl share option" do
+  it "accepts a share pointer" do
+    expect(Ethon::Curl.easy_options(nil)[:share][:type]).to eq(:ffipointer)
+  end
+end
+
 describe Ethon::Curl::Share do
   let(:share) { described_class.new }
 
@@ -57,6 +63,53 @@ describe Ethon::Curl::Share do
       share.share(:cookie)
 
       expect { share.unshare(:cookie) }.not_to raise_error
+    end
+  end
+
+  describe "lock callbacks" do
+    it "retains the lock and unlock functions" do
+      lock = proc { |*| }
+      unlock = proc { |*| }
+
+      share.lockfunction = lock
+      share.unlockfunction = unlock
+
+      expect(share.lockfunction).to be(lock)
+      expect(share.unlockfunction).to be(unlock)
+    end
+
+    it "clears the callbacks" do
+      share.lockfunction = proc { |*| }
+      share.lockfunction = nil
+
+      expect(share.lockfunction).to be_nil
+    end
+
+    it "rejects callbacks that are not procs" do
+      expect { share.lockfunction = Object.new }.
+        to raise_error(Ethon::Errors::InvalidValue)
+    end
+
+    it "calls the callbacks while sharing cookies" do
+      locks = 0
+      unlocks = 0
+      shared = described_class.new
+      shared.lockfunction = proc { |*| locks += 1 }
+      shared.unlockfunction = proc { |*| unlocks += 1 }
+      shared.share(:cookie)
+
+      first = Ethon::Easy.new
+      first.cookiefile = ""
+      first.share = shared
+      first.cookielist = "example.com\tFALSE\t/\tFALSE\t0\tname\tvalue"
+
+      second = Ethon::Easy.new
+      second.cookiefile = ""
+      second.share = shared
+      second.cookielist
+
+      expect(locks).to be > 0
+      expect(unlocks).to be > 0
     end
   end
 
@@ -93,6 +146,14 @@ describe Ethon::Easy do
     easy.share = share
 
     easy.share = nil
+
+    expect(easy.share).to be_nil
+  end
+
+  it "clears the share handle on reset" do
+    easy.share = share
+
+    easy.reset
 
     expect(easy.share).to be_nil
   end

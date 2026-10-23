@@ -275,6 +275,7 @@ module Ethon
       @multipart_form = nil
       @curlu = nil
       @mime = nil
+      @share = nil
       set_callbacks
     end
 
