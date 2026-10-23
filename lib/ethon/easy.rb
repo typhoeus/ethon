@@ -252,6 +252,7 @@ module Ethon
       @url = nil
       @escape = nil
       @hash = nil
+      @return_code = nil
       @on_complete = nil
       @on_headers = nil
       @on_body = nil
