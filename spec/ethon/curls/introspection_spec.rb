@@ -15,7 +15,7 @@ describe Ethon::Curl::HeaderOrigin do
     expect(described_class[:header]).to eq(1 << 0)
     expect(described_class[:trailer]).to eq(1 << 1)
     expect(described_class[:connect]).to eq(1 << 2)
-    expect(described_class[:xx1]).to eq(1 << 3)
+    expect(described_class[:"1xx"]).to eq(1 << 3)
     expect(described_class[:pseudo]).to eq(1 << 4)
   end
 end
@@ -30,6 +30,10 @@ describe Ethon::Curl::EasyType do
 end
 
 describe "libcurl option introspection" do
+  before do
+    skip "curl_easy_option_by_name is unavailable" unless Ethon::Curl.respond_to?(:easy_option_by_name)
+  end
+
   it "looks up an option by name" do
     info = Ethon::Curl.easy_option("URL")
 

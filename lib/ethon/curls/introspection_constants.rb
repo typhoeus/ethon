@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 module Ethon
   module Curl
+    # The struct age at which curl_version_info_data exposes feature_names.
+    CURLVERSION_ELEVENTH = 10
+
     # CURLHcode values.
     HeaderCode = enum(:header_code, [
       :ok,
@@ -19,7 +22,7 @@ module Ethon
       :header,
       :trailer,
       :connect,
-      :xx1,
+      :"1xx",
       :pseudo
     ])
 

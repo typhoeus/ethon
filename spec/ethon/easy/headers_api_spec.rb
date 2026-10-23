@@ -6,6 +6,10 @@ describe Ethon::Easy::HeadersApi do
     Ethon::Easy.new(:url => "http://localhost:3001/multiple-headers").tap(&:perform)
   end
 
+  before do
+    skip "curl_easy_header is unavailable" unless Ethon::Curl.respond_to?(:easy_header)
+  end
+
   describe "#header" do
     it "returns a parsed header" do
       header = easy.header("Content-Type")
@@ -26,13 +30,6 @@ describe Ethon::Easy::HeadersApi do
         to raise_error(Ethon::Errors::Header, /missing/)
     end
 
-    it "raises when the header API is unavailable" do
-      allow(Ethon::Curl).to receive(:respond_to?).and_call_original
-      allow(Ethon::Curl).to receive(:respond_to?).with(:easy_header).and_return(false)
-
-      expect { easy.header("Content-Type") }.
-        to raise_error(NotImplementedError, /curl_easy_header/)
-    end
   end
 
   describe "#each_header" do
@@ -47,12 +44,25 @@ describe Ethon::Easy::HeadersApi do
       expect(easy.headers_list.to_a).not_to be_empty
     end
 
-    it "raises when the header API is unavailable" do
-      allow(Ethon::Curl).to receive(:respond_to?).and_call_original
-      allow(Ethon::Curl).to receive(:respond_to?).with(:easy_nextheader).and_return(false)
+  end
+end
 
-      expect { easy.each_header }.
-        to raise_error(NotImplementedError, /curl_easy_nextheader/)
-    end
+describe Ethon::Easy::HeadersApi, "when the header API is unavailable" do
+  let(:easy) { Ethon::Easy.new }
+
+  it "raises from #header" do
+    allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+    allow(Ethon::Curl).to receive(:respond_to?).with(:easy_header).and_return(false)
+
+    expect { easy.header("Content-Type") }.
+      to raise_error(NotImplementedError, /curl_easy_header/)
+  end
+
+  it "raises from #each_header" do
+    allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+    allow(Ethon::Curl).to receive(:respond_to?).with(:easy_nextheader).and_return(false)
+
+    expect { easy.each_header }.
+      to raise_error(NotImplementedError, /curl_easy_nextheader/)
   end
 end

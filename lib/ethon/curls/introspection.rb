@@ -52,7 +52,7 @@ module Ethon
       # @return [ VersionInfoDataFull, nil ] The full version metadata.
       def version_info_full
         info = version_info
-        return unless info[:curl_version] >= 10
+        return unless info && info[:curl_version] >= CURLVERSION_ELEVENTH
 
         VersionInfoDataFull.new(info.to_ptr)
       end
