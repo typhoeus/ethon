@@ -48,6 +48,23 @@ describe Ethon::Curl do
         Ethon::Curl.cleanup
       end
     end
+
+    context "when already initialized" do
+      before { Ethon::Curl.send(:class_variable_set, :@@initialized, true) }
+
+      it "does not initialize libcurl again" do
+        expect(Ethon::Curl).not_to receive(:global_init)
+
+        Ethon::Curl.init
+      end
+
+      it "does not clean up when initialization never happened" do
+        Ethon::Curl.send(:class_variable_set, :@@initialized, false)
+        expect(Ethon::Curl).not_to receive(:global_cleanup)
+
+        Ethon::Curl.cleanup
+      end
+    end
   end
 
   describe ".check_pid!" do
@@ -89,6 +106,13 @@ describe Ethon::Curl do
       expect(Ethon::Curl).to receive(:slist_free_all).with(node)
 
       expect(Ethon::Curl.get_info_slist(:cookielist, FFI::Pointer::NULL)).to eq(["value"])
+    end
+
+    it "returns nil without freeing when getinfo fails" do
+      allow(Ethon::Curl).to receive(:easy_getinfo).and_return(:unknown_option)
+      expect(Ethon::Curl).not_to receive(:slist_free_all)
+
+      expect(Ethon::Curl.get_info_slist(:cookielist, FFI::Pointer::NULL)).to be_nil
     end
   end
 

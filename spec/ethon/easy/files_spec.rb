@@ -30,6 +30,17 @@ describe Ethon::Easy::Files do
     end
   end
 
+  it "streams the response to a path-like object" do
+    Tempfile.create do |file|
+      file.close
+      path = Struct.new(:to_path).new(file.path)
+      easy.file = path
+
+      expect(easy.perform).to eq(:ok)
+      expect(File.binread(file.path)).to include('"REQUEST_METHOD":"GET"')
+    end
+  end
+
   it "closes an owned file when a callback raises" do
     Tempfile.create do |file|
       file.close

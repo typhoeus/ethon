@@ -19,7 +19,14 @@ module Ethon
       end
 
       def self.release(pointer)
-        owner_pid = OWNERS_MUTEX.synchronize { owners.delete(pointer.address) }
+        owner_pid = begin
+          OWNERS_MUTEX.synchronize { owners.delete(pointer.address) }
+        rescue ThreadError, SignalException
+          # Finalizers can run in a trap context where locking is forbidden,
+          # or be interrupted by a signal. The process is exiting at this
+          # point, so the unsynchronized delete is best effort.
+          owners.delete(pointer.address)
+        end
         native_release(pointer) if owner_pid == Process.pid
       end
     end
@@ -95,8 +102,9 @@ module Ethon
     class FDSet < ::FFI::Struct
       if Curl.windows?
         layout :fd_count, :uint,
+               # SOCKET is UINT_PTR, so use the platform pointer-sized integer.
                # TODO: Make it future proof by dynamically grabbing FD_SETSIZE.
-               :fd_array, [:uint, 2048]
+               :fd_array, [:size_t, 2048]
 
         def clear; self[:fd_count] = 0; end
       else

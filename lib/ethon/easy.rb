@@ -252,7 +252,10 @@ module Ethon
       @url = nil
       @escape = nil
       @hash = nil
+      @multipart = nil
+      @headers = nil
       @return_code = nil
+      @callback_error = nil
       @on_complete = nil
       @on_headers = nil
       @on_body = nil
@@ -260,8 +263,11 @@ module Ethon
       @user_debug_callback = nil
       @procs = nil
       @mirror = nil
+      @read_callback = nil
       clear_response_body_io
       Curl.easy_reset(handle)
+      # libcurl no longer references these after easy_reset.
+      @header_list = nil
       handle.error_buffer = nil
       @error_buffer_enabled = nil
       @multipart_form = nil
@@ -302,9 +308,13 @@ module Ethon
     # @api private
     def escape(value)
       string_pointer = Curl.easy_escape(handle, value, value.bytesize)
-      returned_string = string_pointer.read_string
-      Curl.free(string_pointer)
-      returned_string
+      raise NoMemoryError, "curl_easy_escape failed" if string_pointer.null?
+
+      begin
+        string_pointer.read_string
+      ensure
+        Curl.free(string_pointer)
+      end
     end
 
     # Returns the informations available through libcurl as

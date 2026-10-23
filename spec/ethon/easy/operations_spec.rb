@@ -93,6 +93,14 @@ describe Ethon::Easy::Operations do
   end
 
 
+  describe "#prepare" do
+    it "warns and does nothing" do
+      expect(Ethon.logger).to receive(:warn).with(/no longer necessary/)
+
+      easy.prepare
+    end
+  end
+
   describe "#perform" do
     let(:url) { nil }
     let(:timeout) { nil }

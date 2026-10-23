@@ -4,6 +4,29 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...master)
 
+### Fixes and hardening
+
+* Corrected the native option number for `tcp_fastopen` (`CURLOPT_TCP_FASTOPEN`,
+  244) and the string ABI used by `tlsauth_type` and `proxy_tlsauth_type`.
+  `:srp` and `"srp"` are normalized to libcurl's required `"SRP"` value.
+* Split the progress callback ABI into `CURLOPT_PROGRESSFUNCTION` (`double`) and
+  `CURLOPT_XFERINFOFUNCTION` (`curl_off_t`), and select it using libcurl's
+  numeric version instead of string comparison.
+* Read callbacks now report the number of bytes actually read, handle
+  short-reading IO bodies, and correctly start from an IO's current position.
+* Custom HTTP verbs that collide with top-level Ruby constants no longer
+  resolve to those constants.
+* `Easy#reset` now clears multipart state, request headers, retained read
+  callbacks, and pending callback errors. `Easy#request_headers` exposes the
+  request headers without colliding with the `on_headers` callback.
+* Multi no longer mutates the caller's options, validates `execution_mode`, and
+  no longer raises when `running_count` is nil. Finalizers no longer emit
+  `ThreadError`/`SignalException` warnings.
+* Windows `fd_set` now uses pointer-sized socket entries.
+* Fixed the test server's keep-alive limits, cutting the suite from ~35s to
+  ~5s, and added coverage for the option table, callbacks, reset behavior,
+  Multi message handling, and libcurl info ownership.
+
 ## 0.19.0
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...v0.19.0)

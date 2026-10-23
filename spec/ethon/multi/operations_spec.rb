@@ -29,7 +29,7 @@ describe Ethon::Multi::Operations do
       pid = fork do
         reader.close
         begin
-          multi.perform
+          multi.handle
         rescue Exception => e
           writer.write(e.class.name)
         ensure
@@ -344,6 +344,16 @@ describe Ethon::Multi::Operations do
         end
       end
 
+      context "when running_count is nil" do
+        before do
+          multi.instance_variable_set(:@running_count, nil)
+        end
+
+        it "returns false" do
+          expect(multi.method(:ongoing?).call).to be_falsey
+        end
+      end
+
       context "when running_count greater 0" do
         before { multi.instance_variable_set(:@running_count, 1) }
 
@@ -397,7 +407,95 @@ describe Ethon::Multi::Operations do
   end
 
   describe "#check" do
-    it { skip("untested") }
+    let(:message) { FFI::MemoryPointer.new(Ethon::Curl::Msg) }
+    let(:msg) { Ethon::Curl::Msg.new(message) }
+    let(:null) { FFI::Pointer::NULL }
+
+    before do
+      easy.url = "http://localhost:3001/"
+      multi.add(easy)
+      allow(Ethon::Curl).to receive(:multi_info_read).and_return(msg, null)
+    end
+
+    after do
+      multi.delete(easy) if multi.easy_handles.include?(easy)
+    end
+
+    it "ignores messages that are not done" do
+      msg[:code] = :none
+
+      expect(easy).not_to receive(:complete)
+      multi.send(:check)
+
+      expect(multi.easy_handles).to include(easy)
+    end
+
+    it "completes and removes done handles" do
+      completed = false
+      msg[:code] = :done
+      msg[:easy_handle] = easy.handle
+      msg[:data][:code] = :couldnt_connect
+      easy.on_complete { completed = true }
+
+      multi.send(:check)
+
+      expect(easy.return_code).to eq(:couldnt_connect)
+      expect(completed).to be(true)
+      expect(multi.easy_handles).not_to include(easy)
+    end
+
+    it "ignores completion messages for handles it does not track" do
+      msg[:code] = :done
+      msg[:easy_handle] = FFI::Pointer.new(1)
+      msg[:data][:code] = :ok
+
+      expect(easy).not_to receive(:complete)
+      expect { multi.send(:check) }.not_to raise_error
+    end
+
+    it "raises callback errors after completing and removing the handle" do
+      error = RuntimeError.new("callback failed")
+      msg[:code] = :done
+      msg[:easy_handle] = easy.handle
+      msg[:data][:code] = :ok
+      easy.instance_variable_set(:@callback_error, error)
+
+      expect { multi.send(:check) }.to raise_error(error)
+      expect(multi.easy_handles).not_to include(easy)
+    end
+  end
+
+  describe "#socket_action" do
+    let(:multi) { Ethon::Multi.new(:execution_mode => :socket_action) }
+
+    before do
+      allow(Ethon::Curl).to receive(:multi_socket_action) do |handle, fd, readiness, running|
+        running.write_int(0)
+        :ok
+      end
+    end
+
+    it "accepts an integer file descriptor" do
+      expect(Ethon::Curl).to receive(:multi_socket_action).
+        with(multi.handle, 42, 0, anything) do |_handle, _fd, _readiness, running|
+          running.write_int(0)
+          :ok
+        end
+
+      expect(multi.socket_action(42)).to eq(:ok)
+    end
+
+    it "accepts an IO object" do
+      io = double(:fileno => 7)
+
+      expect(Ethon::Curl).to receive(:multi_socket_action).
+        with(multi.handle, 7, 0, anything) do |_handle, _fd, _readiness, running|
+          running.write_int(0)
+          :ok
+        end
+
+      multi.socket_action(io)
+    end
   end
 
   describe "#run" do

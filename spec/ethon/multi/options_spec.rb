@@ -148,9 +148,7 @@ describe Ethon::Multi::Options do
       end
 
       it "errors on invalid return codes" do
-        called = false
         multi.timerfunction = proc do |handle, timeout_ms, userp|
-          called = true
           "hi"
         end
 

@@ -13,7 +13,7 @@ describe Ethon::Easy do
     context "when options are empty" do
       it "sets only callbacks" do
         expect_any_instance_of(Ethon::Easy).to receive(:set_callbacks)
-        expect(Ethon::Easy).to receive(:set_option).never
+        expect(Ethon::Curl).to receive(:set_option).never
         easy
       end
     end
@@ -36,7 +36,7 @@ describe Ethon::Easy do
     context "when options are empty" do
       it "sets only callbacks" do
         expect_any_instance_of(Ethon::Easy).to receive(:set_callbacks)
-        expect(Ethon::Easy).to receive(:set_option).never
+        expect(Ethon::Curl).to receive(:set_option).never
         easy
       end
     end
@@ -147,6 +147,39 @@ describe Ethon::Easy do
       easy.reset
 
       expect(easy.return_code).to be_nil
+    end
+
+    it "resets multipart?" do
+      easy.multipart = true
+
+      easy.reset
+
+      expect(easy.multipart?).to be(false)
+    end
+
+    it "resets request headers and the native header list" do
+      easy.headers = { 'X-Test' => 'yes' }
+
+      easy.reset
+
+      expect(easy.request_headers).to eq({})
+      expect(easy.header_list).to be_nil
+    end
+
+    it "resets the read callback" do
+      easy.set_read_callback("body")
+
+      easy.reset
+
+      expect(easy.read_callback).to be_nil
+    end
+
+    it "clears a pending callback error" do
+      easy.instance_variable_set(:@callback_error, RuntimeError.new("boom"))
+
+      easy.reset
+
+      expect { easy.send(:raise_callback_error) }.not_to raise_error
     end
   end
 
@@ -288,6 +321,26 @@ describe Ethon::Easy do
       copy = easy.dup
 
       expect(copy.mirror).not_to be(original)
+    end
+  end
+
+  describe "#to_hash" do
+    it "returns the mirror hash and warns" do
+      expect(Kernel).to receive(:warn).with(/deprecated/)
+
+      expect(easy.to_hash).to eq(easy.mirror.to_hash)
+    end
+  end
+
+  describe "#escape" do
+    it "escapes a value" do
+      expect(easy.escape("a b")).to eq("a%20b")
+    end
+
+    it "raises when libcurl cannot allocate the escaped value" do
+      allow(Ethon::Curl).to receive(:easy_escape).and_return(FFI::Pointer::NULL)
+
+      expect { easy.escape("a") }.to raise_error(NoMemoryError, "curl_easy_escape failed")
     end
   end
 

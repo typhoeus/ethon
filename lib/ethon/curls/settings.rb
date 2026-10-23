@@ -5,7 +5,10 @@ module Ethon
     callback :socket_callback, [:pointer, :int, :poll_action, :pointer, :pointer], :multi_code
     callback :timer_callback, [:pointer, :long, :pointer], :multi_code
     callback :debug_callback, [:pointer, :debug_info_type, :pointer, :size_t, :pointer], :int
-    callback :progress_callback, [:pointer, :long_long, :long_long, :long_long, :long_long], :int
+    # CURLOPT_PROGRESSFUNCTION uses doubles, while CURLOPT_XFERINFOFUNCTION uses
+    # curl_off_t. They are not ABI-compatible on all platforms.
+    callback :progress_callback, [:pointer, :double, :double, :double, :double], :int
+    callback :xferinfo_callback, [:pointer, :long_long, :long_long, :long_long, :long_long], :int
     ffi_lib_flags :now, :global
     ffi_lib ENV.fetch('ETHON_CURL_LIBS', 'libcurl,libcurl.so.4,libcurl-4,libcurl-x64,libcurl-arm64').split(',')
   end

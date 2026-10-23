@@ -56,8 +56,8 @@ module Ethon
       def fabricate(url, action_name, options)
         constant_name = action_name.to_s.capitalize
 
-        if Ethon::Easy::Http.const_defined?(constant_name)
-          Ethon::Easy::Http.const_get(constant_name).new(url, options)
+        if Ethon::Easy::Http.const_defined?(constant_name, false)
+          Ethon::Easy::Http.const_get(constant_name, false).new(url, options)
         else
           Ethon::Easy::Http::Custom.new(constant_name.upcase, url, options)
         end

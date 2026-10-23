@@ -85,6 +85,14 @@ describe Ethon::Easy::Queryable do
       end
     end
 
+    context "when params is a scalar" do
+      let(:hash) { 1 }
+
+      it "returns no pairs" do
+        expect(pairs).to eq([])
+      end
+    end
+
     context "when params is simple hash" do
       let(:hash) { {:a => 1, :b => 2} }
 
@@ -120,6 +128,15 @@ describe Ethon::Easy::Queryable do
           expect(pairs).to include([:a, 1])
           expect(pairs).to include(["b[]", 2])
           expect(pairs).to include(["b[]", 3])
+        end
+      end
+
+      context "when params_encoding is :multi" do
+        before { params.params_encoding = :multi }
+        it "uses the same key for every value" do
+          expect(pairs).to include([:a, 1])
+          expect(pairs).to include([:b, 2])
+          expect(pairs).to include([:b, 3])
         end
       end
 
