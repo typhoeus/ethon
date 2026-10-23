@@ -100,7 +100,6 @@ module Ethon
 
         code = Curl.multi_socket_action(handle, fd, readiness, @running_count_pointer)
         @running_count = @running_count_pointer.read_int
-        raise_callback_errors
 
         check
 
@@ -190,6 +189,7 @@ module Ethon
           Ethon.logger.debug { "ETHON:         performed #{easy.log_inspect}" }
           delete(easy)
           easy.complete
+          easy.raise_callback_error
         end
       end
 
@@ -216,12 +216,7 @@ module Ethon
       def trigger(running_count_pointer)
         code = Curl.multi_perform(handle, running_count_pointer)
         @running_count = running_count_pointer.read_int
-        raise_callback_errors
         code
-      end
-
-      def raise_callback_errors
-        easy_handles.each(&:raise_callback_error)
       end
 
       # Return number of running requests.
