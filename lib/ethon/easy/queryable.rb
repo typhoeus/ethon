@@ -12,6 +12,27 @@ module Ethon
         base.send(:attr_accessor, :params_encoding)
       end
 
+      # Loads mime-types on first use rather than when ethon is required:
+      # its registry costs megabytes in every process, while only file
+      # uploads need it. Concurrent first calls are safe, `require` is.
+      #
+      # @return [ Boolean ] True if mime-types could be loaded.
+      def self.mime_types_available?
+        return @mime_types_available unless @mime_types_available.nil?
+
+        @mime_types_available = begin
+          require 'mime/types/columnar'
+          true
+        rescue LoadError
+          begin
+            require 'mime/types'
+            true
+          rescue LoadError
+            false
+          end
+        end
+      end
+
       # Return wether there are elements in params or not.
       #
       # @example Return if params is empty.
@@ -87,7 +108,7 @@ module Ethon
       private
 
       def mime_type(filename)
-        if defined?(MIME) && t = MIME::Types.type_for(filename).first
+        if Queryable.mime_types_available? && defined?(MIME) && t = MIME::Types.type_for(filename).first
           t.to_s
         else
           'application/octet-stream'
