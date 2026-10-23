@@ -43,6 +43,8 @@ corresponding function is unavailable.
 * Exceptions raised while buffering response headers are now captured and
   re-raised after the transfer, matching the body and debug callbacks.
   ([#316](https://github.com/typhoeus/ethon/pull/316))
+* `Easy.supports_timeout_ms?` now checks the libcurl version instead of async
+  DNS support. ([#319](https://github.com/typhoeus/ethon/pull/319))
 * Corrected the native option number for `tcp_fastopen` (`CURLOPT_TCP_FASTOPEN`,
   244) and the string ABI used by `tlsauth_type` and `proxy_tlsauth_type`.
   `:srp` and `"srp"` are normalized to libcurl's required `"SRP"` value.
