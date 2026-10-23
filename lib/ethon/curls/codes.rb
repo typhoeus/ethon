@@ -128,6 +128,12 @@ module Ethon
           :internal_error,
           :bad_socket,
           :unknown_option,
+          :added_already,
+          :recursive_api_call,
+          :wakeup_failure,
+          :bad_function_argument,
+          :aborted_by_callback,
+          :unrecoverable_poll,
           :last
         ]
       end

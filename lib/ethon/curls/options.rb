@@ -229,6 +229,12 @@ module Ethon
         aliases.each { |a| opthash[a]=opthash[name] }
       end
 
+      # Add named enum or bitmask values to an already defined option.
+      def self.option_value_aliases(ftype,name,values)
+        opthash=const_get(FOPTION_STRINGS[ftype])
+        opthash.fetch(name)[:opts].merge!(values)
+      end
+
       def self.option_type(type)
         cname = FOPTION_STRINGS[type]
         const_set(cname, {})
@@ -244,10 +250,10 @@ module Ethon
       option_type :multi
 
       option :multi, :socketfunction, :socket_callback, 1
-      option :multi, :socketdata, :cbdata, 2
+      option :multi, :socketdata, :ffipointer, 2
       option :multi, :pipelining, :int, 3
       option :multi, :timerfunction, :timer_callback, 4
-      option :multi, :timerdata, :cbdata, 5
+      option :multi, :timerdata, :ffipointer, 5
       option :multi, :maxconnects, :int, 6
       option :multi, :max_host_connections, :int, 7
       option :multi, :max_pipeline_length, :int, 8
@@ -313,11 +319,11 @@ module Ethon
       option :easy, :failonerror, :bool, 45
       ## NETWORK OPTIONS
       option :easy, :url, :string, 2
-      option :easy, :protocols, :bitmask, 181, [nil, :http, :https, :ftp, :ftps, :scp, :sftp, :telnet, :ldap, :ldaps, :dict, :file, :tftp, :imap, :imaps, :pop3, :pop3s, :smtp, :smtps, :rtsp, :rtmp, :rtmpt, :rtmpe, :rtmpte, :rtmps, :rtmpts, :gopher]
-      option :easy, :redir_protocols, :bitmask, 182, [nil, :http, :https, :ftp, :ftps, :scp, :sftp, :telnet, :ldap, :ldaps, :dict, :file, :tftp, :imap, :imaps, :pop3, :pop3s, :smtp, :smtps, :rtsp, :rtmp, :rtmpt, :rtmpe, :rtmpte, :rtmps, :rtmpts, :gopher]
+      option :easy, :protocols, :bitmask, 181, [nil, :http, :https, :ftp, :ftps, :scp, :sftp, :telnet, :ldap, :ldaps, :dict, :file, :tftp, :imap, :imaps, :pop3, :pop3s, :smtp, :smtps, :rtsp, :rtmp, :rtmpt, :rtmpe, :rtmpte, :rtmps, :rtmpts, :gopher, :smb, :smbs, :mqtt, :gophers]
+      option :easy, :redir_protocols, :bitmask, 182, [nil, :http, :https, :ftp, :ftps, :scp, :sftp, :telnet, :ldap, :ldaps, :dict, :file, :tftp, :imap, :imaps, :pop3, :pop3s, :smtp, :smtps, :rtsp, :rtmp, :rtmpt, :rtmpe, :rtmpte, :rtmps, :rtmpts, :gopher, :smb, :smbs, :mqtt, :gophers]
       option :easy, :proxy, :string, 4
       option :easy, :proxyport, :int, 59
-      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, :https, nil, :socks4, :socks5, :socks4a, :socks5_hostname]
+      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, :https, :https2, :socks4, :socks5, :socks4a, :socks5_hostname]
       option :easy, :noproxy, :string, 177
       option :easy, :httpproxytunnel, :bool, 61
       option :easy, :socks5_gssapi_service, :string, 179
@@ -380,7 +386,11 @@ module Ethon
       option :easy, :cookiesession, :bool, 96
       option :easy, :cookielist, :string, 135
       option :easy, :httpget, :bool, 80
-      option :easy, :http_version, :enum, 84, [:none, :httpv1_0, :httpv1_1, :httpv2_0, :httpv2_tls, :httpv2_prior_knowledge]
+      option :easy, :http_version, :enum, 84, {
+        :none => 0, :httpv1_0 => 1, :httpv1_1 => 2, :httpv2_0 => 3,
+        :httpv2_tls => 4, :httpv2_prior_knowledge => 5,
+        :httpv3 => 30, :httpv3only => 31
+      }
       option :easy, :ignore_content_length, :bool, 136
       option :easy, :http_content_decoding, :bool, 158
       option :easy, :http_transfer_decoding, :bool, 157
@@ -480,7 +490,7 @@ module Ethon
       option :easy, :egdsocket, :string, 77
       option :easy, :ssl_cipher_list, :string, 83
       option :easy, :ssl_sessionid_cache, :bool, 150
-      option :easy, :ssl_options, :bitmask, 216, [nil, :allow_beast]
+      option :easy, :ssl_options, :bitmask, 216, [nil, :allow_beast, :no_revoke, :no_partialchain, :revoke_best_effort, :native_ca, :auto_client_cert]
       option :easy, :krblevel, :string, 63
       option_alias :easy, :krblevel, :krb4level
       option :easy, :gssapi_delegation, :bitmask, 210, [:none, :policy_flag, :flag]
@@ -504,19 +514,18 @@ module Ethon
       option_alias :easy, :proxy_keypasswd, :proxy_sslkeypasswd
       option :easy, :proxy_ssl_cipher_list, :string, 259
       option :easy, :proxy_crlfile, :string, 260
-      option :easy, :proxy_ssl_options, :bitmask, 261, [nil, :allow_beast]
+      option :easy, :proxy_ssl_options, :bitmask, 261, [nil, :allow_beast, :no_revoke, :no_partialchain, :revoke_best_effort, :native_ca, :auto_client_cert]
       option :easy, :pre_proxy, :string, 262
       option :easy, :proxy_pinnedpublickey, :string, 263
       option_alias :easy, :proxy_pinnedpublickey, :proxy_pinned_public_key
       option :easy, :proxy_issuercert, :string, 296
       ## SSH OPTIONS
-      option :easy, :ssh_auth_types, :bitmask, 151, [:none, :publickey, :password, :host, :keyboard, :agent, {:any => [:all], :default => [:any]}]
+      option :easy, :ssh_auth_types, :bitmask, 151, [:none, :publickey, :password, :host, :keyboard, :agent, :gssapi, {:any => [:all], :default => [:any]}]
       option :easy, :ssh_host_public_key_md5, :string, 162
       option :easy, :ssh_public_keyfile, :string, 152
       option :easy, :ssh_private_keyfile, :string, 153
       option :easy, :ssh_knownhosts, :string, 183
       option :easy, :ssh_keyfunction, :dontuse_callback, 184
-      option :easy, :khstat, :enum, -1, [:fine_add_to_file, :fine, :reject, :defer] # Kludge to make this enum available... Access via CurL::EASY_OPTIONS[:khstat][:opt]
       option :easy, :ssh_keydata, :cbdata, 185
       ## OTHER OPTIONS
       option :easy, :private, :cbdata, 103
@@ -525,6 +534,12 @@ module Ethon
       option :easy, :new_directory_perms, :int, 160
       ## TELNET OPTIONS
       option :easy, :telnetoptions, :curl_slist, 70
+
+      ## NAMED VALUE ADDITIONS
+      option_value_aliases :easy, :httpauth,
+        :negotiate => :gssnegotiate, :bearer => 1<<6, :aws_sigv4 => 1<<7
+      option_value_aliases :easy, :proxyauth,
+        :negotiate => :gssnegotiate, :bearer => 1<<6, :aws_sigv4 => 1<<7
     end
   end
 end

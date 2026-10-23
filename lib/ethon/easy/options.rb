@@ -109,6 +109,14 @@ module Ethon
         end
       end
 
+      # libcurl does not copy CURLOPT_POSTFIELDS, so keep the Ruby string alive
+      # for as long as the handle may reference it.
+      def postfields=(value)
+        @postfields = value
+        Curl.set_option(:postfields, value, handle)
+        value
+      end
+
       # Observe libcurl debug messages without replacing Ethon's internal
       # debug callback. The block receives the native CURL_DEBUGFUNCTION
       # arguments and is called only when verbose mode is enabled.

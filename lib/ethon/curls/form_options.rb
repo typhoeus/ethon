@@ -29,6 +29,7 @@ module Ethon
           :end,
           :obsolete2,
           :stream,
+          :contentlen,
           :last
         ]
       end

@@ -82,7 +82,7 @@ module Ethon
       end
 
       def form_add(name, content)
-        case content
+        code = case content
         when Array
           Curl.formadd(first, last,
                        :form_option, :copyname, :pointer, name,
@@ -101,6 +101,8 @@ module Ethon
                        :form_option, :end
                       )
         end
+
+        raise Errors::FormAdd.new(code) unless code == 0
 
         setup_garbage_collection
       end

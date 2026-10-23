@@ -91,7 +91,7 @@ module Ethon
           :primary_port =>           info_types[:long]   + 40,
           :local_ip =>               info_types[:string] + 41,
           :local_port =>             info_types[:long]   + 42,
-          :last =>42
+          :last =>66
         }
       end
 

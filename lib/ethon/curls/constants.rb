@@ -59,8 +59,26 @@ module Ethon
     VERSION_NTLM_WB = (1<<15) # NTLM delegating to winbind helper
     VERSION_HTTP2 = (1<<16) # HTTP2 support built
     VERSION_GSSAPI = (1<<17) # GSS-API is supported
+    VERSION_KERBEROS5 = (1<<18) # Kerberos V5 auth is supported
+    VERSION_UNIX_SOCKETS = (1<<19) # Unix domain sockets support
+    VERSION_PSL = (1<<20) # Public Suffix List support
+    VERSION_HTTPS_PROXY = (1<<21) # HTTPS-proxy support built-in
+    VERSION_MULTI_SSL = (1<<22) # Multiple SSL backends available
+    VERSION_BROTLI = (1<<23) # Brotli features are present
+    VERSION_ALTSVC = (1<<24) # Alt-Svc handling built-in
+    VERSION_HTTP3 = (1<<25) # HTTP3 support built-in
+    VERSION_ZSTD = (1<<26) # zstd features are present
+    VERSION_UNICODE = (1<<27) # Unicode support on Windows
+    VERSION_HSTS = (1<<28) # HSTS is supported
+    VERSION_GSASL = (1<<29) # libgsasl is supported
+    VERSION_THREADSAFE = (1<<30) # libcurl API is thread-safe
 
-    SOCKET_BAD = -1
+    # curl_socket_t is int on Unix and SOCKET (UINT_PTR) on Windows.
+    SOCKET_BAD = if Curl.windows?
+      (1 << (::FFI.type_size(:size_t) * 8)) - 1
+    else
+      -1
+    end
     SOCKET_TIMEOUT = SOCKET_BAD
 
     PollAction = enum(:poll_action, [
