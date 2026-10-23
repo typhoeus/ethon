@@ -5,8 +5,9 @@ describe "require 'ethon' memory usage" do
   # Retained Ruby heap memory that requiring ethon is allowed to add.
   # This intentionally stays tight: eagerly loading large optional
   # dependencies here makes every process that loads ethon pay for them.
-  # Update it deliberately when the baseline changes.
-  MAX_RETAINED_BYTES = 2 * 1024 * 1024
+  # Update it deliberately when the baseline changes. The current baseline
+  # after removing the eager dependency load is just under 1 MB.
+  MAX_RETAINED_BYTES = 1024 * 1024
 
   it "retains less than #{MAX_RETAINED_BYTES} bytes" do
     script = <<~RUBY
