@@ -153,6 +153,46 @@ describe "duplicating an Easy handle" do
     end
   end
 
+  describe "attached to a Multi" do
+    let(:multi) { Ethon::Multi.new }
+    let(:easy) { Ethon::Easy.new(:url => url) }
+
+    after { multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up) }
+
+    it "refuses to duplicate an attached Easy" do
+      multi.add(easy)
+
+      expect { easy.dup }.
+        to raise_error(Ethon::Errors::EthonError, /still attached to a Multi/)
+    end
+
+    it "refuses to clone an attached Easy" do
+      multi.add(easy)
+
+      expect { easy.clone }.
+        to raise_error(Ethon::Errors::EthonError, /still attached to a Multi/)
+    end
+
+    it "duplicates an Easy that was removed again" do
+      multi.add(easy)
+      multi.delete(easy)
+
+      copy = easy.dup
+
+      expect(copy.perform).to eq(:ok)
+      expect(copy.response_code).to eq(200)
+    end
+
+    it "refuses to duplicate from a transfer callback" do
+      multi.add(easy)
+      easy.on_body { easy.dup }
+
+      expect { multi.perform }.
+        to raise_error(Ethon::Errors::EthonError, /still attached to a Multi/)
+      expect(multi.easy_handles).to be_empty
+    end
+  end
+
   describe "transfer state" do
     it "starts with no return code or pending callback error" do
       easy = Ethon::Easy.new
