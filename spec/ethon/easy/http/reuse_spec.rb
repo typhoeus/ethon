@@ -47,4 +47,42 @@ describe "reusing an Easy handle" do
 
     expect(response_body["REQUEST_METHOD"]).to eq("PUT")
   end
+
+  it "replaces the response on every perform" do
+    easy.http_request("#{url}first", :get)
+    easy.perform
+
+    easy.http_request("#{url}second", :get)
+    easy.perform
+
+    expect(easy.response_body).to include('"PATH_INFO":"/second"')
+    expect(easy.response_body).not_to include('"PATH_INFO":"/first"')
+    expect(easy.response_body.scan('"GATEWAY_INTERFACE"').size).to eq(1)
+    expect(easy.response_headers.scan("HTTP/1.1").size).to eq(1)
+  end
+
+  it "calls on_headers for every perform" do
+    calls = 0
+    easy.on_headers { calls += 1 }
+
+    easy.http_request(url, :get)
+    easy.perform
+    easy.http_request("#{url}second", :get)
+    easy.perform
+
+    expect(calls).to eq(2)
+  end
+
+  it "rewinds an upload body on every perform" do
+    easy.url = url
+    easy.upload = true
+    easy.infilesize = 3
+    easy.set_read_callback("abc")
+
+    expect(easy.perform).to eq(:ok)
+    expect(easy.response_body[/"body":"([^"]*)"/, 1]).to eq("abc")
+
+    expect(easy.perform).to eq(:ok)
+    expect(easy.response_body[/"body":"([^"]*)"/, 1]).to eq("abc")
+  end
 end

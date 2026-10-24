@@ -36,6 +36,7 @@ module Ethon
       # @return [ Integer ] The return code.
       def perform
         prepare_response_body_io
+        reset_transfer_state
         clear_callback_error
         @return_code = Curl.easy_perform(handle)
         if Ethon.logger.debug?

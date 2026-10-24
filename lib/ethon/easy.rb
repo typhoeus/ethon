@@ -266,6 +266,7 @@ module Ethon
       @blobs = nil
       @mirror = nil
       @read_callback = nil
+      @request_body = nil
       clear_response_body_io
       Curl.easy_reset(handle)
       # libcurl no longer references these after easy_reset.
@@ -297,12 +298,22 @@ module Ethon
       e.instance_variable_set(:@response_body_path, nil)
       e.instance_variable_set(:@owns_response_body_io, false)
       e.set_callbacks
+      # The read callback closes over the original Easy's offset. Install a
+      # fresh callback for the copy so both handles own their upload state.
+      e.set_read_callback(@request_body) if defined?(@request_body) && @request_body
       # curl_easy_duphandle copies the error buffer pointer, give the copy its own
       e.instance_variable_set(:@error_buffer, nil)
       e.errorbuffer = true if @error_buffer_enabled
       # curl_easy_duphandle does not inherit share state, so reattach it.
       e.share = e.share if e.share
       e
+    end
+
+    # Cloning shares the native handle, so route it through #dup instead.
+    def clone(freeze: true)
+      copy = dup
+      copy.freeze if freeze && frozen?
+      copy
     end
     # Url escapes the value.
     #

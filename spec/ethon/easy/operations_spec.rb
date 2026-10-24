@@ -422,5 +422,21 @@ describe Ethon::Easy::Operations do
       expect { easy.perform }.to raise_error(error)
       expect(completed).to be(true)
     end
+
+    it "calls on_complete before raising read callback exceptions" do
+      easy.url = "http://localhost:3001/"
+      easy.upload = true
+      easy.infilesize = 100
+      body = Object.new
+      def body.read(*)
+        raise IOError, "read failed"
+      end
+      easy.set_read_callback(body)
+      completed = false
+      easy.on_complete { completed = true }
+
+      expect { easy.perform }.to raise_error(IOError, "read failed")
+      expect(completed).to be(true)
+    end
   end
 end

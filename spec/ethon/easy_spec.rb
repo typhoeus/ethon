@@ -215,11 +215,27 @@ describe Ethon::Easy do
     end
 
     it "preserves on_complete callback" do
-      expect(e.on_complete).to be(easy.on_complete)
+      expect(e.on_complete).to eq(easy.on_complete)
     end
 
     it "preserves on_headers callback" do
-      expect(e.on_headers).to be(easy.on_headers)
+      expect(e.on_headers).to eq(easy.on_headers)
+    end
+
+    it "does not share the on_complete callback list with the copy" do
+      e.on_complete { 'copy' }
+
+      expect(easy.on_complete.size).to eq(1)
+      expect(e.on_complete.size).to eq(2)
+    end
+
+    it "does not share the request headers with the copy" do
+      easy.headers = { "X-Original" => "1" }
+
+      copy = easy.dup
+      copy.request_headers["X-Copy"] = "2"
+
+      expect(easy.request_headers).not_to have_key("X-Copy")
     end
 
     it 'preserves body_write_callback of original handle' do
@@ -228,7 +244,7 @@ describe Ethon::Easy do
     end
 
     it "preserves on_progress callback" do
-      expect(e.on_progress).to be(easy.on_progress)
+      expect(e.on_progress).to eq(easy.on_progress)
     end
 
     it 'sets new body_write_callback of duplicated handle' do
@@ -274,6 +290,18 @@ describe Ethon::Easy do
       expect(easy.response_headers).to eq('test_headers')
     end
 
+    it "does not share upload progress with the copy" do
+      easy.upload = true
+      easy.infilesize = 3
+      easy.set_read_callback("abc")
+
+      copy = easy.dup
+
+      expect(copy.perform).to eq(:ok)
+      expect(easy.instance_variable_get(:@request_body_read)).to eq(0)
+      expect(easy.perform).to eq(:ok)
+    end
+
     context "when errorbuffer is enabled" do
       let!(:easy) do
         easy = Ethon::Easy.new
@@ -288,6 +316,16 @@ describe Ethon::Easy do
         expect(e.error_message).to match(/Failed to connect/)
         expect(easy.error_message).to be_nil
       end
+    end
+  end
+
+  describe "#clone" do
+    let(:easy) { Ethon::Easy.new(:url => "http://localhost:3001/") }
+
+    it "duplicates the native handle instead of sharing it" do
+      copy = easy.clone
+
+      expect(copy.handle).not_to eq(easy.handle)
     end
   end
 

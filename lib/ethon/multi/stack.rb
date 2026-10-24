@@ -27,6 +27,7 @@ module Ethon
         return nil if easy_handles.include?(easy)
 
         easy.prepare_response_body_io
+        easy.reset_transfer_state
         easy.clear_callback_error
         easy_handle = easy.handle
         easy_handles << easy
