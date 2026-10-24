@@ -49,6 +49,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `Easy#file=` treats writable path-like objects such as `Pathname` as paths
+  instead of caller-owned IOs, so the response is no longer truncated on every
+  write.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
   describing state the handle never received.
