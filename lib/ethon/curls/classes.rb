@@ -3,6 +3,7 @@ module Ethon
   module Curl
     class OwnedPointer < ::FFI::AutoPointer
       OWNERS_MUTEX = Mutex.new
+      OWNERS = {}
 
       def initialize(pointer)
         super
@@ -14,8 +15,10 @@ module Ethon
         raise Errors::ForkSafety.new if @pid != Process.pid
       end
 
+      # Every owned pointer registers in the same table so callers can inspect
+      # all live native handles, regardless of their wrapper class.
       def self.owners
-        @owners ||= {}
+        OWNERS
       end
 
       def self.release(pointer)
