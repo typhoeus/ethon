@@ -232,6 +232,14 @@ describe Ethon::Easy do
       expect { easy.dup }.to raise_error(NoMemoryError, "curl_easy_duphandle failed")
     end
 
+    it "raises when curl_easy_duphandle is unavailable" do
+      allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+      allow(Ethon::Curl).to receive(:respond_to?).with(:easy_duphandle).and_return(false)
+
+      expect { easy.dup }.
+        to raise_error(NotImplementedError, /curl_easy_duphandle/)
+    end
+
     it "refuses to duplicate while performing" do
       easy.instance_variable_set(:@performing, true)
 

@@ -26,7 +26,7 @@ module Ethon
 
       # CURLOPT_TIMEOUT_MS was added in libcurl 7.16.2.
       def supports_timeout_ms?
-        Curl.version_info[:version_num] >= 0x071002
+        Curl.version_at_least?("7.16.2")
       end
 
     end

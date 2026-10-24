@@ -59,12 +59,16 @@ describe Ethon::Multi do
     end
 
     it "returns the attached easy handles" do
+      skip "curl_multi_get_handles is unavailable" unless Ethon::Curl.respond_to?(:multi_get_handles)
+
       multi.add(easy)
 
       expect(multi.native_handles.map(&:address)).to include(easy.handle.address)
     end
 
     it "returns an empty array without handles" do
+      skip "curl_multi_get_handles is unavailable" unless Ethon::Curl.respond_to?(:multi_get_handles)
+
       expect(multi.native_handles).to eq([])
     end
 

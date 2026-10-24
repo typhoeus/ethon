@@ -15,11 +15,12 @@ on:
 
 jobs:
   test:
-    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }})
+    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }}${{ matrix.old_curl && ' (old curl)' || '' }})
     runs-on: ${{ matrix.os }}-latest
     env:
       BUNDLE_WITHOUT: perf
       CURL_VERSION: 8.23.0
+      OLD_CURL_VERSION: 7.88.1
     strategy:
       fail-fast: false
       matrix:
@@ -32,19 +33,22 @@ jobs:
         - { os: ubuntu, ruby-version: '3.3' }
         - { os: ubuntu, ruby-version: '3.4' }
         - { os: ubuntu, ruby-version: '4.0', latest_curl: true }
+        - { os: ubuntu, ruby-version: '3.2', old_curl: true }
         - { os: macos, ruby-version: '2.6' }
         - { os: macos, ruby-version: '3.2' }
         - { os: macos, ruby-version: '4.0' }
     steps:
     - uses: actions/checkout@v7
-    - name: Build latest curl
-      if: ${{ matrix.latest_curl && github.event_name == 'push' }}
+    - name: Build curl
+      if: ${{ matrix.old_curl || (matrix.latest_curl && github.event_name == 'push') }}
+      env:
+        CURL_BUILD_VERSION: ${{ matrix.old_curl && env.OLD_CURL_VERSION || env.CURL_VERSION }}
       run: |
-        curl --fail --location --output curl.tar.xz "https://curl.se/download/curl-${CURL_VERSION}.tar.xz"
+        curl --fail --location --output curl.tar.xz "https://curl.se/download/curl-${CURL_BUILD_VERSION}.tar.xz"
         tar --extract --file curl.tar.xz
         mkdir curl-build
         cd curl-build
-        "../curl-${CURL_VERSION}/configure" \
+        "../curl-${CURL_BUILD_VERSION}/configure" \
           --prefix="${RUNNER_TEMP}/curl" \
           --disable-static \
           --enable-shared \
@@ -54,7 +58,8 @@ jobs:
           --without-libpsl \
           --without-libssh2 \
           --without-zstd \
-          --with-openssl
+          --with-openssl \
+          ${{ matrix.latest_curl && '--disable-form-api' || '' }}
         make --jobs="$(nproc)"
         make install
         printf 'ETHON_CURL_LIBS=%s/curl/lib/libcurl.so\n' "${RUNNER_TEMP}" >> "${GITHUB_ENV}"
@@ -66,5 +71,8 @@ jobs:
     - name: Verify latest curl
       if: ${{ matrix.latest_curl && github.event_name == 'push' }}
       run: bundle exec ruby -Ilib -e 'require "ethon"; abort Ethon::Curl.version unless Ethon::Curl.version.start_with?("libcurl/#{ENV.fetch("CURL_VERSION")}")'
+    - name: Verify older curl
+      if: ${{ matrix.old_curl }}
+      run: bundle exec ruby -Ilib -e 'require "ethon"; abort Ethon::Curl.version unless Ethon::Curl.version.start_with?("libcurl/#{ENV.fetch("OLD_CURL_VERSION")}")'
     - name: Run tests
       run: bundle exec rake

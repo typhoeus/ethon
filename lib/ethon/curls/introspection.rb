@@ -64,6 +64,47 @@ module Ethon
         string_array(version_info[:protocols])
       end
 
+      # Return whether libcurl knows an option.
+      #
+      # Easy options are checked against libcurl's own option table on 7.73.0
+      # and newer. Older versions cannot answer that question, so it returns
+      # `true` for every option Ethon knows. Multi options are only checked
+      # against Ethon's table, because libcurl does not expose multi option
+      # metadata.
+      #
+      # @param [ String, Symbol ] name The CURLOPT_* name without the prefix.
+      # @param [ Symbol ] type :easy or :multi.
+      #
+      # @return [ Boolean ] True when the option is available.
+      def supports_option?(name, type = :easy)
+        name = name.to_sym if name.is_a?(String)
+        options = type == :multi ? multi_options(nil) : easy_options(nil)
+        option = options[name]
+        return false unless option
+
+        if type == :easy && respond_to?(:easy_option_by_id)
+          # Resolve by id so Ethon aliases such as :unix_socket are reported
+          # correctly; libcurl's by-name lookup only knows canonical names.
+          !easy_option_by_id(option[:opt]).null?
+        else
+          true
+        end
+      end
+
+      # Check the loaded libcurl version against a dotted version number.
+      #
+      # @example
+      #   Ethon::Curl.version_at_least?("7.66.0")
+      #
+      # @param [ String ] version The version to compare, for example "7.66.0".
+      #
+      # @return [ Boolean ] True when libcurl is at least that version.
+      def version_at_least?(version)
+        parts = version.to_s.split(".").map(&:to_i)
+        required = (parts[0].to_i << 16) | (parts[1].to_i << 8) | parts[2].to_i
+        version_info[:version_num] >= required
+      end
+
       # Feature names supported by the loaded libcurl.
       #
       # @return [ Array<String> ] Feature names.

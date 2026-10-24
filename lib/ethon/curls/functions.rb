@@ -28,7 +28,7 @@ module Ethon
         base.attach_function :easy_strerror,              :curl_easy_strerror,       [:easy_code],                   :string
         base.attach_function :easy_escape,                :curl_easy_escape,         [:pointer, :pointer, :int],     :pointer
         base.attach_function :easy_reset,                 :curl_easy_reset,          [:pointer],                     :void
-        base.attach_function :easy_duphandle,             :curl_easy_duphandle,      [:pointer],                     :pointer
+        Ethon::Curls::Optional.attach(base, :easy_duphandle, :curl_easy_duphandle, [:pointer], :pointer, blocking: false)
 
         Ethon::Curls::Optional.attach(base, :url, :curl_url, [], :pointer, blocking: false)
         Ethon::Curls::Optional.attach(base, :url_cleanup, :curl_url_cleanup, [:pointer], :void, blocking: false)
@@ -37,8 +37,10 @@ module Ethon
         Ethon::Curls::Optional.attach(base, :url_set, :curl_url_set, [:pointer, :url_part, :string, :url_flags], :url_code, blocking: false)
         Ethon::Curls::Optional.attach(base, :url_strerror, :curl_url_strerror, [:url_code], :string, blocking: false)
 
-        base.attach_function :formadd,                    :curl_formadd,             [:pointer, :pointer, :varargs], :int
-        base.attach_function :formfree,                   :curl_formfree,            [:pointer],                     :void
+        # The form API is deprecated and absent from builds configured with
+        # --disable-form-api. Attach it when present so Ethon still loads.
+        Ethon::Curls::Optional.attach(base, :formadd, :curl_formadd, [:pointer, :pointer, :varargs], :int)
+        Ethon::Curls::Optional.attach(base, :formfree, :curl_formfree, [:pointer], :void)
 
         Ethon::Curls::Optional.attach(base, :share_init, :curl_share_init, [], :pointer, blocking: false)
         Ethon::Curls::Optional.attach(base, :share_cleanup, :curl_share_cleanup, [:pointer], :share_code, blocking: false)
@@ -53,7 +55,7 @@ module Ethon
         base.attach_function :multi_perform,              :curl_multi_perform,       [:pointer, :pointer],           :multi_code, blocking: true
         base.attach_function :multi_timeout,              :curl_multi_timeout,       [:pointer, :pointer],           :multi_code
         base.attach_function :multi_fdset,                :curl_multi_fdset,         [:pointer, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, :pointer], :multi_code
-        base.attach_function :multi_strerror,             :curl_multi_strerror,      [:int],                         :string
+        base.attach_function :multi_strerror,             :curl_multi_strerror,      [:multi_code],                  :string
         base.attach_function :multi_setopt,               :curl_multi_setopt,        [:pointer, :multi_option, :varargs], :multi_code
         base.attach_function :multi_socket_action,        :curl_multi_socket_action, [:pointer, :curl_socket_t, :socket_readiness, :pointer], :multi_code, blocking: true
         base.attach_function :multi_assign,               :curl_multi_assign,        [:pointer, :curl_socket_t, :pointer], :multi_code
