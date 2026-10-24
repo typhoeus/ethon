@@ -1,0 +1,151 @@
+# frozen_string_literal: true
+require 'spec_helper'
+require 'json'
+
+describe "duplicating an Easy handle" do
+  let(:url) { "http://localhost:3001/" }
+
+  describe "callbacks" do
+    it "keeps a custom write callback working on the duplicate" do
+      received = String.new
+      easy = Ethon::Easy.new
+      easy.url = url
+      easy.writefunction = proc do |stream, size, num, _|
+        received << stream.read_string(size * num)
+        size * num
+      end
+
+      copy = easy.dup
+      copy.perform
+
+      expect(received).to include('"REQUEST_METHOD":"GET"')
+      expect(copy.response_body).to be_empty
+    end
+
+    it "keeps a custom read callback on the duplicate" do
+      body = "abc"
+      reads = 0
+      easy = Ethon::Easy.new
+      easy.url = url
+      easy.upload = true
+      easy.infilesize = body.bytesize
+      easy.readfunction = proc do |stream, _, _, _|
+        reads += 1
+        if reads == 1
+          stream.write_string(body, body.bytesize)
+          body.bytesize
+        else
+          0
+        end
+      end
+
+      copy = easy.dup
+
+      expect(copy.read_callback).to be_a(Proc)
+      expect(copy.perform).to eq(:ok)
+      expect(JSON.parse(copy.response_body)["body"]).to eq(body)
+    end
+
+    it "binds the duplicate's progress callback to the duplicate" do
+      called = []
+      easy = Ethon::Easy.new
+      easy.url = url
+      easy.on_progress { called << :original }
+      copy = easy.dup
+
+      # Clearing the copy's list must not fall back to the original's list.
+      copy.on_progress.clear
+      copy.perform
+
+      expect(called).to be_empty
+    end
+
+    it "does not depend on the original handle staying alive" do
+      calls = 0
+      original = Ethon::Easy.new
+      original.url = url
+      original.on_progress { calls += 1 }
+      copy = original.dup
+
+      original.cleanup
+      original = nil
+      GC.start
+
+      expect(copy.perform).to eq(:ok)
+      expect(calls).to be > 0
+    end
+  end
+
+  describe "multipart bodies" do
+    let(:file) { File.open(__FILE__) }
+    after { file.close }
+
+    it "preserves the native multipart body without aliasing the original MIME" do
+      easy = Ethon::Easy.new
+      easy.http_request("#{url}file", :post, :body => { :file => file })
+      easy.headers = { "Expect" => "" }
+      original_mime = easy.mime
+
+      copy = easy.dup
+
+      if Ethon::Curl.respond_to?(:mime_init)
+        expect(original_mime).to be_a(Ethon::Curl::Mime)
+        expect(copy.mime).to be_nil
+      end
+
+      original = easy
+      original.cleanup
+      original = nil
+      GC.start
+
+      expect(copy.perform).to eq(:ok)
+      response = JSON.parse(copy.response_body)
+      expect(response["filename"]).to eq(File.basename(__FILE__))
+      expect(response["content"]).not_to be_empty
+    end
+
+    it "does not send an inherited multipart body for the next request" do
+      easy = Ethon::Easy.new
+      easy.http_request("#{url}file", :post, :body => { :file => file })
+      copy = easy.dup
+
+      copy.http_request("#{url}next", :get)
+      copy.perform
+
+      response = JSON.parse(copy.response_body)
+      expect(response["REQUEST_METHOD"]).to eq("GET")
+      expect(response["CONTENT_TYPE"]).to be_nil
+      expect(response["body"]).to eq("")
+    end
+  end
+
+  describe "request state" do
+    it "keeps custom headers after the original is cleaned up" do
+      easy = Ethon::Easy.new
+      easy.url = url
+      easy.headers = { "X-Original" => "yes" }
+      copy = easy.dup
+
+      original = easy
+      original.cleanup
+      original = nil
+      GC.start
+
+      expect(copy.perform).to eq(:ok)
+      expect(copy.response_body).to include('"HTTP_X_ORIGINAL":"yes"')
+    end
+  end
+
+  describe "transfer state" do
+    it "starts with no return code or pending callback error" do
+      easy = Ethon::Easy.new
+      easy.return_code = :ok
+      easy.instance_variable_set(:@callback_error, RuntimeError.new("boom"))
+
+      copy = easy.dup
+
+      expect(copy.return_code).to be_nil
+      expect { copy.send(:raise_callback_error) }.not_to raise_error
+    end
+  end
+end
