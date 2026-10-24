@@ -165,12 +165,11 @@ module Ethon
         end
       end
 
-    def encode_multi_array_pairs(h, prefix, pairs)
-      h.each_with_index do |v, i|
-        key = prefix
-        pairs_for(v, key, pairs)
+      def encode_multi_array_pairs(h, prefix, pairs)
+        h.each do |v|
+          pairs_for(v, prefix, pairs)
+        end
       end
-    end
 
       def pairs_for(v, key, pairs)
         case v

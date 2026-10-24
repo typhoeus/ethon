@@ -34,6 +34,10 @@ describe Ethon::Easy::HeadersApi do
       expect(easy.header("Content-Type", 0, [:header]).value).to eq("text/plain")
     end
 
+    it "accepts a symbol origin" do
+      expect(easy.header("Content-Type", 0, :header).value).to eq("text/plain")
+    end
+
     it "rejects an unknown origin" do
       expect { easy.header("Content-Type", 0, :not_an_origin) }.
         to raise_error(Ethon::Errors::InvalidValue, /header_origin/)

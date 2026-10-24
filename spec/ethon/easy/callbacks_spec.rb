@@ -221,6 +221,14 @@ describe Ethon::Easy::Callbacks do
       expect { easy.reset_transfer_state }.not_to raise_error
     end
 
+    it "leaves a body alone when rewinding it fails" do
+      body = StringIO.new("abc")
+      allow(body).to receive(:seek).and_raise(IOError, "closed stream")
+      easy.set_read_callback(body)
+
+      expect { easy.reset_transfer_state }.not_to raise_error
+    end
+
     it "reports the number of bytes actually read from short-reading IOs" do
       body = Class.new do
         def initialize

@@ -52,6 +52,26 @@ describe Ethon::Easy::Header do
       end
     end
 
+    context "when libcurl rejects the header list" do
+      it "frees the new list and keeps the previous headers" do
+        easy.headers = { "X-Old" => "yes" }
+        old_list = easy.header_list
+        pointer = FFI::MemoryPointer.new(:int)
+        allow(Ethon::Curl).to receive(:slist_append).and_return(pointer)
+        allow(Ethon::Curl).to receive(:set_option).and_call_original
+        allow(Ethon::Curl).to receive(:set_option).
+          with(:httpheader, pointer, anything).
+          and_raise(Ethon::Errors::SetOption.new(:httpheader, :out_of_memory))
+        expect(Ethon::Curl).to receive(:slist_free_all).with(pointer)
+
+        expect { easy.headers = { "X-New" => "yes" } }.
+          to raise_error(Ethon::Errors::SetOption)
+
+        expect(easy.request_headers).to eq("X-Old" => "yes")
+        expect(easy.header_list).to be(old_list)
+      end
+    end
+
     context "when a value contains a bare LF" do
       let(:headers) { { 'X-Test' => "1\nX-Injected: yes" } }
 
