@@ -271,6 +271,7 @@ module Ethon
       @user_debug_callback = nil
       @procs = nil
       @blobs = nil
+      @slists = nil
       @mirror = nil
       @read_callback = nil
       @request_body = nil
