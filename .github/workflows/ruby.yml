@@ -15,7 +15,7 @@ on:
 
 jobs:
   test:
-    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }}${{ matrix.old_curl && ' (old curl)' || '' }}${{ matrix.latest_curl && ' (latest curl)' || '' }})
+    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }}${{ matrix.old_curl && ' (old curl)' || '' }}${{ matrix.latest_curl && github.event_name == 'push' && ' (latest curl)' || '' }})
     runs-on: ${{ matrix.os }}-latest
     env:
       BUNDLE_WITHOUT: perf
