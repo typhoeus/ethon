@@ -48,6 +48,8 @@ is unavailable; introspection helpers return `nil` or an empty array.
   to empty GET requests.
 * MIME parts keep a caller-provided header slist alive until libcurl replaces
   it.
+* `Curl::Share#share` and `#unshare` now reject unknown or non-symbol/string
+  data types with `Ethon::Errors::InvalidValue`.
 * `Easy#header` and `Easy#each_header` accept an array of header origins as
   documented.
 * `Easy#cleanup` is terminal; using the handle afterwards raises

@@ -101,8 +101,12 @@ module Ethon
 
       def setopt(option, data)
         check_pid!
+        unless data.is_a?(Symbol) || data.is_a?(String)
+          raise Errors::InvalidValue.new(option, data)
+        end
+
         value = Curl::LockData[data.to_sym]
-        raise Errors::Share.new(:bad_option) unless value
+        raise Errors::InvalidValue.new(option, data) unless value
 
         code = Curl.share_setopt(self, option, :long, value)
         raise Errors::Share.new(code) unless code == :ok
