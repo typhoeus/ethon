@@ -29,7 +29,7 @@ module Ethon
             easy.multipart_form = nil
             easy.mime = nil if Ethon::Curl.respond_to?(:mime_init)
             easy.upload = true
-            form.escape = true
+            form.escape = easy.escape?
             easy.infilesize = form.to_s.bytesize
             easy.set_read_callback(form.to_s)
           end

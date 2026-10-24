@@ -119,7 +119,20 @@ describe Ethon::Easy::Http::Put do
           end
         end
 
-        context "when injecting a file as body" do
+        context "when escape is false" do
+        let(:options) { { :escape => false } }
+        let(:form) { { :a => "b c" } }
+
+        it "sends raw values" do
+          easy.headers = { 'Expect' => '' }
+          put.setup(easy)
+          easy.perform
+
+          expect(easy.response_body).to include('"body":"a=b c"')
+        end
+      end
+
+      context "when injecting a file as body" do
           let(:file) { File.open(__FILE__) }
           let(:easy) do
             e = Ethon::Easy.new(:url => url, :upload => true)
