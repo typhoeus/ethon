@@ -71,7 +71,10 @@ is unavailable; introspection helpers return `nil` or an empty array.
   a frozen snapshot of the string libcurl points at, so caller mutations cannot
   change the request or leave libcurl reading a reallocated buffer.
 * `Easy#cleanup` drops references to native-backed strings, lists, MIME/URL
-  handles, blobs, and callbacks after freeing the handle.
+  handles, blobs, and callbacks after freeing the handle. It also drops the
+  response, progress, and debug callback closures, and `Multi#cleanup` drops
+  its retained socket and timer callbacks, so terminal cleanup does not keep
+  application state alive.
 * `Multi#cleanup` now releases the native multi handle even when detaching an
   easy handle or closing a streamed response fails, and keeps multi ownership
   on an easy handle whose native detach failed so it cannot be reused.
@@ -79,9 +82,17 @@ is unavailable; introspection helpers return `nil` or an empty array.
   or releasing a native multi handle, and `Easy#reset`/`#perform` validate the
   handle before clearing response state, so a cleaned up or inherited handle
   cannot truncate a response file or discard the previous result while raising.
+* `Easy#handle=` now wraps a raw `FFI::Pointer` in an owned
+  `Ethon::Curl::EasyHandle`, so the documented setter produces a usable handle
+  that fork safety tracks and `#cleanup` frees. Other owned pointer types and
+  null pointers are rejected.
 * `Easy#cleanup` frees the native handle even when closing a streamed response
   fails, and `Multi#add` closes an open response stream when the easy handle is
   unusable or the native add fails.
+* Owned handles now record an explicit `free` and raise
+  `Ethon::Errors::EthonError` when used afterwards, instead of dereferencing
+  the freed native pointer. This covers Easy and Multi handles, URL, MIME,
+  share, and slist wrappers.
 * MIME part and request header lists detect a failed `curl_slist_append`
   allocation (FFI reports a NULL pointer, not `nil`) and free the partially
   built list before installing it.
@@ -102,7 +113,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * `Curl::Share#share` and `#unshare` now reject unknown or non-symbol/string
   data types with `Ethon::Errors::InvalidValue`.
 * `Easy#header` and `Easy#each_header` accept an array of header origins as
-  documented.
+  documented. `Ethon::Curl::Header#origin` no longer exposes libcurl's
+  reserved bit, so it matches the documented `CURLH_*` values in
+  `Ethon::Curl::HeaderOrigin`.
 * `Easy#cleanup` is terminal; using the handle afterwards raises
   `Ethon::Errors::EthonError` instead of silently sending requests without
   callbacks.
@@ -121,6 +134,11 @@ is unavailable; introspection helpers return `nil` or an empty array.
   `Ethon::Errors::InvalidValue` instead of FFI's `ArgumentError`, and
   fractional values for integer options are rejected. Binary bodies still use
   `copypostfields`.
+* String options that libcurl writes verbatim into a request line, a protocol
+  header, or a protocol command now reject CR and LF. This covers
+  `customrequest`, `request_target`, `useragent`, `referer`, `cookie`,
+  `accept_encoding`, `range`, and the RTSP, SMTP, and FTP equivalents, which
+  could otherwise inject additional headers or commands.
 * Split the progress callback ABI into `CURLOPT_PROGRESSFUNCTION` (`double`) and
   `CURLOPT_XFERINFOFUNCTION` (`curl_off_t`), and select it using libcurl's
   numeric version instead of string comparison.
