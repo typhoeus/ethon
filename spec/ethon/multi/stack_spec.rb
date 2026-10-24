@@ -80,6 +80,26 @@ describe Ethon::Multi::Stack do
         expect { multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
         expect(io).to be_closed
       end
+
+      it "closes the file when the easy handle is unusable" do
+        easy.file = tempfile.path
+        easy.prepare_response_body_io
+        io = easy.instance_variable_get(:@response_body_io)
+        allow(easy).to receive(:handle).and_raise(Ethon::Errors::ForkSafety.new)
+
+        expect { multi.add(easy) }.to raise_error(Ethon::Errors::ForkSafety)
+        expect(io).to be_closed
+      end
+
+      it "closes the file when the multi was cleaned up" do
+        easy.file = tempfile.path
+        easy.prepare_response_body_io
+        io = easy.instance_variable_get(:@response_body_io)
+        multi.cleanup
+
+        expect { multi.add(easy) }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+        expect(io).to be_closed
+      end
     end
   end
 

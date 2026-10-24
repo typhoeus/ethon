@@ -111,6 +111,17 @@ describe Ethon::Easy::Operations do
       multi.delete(easy)
       expect { easy.cleanup }.not_to raise_error
     end
+
+    it "frees the native handle when closing the response body fails" do
+      handle = easy.handle
+      allow(easy).to receive(:clear_response_body_io).and_raise(IOError, "close failed")
+
+      expect(handle).to receive(:free).and_call_original
+      expect { easy.cleanup }.to raise_error(IOError, "close failed")
+
+      expect(easy.instance_variable_get(:@handle)).to be_nil
+      expect { easy.cleanup }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+    end
   end
 
   describe "multi ownership" do
@@ -132,6 +143,32 @@ describe Ethon::Easy::Operations do
       multi.delete(easy)
 
       expect(easy.perform).to eq(:ok)
+    end
+  end
+
+  describe "cleaned up handles" do
+    it "does not reset a previous response when performing" do
+      easy.response_body = "previous body"
+      easy.response_headers = "previous headers"
+      easy.cleanup
+
+      expect { easy.perform }.
+        to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+      expect(easy.response_body).to eq("previous body")
+      expect(easy.response_headers).to eq("previous headers")
+    end
+
+    it "does not reset a previous response when resetting" do
+      easy.url = "http://localhost:3001/"
+      easy.response_body = "previous body"
+      easy.response_headers = "previous headers"
+      easy.cleanup
+
+      expect { easy.reset }.
+        to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+      expect(easy.url).to eq("http://localhost:3001/")
+      expect(easy.response_body).to eq("previous body")
+      expect(easy.response_headers).to eq("previous headers")
     end
   end
 

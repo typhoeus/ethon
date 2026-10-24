@@ -26,22 +26,22 @@ module Ethon
       def add(easy)
         return nil if easy_handles.include?(easy)
 
-        easy.prepare_response_body_io
-        easy.reset_transfer_state
-        easy.clear_callback_error
-        easy_handle = easy.handle
-        easy_handles << easy
+        # Resolve the multi handle before changing the easy so a cleaned up or
+        # forked Multi cannot reset the easy or open its response file.
         begin
-          code = Curl.multi_add_handle(handle, easy_handle)
+          multi_handle = handle
+          easy_handle = easy.handle
+          easy.prepare_response_body_io
+          easy.reset_transfer_state
+          easy.clear_callback_error
+          easy_handles << easy
+          code = Curl.multi_add_handle(multi_handle, easy_handle)
+          raise Errors::MultiAdd.new(code, easy) unless code == :ok
         rescue Exception
           easy_handles.delete(easy)
+          # A failed add must not leave a response file open until GC.
           easy.finish_response_body_io
           raise
-        end
-        unless code == :ok
-          easy_handles.delete(easy)
-          easy.finish_response_body_io
-          raise Errors::MultiAdd.new(code, easy)
         end
 
         # Cleanup must not free an easy that is still attached to this multi.
