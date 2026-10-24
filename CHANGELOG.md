@@ -49,12 +49,39 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `:none` options no longer interpret `false` as enabled, `Ethon.logger = nil`
+  falls back to the default logger, and `ETHON_FD_SIZE` is validated and
+  rounded up to the native fd_set word size.
+* HTTP helper actions are resolved through an explicit class map, so custom
+  verbs that collide with `Ethon::Easy::Http` constants such as `:custom` or
+  `:actionable` are sent as custom requests instead of raising.
+* The `select` fallback in `Multi#set_fds` now sleeps for the libcurl timeout
+  when no file descriptors are ready instead of busy-waiting in 1ms steps.
+* `Easy#file=` treats writable path-like objects such as `Pathname` as paths
+  instead of caller-owned IOs, so the response is no longer truncated on every
+  write.
+* MIME part headers now reject CR, LF, and NUL bytes instead of passing them
+  verbatim to libcurl. Empty header lines are dropped, so assigning an empty
+  string clears the part headers instead of adding an empty header line.
+* `CURLOPT_COPYPOSTFIELDS` values are now NUL-terminated, and assigning `nil`
+  passes a NULL pointer instead of a zero-length buffer.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
-  describing state the handle never received.
-* `Multi#cleanup` now releases the native multi handle and clears handle
-  ownership even when detaching an easy handle or closing a streamed response
-  fails.
+  describing state the handle never received. `Easy#postfields=` also retains
+  the normalized string libcurl points at, so non-String bodies cannot be
+  collected mid-transfer.
+* `Easy#cleanup` drops references to native-backed strings, lists, MIME/URL
+  handles, blobs, and callbacks after freeing the handle.
+* `Multi#cleanup` now releases the native multi handle even when detaching an
+  easy handle or closing a streamed response fails, and keeps multi ownership
+  on an easy handle whose native detach failed so it cannot be reused.
+* `Multi#handle` and `Multi#cleanup` now enforce fork safety before allocating
+  or releasing a native multi handle, and `Easy#reset`/`#perform` validate the
+  handle before clearing response state, so a cleaned up or inherited handle
+  cannot truncate a response file or discard the previous result while raising.
+* `Easy#cleanup` frees the native handle even when closing a streamed response
+  fails, and `Multi#add` closes an open response stream when the easy handle is
+  unusable or the native add fails.
 * MIME part and request header lists detect a failed `curl_slist_append`
   allocation (FFI reports a NULL pointer, not `nil`) and free the partially
   built list before installing it.
