@@ -61,6 +61,10 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * Corrected the native option number for `tcp_fastopen` (`CURLOPT_TCP_FASTOPEN`,
   244) and the string ABI used by `tlsauth_type` and `proxy_tlsauth_type`.
   `:srp` and `"srp"` are normalized to libcurl's required `"SRP"` value.
+* String options containing NUL bytes now raise
+  `Ethon::Errors::InvalidValue` instead of FFI's `ArgumentError`, and
+  fractional values for integer options are rejected. Binary bodies still use
+  `copypostfields`.
 * Split the progress callback ABI into `CURLOPT_PROGRESSFUNCTION` (`double`) and
   `CURLOPT_XFERINFOFUNCTION` (`curl_off_t`), and select it using libcurl's
   numeric version instead of string comparison.
