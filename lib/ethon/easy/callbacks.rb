@@ -49,7 +49,7 @@ module Ethon
             result = body(chunk = stream.read_string(size * num))
             if @response_body_io && result != :abort && headers_user_callback_result != :abort
               @response_body_io.write(chunk)
-            elsif result == :unyielded && !@response_body_io
+            elsif result == :unyielded && !@response_body_io && headers_user_callback_result != :abort
               @response_body << chunk
             end
             (result != :abort && headers_user_callback_result != :abort) ? size * num : -1

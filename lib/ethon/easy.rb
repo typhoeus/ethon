@@ -219,8 +219,10 @@ module Ethon
     # @see https://curl.se/libcurl/c/curl_easy_setopt.html
     def initialize(options = {})
       Curl.init
-      set_attributes(options)
+      # Install Ethon's internal callbacks first so callback options passed to
+      # the constructor override them instead of being overwritten here.
       set_callbacks
+      set_attributes(options)
     end
 
     # Set given options.

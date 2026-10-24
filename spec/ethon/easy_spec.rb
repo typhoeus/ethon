@@ -29,6 +29,23 @@ describe Ethon::Easy do
           easy
         end
       end
+
+      context "when a write callback is set" do
+        it "uses the caller's callback instead of Ethon's buffering callback" do
+          received = String.new
+          easy = Ethon::Easy.new(
+            :url => "http://localhost:3001/",
+            :writefunction => proc do |stream, size, num, _|
+              received << stream.read_string(size * num)
+              size * num
+            end
+          )
+
+          expect(easy.perform).to eq(:ok)
+          expect(received).to include('"REQUEST_METHOD":"GET"')
+          expect(easy.response_body).to be_empty
+        end
+      end
     end
   end
 

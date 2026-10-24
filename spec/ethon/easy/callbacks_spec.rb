@@ -89,6 +89,19 @@ describe Ethon::Easy::Callbacks do
       end
     end
 
+    context "when buffering and the headers abort" do
+      before do
+        easy.url = "http://localhost:3001/"
+        easy.on_headers.clear
+        easy.on_headers { :abort }
+      end
+
+      it "aborts without buffering the body chunk" do
+        expect(easy.perform).to eq(:write_error)
+        expect(easy.response_body).to be_empty
+      end
+    end
+
     context "when appending a header raises" do
       before do
         headers = Object.new
