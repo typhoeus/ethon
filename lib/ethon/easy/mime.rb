@@ -8,9 +8,15 @@ module Ethon
       #
       # @param [ Ethon::Curl::Mime, nil ] mime The MIME structure.
       #
+      # @raise [ TypeError ] If mime is not a MIME structure.
+      #
       # @return [ Ethon::Curl::Mime, nil ] The MIME structure.
       def mime=(mime)
-        mime.check_pid! if mime.respond_to?(:check_pid!)
+        unless mime.nil? || mime.is_a?(Curl::Mime)
+          raise TypeError, "expected an Ethon::Curl::Mime, got #{mime.class}"
+        end
+
+        mime.check_pid! if mime
         Curl.set_option(:mimepost, mime, handle)
         @mime = mime
         mime

@@ -179,6 +179,35 @@ describe Ethon::Easy, "with CURLOPT_CURLU" do
 
     expect { easy.curlu = url }.to raise_error(Ethon::Errors::ForkSafety)
   end
+
+  it "rejects another owned pointer type" do
+    easy
+    list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+    expect(Ethon::Curl).not_to receive(:set_option)
+
+    expect { easy.curlu = list }.
+      to raise_error(TypeError, /Ethon::Curl::Url/)
+    expect(easy.curlu).to be_nil
+  ensure
+    list.free if list
+  end
+
+  it "rejects a raw pointer" do
+    list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+
+    expect { easy.curlu = FFI::Pointer.new(list.address) }.
+      to raise_error(TypeError, /Ethon::Curl::Url/)
+  ensure
+    list.free if list
+  end
+
+  it "keeps the URL handle when the replacement is rejected" do
+    easy.curlu = url
+
+    expect { easy.curlu = "http://localhost:3001/" }.
+      to raise_error(TypeError, /Ethon::Curl::Url/)
+    expect(easy.curlu).to be(url)
+  end
 end
 
 describe Ethon::Curl::Url, "when the URL API is unavailable" do

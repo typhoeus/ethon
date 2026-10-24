@@ -8,9 +8,15 @@ module Ethon
       #
       # @param [ Ethon::Curl::Share, nil ] share The share handle.
       #
+      # @raise [ TypeError ] If share is not a share handle.
+      #
       # @return [ Ethon::Curl::Share, nil ] The share handle.
       def share=(share)
-        share.check_pid! if share.respond_to?(:check_pid!)
+        unless share.nil? || share.is_a?(Curl::Share)
+          raise TypeError, "expected an Ethon::Curl::Share, got #{share.class}"
+        end
+
+        share.check_pid! if share
         Curl.set_option(:share, share, handle)
         @share = share
         share
