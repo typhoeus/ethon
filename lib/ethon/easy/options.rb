@@ -133,6 +133,18 @@ module Ethon
               end
               value
             end
+          elsif props[:type] == :curl_slist
+            # libcurl keeps the list pointer, so retain the wrapper in case it
+            # owns the native list. Clearing the option can release it.
+            define_method(method_name) do |value|
+              Curl.set_option(opt, value, handle)
+              if value
+                (@slists ||= {})[opt] = value
+              elsif @slists
+                @slists.delete(opt)
+              end
+              value
+            end
           else
             define_method(method_name) do |value|
               Curl.set_option(opt, value, handle)
@@ -179,6 +191,7 @@ module Ethon
         super
         @procs = @procs.dup if @procs
         @blobs = @blobs.dup if @blobs
+        @slists = @slists.dup if @slists
         @on_complete = @on_complete.dup if @on_complete
         @on_headers = @on_headers.dup if @on_headers
         @on_body = @on_body.dup if @on_body

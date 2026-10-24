@@ -127,6 +127,7 @@ module Ethon
         @mime = nil
         @curlu = nil
         @blobs = nil
+        @slists = nil
         @procs = nil
         @share = nil
         @error_buffer = nil
