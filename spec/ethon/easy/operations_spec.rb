@@ -196,6 +196,23 @@ describe Ethon::Easy::Operations do
       expect(easy.instance_variable_get(:@error_buffer)).to be_nil
       expect(easy.response_body).to eq("response")
     end
+
+    it "releases response and debug callbacks" do
+      easy.on_complete { }
+      easy.on_headers { }
+      easy.on_body { }
+      easy.on_progress { }
+      easy.debugfunction { }
+
+      easy.cleanup
+
+      expect(easy.instance_variable_get(:@on_complete)).to be_nil
+      expect(easy.instance_variable_get(:@on_headers)).to be_nil
+      expect(easy.instance_variable_get(:@on_body)).to be_nil
+      expect(easy.instance_variable_get(:@on_progress)).to be_nil
+      expect(easy.instance_variable_get(:@user_debug_callback)).to be_nil
+      expect(easy.on_complete).to eq([])
+    end
   end
 
   describe "multi ownership" do
