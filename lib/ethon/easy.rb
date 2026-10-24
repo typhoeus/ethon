@@ -256,6 +256,10 @@ module Ethon
       # Check the handle before clearing state so reset is a no-op when the
       # handle was cleaned up or inherited across a fork.
       handle
+      # Close the response stream before clearing any state. If closing fails,
+      # leave the handle and its Ruby-side description untouched so the caller
+      # can recover instead of ending up with a half-reset Easy.
+      clear_response_body_io
 
       @postfields = nil
       @url = nil
@@ -276,7 +280,6 @@ module Ethon
       @read_callback = nil
       @request_body = nil
       @request_body_start = nil
-      clear_response_body_io
       Curl.easy_reset(handle)
       # libcurl no longer references these after easy_reset.
       @header_list = nil
