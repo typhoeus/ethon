@@ -60,7 +60,7 @@ describe Ethon::Curl::Mime do
 
     it "releases a partially built header list when an append fails" do
       first = FFI::MemoryPointer.new(:pointer)
-      allow(Ethon::Curl).to receive(:slist_append).and_return(first, nil)
+      allow(Ethon::Curl).to receive(:slist_append).and_return(first, FFI::Pointer::NULL)
       expect(Ethon::Curl).to receive(:slist_free_all).with(first)
 
       expect { part.headers = ["X-First: 1", "X-Second: 2"] }.

@@ -124,12 +124,14 @@ module Ethon
         list = nil
         begin
           lines.each do |line|
-            previous = list
-            list = Curl.slist_append(list, line.to_s)
-            next unless list.nil?
+            appended = Curl.slist_append(list, line.to_s)
+            # curl_slist_append returns a NULL pointer, not Ruby nil, and
+            # leaves the previous list untouched when it fails.
+            if appended.nil? || appended.null?
+              raise NoMemoryError, "curl_slist_append failed"
+            end
 
-            Curl.slist_free_all(previous) if previous
-            raise NoMemoryError, "curl_slist_append failed"
+            list = appended
           end
           list
         rescue Exception

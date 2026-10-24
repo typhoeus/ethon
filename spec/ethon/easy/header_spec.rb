@@ -46,7 +46,7 @@ describe Ethon::Easy::Header do
     context "when curl_slist_append fails" do
       it "frees the previous list and raises" do
         pointer = FFI::MemoryPointer.new(:int)
-        allow(Ethon::Curl).to receive(:slist_append).and_return(pointer, nil)
+        allow(Ethon::Curl).to receive(:slist_append).and_return(pointer, FFI::Pointer::NULL)
         expect(Ethon::Curl).to receive(:slist_free_all).with(pointer)
 
         expect { easy.headers = { "A" => "1", "B" => "2" } }.

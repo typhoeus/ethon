@@ -78,14 +78,14 @@ module Ethon
       def build_slist(headers)
         list = nil
         headers.each do |key, value|
-          previous = list
-          list = Curl.slist_append(list, compose_header(key, value))
-          next unless list.nil?
+          appended = Curl.slist_append(list, compose_header(key, value))
+          # curl_slist_append returns a NULL pointer, not Ruby nil, and leaves
+          # the previous list untouched when it fails.
+          if appended.nil? || appended.null?
+            raise NoMemoryError, "curl_slist_append failed"
+          end
 
-          # curl_slist_append returns NULL on allocation failure and leaves
-          # the previous list untouched.
-          Curl.slist_free_all(previous) if previous
-          raise NoMemoryError, "curl_slist_append failed"
+          list = appended
         end
         list
       rescue Exception
