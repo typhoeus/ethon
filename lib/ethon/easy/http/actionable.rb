@@ -103,7 +103,9 @@ module Ethon
           set_form(easy) unless form.empty?
           if form.empty?
             easy.multipart_form = nil
-            easy.mime = nil if easy.mime && Ethon::Curl.respond_to?(:mime_init)
+            # Clear any MIME body left over from an earlier request (or copied
+            # by Easy#dup) so this request does not inherit it.
+            easy.mime = nil if Ethon::Curl.respond_to?(:mime_init)
           end
 
           if params.empty?

@@ -66,6 +66,10 @@ is unavailable; introspection helpers return `nil` or an empty array.
   numeric version instead of string comparison.
 * Read callbacks now report the number of bytes actually read, handle
   short-reading IO bodies, and correctly start from an IO's current position.
+* Duplicating an `Easy` now rebinds its response, read, progress, and custom
+  callbacks to the copy instead of leaving them pointing at the original
+  handle, starts with a clean result/callback-error state, and no longer
+  aliases the original MIME structure.
 * Custom HTTP verbs that collide with top-level Ruby constants no longer
   resolve to those constants.
 * `Easy#reset` now clears multipart state, request headers, retained read

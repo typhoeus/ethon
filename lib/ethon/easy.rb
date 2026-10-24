@@ -297,17 +297,47 @@ module Ethon
       e.instance_variable_set(:@response_body_path, nil)
       e.instance_variable_set(:@owns_response_body_io, false)
       e.instance_variable_set(:@multi, nil)
+      # curl_easy_duphandle copies the native MIME structure, but there is no
+      # way to wrap that copy. Keeping the original wrapper would make both
+      # handles appear to share a structure they do not actually share.
+      e.instance_variable_set(:@mime, nil)
       e.set_callbacks
-      # The read callback closes over the original Easy's offset. Install a
-      # fresh callback for the copy so both handles own their upload state.
-      e.set_read_callback(@request_body) if defined?(@request_body) && @request_body
+      restore_callbacks_on(e)
       # curl_easy_duphandle copies the error buffer pointer, give the copy its own
       e.instance_variable_set(:@error_buffer, nil)
       e.errorbuffer = true if @error_buffer_enabled
       # curl_easy_duphandle does not inherit share state, so reattach it.
       e.share = e.share if e.share
+      # The copy starts a fresh transfer and must not report the original's
+      # result or a callback error from it.
+      e.return_code = nil
+      e.clear_callback_error
       e
     end
+
+    # Install fresh callback closures on a duplicate.
+    #
+    # curl_easy_duphandle copies callback pointers, but those closures still
+    # reference the original Easy. Reinstalling them keeps the duplicate from
+    # calling into the original and from depending on it staying alive.
+    def restore_callbacks_on(copy)
+      if defined?(@request_body) && @request_body
+        copy.set_read_callback(@request_body)
+      end
+
+      progress_handled = @procs &&
+        (@procs.key?(:progressfunction) || @procs.key?(:xferinfofunction))
+      if defined?(@on_progress) && @on_progress && @progress_callback && !progress_handled
+        copy.set_progress_callback
+      end
+
+      (@procs || {}).each do |option, callback|
+        next if option == :readfunction && defined?(@request_body) && @request_body
+
+        copy.public_send("#{option}=", callback)
+      end
+    end
+    private :restore_callbacks_on
 
     # Cloning shares the native handle, so route it through #dup instead.
     def clone(freeze: true)
