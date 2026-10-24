@@ -107,9 +107,8 @@ module Ethon
       end
 
       def set_progress_callback
-        # CURLOPT_XFERINFOFUNCTION was added in libcurl 7.32.0. Compare the
-        # numeric version; string comparison breaks for versions like 7.9.x.
-        if Curl.version_info[:version_num] >= 0x072000
+        # CURLOPT_XFERINFOFUNCTION was added in libcurl 7.32.0.
+        if Curl.version_at_least?("7.32.0")
           Curl.set_option(:xferinfofunction, progress_callback, handle)
         else
           Curl.set_option(:progressfunction, progress_callback, handle)

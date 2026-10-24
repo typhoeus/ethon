@@ -3,6 +3,8 @@ require 'spec_helper'
 
 describe Ethon::Easy::Form do
   it "raises when curl_formadd fails" do
+    skip "curl_formadd is unavailable" unless Ethon::Curl.respond_to?(:formadd)
+
     form = described_class.new(Ethon::Easy.new, { :a => "b" })
     allow(Ethon::Curl).to receive(:formadd).and_return(1)
 

@@ -95,6 +95,13 @@ describe "libcurl version introspection" do
     expect(Ethon::Curl.supports_option?(:not_an_option)).to be(false)
   end
 
+  it "assumes an option is available when libcurl cannot answer" do
+    allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+    allow(Ethon::Curl).to receive(:respond_to?).with(:easy_option_by_id).and_return(false)
+
+    expect(Ethon::Curl.supports_option?(:tcp_keepcnt)).to be(true)
+  end
+
   it "reports options missing from an older libcurl" do
     skip "curl_easy_option_by_id is unavailable" unless Ethon::Curl.respond_to?(:easy_option_by_id)
 

@@ -69,7 +69,11 @@ describe Ethon::Easy::Form do
   end
 
   describe "#materialize" do
-    before { form.instance_variable_set(:@query_pairs, pairs) }
+    before do
+      skip "curl_formadd is unavailable" unless Ethon::Curl.respond_to?(:formadd)
+
+      form.instance_variable_set(:@query_pairs, pairs)
+    end
 
     context "when curl_formadd is unavailable" do
       let(:pairs) { [['a', '1']] }

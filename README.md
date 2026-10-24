@@ -167,7 +167,8 @@ ETHON_CURL_LIBS=/opt/curl/lib/libcurl.so bundle exec rake
 ```
 
 CI builds libcurl 7.88 in addition to the system package and 8.23 to catch
-accidental use of newer symbols and options.
+accidental use of newer symbols and options. The 8.23 build uses
+`--disable-form-api`, so the missing form API path is exercised too.
 
 ## Thread and fork safety
 

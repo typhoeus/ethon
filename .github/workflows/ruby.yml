@@ -15,7 +15,7 @@ on:
 
 jobs:
   test:
-    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }})
+    name: test (${{ matrix.os }}, ${{ matrix.ruby-version }}${{ matrix.old_curl && ' (old curl)' || '' }})
     runs-on: ${{ matrix.os }}-latest
     env:
       BUNDLE_WITHOUT: perf
@@ -58,7 +58,8 @@ jobs:
           --without-libpsl \
           --without-libssh2 \
           --without-zstd \
-          --with-openssl
+          --with-openssl \
+          ${{ matrix.latest_curl && '--disable-form-api' || '' }}
         make --jobs="$(nproc)"
         make install
         printf 'ETHON_CURL_LIBS=%s/curl/lib/libcurl.so\n' "${RUNNER_TEMP}" >> "${GITHUB_ENV}"
