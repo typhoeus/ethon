@@ -22,6 +22,25 @@ module Ethon
         value.to_s.gsub(0.chr, '\\\0')
       end
 
+      # Rejects header lines libcurl would send verbatim as extra headers.
+      #
+      # @example Validate a header line.
+      #   Util.validate_header_line(:headers, "X-Test: 1")
+      #
+      # @param [ Symbol ] option The option name used in the error.
+      # @param [ String ] line The header line.
+      #
+      # @raise [ Errors::InvalidValue ] If the line contains CR, LF, or NUL.
+      #
+      # @return [ String ] The validated line.
+      def validate_header_line(option, line)
+        if line.include?("\r") || line.include?("\n") || line.include?("\0")
+          raise Errors::InvalidValue.new(option, line)
+        end
+
+        line
+      end
+
       extend self
     end
   end

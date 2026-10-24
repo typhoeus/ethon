@@ -124,13 +124,9 @@ module Ethon
       def header_lines(lines)
         # An empty line describes no header, so drop it. That also makes a
         # single empty string clear the part headers.
-        lines = lines.map(&:to_s).reject(&:empty?)
-        lines.each do |line|
-          if line.include?("\r") || line.include?("\n") || line.include?("\0")
-            raise Errors::InvalidValue.new(:headers, line)
-          end
+        lines.map(&:to_s).reject(&:empty?).map do |line|
+          Ethon::Easy::Util.validate_header_line(:headers, line)
         end
-        lines
       end
 
       def call(function, *args)
