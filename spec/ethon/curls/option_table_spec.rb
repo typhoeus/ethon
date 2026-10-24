@@ -35,7 +35,9 @@ module OptionTableSpecHelpers
     "INFILE" => "READDATA",
     "PROGRESSDATA" => "XFERINFODATA",
     "WRITEHEADER" => "HEADERDATA",
-    "FTP_RESPONSE_TIMEOUT" => "SERVER_RESPONSE_TIMEOUT"
+    "FTP_RESPONSE_TIMEOUT" => "SERVER_RESPONSE_TIMEOUT",
+    # libcurl 7.88 spells this with three Ls.
+    "MAIL_RCPT_ALLOWFAILS" => "MAIL_RCPT_ALLLOWFAILS"
   }.freeze
 
   EASY_ALIASES = {
