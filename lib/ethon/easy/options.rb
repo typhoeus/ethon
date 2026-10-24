@@ -39,6 +39,13 @@ module Ethon
       def multipart_form=(form)
         self.httppost = form ? form.first.read_pointer : nil
         @multipart_form = form
+      rescue Errors::UnsupportedOption
+        # CURLOPT_HTTPPOST is compiled out of builds configured with
+        # --disable-form-api. Clearing is all that can happen there, because
+        # building a form needs the form API itself.
+        raise if form
+
+        @multipart_form = form
       end
 
       # Enables or disables libcurl's error buffer (CURLOPT_ERRORBUFFER),
