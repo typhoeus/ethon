@@ -64,6 +64,16 @@ describe "libcurl option introspection" do
   end
 end
 
+describe "libcurl option introspection without curl_easy_option_next" do
+  it "raises when enumerating options" do
+    allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+    allow(Ethon::Curl).to receive(:respond_to?).with(:easy_option_next).and_return(false)
+
+    expect { Ethon::Curl.each_easy_option }.
+      to raise_error(NotImplementedError, /curl_easy_option_next/)
+  end
+end
+
 describe "libcurl version introspection" do
   it "lists protocols" do
     expect(Ethon::Curl.protocols).to include("http")

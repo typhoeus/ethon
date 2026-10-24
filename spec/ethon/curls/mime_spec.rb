@@ -45,6 +45,10 @@ describe Ethon::Curl::Mime do
       end
     end
 
+    it "sets an encoder" do
+      expect(part.encoder = "base64").to eq("base64")
+    end
+
     it "raises when a curl_mime_* call fails" do
       allow(Ethon::Curl).to receive(:mime_name).and_return(:out_of_memory)
 
@@ -145,6 +149,18 @@ describe Ethon::Curl::Mime do
       expect(easy.perform).to eq(:ok)
       expect(easy.response_body).to include("field")
       expect(easy.response_body).to include("value")
+    end
+
+    it "encodes a data part" do
+      easy.url = "http://localhost:3001/"
+      part = mime.addpart
+      part.name = "field"
+      part.data = "hello"
+      part.encoder = "base64"
+      easy.mime = mime
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to include("aGVsbG8=")
     end
 
     it "posts a part with extra headers" do

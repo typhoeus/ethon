@@ -58,6 +58,16 @@ describe "reusing an Easy handle" do
     expect(easy.read_callback).to be_nil
   end
 
+  it "does not send a previous POST body with an empty DELETE" do
+    easy.http_request("http://localhost:3001/echo", :post, :body => "previous body")
+    easy.http_request("http://localhost:3001/echo", :delete)
+
+    expect(easy.perform).to eq(:ok)
+    body = JSON.parse(easy.response_body)
+    expect(body["REQUEST_METHOD"]).to eq("DELETE")
+    expect(body["body"]).to eq("")
+  end
+
   it "replaces the response on every perform" do
     easy.http_request("#{url}first", :get)
     easy.perform
