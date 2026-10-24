@@ -77,6 +77,52 @@ describe Ethon::Curl::Mime do
         to raise_error(Ethon::Errors::InvalidValue, /headers/)
     end
 
+    it "rejects a content type containing CRLF" do
+      expect(Ethon::Curl).not_to receive(:mime_type)
+
+      expect { part.type = "text/plain\r\nX-Injected: yes" }.
+        to raise_error(Ethon::Errors::InvalidValue, /type/)
+    end
+
+    it "rejects a content type containing a lone CR or LF" do
+      ["text/plain\r", "text/plain\n"].each do |value|
+        expect { part.type = value }.
+          to raise_error(Ethon::Errors::InvalidValue, /type/)
+      end
+    end
+
+    it "rejects an encoder containing CRLF" do
+      expect(Ethon::Curl).not_to receive(:mime_encoder)
+
+      expect { part.encoder = "base64\r\nX-Injected: yes" }.
+        to raise_error(Ethon::Errors::InvalidValue, /encoder/)
+    end
+
+    it "still sends a valid content type" do
+      easy.url = "http://localhost:3001/echo"
+      part.name = "field"
+      part.type = "text/csv"
+      part.data = "a,b"
+      easy.mime = mime
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to include("Content-Type: text/csv\r\n")
+    end
+
+    [:name, :filename, :type, :encoder, :file].each do |setter|
+      it "rejects NUL bytes in #{setter}" do
+        expect { part.public_send("#{setter}=", "a\0b") }.
+          to raise_error(Ethon::Errors::InvalidValue, /#{setter}/)
+      end
+    end
+
+    it "keeps NUL bytes in part data" do
+      expect(Ethon::Curl).to receive(:mime_data).
+        with(part.handle, "a\0b", 3).and_return(:ok)
+
+      part.data = "a\0b"
+    end
+
     it "clears headers with an empty string" do
       expect(Ethon::Curl).to receive(:mime_headers).
         with(part.handle, nil, 0).and_return(:ok)
