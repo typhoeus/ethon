@@ -59,9 +59,7 @@ module Ethon
       #
       # @return the result of the free which is nil
       def cleanup
-        if defined?(@multi) && @multi
-          raise Errors::EthonError, "Easy is still attached to a Multi; remove it first"
-        end
+        ensure_not_attached_to_multi!
 
         begin
           clear_response_body_io
@@ -85,6 +83,14 @@ module Ethon
           "Easy#prepare. It's going to be removed "+
           "in future versions."
         )
+      end
+
+      private
+
+      def ensure_not_attached_to_multi!
+        return unless defined?(@multi) && @multi
+
+        raise Errors::EthonError, "Easy is still attached to a Multi; remove it first"
       end
     end
   end

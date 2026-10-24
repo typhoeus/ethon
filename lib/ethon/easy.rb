@@ -249,6 +249,8 @@ module Ethon
     # @example Reset.
     #   easy.reset
     def reset
+      ensure_not_attached_to_multi!
+
       @postfields = nil
       @url = nil
       @escape = nil
