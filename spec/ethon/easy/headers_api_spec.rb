@@ -23,6 +23,14 @@ describe Ethon::Easy::HeadersApi do
     it "supports repeated headers by index" do
       expect(easy.header("Set-Cookie", 0).value).to eq("foo")
       expect(easy.header("Set-Cookie", 1).value).to eq("bar")
+      expect(easy.header("Set-Cookie", 0).amount).to eq(2)
+    end
+
+    it "reports only the documented CURLH_* origin bits" do
+      header = easy.header("Content-Type")
+
+      expect(header.origin).to eq(Ethon::Curl::HeaderOrigin[:header])
+      expect(header.origin & ~Ethon::Curl::HeaderOrigin[:header]).to eq(0)
     end
 
     it "raises for missing headers" do
