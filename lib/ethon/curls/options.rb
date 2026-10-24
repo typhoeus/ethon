@@ -100,10 +100,11 @@ module Ethon
           value = Ethon::Curls::Options.integer_value(option, value)
         end
 
-        if va_type==:long or va_type==:int64 then
-            bits=FFI.type_size(va_type)*8
-            tv=((value<0) ? value.abs-1 : value)
-            raise Errors::InvalidValue.new(option,value) unless tv<(1<<bits)
+        if va_type == :long || va_type == :int64
+          limit = 1 << (FFI.type_size(va_type) * 8 - 1)
+          unless value >= -limit && value < limit
+            raise Errors::InvalidValue.new(option, value)
+          end
         end
         send(FUNCS[type], handle, opthash[option][:opt], va_type, value)
       end

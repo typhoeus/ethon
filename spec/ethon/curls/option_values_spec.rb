@@ -87,4 +87,31 @@ describe "libcurl symbolic option values" do
     expect(easy).not_to respond_to(:khstat=)
     expect(Ethon::Curl::EasyOption[:khstat]).to be_nil
   end
+
+  describe "numeric ranges" do
+    let(:long_limit) { 1 << (FFI.type_size(:long) * 8 - 1) }
+
+    it "accepts the signed long limits" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :long, anything).twice.and_return(:ok)
+
+      easy.timeout = long_limit - 1
+      easy.timeout = -long_limit
+    end
+
+    it "rejects values that overflow a signed long" do
+      expect { easy.timeout = long_limit }.
+        to raise_error(Ethon::Errors::InvalidValue)
+    end
+
+    it "rejects values below a signed long" do
+      expect { easy.timeout = -long_limit - 1 }.
+        to raise_error(Ethon::Errors::InvalidValue)
+    end
+
+    it "rejects values that overflow curl_off_t" do
+      expect { easy.timevalue_large = 2**63 }.
+        to raise_error(Ethon::Errors::InvalidValue)
+    end
+  end
 end
