@@ -254,16 +254,7 @@ module Ethon
         def clear; self[:fd_count] = 0; end
       else
         # https://github.com/typhoeus/ethon/issues/182
-        FD_SETSIZE = begin
-          # Allow to override the (new) default cap
-          if ENV['ETHON_FD_SIZE']
-            ENV['ETHON_FD_SIZE'].to_i
-
-          # auto-detect ulimit, but cap at 2^16
-          else
-            [::Ethon::Libc.open_max, 65_536].min
-          end
-        end
+        FD_SETSIZE = ::Ethon::Libc.fd_size
 
         layout :fds_bits, [:long, FD_SETSIZE / ::FFI::Type::LONG.size]
 

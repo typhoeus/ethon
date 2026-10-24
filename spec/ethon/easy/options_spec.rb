@@ -574,9 +574,15 @@ describe Ethon::Easy::Options do
   describe "option coercion branches" do
     before { easy }
 
-    it "sets :none options to one" do
+    it "sets :none options to one for true" do
       expect(Ethon::Curl).to receive(:easy_setopt).
         with(easy.handle, anything, :long, 1).and_return(:ok)
+
+      Ethon::Curl.set_option(:sslengine_default, true, easy.handle)
+    end
+
+    it "does not set :none options for false" do
+      expect(Ethon::Curl).not_to receive(:easy_setopt)
 
       Ethon::Curl.set_option(:sslengine_default, false, easy.handle)
     end
