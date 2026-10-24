@@ -66,6 +66,30 @@ describe Ethon::Easy::Queryable do
         expect(params.to_s).to eq("{a: 1}")
       end
     end
+
+    context "when escape changes after the string was built" do
+      let(:hash) { { :a => "b c" } }
+
+      it "rebuilds the string" do
+        params.escape = false
+        expect(params.to_s).to eq("a=b c")
+
+        params.escape = true
+        expect(params.to_s).to eq("a=b%20c")
+      end
+    end
+  end
+
+  describe "#query_pairs" do
+    let(:hash) { { :a => [1, 2] } }
+
+    it "rebuilds the pairs when params_encoding changes" do
+      params.params_encoding = :rack
+      expect(params.query_pairs).to eq([["a[]", 1], ["a[]", 2]])
+
+      params.params_encoding = :multi
+      expect(params.query_pairs).to eq([[:a, 1], [:a, 2]])
+    end
   end
 
   describe "#build_query_pairs" do
