@@ -15,8 +15,10 @@ module Ethon
           @curlu = nil
         end
 
-        @url = value
+        # Assign after libcurl accepts the value so a rejected URL does not
+        # leave the Ruby state pointing at something the handle never got.
         Curl.set_option(:url, value, handle)
+        @url = value
       end
 
       def escape=( b )
@@ -135,10 +137,11 @@ module Ethon
       end
 
       # libcurl does not copy CURLOPT_POSTFIELDS, so keep the Ruby string alive
-      # for as long as the handle may reference it.
+      # for as long as the handle may reference it. Retain it only once the
+      # option was accepted.
       def postfields=(value)
-        @postfields = value
         Curl.set_option(:postfields, value, handle)
+        @postfields = value
         value
       end
 
