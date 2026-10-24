@@ -46,12 +46,19 @@ module OptionTableSpecHelpers
     :headerdata => :writeheader,
     :encoding => :accept_encoding,
     :post301 => :postredir,
+    :ftplistonly => :dirlistonly,
+    :ftpappend => :append,
+    :server_response_timeout => :ftp_response_timeout,
     :ftp_ssl => :use_ssl,
     :unix_socket => :unix_socket_path,
     :pinned_public_key => :pinnedpublickey,
     :rtspheader => :httpheader,
     :sslcertpasswd => :keypasswd,
-    :krb4level => :krblevel
+    :sslkeypasswd => :keypasswd,
+    :krb4level => :krblevel,
+    :proxy_sslcertpasswd => :proxy_keypasswd,
+    :proxy_sslkeypasswd => :proxy_keypasswd,
+    :proxy_pinned_public_key => :proxy_pinnedpublickey
   }.freeze
 end
 
