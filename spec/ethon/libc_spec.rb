@@ -32,4 +32,25 @@ describe Ethon::Libc do
       expect(Ethon::Libc.open_max).to eq(4096)
     end
   end
+
+  describe ".fd_size" do
+    let(:word) { FFI::Type::LONG.size }
+
+    it "rounds the requested size up to the fd_set word size" do
+      expect(Ethon::Libc.fd_size("100")).to eq(((100 + word - 1) / word) * word)
+    end
+
+    it "uses the detected limit by default" do
+      allow(Ethon::Libc).to receive(:open_max).and_return(2_047)
+
+      expect(Ethon::Libc.fd_size("")).to eq(((2_047 + word - 1) / word) * word)
+    end
+
+    it "rejects invalid sizes" do
+      ["0", "-1", "nope"].each do |value|
+        expect { Ethon::Libc.fd_size(value) }.
+          to raise_error(ArgumentError, /ETHON_FD_SIZE/)
+      end
+    end
+  end
 end

@@ -25,6 +25,14 @@ describe Ethon::Curl::Slist do
   end
 end
 
+describe Ethon::Curl::FDSet do
+  it "uses a word-aligned fd_set size" do
+    skip "Windows uses a fixed fd_array" if Ethon::Curl.windows?
+
+    expect(described_class::FD_SETSIZE % FFI::Type::LONG.size).to eq(0)
+  end
+end
+
 describe Ethon::Curl::EasyHandle do
   describe ".release" do
     let(:pointer) { double(:address => 4242) }

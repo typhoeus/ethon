@@ -49,6 +49,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `:none` options no longer interpret `false` as enabled, `Ethon.logger = nil`
+  falls back to the default logger, and `ETHON_FD_SIZE` is validated and
+  rounded up to the native fd_set word size.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
   describing state the handle never received.

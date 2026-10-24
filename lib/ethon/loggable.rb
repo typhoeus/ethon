@@ -14,7 +14,7 @@ module Ethon
     #
     # @return [ Logger ] The logger.
     def logger
-      return @logger if defined?(@logger)
+      return @logger if defined?(@logger) && @logger
       @logger = rails_logger || default_logger
     end
 

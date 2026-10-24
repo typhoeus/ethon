@@ -19,7 +19,8 @@ module Ethon
 
         case opthash[option][:type]
         when :none
-          return if value.nil?
+          # These options take no value; false means "do not enable".
+          return unless value
           value=1
           va_type=:long
         when :int

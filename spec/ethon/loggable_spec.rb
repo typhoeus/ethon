@@ -24,5 +24,11 @@ describe Ethon::Loggable do
     it "sets the logger" do
       expect(Ethon.logger).to eq(logger)
     end
+
+    it "falls back to a default logger when set to nil" do
+      Ethon.logger = nil
+
+      expect(Ethon.logger).to be_a(Logger)
+    end
   end
 end
