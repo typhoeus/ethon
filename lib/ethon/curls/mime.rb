@@ -101,6 +101,7 @@ module Ethon
           retained = value
         else
           lines = value.is_a?(Hash) ? value.map { |key, item| "#{key}: #{item}" } : Array(value)
+          lines = header_lines(lines)
           list = Curl::Slist.build(lines)
           owned = !list.nil?
         end
@@ -117,6 +118,20 @@ module Ethon
       end
 
       private
+
+      # Normalize header lines and reject values libcurl would send verbatim
+      # as additional part headers.
+      def header_lines(lines)
+        lines = lines.map(&:to_s)
+        # An empty string describes no headers, not one empty header.
+        lines = [] if lines.length == 1 && lines.first.empty?
+        lines.each do |line|
+          if line.include?("\r") || line.include?("\n") || line.include?("\0")
+            raise Errors::InvalidValue.new(:headers, line)
+          end
+        end
+        lines
+      end
 
       def call(function, *args)
         @mime.check_pid!

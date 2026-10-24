@@ -49,6 +49,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* MIME part headers now reject CR, LF, and NUL bytes instead of passing them
+  verbatim to libcurl. Assigning an empty string clears the part headers
+  instead of adding an empty header line.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
   describing state the handle never received.
