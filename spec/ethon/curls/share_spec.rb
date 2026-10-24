@@ -56,6 +56,16 @@ describe Ethon::Curl::Share do
       expect { share.share("dns") }.not_to raise_error
     end
 
+    it "rejects unknown data types" do
+      expect { share.share(:unknown) }.
+        to raise_error(Ethon::Errors::InvalidValue, /unknown.*share/)
+    end
+
+    it "rejects data types that are not symbols or strings" do
+      expect { share.share(1) }.
+        to raise_error(Ethon::Errors::InvalidValue, /share/)
+    end
+
     it "raises on errors" do
       allow(Ethon::Curl).to receive(:share_setopt).and_return(:bad_option)
 
@@ -69,6 +79,11 @@ describe Ethon::Curl::Share do
       share.share(:cookie)
 
       expect { share.unshare(:cookie) }.not_to raise_error
+    end
+
+    it "rejects unknown data types" do
+      expect { share.unshare(:unknown) }.
+        to raise_error(Ethon::Errors::InvalidValue, /unknown.*unshare/)
     end
   end
 
