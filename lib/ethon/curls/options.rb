@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'ethon/easy/util'
 module Ethon
   module Curls
 
@@ -58,7 +59,7 @@ module Ethon
           value.put_bytes(0, s)
         when :string_escape_null
           va_type=:string
-          value=Util.escape_zero_byte(value) unless value.nil?
+          value=Ethon::Easy::Util.escape_zero_byte(value) unless value.nil?
         when :ffipointer
           va_type=:pointer
           raise Errors::InvalidValue.new(option,value) unless value.nil? or value.is_a? FFI::Pointer
