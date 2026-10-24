@@ -157,6 +157,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
   Multi message handling, and libcurl info ownership.
 * Removing an `Easy` that streams its response to a file from a `Multi`, or a
   failed `Multi#add`, now closes the file instead of leaving it open until GC.
+* `Multi#dup` and `Multi#clone` now raise `TypeError` instead of returning a
+  shallow copy that shares the native multi handle and easy-handle stack with
+  the original.
 
 ## 0.19.0
 

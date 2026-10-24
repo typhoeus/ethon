@@ -69,6 +69,35 @@ describe Ethon::Multi do
     end
   end
 
+  describe "#dup" do
+    let(:multi) { Ethon::Multi.new }
+
+    it "refuses to duplicate a multi" do
+      expect { multi.dup }.to raise_error(TypeError, /cannot duplicate/)
+      expect { multi.clone }.to raise_error(TypeError, /cannot duplicate/)
+    end
+
+    it "refuses even after the handle and stack are materialized" do
+      multi.easy_handles
+      multi.handle
+
+      expect { multi.dup }.to raise_error(TypeError, /cannot duplicate/)
+    end
+
+    it "leaves the original usable" do
+      multi.easy_handles
+      expect { multi.dup }.to raise_error(TypeError)
+
+      easy = Ethon::Easy.new(:url => "http://127.0.0.1:3001/")
+      multi.add(easy)
+      multi.perform
+
+      expect(easy.return_code).to eq(:ok)
+    ensure
+      multi.cleanup unless multi.instance_variable_get(:@cleaned_up)
+    end
+  end
+
   describe "#prepare" do
     it "warns and does nothing" do
       expect(Ethon.logger).to receive(:warn).with(/no longer necessary/)
