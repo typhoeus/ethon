@@ -46,6 +46,40 @@ describe Ethon::Multi::Stack do
       end
     end
 
+    context "when the easy is attached to another multi" do
+      let(:other_multi) { Ethon::Multi.new }
+      let(:tempfile) { Tempfile.new("ethon-multi-attach") }
+
+      after { tempfile.close! }
+
+      before do
+        easy.url = "http://127.0.0.1:3001/"
+        multi.add(easy)
+      end
+
+      it "raises without taking over the handle" do
+        expect { other_multi.add(easy) }.
+          to raise_error(Ethon::Errors::EthonError, /attached to a Multi/)
+
+        expect(multi.easy_handles).to include(easy)
+        expect(other_multi.easy_handles).not_to include(easy)
+        expect(easy.instance_variable_get(:@multi)).to be(multi)
+      end
+
+      it "leaves the existing multi transfer usable" do
+        easy.file = tempfile.path
+        tempfile.close
+
+        expect { other_multi.add(easy) }.
+          to raise_error(Ethon::Errors::EthonError, /attached to a Multi/)
+
+        multi.perform
+
+        expect(easy.return_code).to eq(:ok)
+        expect(File.binread(tempfile.path)).to include('"REQUEST_METHOD":"GET"')
+      end
+    end
+
     context "when a callback raises while adding" do
       it "does not keep the easy tracked" do
         error = RuntimeError.new("callback failed")

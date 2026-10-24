@@ -26,6 +26,12 @@ module Ethon
       def add(easy)
         return nil if easy_handles.include?(easy)
 
+        # Another Multi may still own the handle natively. Reject before
+        # resetting its transfer state or touching its response stream.
+        if easy.instance_variable_get(:@multi)
+          raise Errors::EthonError, "Easy is still attached to a Multi; remove it first"
+        end
+
         # Resolve the multi handle before changing the easy so a cleaned up or
         # forked Multi cannot reset the easy or open its response file.
         begin
