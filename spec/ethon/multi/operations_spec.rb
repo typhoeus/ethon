@@ -93,6 +93,15 @@ describe Ethon::Multi::Operations do
       expect { multi.handle }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
     end
 
+    it "releases retained socket and timer callbacks" do
+      multi.socketfunction = proc { |*| }
+      multi.timerfunction = proc { |*| }
+
+      multi.cleanup
+
+      expect(multi.instance_variable_get(:@procs)).to be_nil
+    end
+
     it "is terminal" do
       multi.cleanup
 

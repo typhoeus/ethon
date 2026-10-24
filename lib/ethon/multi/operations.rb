@@ -60,6 +60,7 @@ module Ethon
             easy_handles.clear
             @handle = nil
             @assigned_sockets = nil
+            @procs = nil
             @cleaned_up = true
           end
         end

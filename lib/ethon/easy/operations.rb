@@ -129,6 +129,11 @@ module Ethon
         @blobs = nil
         @slists = nil
         @procs = nil
+        @on_complete = nil
+        @on_headers = nil
+        @on_body = nil
+        @on_progress = nil
+        @user_debug_callback = nil
         @share = nil
         @error_buffer = nil
         @error_buffer_enabled = nil
