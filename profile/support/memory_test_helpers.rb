@@ -5,8 +5,12 @@ require_relative 'os_memory_leak_tracker'
 module MemoryTestHelpers
   class << self
     attr_accessor :gc_proc, :iterations, :logger
+    attr_accessor :max_object_growth, :max_os_growth_kb
 
     def setup
+      self.max_object_growth = ENV.fetch("MAX_OBJECT_GROWTH", 10).to_i
+      self.max_os_growth_kb = ENV.fetch("MAX_OS_GROWTH_KB", 10).to_i
+
       if RUBY_PLATFORM == "java"
         # for leak detection
         JRuby.objectspace = true if defined?(JRuby)
@@ -26,13 +30,15 @@ module MemoryTestHelpers
         it "doesn't leak ruby objects" do
           object_leak_tracker = RubyObjectLeakTracker.new
           track_memory_usage(object_leak_tracker, &block)
-          object_leak_tracker.total_difference_between_runs.should be <= 10
+          expect(object_leak_tracker.total_difference_between_runs).
+            to be <= MemoryTestHelpers.max_object_growth
         end
 
         it "doesn't leak OS memory (C interop check)" do
           os_memory_leak_tracker = OSMemoryLeakTracker.new
           track_memory_usage(os_memory_leak_tracker, &block)
-          os_memory_leak_tracker.total_difference_between_runs.should be <= 10
+          expect(os_memory_leak_tracker.total_difference_between_runs).
+            to be <= MemoryTestHelpers.max_os_growth_kb
         end
       end
     end

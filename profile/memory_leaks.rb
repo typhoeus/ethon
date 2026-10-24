@@ -3,7 +3,6 @@ require 'ethon'
 require 'ethon/easy'
 
 require_relative 'perf_spec_helper'
-require 'rspec/autorun'
 
 describe "low-level interactions with libcurl" do
   describe Ethon::Multi do
@@ -14,6 +13,14 @@ describe "low-level interactions with libcurl" do
     memory_leak_test("handle") do
       Ethon::Multi.new.handle
     end
+
+    memory_leak_test("add, delete, and cleanup") do
+      multi = Ethon::Multi.new
+      easy = Ethon::Easy.new
+      multi.add(easy)
+      multi.delete(easy)
+      multi.cleanup
+    end
   end
 
   describe Ethon::Easy do
@@ -23,6 +30,10 @@ describe "low-level interactions with libcurl" do
 
     memory_leak_test("handle") do
       Ethon::Easy.new.handle
+    end
+
+    memory_leak_test("duplication") do
+      Ethon::Easy.new.dup
     end
 
     memory_leak_test("headers") do
@@ -66,6 +77,20 @@ describe "higher level operations" do
   memory_leak_test("a simple request") do
     Ethon::Easy.new(:url => "http://localhost:3001/",
                     :forbid_reuse => true).perform
+  end
+
+  memory_leak_test("a duplicated request") do
+    Ethon::Easy.new(:url => "http://localhost:3001/",
+                    :forbid_reuse => true).dup.perform
+  end
+
+  memory_leak_test("a request streamed to an IO") do
+    File.open(File::NULL, "wb") do |io|
+      easy = Ethon::Easy.new(:url => "http://localhost:3001/",
+                             :forbid_reuse => true)
+      easy.file = io
+      easy.perform
+    end
   end
 
   memory_leak_test("a request with headers") do
