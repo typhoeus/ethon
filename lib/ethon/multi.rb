@@ -122,6 +122,13 @@ module Ethon
 
     private
 
+    # Ruby cannot duplicate the native multi handle or its Ruby-side
+    # bookkeeping safely. A shallow copy would share the easy-handle stack and
+    # the native handle, so cleaning up one copy would invalidate the other.
+    def initialize_copy(_other)
+      raise TypeError, "cannot duplicate an Ethon::Multi"
+    end
+
     # Internal function to gate functions to a specific execution mode
     #
     # @raise ArgumentError
