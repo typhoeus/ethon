@@ -37,11 +37,27 @@ module Ethon
 
         begin
           easy_handles.dup.each { |easy| delete(easy) }
-          @handle.free if @handle
         ensure
-          @handle = nil
-          @assigned_sockets = nil
-          @cleaned_up = true
+          # Cleanup is terminal. Release the native handle even when detaching
+          # one of the easy handles fails, and clear the Ruby-side ownership so
+          # leftover handles are not left pointing at this multi.
+          begin
+            @handle.free if @handle
+          ensure
+            easy_handles.each do |easy|
+              easy.instance_variable_set(:@multi, nil)
+              begin
+                easy.finish_response_body_io
+              rescue StandardError
+                # Cleanup is best effort; keep tearing down the multi even if
+                # closing a streamed response fails.
+              end
+            end
+            easy_handles.clear
+            @handle = nil
+            @assigned_sockets = nil
+            @cleaned_up = true
+          end
         end
       end
 
