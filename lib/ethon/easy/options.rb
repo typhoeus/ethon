@@ -10,14 +10,25 @@ module Ethon
       attr_reader :url
 
       def url=(value)
-        if @curlu
+        previous_curlu = @curlu
+        if previous_curlu
           Curl.set_option(:curlu, nil, handle)
           @curlu = nil
         end
 
         # Assign after libcurl accepts the value so a rejected URL does not
         # leave the Ruby state pointing at something the handle never got.
-        Curl.set_option(:url, value, handle)
+        begin
+          Curl.set_option(:url, value, handle)
+        rescue Exception
+          # Detaching the URL handle was only necessary to install the new
+          # value. Put it back when that value was rejected.
+          if previous_curlu
+            Curl.set_option(:curlu, previous_curlu, handle)
+            @curlu = previous_curlu
+          end
+          raise
+        end
         @url = value
       end
 
