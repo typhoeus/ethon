@@ -49,9 +49,13 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `CURLOPT_COPYPOSTFIELDS` values are now NUL-terminated, and assigning `nil`
+  passes a NULL pointer instead of a zero-length buffer.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
-  describing state the handle never received.
+  describing state the handle never received. `Easy#postfields=` also retains
+  the normalized string libcurl points at, so non-String bodies cannot be
+  collected mid-transfer.
 * `Multi#cleanup` now releases the native multi handle and clears handle
   ownership even when detaching an easy handle or closing a streamed response
   fails.

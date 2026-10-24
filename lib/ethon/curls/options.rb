@@ -53,10 +53,14 @@ module Ethon
           end
         when :string_as_pointer
           va_type = :pointer
-          s = ''
-          s = value.to_s unless value.nil?
-          value = FFI::MemoryPointer.new(:char, s.bytesize)
-          value.put_bytes(0, s)
+          unless value.nil?
+            s = value.to_s
+            # libcurl treats CURLOPT_*POSTFIELDS as a C string unless an
+            # explicit size is set, so reserve and write the terminator.
+            value = FFI::MemoryPointer.new(:char, s.bytesize + 1)
+            value.put_bytes(0, s)
+            value.put_char(s.bytesize, 0)
+          end
         when :string_escape_null
           va_type=:string
           value=Ethon::Easy::Util.escape_zero_byte(value) unless value.nil?

@@ -30,4 +30,21 @@ describe "Easy option state" do
       to raise_error(Ethon::Errors::InvalidValue)
     expect(easy.instance_variable_get(:@postfields)).to eq("original")
   end
+
+  it "retains the string libcurl receives for non-string values" do
+    easy.postfields = :payload
+
+    expect(easy.instance_variable_get(:@postfields)).to eq("payload")
+    expect(easy.instance_variable_get(:@postfields)).to be_a(String)
+  end
+
+  it "sends non-string postfields after garbage collection" do
+    easy.url = "http://localhost:3001/echo"
+    easy.postfields = :payload
+    easy.postfieldsize = "payload".bytesize
+    GC.start
+
+    expect(easy.perform).to eq(:ok)
+    expect(easy.response_body).to eq("payload")
+  end
 end
