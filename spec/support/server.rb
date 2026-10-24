@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'digest'
 require 'json'
 require 'zlib'
 require 'sinatra/base'
@@ -41,6 +42,51 @@ TESTSERVER = Sinatra.new do
 
   get '/multiple-headers' do
     [200, { 'Set-Cookie' => %w[ foo bar ], 'Content-Type' => 'text/plain' }, ['']]
+  end
+
+  # Deterministic binary payload for byte-exact transfer tests.
+  get '/binary/:size' do
+    size = params[:size].to_i
+    pattern = (0..255).to_a.pack("C*")
+    body = (pattern * (size / pattern.bytesize + 1)).byteslice(0, size)
+
+    content_type 'application/octet-stream'
+    body
+  end
+
+  # Echo the raw request body so uploads can be compared byte for byte.
+  post '/echo' do
+    body = read_request_body.b
+
+    content_type 'application/octet-stream'
+    body
+  end
+
+  put '/echo' do
+    body = read_request_body.b
+
+    content_type 'application/octet-stream'
+    body
+  end
+
+  post '/multipart' do
+    content_type 'application/json'
+
+    result = {}
+    params.each do |key, value|
+      if value.is_a?(Hash) && value[:tempfile]
+        value[:tempfile].rewind
+        content = value[:tempfile].read
+        result[key] = {
+          'filename' => value[:filename],
+          'size' => content.bytesize,
+          'sha256' => Digest::SHA256.hexdigest(content)
+        }
+      else
+        result[key] = value
+      end
+    end
+    result.to_json
   end
 
   get '/fail/:number' do
