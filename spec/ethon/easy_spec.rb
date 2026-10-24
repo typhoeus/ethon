@@ -181,6 +181,21 @@ describe Ethon::Easy do
 
       expect { easy.send(:raise_callback_error) }.not_to raise_error
     end
+
+    it "refuses to reset while attached to a multi" do
+      multi = Ethon::Multi.new
+      multi.add(easy)
+
+      expect { easy.reset }.
+        to raise_error(Ethon::Errors::EthonError, /attached to a Multi/)
+      expect(easy.url).to eq("www.example.com")
+
+      multi.delete(easy)
+
+      expect { easy.reset }.not_to raise_error
+    ensure
+      multi.delete(easy) if multi && multi.easy_handles.include?(easy)
+    end
   end
 
   describe "#dup" do
