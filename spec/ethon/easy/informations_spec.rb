@@ -105,6 +105,12 @@ describe Ethon::Easy::Informations do
       expect(Kernel).to receive(:warn)
       expect(easy.supports_zlib?).to be_truthy
     end
+
+    it "names the replacement in the deprecation warning" do
+      expect(Kernel).to receive(:warn).with(/Easy\.supports_zlib\?/)
+
+      easy.supports_zlib?
+    end
   end
 
   describe "#size_upload" do

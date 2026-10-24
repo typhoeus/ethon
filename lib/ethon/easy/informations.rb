@@ -151,7 +151,7 @@ module Ethon
       # @return [ Boolean ] True if supported, else false.
       # @deprecated Please use the static version instead
       def supports_zlib?
-        Kernel.warn("Ethon: Easy#supports_zlib? is deprecated and will be removed, please use Easy#.")
+        Kernel.warn("Ethon: Easy#supports_zlib? is deprecated and will be removed, please use Easy.supports_zlib? instead.")
         Easy.supports_zlib?
       end
 

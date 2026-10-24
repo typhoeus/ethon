@@ -252,7 +252,6 @@ module Ethon
       @postfields = nil
       @url = nil
       @escape = nil
-      @hash = nil
       @multipart = nil
       @headers = nil
       @return_code = nil

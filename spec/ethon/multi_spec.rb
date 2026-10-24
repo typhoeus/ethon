@@ -71,7 +71,7 @@ describe Ethon::Multi do
 
   describe "#prepare" do
     it "warns and does nothing" do
-      expect(Ethon.logger).to receive(:warn).with(/no longer necessay/)
+      expect(Ethon.logger).to receive(:warn).with(/no longer necessary/)
 
       Ethon::Multi.new.prepare
     end
