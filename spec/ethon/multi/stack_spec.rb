@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'spec_helper'
+require 'tmpdir'
 
 describe Ethon::Multi::Stack do
   let(:multi) { Ethon::Multi.new }
@@ -34,6 +35,113 @@ describe Ethon::Multi::Stack do
         expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:bad_easy_handle)
         expect{ multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
         expect(multi.easy_handles).to_not include(easy)
+      end
+
+      it "keeps the previous response" do
+        easy.url = "http://127.0.0.1:3001/"
+        easy.perform
+        body = easy.response_body
+        headers = easy.response_headers
+
+        allow(Ethon::Curl).to receive(:multi_add_handle).and_return(:bad_easy_handle)
+
+        expect { multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
+        expect(easy.response_body).to equal(body)
+        expect(easy.response_headers).to equal(headers)
+      end
+
+      it "does not start a new transfer state" do
+        easy.url = "http://127.0.0.1:3001/"
+        easy.perform
+        allow(Ethon::Curl).to receive(:multi_add_handle).and_return(:bad_easy_handle)
+
+        expect(easy).not_to receive(:reset_transfer_state)
+        expect(easy).not_to receive(:clear_callback_error)
+
+        expect { multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
+      end
+    end
+
+    context "when the easy is performing its own transfer" do
+      it "does not interrupt the transfer when the add is rejected" do
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "body")
+          easy.url = "http://127.0.0.1:3001/"
+          easy.file = path
+          error = nil
+          easy.on_body do |_chunk|
+            error ||= begin
+              multi.add(easy)
+              nil
+            rescue Exception => e
+              e
+            end
+            true
+          end
+
+          expect(easy.perform).to eq(:ok)
+
+          expect(error).to be_a(Ethon::Errors::MultiAdd)
+          expect(error.message).to match(/added_already/)
+          expect(File.binread(path)).to include('"REQUEST_METHOD":"GET"')
+          expect(easy.instance_variable_get(:@response_body_io)).to be_nil
+        end
+      end
+    end
+
+    context "when the easy does not belong to this library" do
+      it "raises a type error" do
+        other_multi = Ethon::Multi.new
+
+        expect { multi.add(other_multi) }.
+          to raise_error(TypeError, /Ethon::Easy/)
+        expect(multi.easy_handles).to be_empty
+      ensure
+        other_multi.cleanup if other_multi && !other_multi.instance_variable_get(:@cleaned_up)
+      end
+    end
+
+    context "when preparing the transfer fails" do
+      it "detaches the handle again" do
+        easy.url = "http://127.0.0.1:3001/"
+        error = Errno::ENOENT.new("response body")
+        allow(easy).to receive(:prepare_response_body_io).and_raise(error)
+
+        expect { multi.add(easy) }.to raise_error(error)
+
+        expect(multi.easy_handles).not_to include(easy)
+        expect(easy.instance_variable_get(:@multi)).to be_nil
+        if Ethon::Curl.respond_to?(:multi_get_handles)
+          expect(multi.native_handles).to be_empty
+        end
+
+        allow(easy).to receive(:prepare_response_body_io).and_call_original
+        expect(easy.perform).to eq(:ok)
+      end
+
+      it "keeps the previous response" do
+        easy.url = "http://127.0.0.1:3001/"
+        easy.perform
+        body = easy.response_body
+
+        allow(easy).to receive(:prepare_response_body_io).and_raise(Errno::EACCES)
+
+        expect { multi.add(easy) }.to raise_error(Errno::EACCES)
+        expect(easy.response_body).to equal(body)
+      end
+
+      it "keeps the handle tracked when detaching fails" do
+        easy.url = "http://127.0.0.1:3001/"
+        allow(easy).to receive(:prepare_response_body_io).and_raise(Errno::EACCES)
+        allow(Ethon::Curl).to receive(:multi_remove_handle).and_return(:out_of_memory)
+
+        expect { multi.add(easy) }.to raise_error(Errno::EACCES)
+        expect(multi.easy_handles).to include(easy)
+        expect(easy.instance_variable_get(:@multi)).to be(multi)
+      ensure
+        allow(Ethon::Curl).to receive(:multi_remove_handle).and_call_original
+        easy.instance_variable_get(:@multi) && multi.delete(easy)
+        easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
       end
     end
 
@@ -91,6 +199,25 @@ describe Ethon::Multi::Stack do
         expect { multi.add(easy) }.to raise_error(error)
         expect(multi.easy_handles).not_to include(easy)
       end
+
+      it "detaches a handle that libcurl attached before the callback raised" do
+        local_multi = Ethon::Multi.new(:execution_mode => :socket_action)
+        local_multi.timerfunction = proc { "hi" }
+        local_easy = Ethon::Easy.new(:url => "http://127.0.0.1:3001/")
+
+        expect { local_multi.add(local_easy) }.
+          to raise_error(ArgumentError, /invalid enum value/)
+
+        expect(local_multi.easy_handles).not_to include(local_easy)
+        expect(local_easy.instance_variable_get(:@multi)).to be_nil
+        if Ethon::Curl.respond_to?(:multi_get_handles)
+          expect(local_multi.native_handles).to be_empty
+        end
+      ensure
+        local_multi.timerfunction = proc { 0 } if local_multi
+        local_multi.cleanup if local_multi && !local_multi.instance_variable_get(:@cleaned_up)
+        local_easy.cleanup if local_easy && !local_easy.instance_variable_get(:@cleaned_up)
+      end
     end
 
     it "records the multi on the easy" do
@@ -105,34 +232,57 @@ describe Ethon::Multi::Stack do
       let(:tempfile) { Tempfile.new("ethon-multi-add") }
       after { tempfile.close! }
 
-      it "closes the file when adding fails" do
+      it "does not truncate the response file when adding fails" do
+        easy.url = "http://127.0.0.1:3001/"
         easy.file = tempfile.path
-        easy.prepare_response_body_io
+        easy.perform
+        written = File.binread(tempfile.path)
+        expect(written).not_to be_empty
+        expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:bad_easy_handle)
+
+        expect { multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
+
+        expect(File.binread(tempfile.path)).to eq(written)
+        expect(easy.instance_variable_get(:@response_body_io)).to be_nil
+      end
+
+      it "does not touch an open response stream when adding fails" do
+        easy.file = tempfile.path
         io = easy.instance_variable_get(:@response_body_io)
         expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:bad_easy_handle)
 
         expect { multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
-        expect(io).to be_closed
+        expect(io).not_to be_closed
       end
 
-      it "closes the file when the easy handle is unusable" do
+      it "leaves an open stream alone when the easy handle is unusable" do
         easy.file = tempfile.path
-        easy.prepare_response_body_io
         io = easy.instance_variable_get(:@response_body_io)
         allow(easy).to receive(:handle).and_raise(Ethon::Errors::ForkSafety.new)
 
         expect { multi.add(easy) }.to raise_error(Ethon::Errors::ForkSafety)
-        expect(io).to be_closed
+        expect(io).not_to be_closed
       end
 
-      it "closes the file when the multi was cleaned up" do
+      it "leaves an open stream alone when the multi was cleaned up" do
         easy.file = tempfile.path
-        easy.prepare_response_body_io
         io = easy.instance_variable_get(:@response_body_io)
         multi.cleanup
 
         expect { multi.add(easy) }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
-        expect(io).to be_closed
+        expect(io).not_to be_closed
+      end
+
+      it "opens the response file for a successful add" do
+        easy.url = "http://127.0.0.1:3001/"
+        easy.file = tempfile.path
+
+        multi.add(easy)
+
+        expect(easy.instance_variable_get(:@response_body_io)).not_to be_nil
+        expect(File.size(tempfile.path)).to eq(0)
+      ensure
+        multi.delete(easy) if easy && multi.easy_handles.include?(easy)
       end
     end
   end
