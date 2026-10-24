@@ -61,7 +61,13 @@ module Ethon
         else
           "#{key}: #{value}"
         end
-        Util.escape_zero_byte(header)
+        header = Util.escape_zero_byte(header)
+        if header.include?("\r") || header.include?("\n")
+          # libcurl sends custom headers verbatim, so CR/LF would inject
+          # additional headers into the request.
+          raise Errors::InvalidValue.new(:headers, header)
+        end
+        header
       end
     end
   end

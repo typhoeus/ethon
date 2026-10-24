@@ -13,6 +13,33 @@ describe Ethon::Easy::Header do
       easy.headers = headers
     end
 
+    context "when a value contains CRLF" do
+      let(:headers) { { 'X-Test' => "1\r\nX-Injected: yes" } }
+
+      it "rejects the header" do
+        expect { easy.headers = headers }.
+          to raise_error(Ethon::Errors::InvalidValue, /headers/)
+      end
+    end
+
+    context "when a name contains CRLF" do
+      let(:headers) { { "X-Test\r\nX-Injected" => "yes" } }
+
+      it "rejects the header" do
+        expect { easy.headers = headers }.
+          to raise_error(Ethon::Errors::InvalidValue, /headers/)
+      end
+    end
+
+    context "when a value contains a bare LF" do
+      let(:headers) { { 'X-Test' => "1\nX-Injected: yes" } }
+
+      it "rejects the header" do
+        expect { easy.headers = headers }.
+          to raise_error(Ethon::Errors::InvalidValue, /headers/)
+      end
+    end
+
     context "when requesting" do
       before do
         easy.headers = headers
