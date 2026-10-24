@@ -71,7 +71,7 @@ is unavailable; introspection helpers return `nil` or an empty array.
   DNS support. ([#319](https://github.com/typhoeus/ethon/pull/319))
 * Requests no longer set `CURLOPT_HTTPPOST` on libcurl builds configured with
   `--disable-form-api`, where the option does not exist.
-  ([#343](https://github.com/typhoeus/ethon/pull/343))
+  ([#349](https://github.com/typhoeus/ethon/pull/349))
 * Corrected the native option number for `tcp_fastopen` (`CURLOPT_TCP_FASTOPEN`,
   244) and the string ABI used by `tlsauth_type` and `proxy_tlsauth_type`.
   `:srp` and `"srp"` are normalized to libcurl's required `"SRP"` value.
