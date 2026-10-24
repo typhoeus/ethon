@@ -122,9 +122,9 @@ module Ethon
       # Normalize header lines and reject values libcurl would send verbatim
       # as additional part headers.
       def header_lines(lines)
-        lines = lines.map(&:to_s)
-        # An empty string describes no headers, not one empty header.
-        lines = [] if lines.length == 1 && lines.first.empty?
+        # An empty line describes no header, so drop it. That also makes a
+        # single empty string clear the part headers.
+        lines = lines.map(&:to_s).reject(&:empty?)
         lines.each do |line|
           if line.include?("\r") || line.include?("\n") || line.include?("\0")
             raise Errors::InvalidValue.new(:headers, line)

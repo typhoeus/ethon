@@ -77,6 +77,12 @@ describe Ethon::Curl::Mime do
       part.headers = ""
     end
 
+    it "ignores empty header lines in an array" do
+      expect(Ethon::Curl::Slist).to receive(:build).with(["X-Test: 1"]).and_return(nil)
+
+      part.headers = ["", "X-Test: 1"]
+    end
+
     it "releases a partially built header list when an append fails" do
       first = FFI::MemoryPointer.new(:pointer)
       allow(Ethon::Curl).to receive(:slist_append).and_return(first, FFI::Pointer::NULL)
