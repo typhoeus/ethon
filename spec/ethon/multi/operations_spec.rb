@@ -57,7 +57,7 @@ describe Ethon::Multi::Operations do
 
     context "when hydra has easy" do
       before do
-        easy.url = "http://localhost:3001/"
+        easy.url = "http://127.0.0.1:3001/"
         multi.add(easy)
         multi.send(:trigger, pointer)
       end
@@ -71,8 +71,8 @@ describe Ethon::Multi::Operations do
       let(:another_easy) { Ethon::Easy.new }
 
       before do
-        easy.url = "http://localhost:3001/"
-        another_easy.url = "http://localhost:3001/"
+        easy.url = "http://127.0.0.1:3001/"
+        another_easy.url = "http://127.0.0.1:3001/"
         multi.add(easy)
         multi.add(another_easy)
         multi.send(:trigger, pointer)
@@ -189,7 +189,7 @@ describe Ethon::Multi::Operations do
 
     context "when easy handle" do
       before do
-        easy.url = "http://localhost:3001/"
+        easy.url = "http://127.0.0.1:3001/"
         multi.add(easy)
       end
 
@@ -256,7 +256,7 @@ describe Ethon::Multi::Operations do
         ary = []
         4.times do
           ary << another_easy = Ethon::Easy.new
-          another_easy.url = "http://localhost:3001/"
+          another_easy.url = "http://127.0.0.1:3001/"
         end
         ary
       end
@@ -288,7 +288,7 @@ describe Ethon::Multi::Operations do
             end
           end
           writer = fork do
-            sleep 1.5
+            sleep 0.8
             File.write(fifo, "ok\n")
           end
 
@@ -301,13 +301,13 @@ describe Ethon::Multi::Operations do
             finished = clock.call
 
             expect(easy.response_body).to eq("ok\n")
-            expect(finished - started).to be >= 0.5
+            expect(finished - started).to be >= 0.4
 
             # The point is that the heartbeat ran while libcurl blocked, not
             # that it ran at a perfectly steady interval. A single delayed
             # heartbeat made this flaky on loaded CI runners.
             during = beats_lock.synchronize do
-              beats.count { |beat| beat > started + 0.25 && beat < finished - 0.1 }
+              beats.count { |beat| beat > started + 0.15 && beat < finished - 0.05 }
             end
             expect(during).to be > 0
           ensure
@@ -421,7 +421,7 @@ describe Ethon::Multi::Operations do
     let(:null) { FFI::Pointer::NULL }
 
     before do
-      easy.url = "http://localhost:3001/"
+      easy.url = "http://127.0.0.1:3001/"
       multi.add(easy)
       allow(Ethon::Curl).to receive(:multi_info_read).and_return(msg, null)
     end

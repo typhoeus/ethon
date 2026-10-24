@@ -5,7 +5,7 @@ describe "thread safety" do
   it "creates and performs separate easy handles concurrently" do
     results = 5.times.map do
       Thread.new do
-        easy = Ethon::Easy.new(:url => "http://localhost:3001/")
+        easy = Ethon::Easy.new(:url => "http://127.0.0.1:3001/")
         easy.perform
         easy.return_code
       end
@@ -18,7 +18,7 @@ describe "thread safety" do
     results = 5.times.map do
       Thread.new do
         multi = Ethon::Multi.new
-        easy = Ethon::Easy.new(:url => "http://localhost:3001/")
+        easy = Ethon::Easy.new(:url => "http://127.0.0.1:3001/")
         multi.add(easy)
         multi.perform
         easy.return_code

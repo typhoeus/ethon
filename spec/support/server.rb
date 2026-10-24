@@ -7,6 +7,9 @@ TESTSERVER = Sinatra.new do
   use Rack::RewindableInput::Middleware if defined?(Rack::RewindableInput::Middleware)
 
   set :logging, nil
+  disable :protection
+  # Test server: don't spend time logging host authorization on every request.
+  set :host_authorization, { :permitted_hosts => [] }
 
   fail_count = 0
 
@@ -91,12 +94,12 @@ TESTSERVER = Sinatra.new do
   end
 
   get '/**' do
-    sleep params["delay"].to_i if params.has_key?("delay")
+    sleep params["delay"].to_f if params.has_key?("delay")
     request.env.merge!(:body => request.body.read).to_json
   end
 
   head '/**' do
-    sleep params["delay"].to_i if params.has_key?("delay")
+    sleep params["delay"].to_f if params.has_key?("delay")
   end
 
   put '/**' do

@@ -154,7 +154,7 @@ describe Ethon::Multi do
 
     it "supports an end-to-end request" do
       easy = Ethon::Easy.new
-      easy.url = "http://localhost:3001/"
+      easy.url = "http://127.0.0.1:3001/"
       multi.add(easy)
 
       perform_socket_action_until_complete
@@ -166,17 +166,17 @@ describe Ethon::Multi do
       handles = []
       10.times do
         easy = Ethon::Easy.new
-        easy.url = "http://localhost:3001/?delay=1"
+        easy.url = "http://127.0.0.1:3001/?delay=0.2"
         multi.add(easy)
         handles << easy
       end
 
-      start = Time.now
+      start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       perform_socket_action_until_complete
-      duration = Time.now - start
-      
+      duration = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start
+
       # these should have happened concurrently
-      expect(duration).to be < 2
+      expect(duration).to be < 1.0
       expect(multi.ongoing?).to eq(false)
 
       handles.each do |handle|

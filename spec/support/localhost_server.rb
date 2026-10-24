@@ -36,6 +36,7 @@ class LocalhostServer
 
   def initialize(rack_app, port = nil)
     @port = port || find_available_port
+    ensure_port_available! unless port.nil?
     @rack_app = rack_app
     concurrently { boot }
     wait_until(10, "Boot failed.") { booted? }
@@ -48,6 +49,13 @@ class LocalhostServer
     server.addr[1]
   ensure
     server.close if server
+  end
+
+  def ensure_port_available!
+    server = TCPServer.new('127.0.0.1', port)
+    server.close
+  rescue Errno::EADDRINUSE
+    raise "Port #{port} is already in use; another ethon test run may still be active."
   end
 
   def boot
@@ -97,7 +105,13 @@ class LocalhostServer
         end
       end
     else
-      Thread.new { yield }
+      @boot_thread = Thread.new do
+        begin
+          yield
+        rescue Exception => e
+          @boot_error = e
+        end
+      end
     end
   end
 
@@ -110,9 +124,10 @@ class LocalhostServer
     start_time = Time.now
 
     while true
+      raise @boot_error if @boot_error
       return if yield
       raise Timeout::Error.new(error_message) if (Time.now - start_time) > timeout
-      sleep(0.05)
+      sleep(0.005)
     end
   end
 end
