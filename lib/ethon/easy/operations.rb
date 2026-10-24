@@ -26,9 +26,28 @@ module Ethon
       end
 
       # Sets a pointer to the curl easy handle.
-      # @param [ ::FFI::Pointer ] Easy handle that will be assigned.
+      #
+      # Raw pointers are wrapped in an owned {Curl::EasyHandle}, so the
+      # handle is registered for fork safety and freed by this Easy.
+      #
+      # @param [ ::FFI::Pointer, Curl::EasyHandle, nil ] Easy handle that will
+      #   be assigned.
       def handle=(h)
-        @handle = h
+        @handle =
+          case h
+          when nil
+            nil
+          when Curl::EasyHandle
+            h
+          when Curl::OwnedPointer
+            raise TypeError, "expected an easy handle, got #{h.class}"
+          when ::FFI::Pointer
+            raise ArgumentError, "cannot assign a null easy handle" if h.null?
+
+            Curl::EasyHandle.new(h)
+          else
+            raise TypeError, "expected an easy handle pointer, got #{h.class}"
+          end
       end
 
       # Perform the easy request.
