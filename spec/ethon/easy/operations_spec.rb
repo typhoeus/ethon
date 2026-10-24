@@ -113,6 +113,28 @@ describe Ethon::Easy::Operations do
     end
   end
 
+  describe "multi ownership" do
+    it "refuses to perform while attached to a Multi" do
+      multi = Ethon::Multi.new
+      easy.url = "http://localhost:3001/"
+      multi.add(easy)
+
+      expect { easy.perform }.
+        to raise_error(Ethon::Errors::EthonError, /attached to a Multi/)
+    ensure
+      multi.delete(easy) if multi && multi.easy_handles.include?(easy)
+    end
+
+    it "performs once the Multi releases the handle" do
+      multi = Ethon::Multi.new
+      easy.url = "http://localhost:3001/"
+      multi.add(easy)
+      multi.delete(easy)
+
+      expect(easy.perform).to eq(:ok)
+    end
+  end
+
   describe "reentrancy" do
     it "refuses to clean up while performing" do
       easy.instance_variable_set(:@performing, true)
