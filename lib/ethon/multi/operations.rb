@@ -352,7 +352,8 @@ module Ethon
         raise Errors::MultiFdset.new(code) unless code == :ok
         max_fd = @max_fd.read_int
         if max_fd == -1
-          sleep(0.001)
+          # No sockets are ready; wait for the timer instead of spinning.
+          sleep(timeout / 1000.0)
         else
           @timeval[:sec] = timeout / 1000
           @timeval[:usec] = (timeout * 1000) % 1000000

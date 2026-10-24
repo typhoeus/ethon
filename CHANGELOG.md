@@ -49,6 +49,8 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* The `select` fallback in `Multi#set_fds` now sleeps for the libcurl timeout
+  when no file descriptors are ready instead of busy-waiting in 1ms steps.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
   describing state the handle never received.

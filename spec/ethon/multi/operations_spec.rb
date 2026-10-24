@@ -205,11 +205,20 @@ describe Ethon::Multi::Operations do
 
         before do
           multi.instance_variable_set(:@max_fd, double(:read_int => max_fd))
-          expect(multi).to receive(:sleep).with(0.001)
         end
 
-        it "waits 100ms" do
+        it "waits for the timeout" do
+          expect(multi).to receive(:sleep).with(0.001)
           multi.method(:set_fds).call(timeout)
+        end
+
+        context "when the timeout is longer" do
+          let(:timeout) { 250 }
+
+          it "does not busy-wait" do
+            expect(multi).to receive(:sleep).with(0.25)
+            multi.method(:set_fds).call(timeout)
+          end
         end
       end
 
