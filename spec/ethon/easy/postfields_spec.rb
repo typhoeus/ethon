@@ -9,7 +9,42 @@ describe Ethon::Easy do
     it "retains the string libcurl references" do
       easy.postfields = body
 
-      expect(easy.instance_variable_get(:@postfields)).to be(body)
+      retained = easy.instance_variable_get(:@postfields)
+      expect(retained).to eq(body)
+      expect(retained).to be_frozen
+    end
+
+    it "snapshots a mutable string so later mutations cannot invalidate it" do
+      mutable = String.new("a=1")
+
+      easy.postfields = mutable
+
+      retained = easy.instance_variable_get(:@postfields)
+      expect(retained).to eq("a=1")
+      expect(retained).to be_frozen
+      expect(retained).not_to be(mutable)
+    end
+
+    it "does not send later mutations of the caller's string" do
+      easy.url = "http://localhost:3001/echo"
+      source = String.new("first")
+      easy.postfields = source
+      easy.postfieldsize = 5
+      source.replace("other")
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to eq("first")
+    end
+
+    it "does not read freed memory when the caller's string grows" do
+      easy.url = "http://localhost:3001/echo"
+      source = String.new("a")
+      easy.postfields = source
+      easy.postfieldsize = 1
+      source << "b" * 100_000
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to eq("a")
     end
 
     it "clears the retained string on reset" do
