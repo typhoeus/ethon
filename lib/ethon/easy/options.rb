@@ -159,14 +159,13 @@ module Ethon
         end
       end
 
-      # libcurl does not copy CURLOPT_POSTFIELDS, so keep the Ruby string alive
-      # for as long as the handle may reference it. Retain it only once the
-      # option was accepted.
+      # libcurl does not copy CURLOPT_POSTFIELDS, so keep an immutable snapshot
+      # of the bytes alive for as long as the handle may reference it. Retain it
+      # only once the option was accepted. Mutating a caller's string afterwards
+      # may reallocate it, so libcurl must not point at that buffer.
       def postfields=(value)
-        # Retain the exact string libcurl receives. For non-String values
-        # #to_s produces a temporary that would otherwise be collected while
-        # libcurl still points at it.
         string = value.nil? ? nil : value.to_s
+        string = string.dup.freeze if string && !string.frozen?
         Curl.set_option(:postfields, string, handle)
         @postfields = string
         value
