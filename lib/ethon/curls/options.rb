@@ -45,7 +45,11 @@ module Ethon
           end
         when :string
           va_type=:string
-          value=value.to_s unless value.nil?
+          unless value.nil?
+            string = value.to_s
+            raise Errors::InvalidValue.new(option, value) if string.include?("\0")
+            value = string
+          end
         when :string_as_pointer
           va_type = :pointer
           s = ''
@@ -134,10 +138,16 @@ module Ethon
         return 0 if value == false
 
         begin
-          Integer(value)
+          integer = Integer(value)
         rescue ArgumentError, TypeError, RangeError
           raise Errors::InvalidValue.new(option, value)
         end
+
+        if value.is_a?(Numeric) && value != integer
+          raise Errors::InvalidValue.new(option, value)
+        end
+
+        integer
       end
 
       OPTION_TYPE_BASE = {

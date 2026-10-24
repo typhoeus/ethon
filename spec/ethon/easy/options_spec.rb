@@ -172,6 +172,34 @@ describe Ethon::Easy::Options do
       expect { Ethon::Curl.set_option(:timeout, Float::INFINITY, easy.handle) }.
         to raise_error(Ethon::Errors::InvalidValue, /timeout/)
     end
+
+    it "rejects fractional numeric values" do
+      easy
+
+      expect { Ethon::Curl.set_option(:timeout, 1.5, easy.handle) }.
+        to raise_error(Ethon::Errors::InvalidValue, /timeout/)
+    end
+
+    it "accepts whole-valued floats" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :long, 1).and_return(:ok)
+
+      Ethon::Curl.set_option(:timeout, 1.0, easy.handle)
+    end
+
+    it "rejects null bytes in string options" do
+      easy
+
+      expect { Ethon::Curl.set_option(:url, "http://example.com/\0x", easy.handle) }.
+        to raise_error(Ethon::Errors::InvalidValue, /url/)
+    end
+
+    it "keeps null bytes in binary pointer options" do
+      expect(Ethon::Curl).to receive(:easy_setopt).
+        with(easy.handle, anything, :pointer, kind_of(FFI::MemoryPointer)).and_return(:ok)
+
+      Ethon::Curl.set_option(:copypostfields, "a\0b", easy.handle)
+    end
   end
 
   [
