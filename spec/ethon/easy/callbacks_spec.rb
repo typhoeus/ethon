@@ -197,6 +197,17 @@ describe Ethon::Easy::Callbacks do
       expect(easy.read_callback.call(stream, 16, 1, nil)).to eq(3)
     end
 
+    it "leaves a non-seekable body alone" do
+      read, write = IO.pipe
+      write.write("abc")
+      write.close
+
+      easy.set_read_callback(read)
+
+      expect(easy.instance_variable_get(:@request_body_start)).to be_nil
+      expect { easy.reset_transfer_state }.not_to raise_error
+    end
+
     it "reports the number of bytes actually read from short-reading IOs" do
       body = Class.new do
         def initialize

@@ -97,6 +97,14 @@ describe Ethon::Easy::Queryable do
       end
     end
 
+    context "when params is an empty string" do
+      let(:hash) { "" }
+
+      it "returns true" do
+        expect(params.empty?).to be(true)
+      end
+    end
+
     context "when params is a scalar" do
       let(:hash) { 1 }
 
@@ -132,6 +140,14 @@ describe Ethon::Easy::Queryable do
 
       it "wraps it in an array" do
         expect(pairs).to eq([hash])
+      end
+    end
+
+    context "when params is an empty string" do
+      let(:hash) { "" }
+
+      it "returns no pairs" do
+        expect(pairs).to eq([])
       end
     end
 

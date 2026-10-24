@@ -329,6 +329,9 @@ module Ethon
     def restore_callbacks_on(copy)
       if defined?(@request_body) && @request_body
         copy.set_read_callback(@request_body)
+        # Replay the original body range instead of wherever the shared body
+        # happens to be when the copy is made.
+        copy.instance_variable_set(:@request_body_start, @request_body_start)
       end
 
       progress_handled = @procs &&

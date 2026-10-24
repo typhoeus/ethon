@@ -16,6 +16,16 @@ describe Ethon::Easy::Http::Get do
       expect(easy.url).to eq(url)
     end
 
+    context "when params is an empty string" do
+      let(:params) { "" }
+      let(:url) { "http://localhost:3001/?query=here" }
+
+      it "leaves the url alone" do
+        get.setup(easy)
+        expect(easy.url).to eq(url)
+      end
+    end
+
     context "when url has a fragment" do
       let(:url) { "http://localhost:3001/#frag" }
       let(:params) { { :a => 1 } }
