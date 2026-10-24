@@ -36,6 +36,8 @@ module Ethon
       # @return [ Integer ] The return code.
       def perform
         ensure_not_performing!
+        # curl_easy_perform must not drive a handle that is owned by a multi.
+        ensure_not_attached_to_multi!
 
         prepare_response_body_io
         reset_transfer_state
