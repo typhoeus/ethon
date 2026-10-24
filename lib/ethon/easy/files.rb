@@ -1,4 +1,4 @@
- # frozen_string_literal: true
+# frozen_string_literal: true
 module Ethon
   class Easy
     # This module contains logic for streaming response bodies to Ruby IOs.
@@ -8,11 +8,16 @@ module Ethon
       # Pass nil to restore in-memory response buffering.
       def file=(destination)
         clear_response_body_io
-        if destination.respond_to?(:write)
+        # Pathname-like objects may also implement #write. Prefer the path when
+        # the object is not an IO (File and Tempfile expose #fileno).
+        if destination.respond_to?(:to_path) && !destination.respond_to?(:fileno)
+          @response_body_path = destination.to_path
+          prepare_response_body_io
+        elsif destination.respond_to?(:write)
           @response_body_io = destination
           @owns_response_body_io = false
         elsif destination
-          @response_body_path = destination.respond_to?(:to_path) ? destination.to_path : destination.to_s
+          @response_body_path = destination.to_s
           prepare_response_body_io
         end
         @response_body = @response_body_io ? nil : String.new

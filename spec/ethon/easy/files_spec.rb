@@ -2,6 +2,7 @@
 require 'spec_helper'
 require 'stringio'
 require 'tempfile'
+require 'pathname'
 
 describe Ethon::Easy::Files do
   let(:easy) { Ethon::Easy.new(url: "http://localhost:3001/") }
@@ -38,6 +39,20 @@ describe Ethon::Easy::Files do
 
       expect(easy.perform).to eq(:ok)
       expect(File.binread(file.path)).to include('"REQUEST_METHOD":"GET"')
+    end
+  end
+
+  it "treats a writable path-like object such as Pathname as a path" do
+    Tempfile.create do |file|
+      file.close
+      size = 20_000
+      pattern = (0..255).to_a.pack("C*")
+      expected = (pattern * (size / pattern.bytesize + 1)).byteslice(0, size)
+      easy.url = "http://localhost:3001/binary/#{size}"
+      easy.file = Pathname.new(file.path)
+
+      expect(easy.perform).to eq(:ok)
+      expect(File.binread(file.path)).to eq(expected)
     end
   end
 
