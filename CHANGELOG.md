@@ -49,6 +49,20 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
+  libcurl accepts the option, so a rejected value cannot leave the accessors
+  describing state the handle never received.
+* `Multi#cleanup` now releases the native multi handle and clears handle
+  ownership even when detaching an easy handle or closing a streamed response
+  fails.
+* MIME parts free a partially built header list when `curl_slist_append` fails
+  before the list is installed.
+* Fixed the `:string_escape_null` option type to resolve
+  `Ethon::Easy::Util` instead of an undefined constant.
+* Added byte-exact binary transfer tests, a full option-table cross-check
+  against libcurl's own metadata, multipart round-trip tests, end-to-end
+  coverage for the `curl_multi_wait` and `select` fallbacks, and a multi
+  response-isolation test.
 * Reusing an `Easy` no longer leaks the previous custom HTTP method or a
   stale `CURLOPT_CURLU` handle. `Easy#url=` clears a URL handle, `Easy#curlu=`
   clears the string URL, and `Easy#reset` detaches the share before releasing
