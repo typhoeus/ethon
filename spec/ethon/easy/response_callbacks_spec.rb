@@ -49,6 +49,23 @@ describe Ethon::Easy::ResponseCallbacks do
         expect{ easy.complete }.to_not raise_error
       end
     end
+
+    it "refuses to complete recursively from an on_complete callback" do
+      easy.on_complete.clear
+      easy.on_complete { easy.complete }
+
+      expect { easy.complete }.
+        to raise_error(Ethon::Errors::EthonError, /already completing/)
+    end
+
+    it "refuses to complete recursively from an on_headers callback" do
+      easy.on_complete.clear
+      easy.response_headers = "HTTP/1.1 200 OK\r\n"
+      easy.on_headers { easy.complete }
+
+      expect { easy.complete }.
+        to raise_error(Ethon::Errors::EthonError, /already completing/)
+    end
   end
 
   describe "#headers" do

@@ -69,14 +69,20 @@ module Ethon
       # @example Execute on_completes.
       #   request.complete
       def complete
-        @completing = true
-        headers unless @response_headers.empty?
-        if defined?(@on_complete) and not @on_complete.nil?
-          @on_complete.each{ |callback| callback.call(self) }
+        if @completing
+          raise Errors::EthonError, "Easy is already completing; wait for the callbacks to finish"
         end
-      ensure
-        @completing = false
-        finish_response_body_io
+
+        begin
+          @completing = true
+          headers unless @response_headers.empty?
+          if defined?(@on_complete) and not @on_complete.nil?
+            @on_complete.each{ |callback| callback.call(self) }
+          end
+        ensure
+          @completing = false
+          finish_response_body_io
+        end
       end
 
       # Set on_progress callback.
