@@ -55,7 +55,7 @@ module Ethon
         base.attach_function :multi_perform,              :curl_multi_perform,       [:pointer, :pointer],           :multi_code, blocking: true
         base.attach_function :multi_timeout,              :curl_multi_timeout,       [:pointer, :pointer],           :multi_code
         base.attach_function :multi_fdset,                :curl_multi_fdset,         [:pointer, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, :pointer], :multi_code
-        base.attach_function :multi_strerror,             :curl_multi_strerror,      [:int],                         :string
+        base.attach_function :multi_strerror,             :curl_multi_strerror,      [:multi_code],                  :string
         base.attach_function :multi_setopt,               :curl_multi_setopt,        [:pointer, :multi_option, :varargs], :multi_code
         base.attach_function :multi_socket_action,        :curl_multi_socket_action, [:pointer, :curl_socket_t, :socket_readiness, :pointer], :multi_code, blocking: true
         base.attach_function :multi_assign,               :curl_multi_assign,        [:pointer, :curl_socket_t, :pointer], :multi_code

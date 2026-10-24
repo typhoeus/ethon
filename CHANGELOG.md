@@ -10,6 +10,15 @@
   first file upload instead, saving about 2.4 MB and 100 ms per process. Code
   relying on ethon to load `MIME::Types` must now require it itself.
   ([Clément Joubert](https://github.com/czj))
+* Errors from `curl_easy_setopt` and `curl_multi_setopt` are no longer ignored.
+  An option the loaded libcurl does not know raises
+  `Ethon::Errors::UnsupportedOption`, and other rejected values raise
+  `Ethon::Errors::SetOption`. Setting an option such as
+  `Easy#http_version = :httpv3` on a libcurl built without HTTP/3 now raises
+  instead of silently running with a different configuration.
+  `Curl.supports_option?` and `Curl.version_at_least?` can be used to guard
+  optional settings.
+  ([#343](https://github.com/typhoeus/ethon/pull/343))
 
 ### New libcurl bindings
 

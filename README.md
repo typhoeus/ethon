@@ -135,7 +135,7 @@ access to the shared data.
 ## Older libcurl versions
 
 Ethon attaches functions that may not exist in the loaded libcurl conditionally.
-Calling a wrapper for a missing function raises `NotImplementedError`, and the
+Wrappers that check for a missing function raise `NotImplementedError`; the
 introspection helpers return `nil` or `[]`. This keeps the gem loadable with
 libcurl versions that predate the URL, MIME, share, or structured-header APIs.
 
@@ -152,7 +152,9 @@ easy.httpsig_key = key if Ethon::Curl.version_at_least?("8.23.0")
 
 `Curl.supports_option?` asks libcurl's own option table on 7.73.0 and newer.
 Older versions cannot answer that question, so it returns `true` for every
-option Ethon knows; setting an unsupported option still raises.
+option Ethon knows; setting an unsupported option still raises. Multi options
+are only checked against Ethon's table, because libcurl does not expose their
+metadata.
 
 The deprecated form API is attached only when the loaded libcurl exports it,
 because libcurl can be built with `--disable-form-api`. Multipart bodies use the

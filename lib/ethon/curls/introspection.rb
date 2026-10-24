@@ -64,17 +64,20 @@ module Ethon
         string_array(version_info[:protocols])
       end
 
-      # Return whether the loaded libcurl supports an option.
+      # Return whether libcurl knows an option.
       #
-      # libcurl exposes its own option table since 7.73.0. Older versions only
-      # have Ethon's static table, so this returns true there and setting the
-      # option raises Ethon::Errors::UnsupportedOption when it is unknown.
+      # Easy options are checked against libcurl's own option table on 7.73.0
+      # and newer. Older versions cannot answer that question, so it returns
+      # `true` for every option Ethon knows. Multi options are only checked
+      # against Ethon's table, because libcurl does not expose multi option
+      # metadata.
       #
       # @param [ String, Symbol ] name The CURLOPT_* name without the prefix.
       # @param [ Symbol ] type :easy or :multi.
       #
       # @return [ Boolean ] True when the option is available.
       def supports_option?(name, type = :easy)
+        name = name.to_sym if name.is_a?(String)
         options = type == :multi ? multi_options(nil) : easy_options(nil)
         option = options[name]
         return false unless option

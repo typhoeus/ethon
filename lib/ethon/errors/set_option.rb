@@ -2,31 +2,23 @@
 module Ethon
   module Errors
 
-    # Raised when libcurl does not recognize an option.
-    #
-    # This happens when Ethon knows an option that the loaded libcurl is too
-    # old to support, for example an option added in a newer libcurl release.
-    class UnsupportedOption < EthonError
-      def initialize(option)
-        version = begin
-          Ethon::Curl.version_info[:version]
-        rescue StandardError
-          nil
-        end
-        version = Ethon::Curl.version if version.nil?
-        super("libcurl #{version} does not support the option: #{option}")
-      end
-    end
-
     # Raised when libcurl rejects an option value.
     class SetOption < EthonError
-      def initialize(option, code)
+      def initialize(option, code, type = :easy)
         message = begin
-          Ethon::Curl.respond_to?(:easy_strerror) ? Ethon::Curl.easy_strerror(code) : code.to_s
+          strerror(type, code)
         rescue StandardError
           code.to_s
         end
         super("libcurl failed to set the option: #{option}: #{message} (#{code})")
+      end
+
+      private
+
+      # Multi and easy codes overlap, so decode with the matching strerror.
+      def strerror(type, code)
+        func = type == :multi ? :multi_strerror : :easy_strerror
+        Ethon::Curl.respond_to?(func) ? Ethon::Curl.public_send(func, code) : code.to_s
       end
     end
   end

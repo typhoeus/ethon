@@ -120,7 +120,7 @@ module Ethon
         when :unknown_option
           raise Errors::UnsupportedOption.new(option)
         else
-          raise Errors::SetOption.new(option, result)
+          raise Errors::SetOption.new(option, result, type)
         end
       end
 

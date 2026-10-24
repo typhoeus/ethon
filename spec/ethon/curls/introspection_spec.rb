@@ -90,6 +90,7 @@ describe "libcurl version introspection" do
 
   it "reports whether an option is available" do
     expect(Ethon::Curl.supports_option?(:verbose)).to be(true)
+    expect(Ethon::Curl.supports_option?("verbose")).to be(true)
     expect(Ethon::Curl.supports_option?(:verbose, :multi)).to be(false)
     expect(Ethon::Curl.supports_option?(:not_an_option)).to be(false)
   end

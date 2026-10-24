@@ -3,6 +3,7 @@ require 'spec_helper'
 
 describe "setting libcurl options" do
   let!(:easy) { Ethon::Easy.new }
+  let(:multi) { Ethon::Multi.new }
 
   describe "return value handling" do
     it "returns :ok when libcurl accepts the option" do
@@ -21,6 +22,13 @@ describe "setting libcurl options" do
 
       expect { Ethon::Curl.set_option(:http_version, :httpv3, easy.handle) }.
         to raise_error(Ethon::Errors::SetOption, /http_version.*unsupported_protocol/)
+    end
+
+    it "decodes multi errors with multi_strerror" do
+      allow(Ethon::Curl).to receive(:multi_setopt).and_return(:out_of_memory)
+
+      expect { Ethon::Curl.set_option(:maxconnects, 1, multi.handle, :multi) }.
+        to raise_error(Ethon::Errors::SetOption, /maxconnects.*Out of memory/)
     end
 
     it "raises for a real unsupported option on the loaded libcurl" do
