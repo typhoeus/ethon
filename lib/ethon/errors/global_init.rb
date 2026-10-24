@@ -5,7 +5,7 @@ module Ethon
     # Raises when global_init failed.
     class GlobalInit < EthonError
       def initialize
-        super("An error occured initializing curl.")
+        super("An error occurred initializing curl.")
       end
     end
   end

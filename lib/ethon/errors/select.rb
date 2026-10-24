@@ -5,7 +5,7 @@ module Ethon
     # Raised when select failed.
     class Select < EthonError
       def initialize(errno)
-        super("An error occured on select: #{errno}")
+        super("An error occurred on select: #{errno}")
       end
     end
   end
