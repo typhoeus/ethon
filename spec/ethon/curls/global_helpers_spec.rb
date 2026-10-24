@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe Ethon::Curl::SslBackend do
+describe "Ethon::Curl::SslBackend" do
+  let(:described_class) { Ethon::Curl::SslBackend }
+
   it "maps the backends" do
     expect(described_class[:none]).to eq(0)
     expect(described_class[:openssl]).to eq(1)

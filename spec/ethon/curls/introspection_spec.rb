@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe Ethon::Curl::HeaderCode do
+describe "Ethon::Curl::HeaderCode" do
+  let(:described_class) { Ethon::Curl::HeaderCode }
+
   it "maps the codes" do
     expect(described_class[:ok]).to eq(0)
     expect(described_class[:missing]).to eq(2)
@@ -10,7 +12,9 @@ describe Ethon::Curl::HeaderCode do
   end
 end
 
-describe Ethon::Curl::HeaderOrigin do
+describe "Ethon::Curl::HeaderOrigin" do
+  let(:described_class) { Ethon::Curl::HeaderOrigin }
+
   it "maps the origin bits" do
     expect(described_class[:header]).to eq(1 << 0)
     expect(described_class[:trailer]).to eq(1 << 1)
@@ -20,7 +24,9 @@ describe Ethon::Curl::HeaderOrigin do
   end
 end
 
-describe Ethon::Curl::EasyType do
+describe "Ethon::Curl::EasyType" do
+  let(:described_class) { Ethon::Curl::EasyType }
+
   it "maps the option types" do
     expect(described_class[:long]).to eq(0)
     expect(described_class[:off_t]).to eq(2)

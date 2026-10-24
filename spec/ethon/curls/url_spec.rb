@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe Ethon::Curl::UrlPart do
+describe "Ethon::Curl::UrlPart" do
+  let(:described_class) { Ethon::Curl::UrlPart }
+
   it "maps the parts" do
     expect(described_class[:url]).to eq(0)
     expect(described_class[:scheme]).to eq(1)
@@ -10,7 +12,9 @@ describe Ethon::Curl::UrlPart do
   end
 end
 
-describe Ethon::Curl::UrlCode do
+describe "Ethon::Curl::UrlCode" do
+  let(:described_class) { Ethon::Curl::UrlCode }
+
   it "maps the codes" do
     expect(described_class[:ok]).to eq(0)
     expect(described_class[:bad_handle]).to eq(1)
@@ -20,7 +24,9 @@ describe Ethon::Curl::UrlCode do
   end
 end
 
-describe Ethon::Curl::UrlFlags do
+describe "Ethon::Curl::UrlFlags" do
+  let(:described_class) { Ethon::Curl::UrlFlags }
+
   it "maps the flags" do
     expect(described_class[:default_port]).to eq(1 << 0)
     expect(described_class[:default_scheme]).to eq(1 << 2)

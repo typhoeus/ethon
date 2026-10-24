@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe Ethon::Curl::MultiCode do
+describe "Ethon::Curl::MultiCode" do
+  let(:described_class) { Ethon::Curl::MultiCode }
+
   {
     :call_multi_perform => -1,
     :ok => 0,

@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe Ethon::Curl::FormOption do
+describe "Ethon::Curl::FormOption" do
+  let(:described_class) { Ethon::Curl::FormOption }
+
   {
     :end => 17,
     :obsolete2 => 18,

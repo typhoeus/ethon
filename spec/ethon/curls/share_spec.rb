@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe Ethon::Curl::ShareCode do
+describe "Ethon::Curl::ShareCode" do
+  let(:described_class) { Ethon::Curl::ShareCode }
+
   it "maps the codes" do
     expect(described_class[:ok]).to eq(0)
     expect(described_class[:bad_option]).to eq(1)
@@ -10,7 +12,9 @@ describe Ethon::Curl::ShareCode do
   end
 end
 
-describe Ethon::Curl::ShareOption do
+describe "Ethon::Curl::ShareOption" do
+  let(:described_class) { Ethon::Curl::ShareOption }
+
   it "maps the options" do
     expect(described_class[:share]).to eq(1)
     expect(described_class[:unshare]).to eq(2)
@@ -18,7 +22,9 @@ describe Ethon::Curl::ShareOption do
   end
 end
 
-describe Ethon::Curl::LockData do
+describe "Ethon::Curl::LockData" do
+  let(:described_class) { Ethon::Curl::LockData }
+
   it "maps the data types" do
     expect(described_class[:none]).to eq(0)
     expect(described_class[:cookie]).to eq(2)
