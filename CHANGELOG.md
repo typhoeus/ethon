@@ -68,8 +68,8 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
   describing state the handle never received. `Easy#postfields=` also retains
-  the normalized string libcurl points at, so non-String bodies cannot be
-  collected mid-transfer.
+  a frozen snapshot of the string libcurl points at, so caller mutations cannot
+  change the request or leave libcurl reading a reallocated buffer.
 * `Easy#cleanup` drops references to native-backed strings, lists, MIME/URL
   handles, blobs, and callbacks after freeing the handle.
 * `Multi#cleanup` now releases the native multi handle even when detaching an
@@ -162,6 +162,23 @@ is unavailable; introspection helpers return `nil` or an empty array.
   the original.
 * `Easy#file=` validates the easy handle before opening a path, so a cleaned up
   or fork-inherited handle cannot truncate the destination while raising.
+* `Easy#url=` applies a string URL before detaching a `CURLOPT_CURLU` handle,
+  so a rejected value leaves the existing URL handle usable.
+* `Multi#add` rejects an Easy that another Multi owns before resetting its
+  transfer state or preparing its response stream.
+* MIME part content types and encoders reject CR, LF, and NUL bytes, and the
+  other MIME part strings reject NUL bytes with `Ethon::Errors::InvalidValue`
+  instead of FFI's `ArgumentError`.
+* `Easy` retains managed `Curl::Slist` values assigned to list-backed options
+  such as `resolve`, `connect_to`, and `quote`, so garbage collection cannot
+  free a list while libcurl still uses it.
+* Owned native pointers now register in one shared registry, so
+  `Curl::OwnedPointer.owners` reports every live handle and the memory usage
+  test really checks for native handle leaks.
+* `Easy#reset` closes a streamed response file before clearing state, so a
+  close failure leaves the handle usable instead of half-reset.
+* `Easy#complete` rejects reentrant calls from its own `on_headers` or
+  `on_complete` callbacks instead of recursing until the stack overflows.
 
 ## 0.19.0
 
