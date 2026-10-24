@@ -35,10 +35,12 @@ module Ethon
           code = Curl.multi_add_handle(handle, easy_handle)
         rescue Exception
           easy_handles.delete(easy)
+          easy.finish_response_body_io
           raise
         end
         unless code == :ok
           easy_handles.delete(easy)
+          easy.finish_response_body_io
           raise Errors::MultiAdd.new(code, easy)
         end
 
@@ -69,6 +71,7 @@ module Ethon
           end
 
           easy.instance_variable_set(:@multi, nil) if easy.instance_variable_get(:@multi).equal?(self)
+          easy.finish_response_body_io
         end
       end
     end

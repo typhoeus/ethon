@@ -66,6 +66,21 @@ describe Ethon::Multi::Stack do
     ensure
       multi.delete(easy) if multi.easy_handles.include?(easy)
     end
+
+    context "when streaming the response to a file" do
+      let(:tempfile) { Tempfile.new("ethon-multi-add") }
+      after { tempfile.close! }
+
+      it "closes the file when adding fails" do
+        easy.file = tempfile.path
+        easy.prepare_response_body_io
+        io = easy.instance_variable_get(:@response_body_io)
+        expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:bad_easy_handle)
+
+        expect { multi.add(easy) }.to raise_error(Ethon::Errors::MultiAdd)
+        expect(io).to be_closed
+      end
+    end
   end
 
   describe "#delete" do
@@ -86,6 +101,25 @@ describe Ethon::Multi::Stack do
         multi.delete(easy)
 
         expect(easy.instance_variable_get(:@multi)).to be_nil
+      end
+
+    end
+
+    context "when streaming the response to a file" do
+      let(:tempfile) { Tempfile.new("ethon-multi-delete") }
+      after { tempfile.close! }
+
+      before do
+        easy.file = tempfile.path
+        multi.add(easy)
+      end
+
+      it "closes the file" do
+        io = easy.instance_variable_get(:@response_body_io)
+
+        multi.delete(easy)
+
+        expect(io).to be_closed
       end
     end
 

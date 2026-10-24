@@ -78,6 +78,8 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * Fixed the test server's keep-alive limits, cutting the suite from ~35s to
   ~5s, and added coverage for the option table, callbacks, reset behavior,
   Multi message handling, and libcurl info ownership.
+* Removing an `Easy` that streams its response to a file from a `Multi`, or a
+  failed `Multi#add`, now closes the file instead of leaving it open until GC.
 
 ## 0.19.0
 
