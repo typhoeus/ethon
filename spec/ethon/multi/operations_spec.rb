@@ -159,6 +159,13 @@ describe Ethon::Multi::Operations do
     let(:timeout) { 1 }
     let(:max_fd) { 1 }
 
+    before do
+      allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+      allow(Ethon::Curl).to receive(:respond_to?).with(:multi_poll).and_return(false)
+      allow(Ethon::Curl).to receive(:respond_to?).with(:multi_wait).and_return(false)
+      multi.init_vars
+    end
+
     context "when code ok" do
       before { expect(Ethon::Curl).to receive(:multi_fdset).and_return(:ok) }
 
@@ -232,6 +239,15 @@ describe Ethon::Multi::Operations do
       it "sets easy" do
         multi.perform
         expect(easy.response_code).to eq(200)
+      end
+
+      it "waits with curl_multi_poll when available" do
+        skip "curl_multi_poll is unavailable" unless Ethon::Curl.respond_to?(:multi_poll)
+
+        easy.url = "http://127.0.0.1:3001/?delay=0.05"
+        expect(multi).to receive(:poll).at_least(:once).and_call_original
+
+        multi.perform
       end
 
       it "raises callback exceptions with verbose output enabled" do
@@ -422,28 +438,65 @@ describe Ethon::Multi::Operations do
       expect(multi.instance_variable_get(:@timeout)).to be_a(FFI::MemoryPointer)
     end
 
-    it "sets @timeval" do
-      expect(multi.instance_variable_get(:@timeval)).to be_a(Ethon::Curl::Timeval)
+    it "sets @running_count_pointer" do
+      expect(multi.instance_variable_get(:@running_count_pointer)).to be_a(FFI::MemoryPointer)
     end
 
-    it "sets @fd_read" do
-      expect(multi.instance_variable_get(:@fd_read)).to be_a(Ethon::Curl::FDSet)
+    it "sets @msgs_left" do
+      expect(multi.instance_variable_get(:@msgs_left)).to be_a(FFI::MemoryPointer)
     end
 
-    it "sets @fd_write" do
-      expect(multi.instance_variable_get(:@fd_write)).to be_a(Ethon::Curl::FDSet)
+    it "does not allocate fd sets when curl_multi_poll is available" do
+      skip "curl_multi_poll is unavailable" unless Ethon::Curl.respond_to?(:multi_poll)
+
+      expect(multi.instance_variable_get(:@wait_strategy)).to eq(:poll)
+      expect(multi.instance_variable_get(:@fd_read)).to be_nil
+      expect(multi.instance_variable_get(:@fd_write)).to be_nil
+      expect(multi.instance_variable_get(:@fd_excep)).to be_nil
+      expect(multi.instance_variable_get(:@max_fd)).to be_nil
     end
 
-    it "sets @fd_excep" do
-      expect(multi.instance_variable_get(:@fd_excep)).to be_a(Ethon::Curl::FDSet)
+    context "when only curl_multi_wait is available" do
+      before do
+        allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+        allow(Ethon::Curl).to receive(:respond_to?).with(:multi_poll).and_return(false)
+        allow(Ethon::Curl).to receive(:respond_to?).with(:multi_wait).and_return(true)
+        multi.init_vars
+      end
+
+      it "uses wait without allocating fd sets" do
+        expect(multi.instance_variable_get(:@wait_strategy)).to eq(:wait)
+        expect(multi.instance_variable_get(:@fd_read)).to be_nil
+      end
     end
 
-    it "sets @max_fd" do
-      expect(multi.instance_variable_get(:@max_fd)).to be_a(FFI::MemoryPointer)
+    context "when neither poll nor wait is available" do
+      before do
+        allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+        allow(Ethon::Curl).to receive(:respond_to?).with(:multi_poll).and_return(false)
+        allow(Ethon::Curl).to receive(:respond_to?).with(:multi_wait).and_return(false)
+        multi.init_vars
+      end
+
+      it "uses select and allocates the fd sets" do
+        expect(multi.instance_variable_get(:@wait_strategy)).to eq(:select)
+        expect(multi.instance_variable_get(:@timeval)).to be_a(Ethon::Curl::Timeval)
+        expect(multi.instance_variable_get(:@fd_read)).to be_a(Ethon::Curl::FDSet)
+        expect(multi.instance_variable_get(:@fd_write)).to be_a(Ethon::Curl::FDSet)
+        expect(multi.instance_variable_get(:@fd_excep)).to be_a(Ethon::Curl::FDSet)
+        expect(multi.instance_variable_get(:@max_fd)).to be_a(FFI::MemoryPointer)
+      end
     end
   end
 
   describe "#reset_fds" do
+    before do
+      allow(Ethon::Curl).to receive(:respond_to?).and_call_original
+      allow(Ethon::Curl).to receive(:respond_to?).with(:multi_poll).and_return(false)
+      allow(Ethon::Curl).to receive(:respond_to?).with(:multi_wait).and_return(false)
+      multi.init_vars
+    end
+
     after { multi.method(:reset_fds).call }
 
     it "resets @fd_read" do
@@ -516,6 +569,17 @@ describe Ethon::Multi::Operations do
       expect { multi.send(:check) }.to raise_error(error)
       expect(multi.easy_handles).not_to include(easy)
     end
+
+    it "reuses the message pointer" do
+      pointer = multi.instance_variable_get(:@msgs_left)
+
+      expect(Ethon::Curl).to receive(:multi_info_read) do |_, msgs|
+        expect(msgs).to be(pointer)
+        FFI::Pointer::NULL
+      end
+
+      multi.send(:check)
+    end
   end
 
   describe "#socket_action" do
@@ -574,6 +638,18 @@ describe Ethon::Multi::Operations do
         Ethon::Errors::MultiPerform,
         /internal_error/
       )
+    end
+
+    it "reuses the running count pointer" do
+      pointer = multi.instance_variable_get(:@running_count_pointer)
+
+      expect(Ethon::Curl).to receive(:multi_perform) do |_, running|
+        expect(running).to be(pointer)
+        running.write_int(0)
+        :ok
+      end
+
+      multi.send(:run)
     end
   end
 
