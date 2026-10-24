@@ -23,10 +23,17 @@ module Ethon
         Curl.set_option(:writefunction, body_write_callback, handle)
         Curl.set_option(:headerfunction, header_write_callback, handle)
         Curl.set_option(:debugfunction, debug_callback, handle)
+        reset_transfer_state
+      end
+
+      # Reset the state that belongs to a single transfer. Reusing an Easy must
+      # replace the previous response instead of appending to it.
+      def reset_transfer_state
         @response_body = @response_body_io ? nil : String.new
         @response_headers = String.new
         @headers_called = false
         @debug_info = Ethon::Easy::DebugInfo.new
+        @request_body_read = 0
       end
 
       # Returns the body write callback.
@@ -150,37 +157,43 @@ module Ethon
       # @param [ String ] body The body.
       def set_read_callback(body)
         @request_body_read = 0
+        @request_body = body
         @read_callback = proc do |stream, size, num, object|
-          size = size * num
-          remaining = if body.respond_to?(:byteslice)
-            body.bytesize - @request_body_read
-          elsif body.respond_to?(:read)
-            # IO-like bodies advance their own position.
-            body.size - body.pos if body.respond_to?(:size) && body.respond_to?(:pos)
-          elsif body.respond_to?(:size)
-            body.size - @request_body_read
-          end
-
-          size = remaining if remaining && size > remaining
-
-          chunk = if size > 0
-            if body.respond_to?(:byteslice)
-              body.byteslice(@request_body_read, size)
+          begin
+            size = size * num
+            remaining = if body.respond_to?(:byteslice)
+              body.bytesize - @request_body_read
             elsif body.respond_to?(:read)
-              body.read(size)
-            else
-              body[@request_body_read, size]
+              # IO-like bodies advance their own position.
+              body.size - body.pos if body.respond_to?(:size) && body.respond_to?(:pos)
+            elsif body.respond_to?(:size)
+              body.size - @request_body_read
             end
-          end
 
-          # libcurl expects the number of bytes actually copied into the
-          # buffer. IO-like bodies may return fewer bytes than requested.
-          chunk_size = chunk ? chunk.bytesize : 0
-          if chunk_size > 0
-            stream.write_string(chunk, chunk_size)
-            @request_body_read += chunk_size
+            size = remaining if remaining && size > remaining
+
+            chunk = if size > 0
+              if body.respond_to?(:byteslice)
+                body.byteslice(@request_body_read, size)
+              elsif body.respond_to?(:read)
+                body.read(size)
+              else
+                body[@request_body_read, size]
+              end
+            end
+
+            # libcurl expects the number of bytes actually copied into the
+            # buffer. IO-like bodies may return fewer bytes than requested.
+            chunk_size = chunk ? chunk.bytesize : 0
+            if chunk_size > 0
+              stream.write_string(chunk, chunk_size)
+              @request_body_read += chunk_size
+            end
+            chunk_size
+          rescue Exception => e
+            @callback_error ||= e
+            0
           end
-          chunk_size
         end
         readfunction(&@read_callback)
       end

@@ -249,6 +249,18 @@ describe Ethon::Multi::Operations do
         expect(io.string).to include('"REQUEST_METHOD":"GET"')
         expect(io).not_to be_closed
       end
+
+      it "replaces the response when the same easy is added again" do
+        multi.perform
+
+        easy.url = "http://127.0.0.1:3001/second"
+        multi.add(easy)
+        multi.perform
+
+        expect(easy.response_body).to include('"PATH_INFO":"/second"')
+        expect(easy.response_body.scan('"GATEWAY_INTERFACE"').size).to eq(1)
+        expect(easy.response_headers.scan("HTTP/1.1").size).to eq(1)
+      end
     end
 
     context "when four easy handles" do

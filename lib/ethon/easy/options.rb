@@ -154,6 +154,11 @@ module Ethon
         super
         @procs = @procs.dup if @procs
         @blobs = @blobs.dup if @blobs
+        @on_complete = @on_complete.dup if @on_complete
+        @on_headers = @on_headers.dup if @on_headers
+        @on_body = @on_body.dup if @on_body
+        @on_progress = @on_progress.dup if @on_progress
+        @headers = @headers.dup if @headers
       end
 
       def tlsauth_type_value(value)
@@ -168,7 +173,12 @@ module Ethon
       end
 
       def retain_callback(option, callback)
-        @read_callback = callback if option == :readfunction
+        if option == :readfunction
+          # A callback installed directly by the user does not describe the
+          # retained body and must not be replaced when the Easy is duplicated.
+          @request_body = nil unless callback && callback.equal?(@read_callback)
+          @read_callback = callback
+        end
 
         if callback.nil?
           @procs.delete(option) if @procs

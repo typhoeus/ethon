@@ -262,5 +262,17 @@ describe Ethon::Easy::Callbacks do
       expect(callback.call(stream, 16, 1, nil)).to eq(0)
       expect(stream.written).to eq([["xyz", 3]])
     end
+
+    it "captures read errors and reports them after the transfer" do
+      body = Object.new
+      def body.read(*)
+        raise IOError, "read failed"
+      end
+
+      easy.set_read_callback(body)
+
+      expect(easy.read_callback.call(stream, 16, 1, nil)).to eq(0)
+      expect { easy.raise_callback_error }.to raise_error(IOError, "read failed")
+    end
   end
 end
