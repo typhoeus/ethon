@@ -34,6 +34,23 @@ describe Ethon::Curl::FDSet do
 end
 
 describe Ethon::Curl::EasyHandle do
+  it "shares one owner registry with the other owned pointer types" do
+    expect(described_class.owners).to be(Ethon::Curl::OwnedPointer.owners)
+    expect(Ethon::Curl::MultiHandle.owners).to be(Ethon::Curl::OwnedPointer.owners)
+    expect(Ethon::Curl::Slist.owners).to be(Ethon::Curl::OwnedPointer.owners)
+  end
+
+  it "registers every owned pointer type in that registry" do
+    easy = Ethon::Easy.new
+    list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+
+    expect(Ethon::Curl::OwnedPointer.owners).to have_key(easy.handle.address)
+    expect(Ethon::Curl::OwnedPointer.owners).to have_key(list.address)
+  ensure
+    easy.cleanup if easy
+    list.free if list
+  end
+
   describe ".release" do
     let(:pointer) { double(:address => 4242) }
 
