@@ -93,6 +93,27 @@ describe Ethon::Easy::Files do
     end
   end
 
+  it "leaves reset state intact when closing an owned file fails" do
+    Tempfile.create do |file|
+      file.close
+      easy.url = "http://localhost:3001/"
+      easy.postfields = "body"
+      easy.file = file.path
+      io = easy.instance_variable_get(:@response_body_io)
+      allow(io).to receive(:close).and_raise(IOError, "close failed")
+
+      expect { easy.reset }.to raise_error(IOError, "close failed")
+      expect(easy.url).to eq("http://localhost:3001/")
+      expect(easy.instance_variable_get(:@postfields)).to eq("body")
+      expect(easy.instance_variable_get(:@response_body_io)).to be(io)
+
+      allow(io).to receive(:close).and_call_original
+      expect { easy.reset }.not_to raise_error
+      expect(easy.url).to be_nil
+      expect(easy.instance_variable_get(:@postfields)).to be_nil
+    end
+  end
+
   it "does not copy the destination when duplicating an Easy" do
     io = StringIO.new
     easy.file = io
