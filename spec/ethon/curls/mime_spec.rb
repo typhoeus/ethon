@@ -58,6 +58,25 @@ describe Ethon::Curl::Mime do
         to raise_error(Ethon::Errors::Mime, /memory/i)
     end
 
+    it "releases a partially built header list when an append fails" do
+      first = FFI::MemoryPointer.new(:pointer)
+      allow(Ethon::Curl).to receive(:slist_append).and_return(first, nil)
+      expect(Ethon::Curl).to receive(:slist_free_all).with(first)
+
+      expect { part.headers = ["X-First: 1", "X-Second: 2"] }.
+        to raise_error(NoMemoryError, "curl_slist_append failed")
+    end
+
+    it "frees the generated header list when libcurl rejects it" do
+      list = FFI::MemoryPointer.new(:int)
+      allow(Ethon::Curl).to receive(:slist_append).and_return(list)
+      allow(Ethon::Curl).to receive(:mime_headers).and_return(:out_of_memory)
+      expect(Ethon::Curl).to receive(:slist_free_all).with(list)
+
+      expect { part.headers = { "X-Test" => "1" } }.
+        to raise_error(Ethon::Errors::Mime, /memory/i)
+    end
+
     it "keeps a caller-owned header list alive until it is replaced" do
       list = Ethon::Curl::Slist.new(Ethon::Curl.slist_append(nil, "X-Test: 1"))
       part.headers = list
