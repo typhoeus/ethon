@@ -40,8 +40,35 @@ module Ethon
     end
 
     class MultiHandle < OwnedPointer
+      CALLBACKS_MUTEX = Mutex.new
+
+      # libcurl may invoke the socket callback from curl_multi_cleanup. Keep
+      # callbacks referenced until the native handle is done with them.
+      def self.callbacks
+        @callbacks ||= {}
+      end
+
+      def self.retain_callback(pointer, option, callback)
+        key = pointer.address
+        CALLBACKS_MUTEX.synchronize do
+          if callback
+            (callbacks[key] ||= {})[option] = callback
+          elsif (registry = callbacks[key])
+            registry.delete(option)
+            callbacks.delete(key) if registry.empty?
+          end
+        end
+      end
+
       def self.native_release(pointer)
         Curl.multi_cleanup(pointer)
+      ensure
+        begin
+          CALLBACKS_MUTEX.synchronize { callbacks.delete(pointer.address) }
+        rescue ThreadError, SignalException
+          # Finalizers can run in a trap context where locking is forbidden.
+          callbacks.delete(pointer.address)
+        end
       end
     end
 

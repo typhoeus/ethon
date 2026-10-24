@@ -14,6 +14,8 @@ module Ethon
       #
       # @return [ FFI::Pointer ] The multi handle.
       def handle
+        ensure_not_cleaned_up!
+
         handle = @handle ||= begin
           pointer = Curl.multi_init
           raise NoMemoryError, "curl_multi_init failed" if pointer.null?
@@ -21,6 +23,25 @@ module Ethon
         end
         handle.check_pid!
         handle
+      end
+
+      # Clean up the multi.
+      #
+      # Removes all attached easy handles before freeing the native multi
+      # handle. Cleanup is terminal: the Multi cannot be used afterwards.
+      #
+      # @return [ nil ]
+      def cleanup
+        ensure_not_cleaned_up!
+
+        begin
+          easy_handles.dup.each { |easy| delete(easy) }
+          @handle.free if @handle
+        ensure
+          @handle = nil
+          @assigned_sockets = nil
+          @cleaned_up = true
+        end
       end
 
       # Initialize variables.
@@ -50,6 +71,7 @@ module Ethon
       #   multi.perform
       def perform
         ensure_execution_mode(:perform)
+        ensure_not_cleaned_up!
 
         Ethon.logger.debug(STARTED_MULTI)
         while ongoing?
@@ -144,6 +166,7 @@ module Ethon
       # @return [ Symbol ] The Curl.multi_socket_action return code.
       def socket_action(io = nil, readiness = 0)
         ensure_execution_mode(:socket_action)
+        ensure_not_cleaned_up!
 
         fd = if io.nil?
           ::Ethon::Curl::SOCKET_TIMEOUT
@@ -226,6 +249,11 @@ module Ethon
       end
 
       private
+
+      def ensure_not_cleaned_up!
+        return unless @cleaned_up
+        raise Errors::EthonError, "Multi has been cleaned up"
+      end
 
       # Get timeout.
       #

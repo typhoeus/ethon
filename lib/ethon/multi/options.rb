@@ -114,6 +114,7 @@ module Ethon
         else
           (@procs ||= {})[option] = callback
         end
+        Curl::MultiHandle.retain_callback(handle, option, callback)
       end
 
       # Return the value to set to multi handle. It is converted with the help
