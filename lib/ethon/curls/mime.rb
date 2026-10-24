@@ -101,7 +101,7 @@ module Ethon
           retained = value
         else
           lines = value.is_a?(Hash) ? value.map { |key, item| "#{key}: #{item}" } : Array(value)
-          list = build_slist(lines)
+          list = Curl::Slist.build(lines)
           owned = !list.nil?
         end
 
@@ -117,28 +117,6 @@ module Ethon
       end
 
       private
-
-      # Build a list for libcurl. Since the list is not reachable from Ruby
-      # until it is installed, release a partial list if building it fails.
-      def build_slist(lines)
-        list = nil
-        begin
-          lines.each do |line|
-            appended = Curl.slist_append(list, line.to_s)
-            # curl_slist_append returns a NULL pointer, not Ruby nil, and
-            # leaves the previous list untouched when it fails.
-            if appended.nil? || appended.null?
-              raise NoMemoryError, "curl_slist_append failed"
-            end
-
-            list = appended
-          end
-          list
-        rescue Exception
-          Curl.slist_free_all(list) if list
-          raise
-        end
-      end
 
       def call(function, *args)
         @mime.check_pid!

@@ -32,10 +32,8 @@ describe Ethon::Easy::Header do
     end
 
     context "when a later header is invalid" do
-      it "frees the partially built list" do
-        pointer = FFI::MemoryPointer.new(:int)
-        allow(Ethon::Curl).to receive(:slist_append).and_return(pointer)
-        expect(Ethon::Curl).to receive(:slist_free_all).with(pointer)
+      it "does not build a list" do
+        expect(Ethon::Curl).not_to receive(:slist_append)
 
         expect {
           easy.headers = { "X-Ok" => "1", "X-Bad" => "1\r\nInjected: yes" }

@@ -73,24 +73,10 @@ module Ethon
 
       private
 
-      # Build a curl_slist for the headers. A partial list is unreachable from
-      # Ruby and must be released when a header is invalid or allocation fails.
+      # Build a curl_slist for the headers. Compose first so an invalid header
+      # does not leave a partial native list behind.
       def build_slist(headers)
-        list = nil
-        headers.each do |key, value|
-          appended = Curl.slist_append(list, compose_header(key, value))
-          # curl_slist_append returns a NULL pointer, not Ruby nil, and leaves
-          # the previous list untouched when it fails.
-          if appended.nil? || appended.null?
-            raise NoMemoryError, "curl_slist_append failed"
-          end
-
-          list = appended
-        end
-        list
-      rescue Exception
-        Curl.slist_free_all(list) if list
-        raise
+        Curl::Slist.build(headers.map { |key, value| compose_header(key, value) })
       end
     end
   end
