@@ -162,6 +162,18 @@ describe Ethon::Easy, "with CURLOPT_CURLU" do
     expect(easy.response_body).to include('"PATH_INFO":"/"')
   end
 
+  it "keeps the URL handle when the replacement string is rejected" do
+    easy.curlu = url
+
+    expect { easy.url = "http://localhost:3001/\0" }.
+      to raise_error(Ethon::Errors::InvalidValue, /url/)
+
+    expect(easy.curlu).to be(url)
+    expect(easy.url).to be_nil
+    expect(easy.perform).to eq(:ok)
+    expect(easy.response_body).to include('"PATH_INFO":"/"')
+  end
+
   it "rejects a URL handle created before fork" do
     allow(url).to receive(:check_pid!).and_raise(Ethon::Errors::ForkSafety.new)
 
