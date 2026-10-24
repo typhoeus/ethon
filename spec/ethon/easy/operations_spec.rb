@@ -122,6 +122,25 @@ describe Ethon::Easy::Operations do
       expect(easy.instance_variable_get(:@handle)).to be_nil
       expect { easy.cleanup }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
     end
+
+    it "releases native-backed state" do
+      easy.url = "http://localhost:3001/"
+      easy.postfields = "body"
+      easy.set_read_callback("body")
+      easy.headers = { "X-Test" => "yes" }
+      easy.errorbuffer = true
+      easy.response_body = "response"
+
+      easy.cleanup
+
+      expect(easy.instance_variable_get(:@postfields)).to be_nil
+      expect(easy.instance_variable_get(:@header_list)).to be_nil
+      expect(easy.instance_variable_get(:@read_callback)).to be_nil
+      expect(easy.instance_variable_get(:@request_body)).to be_nil
+      expect(easy.instance_variable_get(:@procs)).to be_nil
+      expect(easy.instance_variable_get(:@error_buffer)).to be_nil
+      expect(easy.response_body).to eq("response")
+    end
   end
 
   describe "multi ownership" do

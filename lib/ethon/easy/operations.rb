@@ -88,6 +88,7 @@ module Ethon
           begin
             handle_to_free.free
           ensure
+            clear_native_state
             @handle = nil
             @cleaned_up = true
           end
@@ -110,6 +111,27 @@ module Ethon
       end
 
       private
+
+      # Drop references to native data and callbacks once the handle is gone.
+      def clear_native_state
+        @body_write_callback = nil
+        @header_write_callback = nil
+        @debug_callback = nil
+        @progress_callback = nil
+        @read_callback = nil
+        @request_body = nil
+        @request_body_start = nil
+        @postfields = nil
+        @header_list = nil
+        @multipart_form = nil
+        @mime = nil
+        @curlu = nil
+        @blobs = nil
+        @procs = nil
+        @share = nil
+        @error_buffer = nil
+        @error_buffer_enabled = nil
+      end
 
       def ensure_not_performing!
         if @completing
