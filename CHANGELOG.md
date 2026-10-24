@@ -6,6 +6,12 @@
 
 ### Behavior changes
 
+* Verbose debug output is written through `Ethon.logger` at the debug level
+  instead of directly to stdout, so request and response headers no longer
+  bypass the application's logging configuration. Set
+  `Ethon.logger.level = Logger::DEBUG` to keep seeing the messages; response
+  body data is not logged.
+  ([#390](https://github.com/typhoeus/ethon/pull/390))
 * `require 'ethon'` no longer loads mime-types: the registry is loaded on the
   first file upload instead, saving about 2.4 MB and 100 ms per process. Code
   relying on ethon to load `MIME::Types` must now require it itself.
@@ -197,6 +203,33 @@ is unavailable; introspection helpers return `nil` or an empty array.
   close failure leaves the handle usable instead of half-reset.
 * `Easy#complete` rejects reentrant calls from its own `on_headers` or
   `on_complete` callbacks instead of recursing until the stack overflows.
+* `Multi#add` no longer opens the response file, resets the transfer state, and
+  clears callback errors before libcurl accepted the handle. A failed add
+  leaves the previous response and a streamed response file untouched, rolls
+  the native attach back when preparing the response stream fails or a socket
+  or timer callback raises, and keeps a handle it cannot detach tracked so
+  `Multi#cleanup` can retry. Non-`Ethon::Easy` arguments raise `TypeError`.
+  ([#386](https://github.com/typhoeus/ethon/pull/386))
+* `Easy#dup` and `#clone` now raise `Ethon::Errors::EthonError` when the Easy
+  is still attached to a `Multi`, matching `#perform`, `#reset`, and
+  `#cleanup`. libcurl requires the source handle to be idle while it is
+  cloned, and the copy can never be part of the same multi.
+  ([#387](https://github.com/typhoeus/ethon/pull/387))
+* `Easy#share=`, `#mime=`, and `#curlu=` now raise `TypeError` for values that
+  are not the matching `Ethon::Curl` wrapper and keep the previously assigned
+  handle. Other `FFI::Pointer` values were passed to libcurl as a share, MIME,
+  or URL handle, where the wrong native layout is undefined behavior.
+  ([#388](https://github.com/typhoeus/ethon/pull/388))
+* `Curl::Url#set` and `#get` reject unknown part names and flags with
+  `Ethon::Errors::InvalidValue` instead of FFI's `ArgumentError`, and values
+  containing a NUL byte now raise `Ethon::Errors::InvalidValue` instead of
+  silently truncating the URL passed to libcurl. Other values are coerced with
+  `to_s`, and `nil` still clears a part.
+  ([#391](https://github.com/typhoeus/ethon/pull/391))
+* `Multi#easy_handles` returns a frozen snapshot instead of the mutable array
+  the multi uses for its bookkeeping. Modifying the returned array previously
+  desynchronized the Ruby-side stack from the handles libcurl had attached.
+  ([#392](https://github.com/typhoeus/ethon/pull/392))
 
 ## 0.19.0
 
