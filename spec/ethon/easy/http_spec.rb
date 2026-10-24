@@ -66,6 +66,16 @@ describe Ethon::Easy::Http do
         expect(action).to be_a(Ethon::Easy::Http::Custom)
         expect { action.setup(easy) }.not_to raise_error
       end
+
+      [:custom, :actionable, :postable, :putable].each do |verb|
+        it "treats #{verb} as a custom verb" do
+          action = easy.send(:fabricate, url, verb, options)
+
+          expect(action).to be_a(Ethon::Easy::Http::Custom)
+          expect(action.url).to eq(url)
+          expect { action.setup(easy) }.not_to raise_error
+        end
+      end
     end
   end
 end

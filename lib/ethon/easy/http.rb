@@ -15,6 +15,18 @@ module Ethon
     # This module contains logic about making valid HTTP requests.
     module Http
 
+      # Built-in request actions. Custom verbs must not resolve to helper
+      # modules or classes that happen to live in this namespace.
+      ACTION_CLASSES = {
+        "get" => Get,
+        "head" => Head,
+        "post" => Post,
+        "put" => Put,
+        "delete" => Delete,
+        "patch" => Patch,
+        "options" => Options
+      }.freeze
+
       # Set specified options in order to make a HTTP request.
       # Look at {Ethon::Easy::Options Options} to see what you can
       # provide in the options hash.
@@ -54,12 +66,12 @@ module Ethon
       #
       # @return [ Easy::Ethon::Actionable ] The request instance.
       def fabricate(url, action_name, options)
-        constant_name = action_name.to_s.capitalize
+        action_class = ACTION_CLASSES[action_name.to_s.downcase]
 
-        if Ethon::Easy::Http.const_defined?(constant_name, false)
-          Ethon::Easy::Http.const_get(constant_name, false).new(url, options)
+        if action_class
+          action_class.new(url, options)
         else
-          Ethon::Easy::Http::Custom.new(constant_name.upcase, url, options)
+          Ethon::Easy::Http::Custom.new(action_name.to_s.upcase, url, options)
         end
       end
 
