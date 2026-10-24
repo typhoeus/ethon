@@ -196,6 +196,13 @@ describe Ethon::Easy do
     ensure
       multi.delete(easy) if multi && multi.easy_handles.include?(easy)
     end
+
+    it "refuses to reset while performing" do
+      easy.instance_variable_set(:@performing, true)
+
+      expect { easy.reset }.
+        to raise_error(Ethon::Errors::EthonError, /performing/)
+    end
   end
 
   describe "#dup" do
@@ -223,6 +230,13 @@ describe Ethon::Easy do
       allow(Ethon::Curl).to receive(:easy_duphandle).and_return(FFI::Pointer::NULL)
 
       expect { easy.dup }.to raise_error(NoMemoryError, "curl_easy_duphandle failed")
+    end
+
+    it "refuses to duplicate while performing" do
+      easy.instance_variable_set(:@performing, true)
+
+      expect { easy.dup }.
+        to raise_error(Ethon::Errors::EthonError, /performing/)
     end
 
     it "preserves url" do

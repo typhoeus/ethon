@@ -80,6 +80,33 @@ describe Ethon::Multi::Operations do
     end
   end
 
+  describe "reentrancy" do
+    it "refuses to clean up while executing" do
+      multi.instance_variable_set(:@executing, true)
+
+      expect { multi.cleanup }.
+        to raise_error(Ethon::Errors::EthonError, /executing/)
+    end
+
+    it "refuses to perform while executing" do
+      multi.instance_variable_set(:@executing, true)
+
+      expect { multi.perform }.
+        to raise_error(Ethon::Errors::EthonError, /executing/)
+    end
+
+    it "refuses to clean up from an on_complete callback" do
+      easy.url = "http://127.0.0.1:3001/"
+      easy.on_complete { multi.cleanup }
+      multi.add(easy)
+
+      expect { multi.perform }.
+        to raise_error(Ethon::Errors::EthonError, /executing/)
+    ensure
+      multi.cleanup unless multi.instance_variable_get(:@cleaned_up)
+    end
+  end
+
   describe "#running_count" do
     context "when hydra has no easy" do
       it "returns nil" do
