@@ -160,6 +160,8 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * `Multi#dup` and `Multi#clone` now raise `TypeError` instead of returning a
   shallow copy that shares the native multi handle and easy-handle stack with
   the original.
+* `Easy#file=` validates the easy handle before opening a path, so a cleaned up
+  or fork-inherited handle cannot truncate the destination while raising.
 
 ## 0.19.0
 
