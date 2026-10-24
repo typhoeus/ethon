@@ -140,8 +140,12 @@ module Ethon
       # for as long as the handle may reference it. Retain it only once the
       # option was accepted.
       def postfields=(value)
-        Curl.set_option(:postfields, value, handle)
-        @postfields = value
+        # Retain the exact string libcurl receives. For non-String values
+        # #to_s produces a temporary that would otherwise be collected while
+        # libcurl still points at it.
+        string = value.nil? ? nil : value.to_s
+        Curl.set_option(:postfields, string, handle)
+        @postfields = string
         value
       end
 
