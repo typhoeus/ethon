@@ -64,6 +64,8 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * Split the progress callback ABI into `CURLOPT_PROGRESSFUNCTION` (`double`) and
   `CURLOPT_XFERINFOFUNCTION` (`curl_off_t`), and select it using libcurl's
   numeric version instead of string comparison.
+* Changing `escape` or `params_encoding` after a query string was built now
+  rebuilds the cached pairs and string.
 * Read callbacks now report the number of bytes actually read, handle
   short-reading IO bodies, and correctly start from an IO's current position.
 * Custom HTTP verbs that collide with top-level Ruby constants no longer

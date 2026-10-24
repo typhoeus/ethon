@@ -5,11 +5,17 @@ module Ethon
     # This module contains logic about building
     # query parameters for url or form.
     module Queryable
+      attr_reader :escape, :params_encoding
 
-      # :nodoc:
-      def self.included(base)
-        base.send(:attr_accessor, :escape)
-        base.send(:attr_accessor, :params_encoding)
+      def escape=(value)
+        @to_s = nil
+        @escape = value
+      end
+
+      def params_encoding=(value)
+        @query_pairs = nil
+        @to_s = nil
+        @params_encoding = value
       end
 
       # Loads mime-types on first use rather than when ethon is required:
