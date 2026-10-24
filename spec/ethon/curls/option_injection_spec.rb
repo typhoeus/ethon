@@ -42,6 +42,10 @@ describe "line-based libcurl options" do
       end
 
       it "accepts an ordinary value" do
+        # libcurl removed the option in 8.17.0 and now reports not_built_in.
+        skip "krblevel was removed in libcurl 8.17.0" if
+          option == :krblevel && Ethon::Curl.version_at_least?("8.17.0")
+
         expect { easy.public_send("#{option}=", "ordinary") }.not_to raise_error
       end
     end
