@@ -48,6 +48,38 @@ describe Ethon::Multi::Operations do
     end
   end
 
+  describe "#cleanup" do
+    it "removes attached easy handles" do
+      easy.url = "http://127.0.0.1:3001/"
+      multi.add(easy)
+
+      multi.cleanup
+
+      expect(multi.easy_handles).to be_empty
+      expect(easy.instance_variable_get(:@multi)).to be_nil
+    end
+
+    it "frees the native handle" do
+      multi.handle
+
+      multi.cleanup
+
+      expect { multi.handle }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+    end
+
+    it "is terminal" do
+      multi.cleanup
+
+      expect { multi.perform }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+    end
+
+    it "rejects a second cleanup" do
+      multi.cleanup
+
+      expect { multi.cleanup }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+    end
+  end
+
   describe "#running_count" do
     context "when hydra has no easy" do
       it "returns nil" do

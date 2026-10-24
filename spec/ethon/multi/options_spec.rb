@@ -9,6 +9,18 @@ describe Ethon::Multi::Options do
   end
 
   describe "callback retention" do
+    it "keeps callbacks alive until the native handle is cleaned up" do
+      callback = proc { :ok }
+      multi.socketfunction = callback
+      address = multi.handle.address
+
+      expect(Ethon::Curl::MultiHandle.callbacks[address][:socketfunction]).to be(callback)
+
+      multi.cleanup
+
+      expect(Ethon::Curl::MultiHandle.callbacks).not_to have_key(address)
+    end
+
     [:socketfunction, :timerfunction].each do |name|
       it "retains #{name}" do
         callback = proc { :ok }

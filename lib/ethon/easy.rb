@@ -297,6 +297,7 @@ module Ethon
       e.instance_variable_set(:@response_body_io, nil)
       e.instance_variable_set(:@response_body_path, nil)
       e.instance_variable_set(:@owns_response_body_io, false)
+      e.instance_variable_set(:@multi, nil)
       e.set_callbacks
       # The read callback closes over the original Easy's offset. Install a
       # fresh callback for the copy so both handles own their upload state.

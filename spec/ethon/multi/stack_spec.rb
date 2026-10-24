@@ -47,7 +47,7 @@ describe Ethon::Multi::Stack do
     end
 
     context "when a callback raises while adding" do
-      it "keeps the easy tracked" do
+      it "does not keep the easy tracked" do
         error = RuntimeError.new("callback failed")
         expect(Ethon::Curl).to receive(:multi_add_handle) do
           expect(multi.easy_handles).to include(easy)
@@ -55,11 +55,17 @@ describe Ethon::Multi::Stack do
         end
 
         expect { multi.add(easy) }.to raise_error(error)
-        expect(multi.easy_handles).to include(easy)
-        multi.easy_handles.delete(easy)
+        expect(multi.easy_handles).not_to include(easy)
       end
     end
 
+    it "records the multi on the easy" do
+      multi.add(easy)
+
+      expect(easy.instance_variable_get(:@multi)).to be(multi)
+    ensure
+      multi.delete(easy) if multi.easy_handles.include?(easy)
+    end
   end
 
   describe "#delete" do
@@ -74,6 +80,12 @@ describe Ethon::Multi::Stack do
       it "deletes easy from easy_handles" do
         multi.delete(easy)
         expect(multi.easy_handles).to_not include(easy)
+      end
+
+      it "clears the multi on the easy" do
+        multi.delete(easy)
+
+        expect(easy.instance_variable_get(:@multi)).to be_nil
       end
     end
 
@@ -99,7 +111,7 @@ describe Ethon::Multi::Stack do
     context "when a callback raises while removing" do
       before { multi.easy_handles << easy }
 
-      it "keeps the easy removed" do
+      it "keeps the easy tracked" do
         error = RuntimeError.new("callback failed")
         expect(Ethon::Curl).to receive(:multi_remove_handle) do
           expect(multi.easy_handles).to_not include(easy)
@@ -107,7 +119,8 @@ describe Ethon::Multi::Stack do
         end
 
         expect { multi.delete(easy) }.to raise_error(error)
-        expect(multi.easy_handles).to_not include(easy)
+        expect(multi.easy_handles).to include(easy)
+        multi.easy_handles.delete(easy)
       end
     end
   end

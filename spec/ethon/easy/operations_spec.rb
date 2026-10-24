@@ -101,6 +101,18 @@ describe Ethon::Easy::Operations do
     end
   end
 
+  describe "#cleanup" do
+    it "refuses to clean up while attached to a Multi" do
+      multi = Ethon::Multi.new
+      multi.add(easy)
+
+      expect { easy.cleanup }.to raise_error(Ethon::Errors::EthonError, /attached/)
+
+      multi.delete(easy)
+      expect { easy.cleanup }.not_to raise_error
+    end
+  end
+
   describe "#perform" do
     let(:url) { nil }
     let(:timeout) { nil }

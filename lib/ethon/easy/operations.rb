@@ -59,11 +59,17 @@ module Ethon
       #
       # @return the result of the free which is nil
       def cleanup
-        clear_response_body_io
-        handle.free
-      ensure
-        @handle = nil
-        @cleaned_up = true
+        if defined?(@multi) && @multi
+          raise Errors::EthonError, "Easy is still attached to a Multi; remove it first"
+        end
+
+        begin
+          clear_response_body_io
+          handle.free
+        ensure
+          @handle = nil
+          @cleaned_up = true
+        end
       end
 
       # Prepare the easy. Options, headers and callbacks
