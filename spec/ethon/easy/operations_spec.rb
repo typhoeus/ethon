@@ -93,6 +93,61 @@ describe Ethon::Easy::Operations do
   end
 
 
+  describe "#handle=" do
+    it "wraps a raw pointer in an owned easy handle" do
+      pointer = Ethon::Curl.easy_init
+
+      easy.handle = pointer
+
+      expect(easy.handle).to be_a(Ethon::Curl::EasyHandle)
+      expect(easy.handle.address).to eq(pointer.address)
+    end
+
+    it "takes ownership of the assigned pointer" do
+      pointer = Ethon::Curl.easy_init
+      address = pointer.address
+
+      easy.handle = pointer
+      expect(Ethon::Curl::OwnedPointer.owners).to have_key(address)
+
+      easy.cleanup
+
+      expect(Ethon::Curl::OwnedPointer.owners).not_to have_key(address)
+    end
+
+    it "keeps an already owned handle as-is" do
+      handle = easy.handle
+
+      easy.handle = handle
+
+      expect(easy.handle).to be(handle)
+    end
+
+    it "clears the handle when assigning nil" do
+      old_handle = easy.handle
+
+      easy.handle = nil
+
+      expect(easy.handle).not_to be(old_handle)
+      expect(easy.handle).to be_a(Ethon::Curl::EasyHandle)
+    end
+
+    it "rejects a null pointer" do
+      expect { easy.handle = FFI::Pointer::NULL }.
+        to raise_error(ArgumentError, /null easy handle/)
+    end
+
+    it "rejects other owned pointer types" do
+      expect { easy.handle = Ethon::Curl::Share.new }.
+        to raise_error(TypeError, /expected an easy handle/)
+    end
+
+    it "rejects values that are not pointers" do
+      expect { easy.handle = Object.new }.
+        to raise_error(TypeError, /easy handle pointer/)
+    end
+  end
+
   describe "#prepare" do
     it "warns and does nothing" do
       expect(Ethon.logger).to receive(:warn).with(/no longer necessary/)
