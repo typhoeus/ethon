@@ -49,6 +49,13 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `Multi#handle` and `Multi#cleanup` now enforce fork safety before allocating
+  or releasing a native multi handle, and `Easy#reset`/`#perform` validate the
+  handle before clearing response state, so a cleaned up or inherited handle
+  cannot truncate a response file or discard the previous result while raising.
+* `Easy#cleanup` frees the native handle even when closing a streamed response
+  fails, and `Multi#add` closes an open response stream when the easy handle is
+  unusable or the native add fails.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
   describing state the handle never received.

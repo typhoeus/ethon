@@ -46,6 +46,32 @@ describe Ethon::Multi::Operations do
       writer.close if writer && !writer.closed?
       Process.wait(pid) if pid
     end
+
+    it "rejects creating a handle after a fork" do
+      # Creating the Multi initializes libcurl in the parent, but this Multi
+      # does not allocate its native handle until #handle is called.
+      expect(multi.instance_variable_get(:@handle)).to be_nil
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          multi.handle
+        rescue Exception => e
+          writer.write(e.class.name)
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("Ethon::Errors::ForkSafety")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
   end
 
   describe "#cleanup" do
@@ -77,6 +103,30 @@ describe Ethon::Multi::Operations do
       multi.cleanup
 
       expect { multi.cleanup }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+    end
+
+    it "rejects cleaning up a handle inherited across a fork" do
+      multi.handle
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          multi.cleanup
+        rescue Exception => e
+          writer.write(e.class.name)
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("Ethon::Errors::ForkSafety")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
     end
   end
 

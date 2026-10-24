@@ -14,6 +14,9 @@ module Ethon
         raise Errors::EthonError, "Easy has been cleaned up" if @cleaned_up
 
         handle = @handle ||= begin
+          # Enforce fork safety before creating a handle for an Easy whose
+          # native handle was released or never created.
+          Curl.check_pid!
           pointer = Curl.easy_init
           raise NoMemoryError, "curl_easy_init failed" if pointer.null?
           Curl::EasyHandle.new(pointer)
@@ -38,6 +41,10 @@ module Ethon
         ensure_not_performing!
         # curl_easy_perform must not drive a handle that is owned by a multi.
         ensure_not_attached_to_multi!
+        # Touch the handle before changing transfer state so a cleaned up or
+        # forked handle cannot truncate a response file or reset the previous
+        # result while raising.
+        handle
 
         prepare_response_body_io
         reset_transfer_state
@@ -71,12 +78,19 @@ module Ethon
         ensure_not_performing!
         ensure_not_attached_to_multi!
 
+        # Resolve the handle first: cleanup must not clear the response body if
+        # the handle is unusable (cleaned up or inherited across a fork).
+        handle_to_free = handle
         begin
           clear_response_body_io
-          handle.free
         ensure
-          @handle = nil
-          @cleaned_up = true
+          # Free the native handle even when closing the response body fails.
+          begin
+            handle_to_free.free
+          ensure
+            @handle = nil
+            @cleaned_up = true
+          end
         end
       end
 

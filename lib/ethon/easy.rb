@@ -253,6 +253,9 @@ module Ethon
     def reset
       ensure_not_attached_to_multi!
       ensure_not_performing!
+      # Check the handle before clearing state so reset is a no-op when the
+      # handle was cleaned up or inherited across a fork.
+      handle
 
       @postfields = nil
       @url = nil

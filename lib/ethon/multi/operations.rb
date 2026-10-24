@@ -17,6 +17,9 @@ module Ethon
         ensure_not_cleaned_up!
 
         handle = @handle ||= begin
+          # Enforce fork safety before creating a handle for a Multi that was
+          # constructed before the fork but never touched.
+          Curl.check_pid!
           pointer = Curl.multi_init
           raise NoMemoryError, "curl_multi_init failed" if pointer.null?
           Curl::MultiHandle.new(pointer)
@@ -34,6 +37,8 @@ module Ethon
       def cleanup
         ensure_not_cleaned_up!
         ensure_not_executing!
+        # A handle created before a fork must not be released in the child.
+        @handle.check_pid! if @handle
 
         begin
           easy_handles.dup.each { |easy| delete(easy) }
