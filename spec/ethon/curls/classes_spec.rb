@@ -1,6 +1,30 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
+describe Ethon::Curl::Slist do
+  describe ".build" do
+    it "returns nil without lines" do
+      expect(described_class.build([])).to be_nil
+    end
+
+    it "builds a list from lines" do
+      list = described_class.build(["X-First: 1", "X-Second: 2"])
+
+      expect(described_class.new(list).to_a).
+        to eq(["X-First: 1", "X-Second: 2"])
+    end
+
+    it "frees the previous list and raises when an append fails" do
+      first = FFI::MemoryPointer.new(:pointer)
+      allow(Ethon::Curl).to receive(:slist_append).and_return(first, FFI::Pointer::NULL)
+      expect(Ethon::Curl).to receive(:slist_free_all).with(first)
+
+      expect { described_class.build(["one", "two"]) }.
+        to raise_error(NoMemoryError, "curl_slist_append failed")
+    end
+  end
+end
+
 describe Ethon::Curl::EasyHandle do
   describe ".release" do
     let(:pointer) { double(:address => 4242) }

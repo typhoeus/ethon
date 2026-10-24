@@ -73,6 +73,27 @@ module Ethon
     end
 
     class Slist < OwnedPointer
+      # Build a curl_slist from lines. Returns the raw pointer, which is owned
+      # by the caller; nil when there are no lines.
+      def self.build(lines)
+        list = nil
+        begin
+          lines.each do |line|
+            appended = Curl.slist_append(list, line.to_s)
+            # libcurl returns NULL (not nil) and leaves the old list intact.
+            if appended.nil? || appended.null?
+              raise NoMemoryError, "curl_slist_append failed"
+            end
+
+            list = appended
+          end
+          list
+        rescue Exception
+          Curl.slist_free_all(list) if list
+          raise
+        end
+      end
+
       def to_a
         SlistNode.to_a(self)
       end
