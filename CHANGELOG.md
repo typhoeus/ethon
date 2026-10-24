@@ -49,6 +49,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* HTTP helper actions are resolved through an explicit class map, so custom
+  verbs that collide with `Ethon::Easy::Http` constants such as `:custom` or
+  `:actionable` are sent as custom requests instead of raising.
 * `Easy#url=` and `Easy#postfields=` only update the Ruby-side value after
   libcurl accepts the option, so a rejected value cannot leave the accessors
   describing state the handle never received.
