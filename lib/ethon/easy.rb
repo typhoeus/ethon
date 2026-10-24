@@ -287,6 +287,9 @@ module Ethon
     #   the current handle will be set on duplicated handle.
     def dup
       ensure_not_performing!
+      unless Curl.respond_to?(:easy_duphandle)
+        raise NotImplementedError, "curl_easy_duphandle is not supported by this libcurl"
+      end
 
       e = super
       duplicated_handle = Curl.easy_duphandle(handle)

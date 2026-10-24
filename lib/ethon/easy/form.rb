@@ -65,6 +65,11 @@ module Ethon
       # @example Add form to libcurl.
       #   form.materialize
       def materialize
+        unless Curl.respond_to?(:formadd)
+          raise NotImplementedError,
+            "curl_formadd is not supported by this libcurl; use the MIME API instead"
+        end
+
         query_pairs.each { |pair| form_add(pair.first.to_s, pair.last) }
       end
 

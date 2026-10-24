@@ -87,4 +87,33 @@ describe "libcurl version introspection" do
     expect(Ethon::Curl.string_array(nil)).to eq([])
     expect(Ethon::Curl.string_array(FFI::Pointer::NULL)).to eq([])
   end
+
+  it "reports whether an option is available" do
+    expect(Ethon::Curl.supports_option?(:verbose)).to be(true)
+    expect(Ethon::Curl.supports_option?(:verbose, :multi)).to be(false)
+    expect(Ethon::Curl.supports_option?(:not_an_option)).to be(false)
+  end
+
+  it "reports options missing from an older libcurl" do
+    skip "curl_easy_option_by_id is unavailable" unless Ethon::Curl.respond_to?(:easy_option_by_id)
+
+    missing = Ethon::Curl.easy_options(nil).keys.find do |option|
+      !Ethon::Curl.supports_option?(option)
+    end
+    skip "the loaded libcurl supports every option Ethon knows" unless missing
+
+    expect(Ethon::Curl.supports_option?(missing)).to be(false)
+  end
+
+  it "resolves option aliases by their canonical id" do
+    skip "curl_easy_option_by_id is unavailable" unless Ethon::Curl.respond_to?(:easy_option_by_id)
+
+    expect(Ethon::Curl.supports_option?(:unix_socket)).to be(true)
+    expect(Ethon::Curl.supports_option?(:pinned_public_key)).to be(true)
+  end
+
+  it "compares the runtime version" do
+    expect(Ethon::Curl.version_at_least?("7.0.0")).to be(true)
+    expect(Ethon::Curl.version_at_least?("999.0.0")).to be(false)
+  end
 end

@@ -20,6 +20,7 @@ jobs:
     env:
       BUNDLE_WITHOUT: perf
       CURL_VERSION: 8.23.0
+      OLD_CURL_VERSION: 7.88.1
     strategy:
       fail-fast: false
       matrix:
@@ -32,6 +33,7 @@ jobs:
         - { os: ubuntu, ruby-version: '3.3' }
         - { os: ubuntu, ruby-version: '3.4' }
         - { os: ubuntu, ruby-version: '4.0', latest_curl: true }
+        - { os: ubuntu, ruby-version: '3.2', old_curl: true }
         - { os: macos, ruby-version: '2.6' }
         - { os: macos, ruby-version: '3.2' }
         - { os: macos, ruby-version: '4.0' }
@@ -66,5 +68,29 @@ jobs:
     - name: Verify latest curl
       if: ${{ matrix.latest_curl && github.event_name == 'push' }}
       run: bundle exec ruby -Ilib -e 'require "ethon"; abort Ethon::Curl.version unless Ethon::Curl.version.start_with?("libcurl/#{ENV.fetch("CURL_VERSION")}")'
+    - name: Build older curl
+      if: ${{ matrix.old_curl }}
+      run: |
+        curl --fail --location --output curl.tar.xz "https://curl.se/download/curl-${OLD_CURL_VERSION}.tar.xz"
+        tar --extract --file curl.tar.xz
+        mkdir curl-build
+        cd curl-build
+        "../curl-${OLD_CURL_VERSION}/configure" \
+          --prefix="${RUNNER_TEMP}/curl" \
+          --disable-static \
+          --enable-shared \
+          --disable-ldap \
+          --without-brotli \
+          --without-libidn2 \
+          --without-libpsl \
+          --without-libssh2 \
+          --without-zstd \
+          --with-openssl
+        make --jobs="$(nproc)"
+        make install
+        printf 'ETHON_CURL_LIBS=%s/curl/lib/libcurl.so\n' "${RUNNER_TEMP}" >> "${GITHUB_ENV}"
+    - name: Verify older curl
+      if: ${{ matrix.old_curl }}
+      run: bundle exec ruby -Ilib -e 'require "ethon"; abort Ethon::Curl.version unless Ethon::Curl.version.start_with?("libcurl/#{ENV.fetch("OLD_CURL_VERSION")}")'
     - name: Run tests
       run: bundle exec rake

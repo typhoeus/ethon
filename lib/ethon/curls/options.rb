@@ -110,7 +110,18 @@ module Ethon
             raise Errors::InvalidValue.new(option, value)
           end
         end
-        send(FUNCS[type], handle, opthash[option][:opt], va_type, value)
+        result = send(FUNCS[type], handle, opthash[option][:opt], va_type, value)
+
+        # Silently ignored options are a correctness bug: on an older libcurl
+        # the request would run with a different configuration than requested.
+        case result
+        when :ok
+          result
+        when :unknown_option
+          raise Errors::UnsupportedOption.new(option)
+        else
+          raise Errors::SetOption.new(option, result)
+        end
       end
 
       def named_option_value(option, value, values, seen = [])

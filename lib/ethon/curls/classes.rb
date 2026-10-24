@@ -99,7 +99,7 @@ module Ethon
 
     class FormData < OwnedPointer
       def self.native_release(pointer)
-        Curl.formfree(pointer)
+        Curl.formfree(pointer) if Curl.respond_to?(:formfree)
       end
     end
 

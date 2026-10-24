@@ -132,6 +132,41 @@ When a share handle is used from more than one thread, set
 `Share#lockfunction=` and `Share#unlockfunction=` so libcurl can synchronize
 access to the shared data.
 
+## Older libcurl versions
+
+Ethon attaches functions that may not exist in the loaded libcurl conditionally.
+Calling a wrapper for a missing function raises `NotImplementedError`, and the
+introspection helpers return `nil` or `[]`. This keeps the gem loadable with
+libcurl versions that predate the URL, MIME, share, or structured-header APIs.
+
+libcurl silently ignores options it does not know, which would make a request
+run with a different configuration than requested. Ethon therefore raises
+`Ethon::Errors::UnsupportedOption` when `curl_easy_setopt` reports
+`CURLE_UNKNOWN_OPTION`, and `Ethon::Errors::SetOption` for other rejected
+values. Guard optional settings when you support old runtimes:
+
+```ruby
+easy.tcp_keepcnt = 30 if Ethon::Curl.supports_option?(:tcp_keepcnt)
+easy.httpsig_key = key if Ethon::Curl.version_at_least?("8.23.0")
+```
+
+`Curl.supports_option?` asks libcurl's own option table on 7.73.0 and newer.
+Older versions cannot answer that question, so it returns `true` for every
+option Ethon knows; setting an unsupported option still raises.
+
+The deprecated form API is attached only when the loaded libcurl exports it,
+because libcurl can be built with `--disable-form-api`. Multipart bodies use the
+MIME API when available and fall back to the form API otherwise.
+
+Point `ETHON_CURL_LIBS` at a specific build to test against it:
+
+```sh
+ETHON_CURL_LIBS=/opt/curl/lib/libcurl.so bundle exec rake
+```
+
+CI builds libcurl 7.88 in addition to the system package and 8.23 to catch
+accidental use of newer symbols and options.
+
 ## Thread and fork safety
 
 Ethon can be used from multiple threads, but it does not synchronize access to
