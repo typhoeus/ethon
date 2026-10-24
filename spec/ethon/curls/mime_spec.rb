@@ -46,7 +46,10 @@ describe Ethon::Curl::Mime do
     end
 
     it "sets an encoder" do
-      expect(part.encoder = "base64").to eq("base64")
+      expect(Ethon::Curl).to receive(:mime_encoder).
+        with(part.handle, "base64").and_return(:ok)
+
+      part.encoder = "base64"
     end
 
     it "raises when a curl_mime_* call fails" do
