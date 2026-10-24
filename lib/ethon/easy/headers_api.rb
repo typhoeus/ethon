@@ -54,9 +54,15 @@ module Ethon
       def header_origin(origin)
         case origin
         when Array
-          origin.inject(0) { |mask, item| mask | Curl::HeaderOrigin[item] }
+          origin.inject(0) do |mask, item|
+            value = Curl::HeaderOrigin[item]
+            raise Errors::InvalidValue.new(:header_origin, item) unless value && value != 0
+            mask | value
+          end
         when Symbol
-          Curl::HeaderOrigin[origin]
+          value = Curl::HeaderOrigin[origin]
+          raise Errors::InvalidValue.new(:header_origin, origin) unless value && value != 0
+          value
         else
           origin
         end

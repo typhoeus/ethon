@@ -21,16 +21,17 @@ module Ethon
       #   easy.headers = {'User-Agent' => 'ethon'}
       #
       # @param [ Hash ] headers The headers.
-      def headers=(headers)
-        headers ||= {}
-        header_list = nil
-        headers.each do |key, value|
-          header_list = Curl.slist_append(header_list, compose_header(key, value))
+      def headers=(value)
+        list = build_slist(value || {})
+        begin
+          Curl.set_option(:httpheader, list, handle)
+        rescue Exception
+          Curl.slist_free_all(list) if list
+          raise
         end
-        Curl.set_option(:httpheader, header_list, handle)
 
-        @headers = headers
-        @header_list = header_list && Curl::Slist.new(header_list)
+        @headers = value || {}
+        @header_list = list && Curl::Slist.new(list)
       end
       alias request_headers= headers=
 
@@ -68,6 +69,28 @@ module Ethon
           raise Errors::InvalidValue.new(:headers, header)
         end
         header
+      end
+
+      private
+
+      # Build a curl_slist for the headers. A partial list is unreachable from
+      # Ruby and must be released when a header is invalid or allocation fails.
+      def build_slist(headers)
+        list = nil
+        headers.each do |key, value|
+          previous = list
+          list = Curl.slist_append(list, compose_header(key, value))
+          next unless list.nil?
+
+          # curl_slist_append returns NULL on allocation failure and leaves
+          # the previous list untouched.
+          Curl.slist_free_all(previous) if previous
+          raise NoMemoryError, "curl_slist_append failed"
+        end
+        list
+      rescue Exception
+        Curl.slist_free_all(list) if list
+        raise
       end
     end
   end
