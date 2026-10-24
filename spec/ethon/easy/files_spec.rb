@@ -130,4 +130,31 @@ describe Ethon::Easy::Files do
 
     expect { easy.perform }.to raise_error(IOError, "disk full")
   end
+
+  it "does not truncate a path when the handle has been cleaned up" do
+    Tempfile.create do |file|
+      file.write("existing content")
+      file.flush
+      path = file.path
+
+      easy.cleanup
+
+      expect { easy.file = path }.
+        to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+      expect(File.read(path)).to eq("existing content")
+    end
+  end
+
+  it "does not truncate a path when the handle was inherited across a fork" do
+    Tempfile.create do |file|
+      file.write("existing content")
+      file.flush
+      path = file.path
+
+      allow(easy).to receive(:handle).and_raise(Ethon::Errors::ForkSafety.new)
+
+      expect { easy.file = path }.to raise_error(Ethon::Errors::ForkSafety)
+      expect(File.read(path)).to eq("existing content")
+    end
+  end
 end
