@@ -31,6 +31,29 @@ describe Ethon::Easy::Header do
       end
     end
 
+    context "when a later header is invalid" do
+      it "frees the partially built list" do
+        pointer = FFI::MemoryPointer.new(:int)
+        allow(Ethon::Curl).to receive(:slist_append).and_return(pointer)
+        expect(Ethon::Curl).to receive(:slist_free_all).with(pointer)
+
+        expect {
+          easy.headers = { "X-Ok" => "1", "X-Bad" => "1\r\nInjected: yes" }
+        }.to raise_error(Ethon::Errors::InvalidValue, /headers/)
+      end
+    end
+
+    context "when curl_slist_append fails" do
+      it "frees the previous list and raises" do
+        pointer = FFI::MemoryPointer.new(:int)
+        allow(Ethon::Curl).to receive(:slist_append).and_return(pointer, nil)
+        expect(Ethon::Curl).to receive(:slist_free_all).with(pointer)
+
+        expect { easy.headers = { "A" => "1", "B" => "2" } }.
+          to raise_error(NoMemoryError, /curl_slist_append/)
+      end
+    end
+
     context "when a value contains a bare LF" do
       let(:headers) { { 'X-Test' => "1\nX-Injected: yes" } }
 
