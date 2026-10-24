@@ -148,5 +148,40 @@ describe Ethon::Easy::ResponseCallbacks do
         expect{ easy.body("the chunk") }.to_not raise_error
       end
     end
+
+    context "when no on_body block was ever given" do
+      it "returns :unyielded" do
+        expect(Ethon::Easy.new.body("the chunk")).to eq(:unyielded)
+      end
+    end
+
+    context "when the callback list is empty" do
+      before { easy.on_body.clear }
+
+      it "returns :unyielded" do
+        expect(easy.body("the chunk")).to eq(:unyielded)
+      end
+    end
+  end
+
+  describe "response body buffering" do
+    it "still buffers the body when #on_body is only read" do
+      easy.url = "http://localhost:3001/"
+
+      easy.on_body
+      easy.perform
+
+      expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
+    end
+
+    it "still buffers the body after the on_body list is cleared" do
+      easy.url = "http://localhost:3001/"
+
+      easy.on_body { |_chunk| }
+      easy.on_body.clear
+      easy.perform
+
+      expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
+    end
   end
 end

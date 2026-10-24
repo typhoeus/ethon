@@ -75,6 +75,8 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * `Easy#reset` now clears multipart state, request headers, retained read
   callbacks, and pending callback errors. `Easy#request_headers` exposes the
   request headers without colliding with the `on_headers` callback.
+* Reading `#on_body` without a block, or after clearing the callback list, no
+  longer disables response body buffering.
 * Multi no longer mutates the caller's options, validates `execution_mode`, and
   no longer raises when `running_count` is nil. Finalizers no longer emit
   `ThreadError`/`SignalException` warnings.
