@@ -4,6 +4,15 @@ require 'spec_helper'
 describe Ethon::Easy::Informations do
   let(:easy) { Ethon::Easy.new }
 
+  [:posttransfer_time_t, :earlydata_sent_t, :httpauth_used, :proxyauth_used, :size_delivered].each do |info|
+    describe "##{info}" do
+      it "is exposed on Easy and Mirror" do
+        expect(easy).to respond_to(info)
+        expect(easy.mirror).to respond_to(info)
+      end
+    end
+  end
+
   before do
     easy.url = "http://localhost:3001"
     easy.perform

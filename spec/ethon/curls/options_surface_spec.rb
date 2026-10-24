@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe "curl 8.7.1 option surface" do
+describe "recent libcurl option surface" do
   TYPE_BASE = {
     :long => 0,
     :objectpoint => 10000,
@@ -101,7 +101,15 @@ describe "curl 8.7.1 option surface" do
     :upkeep_interval_ms => [:int, 281],
     :upload_buffersize => [:int, 280],
     :ws_options => [:bitmask, 320],
-    :xoauth2_bearer => [:string, 220]
+    :xoauth2_bearer => [:string, 220],
+    :ech => [:string, 325],
+    :tcp_keepcnt => [:int, 326],
+    :upload_flags => [:bitmask, 327],
+    :ssl_signature_algorithms => [:string, 328],
+    :httpsig_algorithm => [:enum, 329],
+    :httpsig_key => [:string, 330],
+    :httpsig_keyid => [:string, 331],
+    :httpsig_headers => [:string, 332]
   }.freeze
 
   NEW_OPTIONS.each do |name, (type, number)|

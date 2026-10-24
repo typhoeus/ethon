@@ -91,6 +91,10 @@ is unavailable; introspection helpers return `nil` or an empty array.
   no longer raises when `running_count` is nil. Finalizers no longer emit
   `ThreadError`/`SignalException` warnings.
 * Windows `fd_set` now uses pointer-sized socket entries.
+* Added libcurl 8.23 options (`CURLOPT_ECH`, `CURLOPT_TCP_KEEPCNT`,
+  `CURLOPT_UPLOAD_FLAGS`, `CURLOPT_SSL_SIGNATURE_ALGORITHMS`, and the
+  `CURLOPT_HTTPSIG_*` family), the newer `CURLINFO_*` entries, and
+  `CURLUE_BACKSLASH`/`CURLU_GET_EMPTY`/`CURLU_NO_GUESS_SCHEME`.
 * Fixed the test server's keep-alive limits, cutting the suite from ~35s to
   ~5s, and added coverage for the option table, callbacks, reset behavior,
   Multi message handling, and libcurl info ownership.

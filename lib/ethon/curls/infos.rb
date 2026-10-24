@@ -79,6 +79,11 @@ module Ethon
           :conn_id =>                info_types[:off_t]  + 64,
           :queue_time_t =>           info_types[:off_t]  + 65,
           :used_proxy =>             info_types[:long]   + 66,
+          :posttransfer_time_t =>    info_types[:off_t]  + 67,
+          :earlydata_sent_t =>       info_types[:off_t]  + 68,
+          :httpauth_used =>          info_types[:long]   + 69,
+          :proxyauth_used =>         info_types[:long]   + 70,
+          :size_delivered =>         info_types[:off_t]  + 71,
           :activesocket =>           info_types[:socket] + 44,
           :tls_ssl_ptr =>            info_types[:ptr]    + 45,
           :effective_url =>          info_types[:string] + 1,
@@ -123,7 +128,7 @@ module Ethon
           :primary_port =>           info_types[:long]   + 40,
           :local_ip =>               info_types[:string] + 41,
           :local_port =>             info_types[:long]   + 42,
-          :last =>66
+          :last =>71
         }
       end
 
