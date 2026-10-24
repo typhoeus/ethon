@@ -250,6 +250,7 @@ module Ethon
     #   easy.reset
     def reset
       ensure_not_attached_to_multi!
+      ensure_not_performing!
 
       @postfields = nil
       @url = nil
@@ -285,6 +286,8 @@ module Ethon
     # Clones libcurl session handle. This means that all options that is set in
     #   the current handle will be set on duplicated handle.
     def dup
+      ensure_not_performing!
+
       e = super
       duplicated_handle = Curl.easy_duphandle(handle)
       raise NoMemoryError, "curl_easy_duphandle failed" if duplicated_handle.null?

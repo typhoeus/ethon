@@ -113,6 +113,43 @@ describe Ethon::Easy::Operations do
     end
   end
 
+  describe "reentrancy" do
+    it "refuses to clean up while performing" do
+      easy.instance_variable_set(:@performing, true)
+
+      expect { easy.cleanup }.
+        to raise_error(Ethon::Errors::EthonError, /performing/)
+    end
+
+    it "refuses to perform while already performing" do
+      easy.instance_variable_set(:@performing, true)
+
+      expect { easy.perform }.
+        to raise_error(Ethon::Errors::EthonError, /performing/)
+    end
+
+    it "refuses to clean up from a body callback" do
+      easy.url = "http://localhost:3001/"
+      easy.on_body { easy.cleanup }
+
+      expect { easy.perform }.
+        to raise_error(Ethon::Errors::EthonError, /performing/)
+      expect(easy.return_code).to eq(:write_error)
+    ensure
+      easy.cleanup
+    end
+
+    it "refuses to clean up from an on_complete callback" do
+      easy.url = "http://localhost:3001/"
+      easy.on_complete { easy.cleanup }
+
+      expect { easy.perform }.
+        to raise_error(Ethon::Errors::EthonError, /completing/)
+    ensure
+      easy.cleanup
+    end
+  end
+
   describe "#perform" do
     let(:url) { nil }
     let(:timeout) { nil }

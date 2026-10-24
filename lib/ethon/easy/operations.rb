@@ -35,18 +35,25 @@ module Ethon
       #
       # @return [ Integer ] The return code.
       def perform
+        ensure_not_performing!
+
         prepare_response_body_io
         reset_transfer_state
         clear_callback_error
-        @return_code = Curl.easy_perform(handle)
-        if Ethon.logger.debug?
-          Ethon.logger.debug { "ETHON: performed #{log_inspect}" }
+        @performing = true
+
+        begin
+          @return_code = Curl.easy_perform(handle)
+          if Ethon.logger.debug?
+            Ethon.logger.debug { "ETHON: performed #{log_inspect}" }
+          end
+          complete
+          raise_callback_error
+          @return_code
+        ensure
+          @performing = false
+          finish_response_body_io
         end
-        complete
-        raise_callback_error
-        @return_code
-      ensure
-        finish_response_body_io
       end
 
       # Clean up the easy.
@@ -59,6 +66,7 @@ module Ethon
       #
       # @return the result of the free which is nil
       def cleanup
+        ensure_not_performing!
         ensure_not_attached_to_multi!
 
         begin
@@ -86,6 +94,15 @@ module Ethon
       end
 
       private
+
+      def ensure_not_performing!
+        if @completing
+          raise Errors::EthonError, "Easy is currently completing; wait for the callbacks to finish"
+        end
+        if @performing
+          raise Errors::EthonError, "Easy is currently performing; wait for the transfer to finish"
+        end
+      end
 
       def ensure_not_attached_to_multi!
         return unless defined?(@multi) && @multi

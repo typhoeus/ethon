@@ -184,4 +184,27 @@ describe Ethon::Multi do
       end
     end
   end
+
+  describe "#perform" do
+    it "runs several delayed requests concurrently" do
+      multi = Ethon::Multi.new
+      handles = 10.times.map do
+        easy = Ethon::Easy.new(:url => "http://127.0.0.1:3001/?delay=0.2")
+        multi.add(easy)
+        easy
+      end
+
+      start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      multi.perform
+      duration = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start
+
+      expect(duration).to be < 1.0
+      expect(multi.ongoing?).to eq(false)
+      handles.each do |handle|
+        expect(handle.response_code).to eq(200)
+      end
+    ensure
+      multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
+    end
+  end
 end

@@ -85,6 +85,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
   request headers without colliding with the `on_headers` callback.
 * `Easy#reset` now refuses to reset a handle that is still attached to a
   `Multi`, matching `Easy#cleanup`.
+* `Easy#perform`/`#reset`/`#cleanup`/`#dup` and `Multi#perform`/
+  `#socket_action`/`#cleanup` now reject reentrant calls made from callbacks
+  while the handle is still active.
 * Reading `#on_body` without a block, or after clearing the callback list, no
   longer disables response body buffering.
 * Multi no longer mutates the caller's options, validates `execution_mode`, and

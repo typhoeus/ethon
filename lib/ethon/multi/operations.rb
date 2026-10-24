@@ -33,6 +33,7 @@ module Ethon
       # @return [ nil ]
       def cleanup
         ensure_not_cleaned_up!
+        ensure_not_executing!
 
         begin
           easy_handles.dup.each { |easy| delete(easy) }
@@ -85,21 +86,27 @@ module Ethon
       def perform
         ensure_execution_mode(:perform)
         ensure_not_cleaned_up!
+        ensure_not_executing!
 
         Ethon.logger.debug(STARTED_MULTI)
-        while ongoing?
-          run
-          timeout = get_timeout
-          next if timeout == 0
-          case @wait_strategy
-          when :poll
-            poll(timeout)
-          when :wait
-            wait(timeout)
-          else
-            reset_fds
-            set_fds(timeout)
+        @executing = true
+        begin
+          while ongoing?
+            run
+            timeout = get_timeout
+            next if timeout == 0
+            case @wait_strategy
+            when :poll
+              poll(timeout)
+            when :wait
+              wait(timeout)
+            else
+              reset_fds
+              set_fds(timeout)
+            end
           end
+        ensure
+          @executing = false
         end
         Ethon.logger.debug(PERFORMED_MULTI)
         nil
@@ -187,6 +194,7 @@ module Ethon
       def socket_action(io = nil, readiness = 0)
         ensure_execution_mode(:socket_action)
         ensure_not_cleaned_up!
+        ensure_not_executing!
 
         fd = if io.nil?
           ::Ethon::Curl::SOCKET_TIMEOUT
@@ -196,12 +204,17 @@ module Ethon
           io.fileno
         end
 
-        code = Curl.multi_socket_action(handle, fd, readiness, @running_count_pointer)
-        @running_count = @running_count_pointer.read_int
+        @executing = true
+        begin
+          code = Curl.multi_socket_action(handle, fd, readiness, @running_count_pointer)
+          @running_count = @running_count_pointer.read_int
 
-        check
+          check
 
-        code
+          code
+        ensure
+          @executing = false
+        end
       end
 
       # Return whether the multi still contains requests or not.
@@ -273,6 +286,12 @@ module Ethon
       def ensure_not_cleaned_up!
         return unless @cleaned_up
         raise Errors::EthonError, "Multi has been cleaned up"
+      end
+
+      def ensure_not_executing!
+        return unless @executing
+
+        raise Errors::EthonError, "Multi is currently executing; wait for it to finish"
       end
 
       # Get timeout.
