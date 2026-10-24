@@ -65,6 +65,31 @@ describe Ethon::Curl::Mime do
         to raise_error(Ethon::Errors::Mime, /memory/i)
     end
 
+    it "rejects header values containing CRLF" do
+      expect { part.headers = { "X-Test" => "1\r\nX-Injected: yes" } }.
+        to raise_error(Ethon::Errors::InvalidValue, /headers/)
+      expect { part.headers = ["X-Test: 1\nX-Injected: yes"] }.
+        to raise_error(Ethon::Errors::InvalidValue, /headers/)
+    end
+
+    it "rejects header values containing NUL" do
+      expect { part.headers = { "X-Test" => "1\0" } }.
+        to raise_error(Ethon::Errors::InvalidValue, /headers/)
+    end
+
+    it "clears headers with an empty string" do
+      expect(Ethon::Curl).to receive(:mime_headers).
+        with(part.handle, nil, 0).and_return(:ok)
+
+      part.headers = ""
+    end
+
+    it "ignores empty header lines in an array" do
+      expect(Ethon::Curl::Slist).to receive(:build).with(["X-Test: 1"]).and_return(nil)
+
+      part.headers = ["", "X-Test: 1"]
+    end
+
     it "releases a partially built header list when an append fails" do
       first = FFI::MemoryPointer.new(:pointer)
       allow(Ethon::Curl).to receive(:slist_append).and_return(first, FFI::Pointer::NULL)
