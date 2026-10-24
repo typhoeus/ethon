@@ -29,6 +29,7 @@ module Ethon
       # Reset the state that belongs to a single transfer. Reusing an Easy must
       # replace the previous response instead of appending to it.
       def reset_transfer_state
+        rewind_request_body
         @response_body = @response_body_io ? nil : String.new
         @response_headers = String.new
         @headers_called = false
@@ -157,6 +158,13 @@ module Ethon
       def set_read_callback(body)
         @request_body_read = 0
         @request_body = body
+        # Remember where a seekable body starts so reusing the Easy replays the
+        # same range instead of finding the IO at EOF.
+        @request_body_start = begin
+          body.pos if body.respond_to?(:seek) && body.respond_to?(:pos)
+        rescue IOError, SystemCallError
+          nil
+        end
         @read_callback = proc do |stream, size, num, object|
           begin
             size = size * num
@@ -205,6 +213,19 @@ module Ethon
       # @return [ Proc ] The callback.
       def read_callback
         @read_callback
+      end
+
+      private
+
+      # Seek a request body back to where it was when the callback was
+      # installed. Pipes and other non-seekable bodies are left alone.
+      def rewind_request_body
+        return unless @request_body_start
+        return unless @request_body.respond_to?(:seek)
+
+        @request_body.seek(@request_body_start)
+      rescue IOError, SystemCallError
+        nil
       end
     end
   end

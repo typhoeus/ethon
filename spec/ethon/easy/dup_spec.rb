@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 require 'json'
+require 'stringio'
 
 describe "duplicating an Easy handle" do
   let(:url) { "http://localhost:3001/" }
@@ -44,6 +45,22 @@ describe "duplicating an Easy handle" do
       expect(copy.read_callback).to be_a(Proc)
       expect(copy.perform).to eq(:ok)
       expect(JSON.parse(copy.response_body)["body"]).to eq(body)
+    end
+
+    it "replays a consumed read body on the duplicate" do
+      body = StringIO.new("hello-io")
+      easy = Ethon::Easy.new
+      easy.url = url
+      easy.upload = true
+      easy.infilesize = body.string.bytesize
+      easy.set_read_callback(body)
+
+      expect(easy.perform).to eq(:ok)
+
+      copy = easy.dup
+
+      expect(copy.perform).to eq(:ok)
+      expect(JSON.parse(copy.response_body)["body"]).to eq("hello-io")
     end
 
     it "binds the duplicate's progress callback to the duplicate" do

@@ -46,7 +46,9 @@ module Ethon
       #
       # @return [ Boolean ] True if params is empty, else false.
       def empty?
-        @params.empty?
+        # Build the pairs instead of asking @params directly: params may be a
+        # String or a scalar, and only the pairs describe what is sent.
+        query_pairs.empty?
       end
 
       # Return the string representation of params.
@@ -87,7 +89,11 @@ module Ethon
       #
       # @return [ Array ] The array of query pairs.
       def build_query_pairs(hash)
-        return [hash] if hash.is_a?(String)
+        if hash.is_a?(String)
+          # An empty string describes no pairs. Treating it as one would make
+          # #empty? false and leave a stray "?" or "&" in the url.
+          return hash.empty? ? [] : [hash]
+        end
 
         pairs = []
         recursively_generate_pairs(hash, nil, pairs)

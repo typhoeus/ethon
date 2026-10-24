@@ -269,6 +269,7 @@ module Ethon
       @mirror = nil
       @read_callback = nil
       @request_body = nil
+      @request_body_start = nil
       clear_response_body_io
       Curl.easy_reset(handle)
       # libcurl no longer references these after easy_reset.
@@ -331,6 +332,9 @@ module Ethon
     def restore_callbacks_on(copy)
       if defined?(@request_body) && @request_body
         copy.set_read_callback(@request_body)
+        # Replay the original body range instead of wherever the shared body
+        # happens to be when the copy is made.
+        copy.instance_variable_set(:@request_body_start, @request_body_start)
       end
 
       progress_handled = @procs &&
