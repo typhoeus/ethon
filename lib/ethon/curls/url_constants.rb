@@ -50,6 +50,7 @@ module Ethon
       :bad_user,
       :lacks_idn,
       :too_large,
+      :backslash,
       :last
     ])
 
@@ -69,7 +70,9 @@ module Ethon
       :no_authority,
       :allow_space,
       :punycode,
-      :puny2idn
+      :puny2idn,
+      :get_empty,
+      :no_guess_scheme
     ])
   end
 end

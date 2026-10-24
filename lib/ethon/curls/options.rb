@@ -373,11 +373,11 @@ module Ethon
       option :easy, :password, :string, 174
       option :easy, :proxyusername, :string, 175
       option :easy, :proxypassword, :string, 176
-      option :easy, :httpauth, :bitmask, 107, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11, :auto => 0x1f}]
+      option :easy, :httpauth, :bitmask, 107, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x110, :anysafe => ~0x111, :auto => 0x1f}]
       option :easy, :tlsauth_type, :string, 206
       option :easy, :tlsauth_username, :string, 204
       option :easy, :tlsauth_password, :string, 205
-      option :easy, :proxyauth, :bitmask, 111, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x10, :anysafe => ~0x11, :auto => 0x1f}]
+      option :easy, :proxyauth, :bitmask, 111, [:none, :basic, :digest, :gssnegotiate, :ntlm, :digest_ie, :ntlm_wb, {:only => 1<<31, :any => ~0x110, :anysafe => ~0x111, :auto => 0x1f}]
       option :easy, :sasl_ir, :bool, 218
       ## HTTP OPTIONS
       option :easy, :autoreferer, :bool, 58
@@ -568,6 +568,7 @@ module Ethon
       option :easy, :doh_ssl_verifypeer, :bool, 306
       option :easy, :doh_ssl_verifystatus, :bool, 308
       option :easy, :doh_url, :string, 279
+      option :easy, :ech, :string, 325
       option :easy, :expect_100_timeout_ms, :int, 227
       option :easy, :happy_eyeballs_timeout_ms, :int, 271
       option :easy, :haproxy_client_ip, :string, 323
@@ -580,6 +581,10 @@ module Ethon
       option :easy, :hstswritedata, :ffipointer, 304
       option :easy, :hstswritefunction, :dontuse_callback, 303
       option :easy, :http09_allowed, :bool, 285
+      option :easy, :httpsig_algorithm, :enum, 329, [:none, :ed25519, :hmac_sha256]
+      option :easy, :httpsig_headers, :string, 332
+      option :easy, :httpsig_key, :string, 330
+      option :easy, :httpsig_keyid, :string, 331
       option :easy, :issuercert_blob, :blob, 295
       option :easy, :keep_sending_on_error, :bool, 245
       option :easy, :login_options, :string, 224
@@ -615,6 +620,7 @@ module Ethon
       option :easy, :ssl_enable_alpn, :bool, 226
       option :easy, :ssl_enable_npn, :bool, 225
       option :easy, :ssl_falsestart, :bool, 233
+      option :easy, :ssl_signature_algorithms, :string, 328
       option :easy, :ssl_verifystatus, :bool, 232
       option :easy, :sslcert_blob, :blob, 291
       option :easy, :sslkey_blob, :blob, 292
@@ -622,6 +628,7 @@ module Ethon
       option :easy, :stream_depends_e, :ffipointer, 241
       option :easy, :stream_weight, :int, 239
       option :easy, :suppress_connect_headers, :bool, 265
+      option :easy, :tcp_keepcnt, :int, 326
       option :easy, :tftp_no_options, :bool, 242
       option :easy, :timevalue_large, :off_t, 270
       option :easy, :tls13_ciphers, :string, 276
@@ -629,6 +636,7 @@ module Ethon
       option :easy, :trailerfunction, :dontuse_callback, 283
       option :easy, :upkeep_interval_ms, :int, 281
       option :easy, :upload_buffersize, :int, 280
+      option :easy, :upload_flags, :bitmask, 327, [nil, :answered, :deleted, :draft, :flagged, :seen]
       option :easy, :ws_options, :bitmask, 320, [nil, :raw_mode]
       option :easy, :xoauth2_bearer, :string, 220
 
@@ -637,9 +645,11 @@ module Ethon
 
       ## NAMED VALUE ADDITIONS
       option_value_aliases :easy, :httpauth,
-        :negotiate => :gssnegotiate, :bearer => 1<<6, :aws_sigv4 => 1<<7
+        :negotiate => :gssnegotiate, :bearer => 1<<6, :aws_sigv4 => 1<<7,
+        :httpsig => 1<<8
       option_value_aliases :easy, :proxyauth,
-        :negotiate => :gssnegotiate, :bearer => 1<<6, :aws_sigv4 => 1<<7
+        :negotiate => :gssnegotiate, :bearer => 1<<6, :aws_sigv4 => 1<<7,
+        :httpsig => 1<<8
     end
   end
 end

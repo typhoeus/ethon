@@ -20,7 +20,8 @@ describe "Ethon::Curl::UrlCode" do
     expect(described_class[:bad_handle]).to eq(1)
     expect(described_class[:unsupported_scheme]).to eq(5)
     expect(described_class[:too_large]).to eq(31)
-    expect(described_class[:last]).to eq(32)
+    expect(described_class[:backslash]).to eq(32)
+    expect(described_class[:last]).to eq(33)
   end
 end
 
@@ -32,6 +33,8 @@ describe "Ethon::Curl::UrlFlags" do
     expect(described_class[:default_scheme]).to eq(1 << 2)
     expect(described_class[:urlencode]).to eq(1 << 7)
     expect(described_class[:puny2idn]).to eq(1 << 13)
+    expect(described_class[:get_empty]).to eq(1 << 14)
+    expect(described_class[:no_guess_scheme]).to eq(1 << 15)
   end
 end
 

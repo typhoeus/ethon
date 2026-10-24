@@ -30,9 +30,14 @@ module Ethon
         :xfer_id => :off_t,
         :conn_id => :off_t,
         :queue_time_t => :off_t,
+        :posttransfer_time_t => :off_t,
+        :earlydata_sent_t => :off_t,
+        :size_delivered => :off_t,
 
         # Connection/request metadata.
         :http_version => :long,
+        :httpauth_used => :long,
+        :proxyauth_used => :long,
         :proxy_ssl_verifyresult => :long,
         :proxy_error => :long,
         :used_proxy => :long,

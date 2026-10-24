@@ -44,6 +44,35 @@ describe "libcurl symbolic option values" do
     easy.httpauth = :negotiate
   end
 
+  it "supports CURLAUTH_HTTPSIG" do
+    expect_long(1 << 8)
+    easy.httpauth = :httpsig
+
+    expect_long(1 << 8)
+    easy.proxyauth = :httpsig
+  end
+
+  it "excludes HTTPSIG from ANY and ANYSAFE" do
+    expect_long(~0x110)
+    easy.httpauth = :any
+
+    expect_long(~0x111)
+    easy.httpauth = :anysafe
+  end
+
+  it "supports CURLULFLAG upload flags" do
+    expect_long(1 | (1 << 4))
+    easy.upload_flags = [:answered, :seen]
+  end
+
+  it "supports CURLHTTPSIG algorithms" do
+    expect_long(1)
+    easy.httpsig_algorithm = :ed25519
+
+    expect_long(2)
+    easy.httpsig_algorithm = :hmac_sha256
+  end
+
   it "supports the newer protocol bits" do
     expect_long(1 << 26)
     easy.protocols = :smb
