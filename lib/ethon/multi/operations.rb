@@ -53,13 +53,26 @@ module Ethon
       def init_vars
         if @execution_mode == :perform
           @timeout = ::FFI::MemoryPointer.new(:long)
-          @timeval = Curl::Timeval.new
-          @fd_read = Curl::FDSet.new
-          @fd_write = Curl::FDSet.new
-          @fd_excep = Curl::FDSet.new
-          @max_fd = ::FFI::MemoryPointer.new(:int)
+          @running_count_pointer = ::FFI::MemoryPointer.new(:int)
+          @msgs_left = ::FFI::MemoryPointer.new(:int)
+          @wait_strategy = if Curl.respond_to?(:multi_poll)
+            :poll
+          elsif Curl.respond_to?(:multi_wait)
+            :wait
+          else
+            :select
+          end
+
+          if @wait_strategy == :select
+            @timeval = Curl::Timeval.new
+            @fd_read = Curl::FDSet.new
+            @fd_write = Curl::FDSet.new
+            @fd_excep = Curl::FDSet.new
+            @max_fd = ::FFI::MemoryPointer.new(:int)
+          end
         elsif @execution_mode == :socket_action
           @running_count_pointer = FFI::MemoryPointer.new(:int)
+          @msgs_left = FFI::MemoryPointer.new(:int)
         end
       end
 
@@ -78,8 +91,15 @@ module Ethon
           run
           timeout = get_timeout
           next if timeout == 0
-          reset_fds
-          set_fds(timeout)
+          case @wait_strategy
+          when :poll
+            poll(timeout)
+          when :wait
+            wait(timeout)
+          else
+            reset_fds
+            set_fds(timeout)
+          end
         end
         Ethon.logger.debug(PERFORMED_MULTI)
         nil
@@ -114,7 +134,7 @@ module Ethon
           raise NotImplementedError, "curl_multi_wait is not supported by this libcurl"
         end
 
-        numfds = ::FFI::MemoryPointer.new(:int)
+        numfds = (@numfds ||= ::FFI::MemoryPointer.new(:int))
         code = Curl.multi_wait(handle, ::FFI::Pointer::NULL, 0, timeout_ms, numfds)
         raise Errors::MultiWait.new(code) unless code == :ok
 
@@ -131,7 +151,7 @@ module Ethon
           raise NotImplementedError, "curl_multi_poll is not supported by this libcurl"
         end
 
-        numfds = ::FFI::MemoryPointer.new(:int)
+        numfds = (@numfds ||= ::FFI::MemoryPointer.new(:int))
         code = Curl.multi_poll(handle, ::FFI::Pointer::NULL, 0, timeout_ms, numfds)
         raise Errors::MultiPoll.new(code) unless code == :ok
 
@@ -316,7 +336,7 @@ module Ethon
       #
       # @return [ void ]
       def check
-        msgs_left = ::FFI::MemoryPointer.new(:int)
+        msgs_left = (@msgs_left ||= ::FFI::MemoryPointer.new(:int))
         while true
           msg = Curl.multi_info_read(handle, msgs_left)
           break if msg.null?
@@ -340,7 +360,7 @@ module Ethon
       #
       # @return [ void ]
       def run
-        running_count_pointer = FFI::MemoryPointer.new(:int)
+        running_count_pointer = (@running_count_pointer ||= ::FFI::MemoryPointer.new(:int))
         begin code = trigger(running_count_pointer) end while code == :call_multi_perform
         raise Errors::MultiPerform.new(code) unless code == :ok
 
