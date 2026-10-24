@@ -101,8 +101,7 @@ module Ethon
           retained = value
         else
           lines = value.is_a?(Hash) ? value.map { |key, item| "#{key}: #{item}" } : Array(value)
-          list = lines.inject(nil) { |result, line| Curl.slist_append(result, line.to_s) }
-          raise NoMemoryError, "curl_slist_append failed" if !lines.empty? && list.nil?
+          list = Curl::Slist.build(lines)
           owned = !list.nil?
         end
 
