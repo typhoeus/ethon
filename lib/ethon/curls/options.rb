@@ -6,6 +6,29 @@ module Ethon
     # This module contains logic for setting options on
     # easy or multi interface.
     module Options
+      # libcurl writes these values verbatim into an HTTP request line, a
+      # protocol header, or a protocol command. A carriage return or newline
+      # would let a caller inject another header or command into the request.
+      LINE_BASED_OPTIONS = [
+        :accept_encoding,
+        :cookie,
+        :customrequest,
+        :encoding,
+        :ftp_account,
+        :ftp_alternative_to_user,
+        :krblevel,
+        :login_options,
+        :mail_auth,
+        :mail_from,
+        :range,
+        :referer,
+        :request_target,
+        :rtsp_session_id,
+        :rtsp_stream_uri,
+        :rtsp_transport,
+        :useragent,
+        :xoauth2_bearer
+      ].freeze
 
       OPTION_STRINGS = { :easy => 'easy_options', :multi => 'multi_options' }.freeze
       FOPTION_STRINGS = { :easy => 'EASY_OPTIONS', :multi => 'MULTI_OPTIONS' }.freeze
@@ -50,6 +73,10 @@ module Ethon
           unless value.nil?
             string = value.to_s
             raise Errors::InvalidValue.new(option, value) if string.include?("\0")
+            if LINE_BASED_OPTIONS.include?(option) &&
+               (string.include?("\r") || string.include?("\n"))
+              raise Errors::InvalidValue.new(option, value)
+            end
             value = string
           end
         when :string_as_pointer
