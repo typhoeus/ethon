@@ -93,6 +93,7 @@ module Ethon
         # @param [ easy ] easy the easy to setup.
         def setup(easy)
           @easy = easy
+          easy.customrequest = nil
 
           # Order is important, @easy will be used to provide access to options
           # relevant to the following operations (like whether or not to escape
@@ -100,8 +101,9 @@ module Ethon
           easy.set_attributes(options)
 
           set_form(easy) unless form.empty?
-          if form.empty? && easy.mime && Ethon::Curl.respond_to?(:mime_init)
-            easy.mime = nil
+          if form.empty?
+            easy.multipart_form = nil
+            easy.mime = nil if easy.mime && Ethon::Curl.respond_to?(:mime_init)
           end
 
           if params.empty?

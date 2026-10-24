@@ -40,6 +40,19 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* Reusing an `Easy` no longer leaks the previous custom HTTP method or a
+  stale `CURLOPT_CURLU` handle. `Easy#url=` clears a URL handle, `Easy#curlu=`
+  clears the string URL, and `Easy#reset` detaches the share before releasing
+  it.
+* GET requests with a body send the body again; the method reset only applies
+  to empty GET requests.
+* MIME parts keep a caller-provided header slist alive until libcurl replaces
+  it.
+* `Easy#header` and `Easy#each_header` accept an array of header origins as
+  documented.
+* `Easy#cleanup` is terminal; using the handle afterwards raises
+  `Ethon::Errors::EthonError` instead of silently sending requests without
+  callbacks.
 * Exceptions raised while buffering response headers are now captured and
   re-raised after the transfer, matching the body and debug callbacks.
   ([#316](https://github.com/typhoeus/ethon/pull/316))

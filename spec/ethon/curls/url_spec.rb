@@ -135,6 +135,24 @@ describe Ethon::Easy, "with CURLOPT_CURLU" do
     expect(easy.curlu).to be_nil
   end
 
+  it "clears the URL handle when a string url is set" do
+    easy.curlu = url
+    easy.url = "http://localhost:3001/second"
+
+    expect(easy.curlu).to be_nil
+    expect(easy.perform).to eq(:ok)
+    expect(easy.response_body).to include('"PATH_INFO":"/second"')
+  end
+
+  it "clears the string url when a URL handle is set" do
+    easy.url = "http://localhost:3001/first"
+    easy.curlu = url
+
+    expect(easy.url).to be_nil
+    expect(easy.perform).to eq(:ok)
+    expect(easy.response_body).to include('"PATH_INFO":"/"')
+  end
+
   it "rejects a URL handle created before fork" do
     allow(url).to receive(:check_pid!).and_raise(Ethon::Errors::ForkSafety.new)
 

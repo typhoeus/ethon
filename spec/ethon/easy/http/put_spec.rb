@@ -183,10 +183,11 @@ describe Ethon::Easy::Http::Put do
       end
 
       it "uses PUT without upload mode" do
-        expect(easy).to receive(:customrequest=).with("PUT")
+        allow(easy).to receive(:customrequest=)
         expect(easy).not_to receive(:upload=)
 
         put.setup(easy)
+        expect(easy).to have_received(:customrequest=).with("PUT")
       end
 
       context "when requesting" do

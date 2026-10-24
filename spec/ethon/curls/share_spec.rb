@@ -66,6 +66,20 @@ describe Ethon::Curl::Share do
     end
   end
 
+  describe "Easy integration" do
+    let(:easy) { Ethon::Easy.new }
+
+    it "detaches the share on reset" do
+      easy.share = share
+      allow(Ethon::Curl).to receive(:set_option).and_call_original
+
+      easy.reset
+
+      expect(Ethon::Curl).to have_received(:set_option).with(:share, nil, kind_of(FFI::Pointer))
+      expect(easy.share).to be_nil
+    end
+  end
+
   describe "lock callbacks" do
     it "retains the lock and unlock functions" do
       lock = proc { |*| }

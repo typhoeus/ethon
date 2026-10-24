@@ -12,6 +12,10 @@ module Ethon
       def curlu=(url)
         url.check_pid! if url.respond_to?(:check_pid!)
         Curl.set_option(:curlu, url, handle)
+        if url
+          Curl.set_option(:url, nil, handle)
+          @url = nil
+        end
         @curlu = url
         url
       end

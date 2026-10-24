@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'spec_helper'
+require 'json'
 
 describe Ethon::Easy::Http::Get do
   let(:easy) { Ethon::Easy.new }
@@ -39,15 +40,31 @@ describe Ethon::Easy::Http::Get do
       let(:form) { { :a => 1 } }
 
       it "sets customrequest" do
-        expect(easy).to receive(:customrequest=).with("GET")
+        allow(easy).to receive(:customrequest=)
         get.setup(easy)
+        expect(easy).to have_received(:customrequest=).with("GET")
+      end
+
+      context "when requesting" do
+        before do
+          get.setup(easy)
+          easy.perform
+        end
+
+        it "sends a GET request with the body" do
+          response = JSON.parse(easy.response_body)
+          expect(response["REQUEST_METHOD"]).to eq("GET")
+          expect(response["CONTENT_LENGTH"]).to eq("3")
+          expect(response["CONTENT_TYPE"]).to include("application/x-www-form-urlencoded")
+        end
       end
     end
 
     context "when no body" do
-      it "doesn't set customrequest" do
-        expect(easy).to receive(:customrequest=).never
+      it "clears customrequest" do
+        allow(easy).to receive(:customrequest=)
         get.setup(easy)
+        expect(easy).to have_received(:customrequest=).with(nil)
       end
     end
 
