@@ -55,8 +55,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * `Multi#cleanup` now releases the native multi handle and clears handle
   ownership even when detaching an easy handle or closing a streamed response
   fails.
-* MIME parts free a partially built header list when `curl_slist_append` fails
-  before the list is installed.
+* MIME part and request header lists detect a failed `curl_slist_append`
+  allocation (FFI reports a NULL pointer, not `nil`) and free the partially
+  built list before installing it.
 * Fixed the `:string_escape_null` option type to resolve
   `Ethon::Easy::Util` instead of an undefined constant.
 * Added byte-exact binary transfer tests, a full option-table cross-check
