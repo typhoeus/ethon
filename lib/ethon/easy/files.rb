@@ -7,6 +7,10 @@ module Ethon
       # files it opens from paths; caller-provided objects remain caller-owned.
       # Pass nil to restore in-memory response buffering.
       def file=(destination)
+        # Resolve the handle first. Opening a path truncates it, so a cleaned
+        # up or fork-inherited handle must not touch the destination before the
+        # error is raised.
+        handle
         clear_response_body_io
         # Pathname-like objects may also implement #write. Prefer the path when
         # the object is not an IO (File and Tempfile expose #fileno).
