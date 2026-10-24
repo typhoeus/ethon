@@ -94,6 +94,15 @@ module Ethon
         def setup(easy)
           @easy = easy
           easy.customrequest = nil
+          # A reused handle keeps the previous transfer's method and body
+          # options. Clear them before applying this request so a stale
+          # upload body cannot win over the body configured below.
+          Curl.set_option(:upload, false, easy.handle)
+          Curl.set_option(:httpget, false, easy.handle)
+          Curl.set_option(:nobody, false, easy.handle)
+          Curl.set_option(:post, false, easy.handle)
+          easy.postfields = nil
+          easy.readfunction = nil
 
           # Order is important, @easy will be used to provide access to options
           # relevant to the following operations (like whether or not to escape

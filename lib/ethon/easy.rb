@@ -269,6 +269,7 @@ module Ethon
       @mirror = nil
       @read_callback = nil
       @request_body = nil
+      @request_body_start = nil
       clear_response_body_io
       Curl.easy_reset(handle)
       # libcurl no longer references these after easy_reset.

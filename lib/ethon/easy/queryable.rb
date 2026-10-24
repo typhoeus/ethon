@@ -46,7 +46,9 @@ module Ethon
       #
       # @return [ Boolean ] True if params is empty, else false.
       def empty?
-        @params.empty?
+        # Build the pairs instead of asking @params directly: params may be a
+        # String or a scalar, and only the pairs describe what is sent.
+        query_pairs.empty?
       end
 
       # Return the string representation of params.

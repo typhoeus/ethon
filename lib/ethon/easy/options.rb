@@ -176,7 +176,10 @@ module Ethon
         if option == :readfunction
           # A callback installed directly by the user does not describe the
           # retained body and must not be replaced when the Easy is duplicated.
-          @request_body = nil unless callback && callback.equal?(@read_callback)
+          unless callback && callback.equal?(@read_callback)
+            @request_body = nil
+            @request_body_start = nil
+          end
           @read_callback = callback
         end
 

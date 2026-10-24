@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 require 'json'
+require 'stringio'
 
 describe "reusing an Easy handle" do
   let(:easy) { Ethon::Easy.new }
@@ -48,6 +49,15 @@ describe "reusing an Easy handle" do
     expect(response_body["REQUEST_METHOD"]).to eq("PUT")
   end
 
+  it "clears the previous upload callback for a non-upload body" do
+    easy.http_request(url, :put, :body => { :a => 1 })
+    expect(easy.read_callback).to be_a(Proc)
+
+    easy.http_request(url, :patch, :body => { :b => 2 })
+
+    expect(easy.read_callback).to be_nil
+  end
+
   it "replaces the response on every perform" do
     easy.http_request("#{url}first", :get)
     easy.perform
@@ -84,5 +94,32 @@ describe "reusing an Easy handle" do
 
     expect(easy.perform).to eq(:ok)
     expect(easy.response_body[/"body":"([^"]*)"/, 1]).to eq("abc")
+  end
+
+  it "rewinds a seekable IO upload body on every perform" do
+    body = StringIO.new("hello-io")
+    easy.url = url
+    easy.upload = true
+    easy.infilesize = body.string.bytesize
+    easy.set_read_callback(body)
+
+    2.times do
+      expect(easy.perform).to eq(:ok)
+      expect(response_body["body"]).to eq("hello-io")
+    end
+  end
+
+  it "replays an IO upload body from its position when the callback was set" do
+    body = StringIO.new("xxhello")
+    body.seek(2)
+    easy.url = url
+    easy.upload = true
+    easy.infilesize = 5
+    easy.set_read_callback(body)
+
+    2.times do
+      expect(easy.perform).to eq(:ok)
+      expect(response_body["body"]).to eq("hello")
+    end
   end
 end

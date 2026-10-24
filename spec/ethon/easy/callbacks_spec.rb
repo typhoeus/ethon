@@ -184,6 +184,19 @@ describe Ethon::Easy::Callbacks do
       expect(stream.written).to eq([["abc", 3]])
     end
 
+    it "rewinds a seekable body when the transfer state resets" do
+      body = StringIO.new("abc")
+      easy.set_read_callback(body)
+
+      expect(easy.read_callback.call(stream, 16, 1, nil)).to eq(3)
+      expect(body.pos).to eq(3)
+
+      easy.reset_transfer_state
+
+      expect(body.pos).to eq(0)
+      expect(easy.read_callback.call(stream, 16, 1, nil)).to eq(3)
+    end
+
     it "reports the number of bytes actually read from short-reading IOs" do
       body = Class.new do
         def initialize

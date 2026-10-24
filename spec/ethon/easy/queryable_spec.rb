@@ -80,6 +80,32 @@ describe Ethon::Easy::Queryable do
     end
   end
 
+  describe "#empty?" do
+    context "when params is a hash" do
+      let(:hash) { { :a => 1 } }
+
+      it "returns false" do
+        expect(params.empty?).to be(false)
+      end
+    end
+
+    context "when params is a string" do
+      let(:hash) { "a=1" }
+
+      it "returns false" do
+        expect(params.empty?).to be(false)
+      end
+    end
+
+    context "when params is a scalar" do
+      let(:hash) { 1 }
+
+      it "returns true instead of calling a missing String method" do
+        expect(params.empty?).to be(true)
+      end
+    end
+  end
+
   describe "#query_pairs" do
     let(:hash) { { :a => [1, 2] } }
 

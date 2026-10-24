@@ -13,6 +13,14 @@ TESTSERVER = Sinatra.new do
 
   fail_count = 0
 
+  def read_request_body
+    body = request.body
+    # Sinatra parses some methods' bodies before the route runs. Rewind so the
+    # tests can assert on the body that was actually sent.
+    body.rewind if body.respond_to?(:rewind)
+    body.read
+  end
+
   post '/file' do
     {
       'content-type' => params[:file][:type],
@@ -95,7 +103,7 @@ TESTSERVER = Sinatra.new do
 
   get '/**' do
     sleep params["delay"].to_f if params.has_key?("delay")
-    request.env.merge!(:body => request.body.read).to_json
+    request.env.merge!(:body => read_request_body).to_json
   end
 
   head '/**' do
@@ -103,26 +111,26 @@ TESTSERVER = Sinatra.new do
   end
 
   put '/**' do
-    request.env.merge!(:body => request.body.read).to_json
+    request.env.merge!(:body => read_request_body).to_json
   end
 
   post '/**' do
-    request.env.merge!(:body => request.body.tap {|b| b.rewind }.read).to_json
+    request.env.merge!(:body => read_request_body).to_json
   end
 
   delete '/**' do
-    request.env.merge!(:body => request.body.read).to_json
+    request.env.merge!(:body => read_request_body).to_json
   end
 
   patch '/**' do
-    request.env.merge!(:body => request.body.read).to_json
+    request.env.merge!(:body => read_request_body).to_json
   end
 
   options '/**' do
-    request.env.merge!(:body => request.body.read).to_json
+    request.env.merge!(:body => read_request_body).to_json
   end
 
   route 'PURGE', '/**' do
-    request.env.merge!(:body => request.body.tap {|b| b.rewind }.read).to_json
+    request.env.merge!(:body => read_request_body).to_json
   end
 end
