@@ -11,7 +11,16 @@ module Ethon
         OWNERS_MUTEX.synchronize { self.class.owners[pointer.address] = @pid }
       end
 
+      # Explicitly free the native pointer. The wrapper must not be used
+      # afterwards, because FFI keeps the original address instead of
+      # clearing it.
+      def free
+        @freed = true
+        super
+      end
+
       def check_pid!
+        raise Errors::EthonError, "#{self.class} has already been freed" if @freed
         raise Errors::ForkSafety.new if @pid != Process.pid
       end
 
@@ -98,6 +107,7 @@ module Ethon
       end
 
       def to_a
+        check_pid!
         SlistNode.to_a(self)
       end
 

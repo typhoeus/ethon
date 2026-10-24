@@ -25,6 +25,62 @@ describe Ethon::Curl::Slist do
   end
 end
 
+describe "explicitly freed owned pointers" do
+  def freed_error
+    Ethon::Errors::EthonError
+  end
+
+  it "rejects a freed slist" do
+    list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+    list.free
+
+    expect { list.to_a }.to raise_error(freed_error, /freed/)
+  end
+
+  it "rejects a freed URL handle" do
+    url = Ethon::Curl::Url.new("https://example.com/")
+    url.free
+
+    expect { url.to_s }.to raise_error(freed_error, /freed/)
+  end
+
+  it "rejects a freed MIME structure and its parts" do
+    easy = Ethon::Easy.new
+    mime = Ethon::Curl::Mime.new(easy)
+    part = mime.addpart
+    mime.free
+
+    expect { part.name = "field" }.to raise_error(freed_error, /freed/)
+  ensure
+    easy.cleanup if easy
+  end
+
+  it "rejects a freed share handle" do
+    share = Ethon::Curl::Share.new
+    share.free
+
+    expect { share.share(:cookie) }.to raise_error(freed_error, /freed/)
+  end
+
+  it "rejects a freed Easy handle" do
+    easy = Ethon::Easy.new
+    easy.handle.free
+
+    expect { easy.perform }.to raise_error(freed_error, /freed/)
+  ensure
+    easy.instance_variable_set(:@handle, nil) if easy
+  end
+
+  it "rejects a freed Multi handle" do
+    multi = Ethon::Multi.new
+    multi.handle.free
+
+    expect { multi.wait }.to raise_error(freed_error, /freed/)
+  ensure
+    multi.instance_variable_set(:@handle, nil) if multi
+  end
+end
+
 describe Ethon::Curl::FDSet do
   it "uses a word-aligned fd_set size" do
     skip "Windows uses a fixed fd_array" if Ethon::Curl.windows?
