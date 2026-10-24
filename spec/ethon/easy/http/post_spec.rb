@@ -155,8 +155,8 @@ describe Ethon::Easy::Http::Post do
       context "when multipart" do
         let(:form) { {:a => File.open(__FILE__, 'r')} }
 
-        it "sets httppost" do
-          expect(easy).to receive(:httppost=)
+        it "installs the multipart form" do
+          expect(easy).to receive(:multipart_form=)
           post.setup(easy)
         end
 

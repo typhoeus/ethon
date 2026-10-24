@@ -327,6 +327,26 @@ describe Ethon::Easy::Options do
 
       expect(easy.instance_variable_get(:@multipart_form)).to be_nil
     end
+
+    it "ignores a missing CURLOPT_HTTPPOST when clearing" do
+      allow(Ethon::Curl).to receive(:set_option).and_call_original
+      allow(Ethon::Curl).to receive(:set_option).with(:httppost, anything, anything).
+        and_raise(Ethon::Errors::UnsupportedOption.new(:httppost))
+
+      easy.multipart_form = nil
+
+      expect(easy.instance_variable_get(:@multipart_form)).to be_nil
+    end
+
+    it "still raises when installing a form without CURLOPT_HTTPPOST" do
+      form = double(:form, :first => double(:first, :read_pointer => FFI::Pointer::NULL))
+
+      allow(Ethon::Curl).to receive(:set_option).and_call_original
+      allow(Ethon::Curl).to receive(:set_option).with(:httppost, anything, anything).
+        and_raise(Ethon::Errors::UnsupportedOption.new(:httppost))
+
+      expect { easy.multipart_form = form }.to raise_error(Ethon::Errors::UnsupportedOption)
+    end
   end
 
   describe "#httppost=" do
