@@ -51,27 +51,27 @@ module Ethon
       end
 
       def name=(value)
-        call(:mime_name, value.to_s)
+        call(:mime_name, native_string(:name, value))
         value
       end
 
       def filename=(value)
-        call(:mime_filename, value.to_s)
+        call(:mime_filename, native_string(:filename, value))
         value
       end
 
       def type=(value)
-        call(:mime_type, value.to_s)
+        call(:mime_type, header_line(:type, value))
         value
       end
 
       def encoder=(value)
-        call(:mime_encoder, value.to_s)
+        call(:mime_encoder, header_line(:encoder, value))
         value
       end
 
       def file=(value)
-        call(:mime_filedata, value.to_s)
+        call(:mime_filedata, native_string(:file, value))
         value
       end
 
@@ -118,6 +118,22 @@ module Ethon
       end
 
       private
+
+      # Convert a value to the C string libcurl receives, rejecting embedded
+      # NUL bytes with Ethon's error type instead of FFI's ArgumentError.
+      def native_string(option, value)
+        string = value.to_s
+        if string.include?("\0")
+          raise Errors::InvalidValue.new(option, value)
+        end
+        string
+      end
+
+      # The content type and encoder are written into the part headers
+      # verbatim, so CR or LF would add headers to the part or the request.
+      def header_line(option, value)
+        Ethon::Easy::Util.validate_header_line(option, native_string(option, value))
+      end
 
       # Normalize header lines and reject values libcurl would send verbatim
       # as additional part headers.
