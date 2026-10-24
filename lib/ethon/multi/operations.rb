@@ -44,13 +44,12 @@ module Ethon
           easy_handles.dup.each { |easy| delete(easy) }
         ensure
           # Cleanup is terminal. Release the native handle even when detaching
-          # one of the easy handles fails, and clear the Ruby-side ownership so
-          # leftover handles are not left pointing at this multi.
+          # one of the easy handles fails. Handles that could not be detached
+          # keep their multi ownership so they cannot be reused unsafely.
           begin
             @handle.free if @handle
           ensure
             easy_handles.each do |easy|
-              easy.instance_variable_set(:@multi, nil)
               begin
                 easy.finish_response_body_io
               rescue StandardError

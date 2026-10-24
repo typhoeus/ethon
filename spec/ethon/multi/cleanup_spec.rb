@@ -14,7 +14,9 @@ describe "Ethon::Multi#cleanup failures" do
     expect(multi.instance_variable_get(:@handle)).to be_nil
     expect(multi.instance_variable_get(:@cleaned_up)).to be(true)
     expect(multi.easy_handles).to be_empty
-    expect(easy.instance_variable_get(:@multi)).to be_nil
+    expect(easy.instance_variable_get(:@multi)).to be(multi)
+    expect { easy.perform }.
+      to raise_error(Ethon::Errors::EthonError, /attached to a Multi/)
   end
 
   it "keeps tearing down when closing a streamed response fails" do
