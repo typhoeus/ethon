@@ -40,6 +40,15 @@
   callback signature, so the user pointer was read as an access mode and the
   callback received a garbage fourth argument.
   ([#405](https://github.com/typhoeus/ethon/pull/405))
+* `Easy#header` and `Easy#each_header` now default to the last request in a
+  transfer (`request = -1`), so structured headers describe the response after
+  a redirect instead of the first request. Pass `0` to read the first request.
+  ([#409](https://github.com/typhoeus/ethon/pull/409))
+* `Easy#url=` now keeps a frozen snapshot of the string libcurl accepted, and
+  `Easy#request_headers` returns a fresh snapshot of the headers that were
+  accepted. Mutating the object passed to the setter no longer makes the
+  accessor describe a URL or header set the handle never received.
+  ([#413](https://github.com/typhoeus/ethon/pull/413))
 
 ### New libcurl bindings
 
@@ -70,6 +79,35 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* Clearing `writefunction`, `headerfunction`, or `debugfunction` now restores
+  Ethon's internal callback. libcurl's default callback previously wrote
+  response bodies to stdout, stopped collecting response headers, or sent
+  verbose output to stderr.
+  ([#410](https://github.com/typhoeus/ethon/pull/410))
+* `Easy#handle=` now frees the native handle it replaces when this Easy owned
+  it, and reattaches the error buffer and `noprogress` setting to the
+  replacement. Replacing a handle no longer leaks it, and `#error_message` and
+  progress callbacks keep working.
+  ([#411](https://github.com/typhoeus/ethon/pull/411))
+* `Multi#cleanup` now continues detaching the remaining easy handles after one
+  native detach or streamed-response close fails, instead of leaving them
+  attached to a cleaned-up Multi. The first error is still raised after
+  teardown.
+  ([#412](https://github.com/typhoeus/ethon/pull/412))
+* `Curl::Mime.new` now rejects handles that are not an `Ethon::Easy`, an
+  `Ethon::Curl::EasyHandle`, or a non-null raw easy pointer. Passing another
+  owned handle, such as a `Multi`, previously reached `curl_mime_init` and
+  could crash the process. Assigning `nil` to a MIME part field now clears it
+  instead of setting an empty value or raising.
+  ([#414](https://github.com/typhoeus/ethon/pull/414))
+* `Curl::Header#origin` now masks every undocumented origin bit, not only the
+  single reserved bit current libcurl sets, so the value only contains the
+  documented `CURLH_*` bits.
+  ([#417](https://github.com/typhoeus/ethon/pull/417))
+* `Curl::Slist.build` now rejects CR, LF, and NUL in list lines, so lists used
+  for FTP quotes, SMTP recipients, and other verbatim protocol commands cannot
+  inject additional commands.
+  ([#415](https://github.com/typhoeus/ethon/pull/415))
 * `:none` options no longer interpret `false` as enabled, `Ethon.logger = nil`
   falls back to the default logger, and `ETHON_FD_SIZE` is validated and
   rounded up to the native fd_set word size.
