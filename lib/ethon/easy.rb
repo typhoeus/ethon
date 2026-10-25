@@ -252,7 +252,7 @@ module Ethon
     #   easy.reset
     def reset
       ensure_not_attached_to_multi!
-      ensure_not_performing!
+      ensure_not_in_transfer!
       # Check the handle before clearing state so reset is a no-op when the
       # handle was cleaned up or inherited across a fork.
       handle
@@ -267,7 +267,9 @@ module Ethon
       @multipart = nil
       @headers = nil
       @return_code = nil
-      @callback_error = nil
+      # A reset from on_complete is cleanup for the finished transfer. Keep a
+      # callback error so perform still raises it afterwards.
+      @callback_error = nil unless @completing
       @on_complete = nil
       @on_headers = nil
       @on_body = nil
