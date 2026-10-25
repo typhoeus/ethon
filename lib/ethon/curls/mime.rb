@@ -11,19 +11,19 @@ module Ethon
         Curl.mime_free(pointer) if Curl.respond_to?(:mime_free)
       end
 
-      # @param [ Ethon::Easy, FFI::Pointer ] easy The easy handle used to
-      #   create the MIME structure.
+      # @param [ Ethon::Easy, Curl::EasyHandle, FFI::Pointer ] easy The easy
+      #   handle used to create the MIME structure.
       def initialize(easy)
         Curl.init
         unless Curl.respond_to?(:mime_init)
           raise NotImplementedError, "curl_mime_init is not supported by this libcurl"
         end
 
-        @easy = easy
-        easy_handle = easy.respond_to?(:handle) ? easy.handle : easy
+        easy_handle = mime_easy_handle(easy)
         pointer = Curl.mime_init(easy_handle)
         raise NoMemoryError, "curl_mime_init failed" if pointer.null?
 
+        @easy = easy
         super(pointer)
       end
 
@@ -38,6 +38,28 @@ module Ethon
         part = MimePart.new(pointer, self)
         (@parts ||= []) << part
         part
+      end
+
+      private
+
+      # libcurl dereferences the easy handle while creating a MIME structure,
+      # so a Multi or another owned pointer would corrupt memory.
+      def mime_easy_handle(easy)
+        case easy
+        when Ethon::Easy
+          easy.handle
+        when Ethon::Curl::EasyHandle
+          easy.check_pid!
+          easy
+        when Ethon::Curl::OwnedPointer
+          raise TypeError, "expected an Ethon::Easy or easy handle, got #{easy.class}"
+        when ::FFI::Pointer
+          raise ArgumentError, "cannot create a MIME structure for a null easy handle" if easy.null?
+
+          easy
+        else
+          raise TypeError, "expected an Ethon::Easy or easy handle, got #{easy.class}"
+        end
       end
     end
 
@@ -71,13 +93,17 @@ module Ethon
       end
 
       def file=(value)
-        call(:mime_filedata, native_string(:file, value))
+        call(:mime_filedata, value.nil? ? nil : native_string(:file, value))
         value
       end
 
       def data=(value)
-        data = value.to_s
-        call(:mime_data, data, data.bytesize)
+        if value.nil?
+          call(:mime_data, nil, 0)
+        else
+          data = value.to_s
+          call(:mime_data, data, data.bytesize)
+        end
         value
       end
 
@@ -132,7 +158,10 @@ module Ethon
 
       # The content type and encoder are written into the part headers
       # verbatim, so CR or LF would add headers to the part or the request.
+      # A nil value clears the field instead of setting an empty string.
       def header_line(option, value)
+        return if value.nil?
+
         Ethon::Easy::Util.validate_header_line(option, native_string(option, value))
       end
 
