@@ -43,7 +43,9 @@ describe Ethon::Multi::Options do
   [
     :maxconnects, :pipelining, :socketdata, :socketfunction,
     :timerdata, :timerfunction, :max_total_connections,
-    :max_concurrent_streams
+    :max_concurrent_streams, :max_host_connections,
+    :max_pipeline_length, :content_length_penalty_size,
+    :chunk_length_penalty_size
   ].each do |name|
     describe "#{name}=" do
       it "responds_to" do

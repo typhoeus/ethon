@@ -42,6 +42,54 @@ module Ethon
         Curl.set_option(:maxconnects, value_for(value, :int, :maxconnects), handle, :multi)
       end
 
+      # Sets max_host_connections option.
+      #
+      # @example Set max_host_connections option.
+      #   multi.max_host_connections = $value
+      #
+      # @param [ Integer ] value The value to set.
+      #
+      # @return [ void ]
+      def max_host_connections=(value)
+        Curl.set_option(:max_host_connections, value_for(value, :int, :max_host_connections), handle, :multi)
+      end
+
+      # Sets max_pipeline_length option.
+      #
+      # @example Set max_pipeline_length option.
+      #   multi.max_pipeline_length = $value
+      #
+      # @param [ Integer ] value The value to set.
+      #
+      # @return [ void ]
+      def max_pipeline_length=(value)
+        Curl.set_option(:max_pipeline_length, value_for(value, :int, :max_pipeline_length), handle, :multi)
+      end
+
+      # Sets content_length_penalty_size option.
+      #
+      # @example Set content_length_penalty_size option.
+      #   multi.content_length_penalty_size = $value
+      #
+      # @param [ Integer ] value The value to set.
+      #
+      # @return [ void ]
+      def content_length_penalty_size=(value)
+        Curl.set_option(:content_length_penalty_size, value, handle, :multi)
+      end
+
+      # Sets chunk_length_penalty_size option.
+      #
+      # @example Set chunk_length_penalty_size option.
+      #   multi.chunk_length_penalty_size = $value
+      #
+      # @param [ Integer ] value The value to set.
+      #
+      # @return [ void ]
+      def chunk_length_penalty_size=(value)
+        Curl.set_option(:chunk_length_penalty_size, value, handle, :multi)
+      end
+
       # Sets pipelining option.
       #
       # @example Set pipelining option.
