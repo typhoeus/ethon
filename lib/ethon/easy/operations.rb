@@ -29,49 +29,14 @@ module Ethon
       # Ethon's response callbacks and replays callbacks previously assigned to
       # this Easy, then frees the handle it replaces when this Easy owned it.
       #
+      # Request options that are not replayed are cleared, because the
+      # replacement handle does not have them. Read them before replacing the
+      # handle if they are needed again.
+      #
       # @param [ ::FFI::Pointer, Curl::EasyHandle, nil ] Easy handle that will
       #   be assigned.
       def handle=(h)
-        raise Errors::EthonError, "Easy has been cleaned up" if @cleaned_up
-
-        ensure_not_performing!
-        ensure_not_attached_to_multi!
-
-        previous = @handle
-        @handle =
-          case h
-          when nil
-            # Create the replacement now so it gets Ethon's callbacks even
-            # before an option setter or #perform touches it.
-            create_handle
-          when Curl::EasyHandle
-            h.check_pid!
-            # Two Easies must not share one owned wrapper: whichever cleans up
-            # first invalidates the handle for the other.
-            if h.owner && !h.owner.equal?(self)
-              raise ArgumentError, "easy handle is already owned by another Ethon handle"
-            end
-            h
-          when Curl::OwnedPointer
-            raise TypeError, "expected an easy handle, got #{h.class}"
-          when ::FFI::Pointer
-            raise ArgumentError, "cannot assign a null easy handle" if h.null?
-
-            Curl::EasyHandle.new(h)
-          else
-            raise TypeError, "expected an easy handle pointer, got #{h.class}"
-          end
-        @handle.owner = self if @handle
-        if @handle && !@handle.equal?(previous)
-          # A replacement handle has no Ethon callbacks or Ethon-managed
-          # options, so its response would otherwise not be collected. Retained
-          # user callbacks are replayed on top of the internal ones.
-          install_callbacks(@handle)
-          restore_handle_options
-          restore_callbacks_on(self)
-        end
-        release_replaced_handle(previous)
-        @handle
+        assign_handle(h, true)
       end
 
       # Perform the easy request.
@@ -200,6 +165,80 @@ module Ethon
           @error_buffer.put_char(0, 0)
         end
         self.noprogress = @noprogress_value unless @noprogress_value.nil?
+      end
+
+      # Install a handle and, unless the native duplicate already carries the
+      # request options, clear the Ruby-side state that belonged to the handle
+      # it replaces.
+      def assign_handle(h, clear_state)
+        raise Errors::EthonError, "Easy has been cleaned up" if @cleaned_up
+
+        ensure_not_performing!
+        ensure_not_attached_to_multi!
+
+        previous = @handle
+        @handle =
+          case h
+          when nil
+            # Create the replacement now so it gets Ethon's callbacks even
+            # before an option setter or #perform touches it.
+            create_handle
+          when Curl::EasyHandle
+            h.check_pid!
+            # Two Easies must not share one owned wrapper: whichever cleans up
+            # first invalidates the handle for the other.
+            if h.owner && !h.owner.equal?(self)
+              raise ArgumentError, "easy handle is already owned by another Ethon handle"
+            end
+            h
+          when Curl::OwnedPointer
+            raise TypeError, "expected an easy handle, got #{h.class}"
+          when ::FFI::Pointer
+            raise ArgumentError, "cannot assign a null easy handle" if h.null?
+
+            Curl::EasyHandle.new(h)
+          else
+            raise TypeError, "expected an easy handle pointer, got #{h.class}"
+          end
+        @handle.owner = self if @handle
+
+        replaced = @handle && !@handle.equal?(previous)
+        if replaced
+          # A replacement handle has no Ethon callbacks or Ethon-managed
+          # options, so its response would otherwise not be collected. Retained
+          # user callbacks are replayed on top of the internal ones.
+          install_callbacks(@handle)
+          restore_handle_options
+          restore_callbacks_on(self)
+        end
+        release_replaced_handle(previous)
+        # Free the old handle before dropping the Ruby references it owned.
+        clear_replaced_handle_state if replaced && clear_state
+        @handle
+      end
+
+      # The replacement handle does not have the old handle's request options.
+      # Clear the Ruby-side state so the accessors do not describe options the
+      # new handle never received. Callbacks, the error buffer, and the
+      # progress setting are replayed by #assign_handle and stay in place.
+      def clear_replaced_handle_state
+        @url = nil
+        @headers = nil
+        @header_list = nil
+        @postfields = nil
+        @postfields_pointer = nil
+        @postfield_body_size = nil
+        @postfieldsize_value = nil
+        @curlu = nil
+        @mime = nil
+        @multipart_form = nil
+        @slists = nil
+        @blobs = nil
+        @share = nil
+        @escape = nil
+        @multipart = nil
+        reset_transfer_state
+        clear_callback_error
       end
 
       # Free the handle this Easy owned before the replacement. A handle owned

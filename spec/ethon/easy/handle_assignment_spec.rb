@@ -77,6 +77,69 @@ describe "assigning an Easy handle" do
       expect(easy.response_body).to include('"REQUEST_METHOD":"GET"')
     end
 
+    it "clears request options that the replacement does not receive" do
+      easy = Ethon::Easy.new(:url => url, :headers => { "X-Test" => "yes" })
+      easy.postfields = "body"
+
+      easy.handle = Ethon::Curl.easy_init
+
+      expect(easy.url).to be_nil
+      expect(easy.request_headers).to eq({})
+      expect(easy.instance_variable_get(:@postfields)).to be_nil
+    ensure
+      easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+    end
+
+    it "clears the previous response when the handle is replaced" do
+      easy = Ethon::Easy.new(:url => url)
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).not_to be_empty
+
+      easy.handle = nil
+
+      expect(easy.response_body).to eq("")
+      expect(easy.response_headers).to eq("")
+      expect(easy.return_code).to be_nil
+    ensure
+      easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+    end
+
+    it "clears retained handles that are not replayed" do
+      easy = Ethon::Easy.new
+      share = Ethon::Curl::Share.new
+      url_handle = Ethon::Curl::Url.new("http://example.com/")
+      mime = Ethon::Curl::Mime.new(easy)
+      easy.share = share
+      easy.curlu = url_handle
+      easy.mime = mime
+
+      easy.handle = Ethon::Curl.easy_init
+
+      expect(easy.share).to be_nil
+      expect(easy.curlu).to be_nil
+      expect(easy.mime).to be_nil
+    ensure
+      easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+      share.free if share && !share.null?
+      url_handle.free if url_handle && !url_handle.null?
+      mime.free if mime && !mime.null?
+    end
+
+    it "keeps the response destination" do
+      Tempfile.create do |file|
+        file.close
+        easy = Ethon::Easy.new(:file => file.path)
+        io = easy.instance_variable_get(:@response_body_io)
+
+        easy.handle = Ethon::Curl.easy_init
+
+        expect(easy.instance_variable_get(:@response_body_path)).to eq(file.path)
+        expect(easy.instance_variable_get(:@response_body_io)).to be(io)
+      ensure
+        easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+      end
+    end
+
     it "replays retained request callbacks" do
       received = String.new
       easy = Ethon::Easy.new
