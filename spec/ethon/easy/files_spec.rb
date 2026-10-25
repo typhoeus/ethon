@@ -224,6 +224,29 @@ describe Ethon::Easy::Files do
     end
   end
 
+  it "closes the new file when the previous destination cannot be released" do
+    Dir.mktmpdir do |dir|
+      first = File.join(dir, "first")
+      second = File.join(dir, "second")
+      easy.file = first
+      previous_io = easy.instance_variable_get(:@response_body_io)
+      allow(previous_io).to receive(:close).and_raise(IOError, "close failed")
+      opened = nil
+      allow(File).to receive(:open).and_wrap_original do |original, *args|
+        opened = original.call(*args)
+      end
+
+      expect { easy.file = second }.to raise_error(IOError, "close failed")
+      expect(easy.instance_variable_get(:@response_body_path)).to eq(first)
+      expect(easy.instance_variable_get(:@response_body_io)).to be(previous_io)
+      expect(opened).to be_closed
+    ensure
+      allow(previous_io).to receive(:close).and_call_original if previous_io
+      allow(File).to receive(:open).and_call_original
+      easy.file = nil
+    end
+  end
+
   it "propagates write errors" do
     io = Object.new
     io.define_singleton_method(:write) { |_| raise IOError, "disk full" }
