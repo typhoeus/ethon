@@ -278,6 +278,11 @@ module Ethon
         end
 
         socket = io.respond_to?(:fileno) ? io.fileno : io
+        # FFI would reject a non-integer descriptor with a TypeError instead
+        # of the error Ethon uses for invalid option values.
+        unless socket.is_a?(Integer)
+          raise Errors::InvalidValue.new(:assign, io)
+        end
         code = Curl.multi_assign(handle, socket, pointer)
         raise Errors::MultiAssign.new(code) unless code == :ok
 
