@@ -170,6 +170,20 @@ CI builds libcurl 7.88 in addition to the system package and 8.23 to catch
 accidental use of newer symbols and options. The 8.23 build uses
 `--disable-form-api`, so the missing form API path is exercised too.
 
+## Debugging
+
+Set `verbose: true` on an Easy to collect libcurl's debug messages.
+`Easy#debug_info` returns the collected text and header lines, and
+`Easy#debugfunction` registers an observer. The messages are written through
+`Ethon.logger` at the debug level, so configure it to see them:
+
+```ruby
+Ethon.logger.level = Logger::DEBUG
+```
+
+Response body data is not written to the log; it stays available through
+`Easy#debug_info` and the `debugfunction` observer.
+
 ## Thread and fork safety
 
 Ethon can be used from multiple threads, but it does not synchronize access to

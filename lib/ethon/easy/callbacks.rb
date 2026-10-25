@@ -79,8 +79,11 @@ module Ethon
         }
       end
 
-      # Returns the debug callback. This callback is currently used
-      # write the raw http request headers.
+      # This callback is called for every debug message libcurl emits while
+      # verbose mode is enabled.
+      #
+      # Messages are written through +Ethon.logger+ at the debug level. The
+      # user observer registered with #debugfunction is called as well.
       #
       # @example Return the callback.
       #   easy.debug_callback
@@ -93,11 +96,12 @@ module Ethon
             @debug_info.add type, message
 
             if [:ssl_data_in, :ssl_data_out].include?(type)
-              print "[#{size} bytes data]\n"
+              log_debug("[#{size} bytes data]")
             elsif [:data_in, :data_out].include?(type)
-              # print "} [#{size} bytes data]\n"
+              # Body data stays in #debug_info; logging it would duplicate the
+              # response body in the application log.
             else
-              print message
+              log_debug(message)
             end
             @user_debug_callback.call(handle, type, data, size, udata) if @user_debug_callback
           rescue Exception => e
@@ -216,6 +220,17 @@ module Ethon
       end
 
       private
+
+      # Log a libcurl debug message through Ethon.logger. The default level is
+      # INFO, so applications opt in by lowering the logger level.
+      def log_debug(message)
+        return if message.empty?
+
+        logger = Ethon.logger
+        return unless logger.debug?
+
+        logger.debug { message.sub(/\n+\z/, "") }
+      end
 
       # Seek a request body back to where it was when the callback was
       # installed. Pipes and other non-seekable bodies are left alone.
