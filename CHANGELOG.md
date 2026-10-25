@@ -81,11 +81,14 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 * Response stream teardown now only finishes the destination that the completed
   transfer wrote to. A completion callback can schedule the next transfer on
-  the same `Easy` (including adding it to a `Multi` with a new response file);
-  that file is no longer closed before the next transfer runs. A failing close
-  or flush also no longer replaces the callback or completion error, and
-  `Multi#perform` runs `on_complete` before raising a teardown error for a
-  handle libcurl already detached.
+  the same `Easy` (including adding it to a `Multi` with a new or reused
+  response file); that destination is no longer closed before the next transfer
+  runs. `Multi#add` finishes the previous transfer's stream before preparing
+  the next one, and no longer clears a pending callback error while the Easy is
+  completing, so the error from the finished transfer is still raised. A
+  failing close or flush also no longer replaces the callback or completion
+  error, and `Multi#perform` runs `on_complete` before raising a teardown error
+  for a handle libcurl already detached.
   ([#431](https://github.com/typhoeus/ethon/pull/431))
 * `Multi#assign` rejects a nil or non-integer socket descriptor with
   `Ethon::Errors::InvalidValue` instead of letting FFI raise `TypeError`.
