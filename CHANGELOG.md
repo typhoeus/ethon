@@ -256,6 +256,10 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * `Easy#handle=` rejects assignment while the Easy is performing, completing,
   attached to a `Multi`, or cleaned up.
   ([#399](https://github.com/typhoeus/ethon/pull/399))
+* Wrapping a native pointer that another `Ethon::Curl` wrapper already owns
+  now raises instead of creating a second owner that can use the pointer after
+  it is freed. `Easy#handle=` also rejects a handle owned by another Easy.
+  ([#401](https://github.com/typhoeus/ethon/pull/401))
 
 ## 0.19.0
 
