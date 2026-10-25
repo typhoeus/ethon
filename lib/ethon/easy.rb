@@ -282,6 +282,7 @@ module Ethon
       @progress_source = nil
       @internal_progress_option = nil
       @user_debug_callback = nil
+      @noprogress_value = nil
       @procs = nil
       @blobs = nil
       @slists = nil
