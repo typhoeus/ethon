@@ -88,7 +88,7 @@ module Ethon
             part = structure.addpart
             name, content = pair
             part.name = name.to_s
-            if content.is_a?(Array)
+            if content.is_a?(Queryable::FileInfo)
               part.file = content[2]
               part.filename = content[0]
               part.type = content[1]
@@ -125,7 +125,7 @@ module Ethon
       def form_add(name, content)
         name = validate_header_line(:name, name.to_s)
         code = case content
-        when Array
+        when Queryable::FileInfo
           # The form API writes these into Content-Disposition headers. Older
           # libcurl versions do not escape them.
           filename = validate_header_line(:filename, content[0].to_s)

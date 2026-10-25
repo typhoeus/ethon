@@ -106,7 +106,7 @@ describe Ethon::Easy::Form do
     end
 
     context "when query_pairs contains file" do
-      let(:pairs) { [['a', ["file", "type", "path/file"]]] }
+      let(:pairs) { [['a', Ethon::Easy::Queryable::FileInfo.new("file", "type", "path/file")]] }
 
       it "adds file to form" do
         expect(Ethon::Curl).to receive(:formadd).and_return(0)
@@ -115,7 +115,7 @@ describe Ethon::Easy::Form do
     end
 
     context "when query_pairs contains file and string values" do
-      let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1']] }
+      let(:pairs) { [['a', Ethon::Easy::Queryable::FileInfo.new("file", "type", "path/file")], ['b', '1']] }
 
       it "adds file to form" do
         expect(Ethon::Curl).to receive(:formadd).twice.and_return(0)
@@ -135,7 +135,7 @@ describe Ethon::Easy::Form do
     end
 
     context "when a filename contains CRLF" do
-      let(:pairs) { [['file', ["file\r\nX-Injected: yes", "text/plain", "path/file"]]] }
+      let(:pairs) { [['file', Ethon::Easy::Queryable::FileInfo.new("file\r\nX-Injected: yes", "text/plain", "path/file")]] }
 
       it "rejects the file before building the form" do
         expect(Ethon::Curl).not_to receive(:formadd)
@@ -146,7 +146,7 @@ describe Ethon::Easy::Form do
     end
 
     context "when a content type contains CRLF" do
-      let(:pairs) { [['file', ["file", "text/plain\r\nX-Injected: yes", "path/file"]]] }
+      let(:pairs) { [['file', Ethon::Easy::Queryable::FileInfo.new("file", "text/plain\r\nX-Injected: yes", "path/file")]] }
 
       it "rejects the file before building the form" do
         expect(Ethon::Curl).not_to receive(:formadd)
@@ -157,7 +157,7 @@ describe Ethon::Easy::Form do
     end
 
     context "when query_pairs contains file, string and int values" do
-      let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1'], ['c', 1]] }
+      let(:pairs) { [['a', Ethon::Easy::Queryable::FileInfo.new("file", "type", "path/file")], ['b', '1'], ['c', 1]] }
 
       it "adds file to form" do
         expect(Ethon::Curl).to receive(:formadd).exactly(3).times.and_return(0)

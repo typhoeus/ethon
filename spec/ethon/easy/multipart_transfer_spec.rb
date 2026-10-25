@@ -79,6 +79,48 @@ describe "multipart forms" do
     expect(response["list"]).to eq("0" => "first", "1" => "second")
   end
 
+  it "keeps array values under params_encoding :none" do
+    body = { :list => ["first", "second"], :triple => ["a", "b", "c"] }
+    easy.http_request(
+      url,
+      :post,
+      :body => body,
+      :multipart => true,
+      :params_encoding => :none
+    )
+
+    expect(easy.perform).to eq(:ok)
+    response = JSON.parse(easy.response_body)
+    expect(response["list"]).to eq(["first", "second"].to_s)
+    expect(response["triple"]).to eq(["a", "b", "c"].to_s)
+  end
+
+  it "uploads a file under params_encoding :none" do
+    content = "file contents"
+
+    Tempfile.create do |file|
+      file.write(content)
+      file.flush
+
+      File.open(file.path) do |upload|
+        easy.http_request(
+          url,
+          :post,
+          :body => { :file => upload },
+          :multipart => true,
+          :params_encoding => :none
+        )
+      end
+
+      expect(easy.perform).to eq(:ok)
+      response = JSON.parse(easy.response_body)
+      expect(response["file"]).to include(
+        "filename" => File.basename(file.path),
+        "sha256" => Digest::SHA256.hexdigest(content)
+      )
+    end
+  end
+
   it "uploads a binary file byte for byte" do
     content = (0..255).to_a.pack("C*") * 4
 

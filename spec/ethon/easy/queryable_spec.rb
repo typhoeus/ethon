@@ -242,6 +242,10 @@ describe Ethon::Easy::Queryable do
           expect(pairs).to eq([["a[b][0]", file_info]])
         end
 
+        it "marks the tuple as a file value" do
+          expect(file_info).to be_a(Ethon::Easy::Queryable::FileInfo)
+        end
+
         context "when MIME" do
           context "when mime type" do
             it "sets mime type to text" do
