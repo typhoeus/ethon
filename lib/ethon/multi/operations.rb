@@ -40,8 +40,18 @@ module Ethon
         # A handle created before a fork must not be released in the child.
         @handle.check_pid! if @handle
 
+        error = nil
         begin
-          stack.dup.each { |easy| delete(easy) }
+          stack.dup.each do |easy|
+            begin
+              delete(easy)
+            rescue StandardError => e
+              # Keep detaching the other handles. A failed close or native
+              # detach must not strand every remaining handle on a Multi whose
+              # native handle is about to be freed.
+              error ||= e
+            end
+          end
         ensure
           # Cleanup is terminal. Release the native handle even when detaching
           # one of the easy handles fails. Handles that could not be detached
@@ -64,6 +74,7 @@ module Ethon
             @cleaned_up = true
           end
         end
+        raise error if error
       end
 
       # Initialize variables.
