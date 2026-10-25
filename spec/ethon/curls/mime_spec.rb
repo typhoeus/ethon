@@ -2,6 +2,7 @@
 require 'spec_helper'
 require 'json'
 require 'tempfile'
+require 'tmpdir'
 
 describe Ethon::Curl::Mime do
   let(:easy) { Ethon::Easy.new }
@@ -96,6 +97,36 @@ describe Ethon::Curl::Mime do
 
       expect { part.encoder = "base64\r\nX-Injected: yes" }.
         to raise_error(Ethon::Errors::InvalidValue, /encoder/)
+    end
+
+    it "rejects a part name containing CRLF" do
+      expect(Ethon::Curl).not_to receive(:mime_name)
+
+      expect { part.name = "field\r\nX-Injected: yes" }.
+        to raise_error(Ethon::Errors::InvalidValue, /name/)
+    end
+
+    it "rejects a filename containing CRLF" do
+      expect(Ethon::Curl).not_to receive(:mime_filename)
+
+      expect { part.filename = "file\r\nX-Injected: yes" }.
+        to raise_error(Ethon::Errors::InvalidValue, /filename/)
+    end
+
+    it "rejects lone CR and LF in names and filenames" do
+      [["name", :name], ["filename", :filename]].each do |value, setter|
+        ["#{value}\r", "#{value}\n"].each do |bad|
+          expect { part.public_send("#{setter}=", bad) }.
+            to raise_error(Ethon::Errors::InvalidValue, /#{setter}/)
+        end
+      end
+    end
+
+    it "still accepts valid names and filenames" do
+      expect {
+        part.name = "field"
+        part.filename = "report.csv"
+      }.not_to raise_error
     end
 
     it "still sends a valid content type" do
@@ -239,6 +270,20 @@ describe Ethon::Curl::Mime do
         body = JSON.parse(easy.response_body)
         expect(body["filename"]).to eq(File.basename(file.path))
         expect(body["content"]).to eq("mime content")
+      end
+    end
+
+    it "rejects a form filename containing CRLF" do
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "file\r\nX-Injected: yes")
+        File.write(path, "mime content")
+
+        File.open(path) do |file|
+          form = Ethon::Easy::Form.new(easy, { :file => file })
+
+          expect { form.mime }.
+            to raise_error(Ethon::Errors::InvalidValue, /filename/)
+        end
       end
     end
 
