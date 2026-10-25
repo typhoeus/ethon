@@ -112,6 +112,104 @@ describe Ethon::Curl::Url do
     expect(value.get(:path)).to eq("/a b")
   end
 
+  it "accepts a nil value to clear a part" do
+    url.set(:query, nil)
+
+    expect { url.get(:query) }.to raise_error(Ethon::Errors::Url)
+  end
+
+  it "accepts a flag name or an array of flag names" do
+    value = described_class.new
+
+    value.set(:url, "https://example.com/a b", [:allow_space])
+    expect(value.get(:path)).to eq("/a b")
+
+    value.set(:path, "/c d", :allow_space)
+    expect(value.get(:path)).to eq("/c d")
+  end
+
+  it "rejects an unknown flag name" do
+    url
+    expect(Ethon::Curl).not_to receive(:url_set)
+
+    expect { url.set(:host, "example.org", :bogus) }.
+      to raise_error(Ethon::Errors::InvalidValue, /url_flags/)
+  end
+
+  it "rejects an unknown flag name when reading" do
+    url
+    expect(Ethon::Curl).not_to receive(:url_get)
+
+    expect { url.get(:host, :bogus) }.
+      to raise_error(Ethon::Errors::InvalidValue, /url_flags/)
+  end
+
+  it "coerces non-string values" do
+    url.set(:fragment, :anchor)
+
+    expect(url.get(:fragment)).to eq("anchor")
+  end
+
+  it "rejects an unknown part name" do
+    url
+    expect(Ethon::Curl).not_to receive(:url_set)
+
+    expect { url.set(:bogus, "value") }.
+      to raise_error(Ethon::Errors::InvalidValue, /url_part/)
+  end
+
+  it "rejects an unknown part name when reading" do
+    url
+    expect(Ethon::Curl).not_to receive(:url_get)
+
+    expect { url.get(:bogus) }.
+      to raise_error(Ethon::Errors::InvalidValue, /url_part/)
+  end
+
+  it "accepts an enum value as the part name" do
+    url.set(Ethon::Curl::UrlPart[:host], "example.org")
+
+    expect(url.get(:host)).to eq("example.org")
+  end
+
+  it "rejects an unknown enum value as the part name" do
+    url
+    expect(Ethon::Curl).not_to receive(:url_set)
+
+    expect { url.set(99, "value") }.
+      to raise_error(Ethon::Errors::InvalidValue, /url_part/)
+  end
+
+  it "rejects a part name that is not a string, symbol, or enum value" do
+    expect { url.set(Object.new, "value") }.
+      to raise_error(Ethon::Errors::InvalidValue, /url_part/)
+  end
+
+  it "rejects a value containing a NUL byte" do
+    url
+    expect(Ethon::Curl).not_to receive(:url_set)
+
+    expect { url.set(:url, "https://example.com/\0truncated") }.
+      to raise_error(Ethon::Errors::InvalidValue, /url_value/)
+    expect(url.get(:host)).to eq("example.com")
+  end
+
+  it "rejects a NUL byte in the initial URL" do
+    expect { described_class.new("https://example.com/\0truncated") }.
+      to raise_error(Ethon::Errors::InvalidValue, /url_value/)
+  end
+
+  it "releases the native handle when the initial URL is rejected" do
+    pointer = nil
+    allow(Ethon::Curl).to receive(:url).and_wrap_original do |original|
+      pointer = original.call
+    end
+
+    expect { described_class.new("https://example.com/\0truncated") }.
+      to raise_error(Ethon::Errors::InvalidValue)
+    expect(Ethon::Curl::OwnedPointer.owners).not_to have_key(pointer.address)
+  end
+
 end
 
 describe Ethon::Easy, "with CURLOPT_CURLU" do
