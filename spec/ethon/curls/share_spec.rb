@@ -43,6 +43,10 @@ end
 describe Ethon::Curl::Share do
   let(:share) { described_class.new }
 
+  def null_pointer?(value)
+    value.nil? || value.null?
+  end
+
   describe "#share" do
     it "shares a data type" do
       expect { share.share(:cookie) }.not_to raise_error
@@ -155,6 +159,35 @@ describe Ethon::Curl::Share do
 
       expect(locks).to be > 0
       expect(unlocks).to be > 0
+    end
+
+    it "passes libcurl's arguments to the callbacks" do
+      lock_args = []
+      unlock_args = []
+      shared = described_class.new
+      shared.lockfunction = proc { |*args| lock_args << args }
+      shared.unlockfunction = proc { |*args| unlock_args << args }
+      shared.share(:cookie)
+
+      first = Ethon::Easy.new
+      first.cookiefile = ""
+      first.share = shared
+      first.cookielist = "example.com\tFALSE\t/\tFALSE\t0\tname\tvalue"
+
+      second = Ethon::Easy.new
+      second.cookiefile = ""
+      second.share = shared
+      second.cookielist
+
+      expect(lock_args).not_to be_empty
+      expect(lock_args).to all(satisfy { |args| args.length == 4 })
+      expect(lock_args).to all(satisfy { |args| args[1].is_a?(Symbol) })
+      expect(lock_args).to all(satisfy { |args| null_pointer?(args[3]) })
+
+      expect(unlock_args).not_to be_empty
+      expect(unlock_args).to all(satisfy { |args| args.length == 3 })
+      expect(unlock_args).to all(satisfy { |args| args[1].is_a?(Symbol) })
+      expect(unlock_args).to all(satisfy { |args| null_pointer?(args[2]) })
     end
   end
 

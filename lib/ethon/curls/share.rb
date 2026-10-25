@@ -33,9 +33,19 @@ module Ethon
       # Build the dispatcher on the class so the closure does not retain the
       # Share instance; otherwise the callback registry itself would keep every
       # share handle alive.
-      def self.callback_function(callback)
+      #
+      # curl_lock_function and curl_unlock_function do not take the same
+      # arguments. An unlock callback receives the user pointer where a lock
+      # callback receives the access mode.
+      def self.lock_function(callback)
         FFI::Function.new(:void, [:pointer, :int, :int, :pointer], proc do |handle, data, access, userp|
           callback.call(handle, Curl::LockData[data], Curl::LockAccess[access], userp)
+        end)
+      end
+
+      def self.unlock_function(callback)
+        FFI::Function.new(:void, [:pointer, :int, :pointer], proc do |handle, data, userp|
+          callback.call(handle, Curl::LockData[data], userp)
         end)
       end
 
@@ -88,7 +98,10 @@ module Ethon
         set_callback(:lockfunc, callback)
       end
 
-      # Set the callback libcurl calls after accessing shared data.
+      # Set the callback libcurl calls before releasing a share lock.
+      #
+      # The block receives the easy handle, the shared data type, and the user
+      # pointer. libcurl's unlock callback has no access mode argument.
       #
       # @param [ Proc, nil ] callback The unlock callback.
       #
@@ -122,7 +135,9 @@ module Ethon
 
         # libcurl calls the lock and unlock callbacks again during
         # curl_share_cleanup, so the FFI::Function itself must stay alive.
-        function = self.class.callback_function(callback) if callback
+        function = if callback
+          option == :lockfunc ? self.class.lock_function(callback) : self.class.unlock_function(callback)
+        end
 
         code = Curl.share_setopt(self, option, :pointer, function)
         raise Errors::Share.new(code) unless code == :ok
