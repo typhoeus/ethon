@@ -20,16 +20,22 @@ module Ethon
       attr_reader :url
 
       def url=(value)
+        # libcurl copies the URL, but the accessor must describe the exact
+        # string libcurl received. Snapshot it so later caller mutations cannot
+        # make #url disagree with the handle, and assign it only once libcurl
+        # accepts the value. Do this before touching the URL handle so a
+        # rejected value cannot leave it detached.
+        snapshot = value.nil? ? nil : value.to_s
+        snapshot = snapshot.dup.freeze if snapshot && !snapshot.frozen?
+
         previous_curlu = @curlu
         if previous_curlu
           Curl.set_option(:curlu, nil, handle)
           @curlu = nil
         end
 
-        # Assign after libcurl accepts the value so a rejected URL does not
-        # leave the Ruby state pointing at something the handle never got.
         begin
-          Curl.set_option(:url, value, handle)
+          Curl.set_option(:url, snapshot, handle)
         rescue Exception
           # Detaching the URL handle was only necessary to install the new
           # value. Put it back when that value was rejected.
@@ -39,7 +45,8 @@ module Ethon
           end
           raise
         end
-        @url = value
+        @url = snapshot
+        value
       end
 
       def escape=( b )
@@ -239,7 +246,7 @@ module Ethon
         @on_headers = @on_headers.dup if @on_headers
         @on_body = @on_body.dup if @on_body
         @on_progress = @on_progress.dup if @on_progress
-        @headers = @headers.dup if @headers
+        @headers = @headers.dup.freeze if @headers
       end
 
       def tlsauth_type_value(value)
