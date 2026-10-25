@@ -480,7 +480,7 @@ describe Ethon::Multi::Operations do
 
   describe "#ongoing?" do
     context "when easy_handles" do
-      before { multi.easy_handles << 1 }
+      before { multi.send(:stack) << 1 }
 
       context "when running_count not greater 0" do
         before { multi.instance_variable_set(:@running_count, 0) }

@@ -5,14 +5,18 @@ module Ethon
     # This module provides the multi stack behaviour.
     module Stack
 
-      # Return easy handles.
+      # Return the easy handles currently added to this multi.
+      #
+      # The returned array is a snapshot. Adding or deleting entries there does
+      # not change the multi, because libcurl would still reference the handles.
+      # Use #add and #delete instead.
       #
       # @example Return easy handles.
       #   multi.easy_handles
       #
-      # @return [ Array ] The easy handles.
+      # @return [ Array<Easy> ] The easy handles.
       def easy_handles
-        @easy_handles ||= []
+        stack.dup.freeze
       end
 
       # Add an easy to the stack.
@@ -28,7 +32,7 @@ module Ethon
       # @raise [ TypeError ] If easy is not an Ethon::Easy.
       # @raise [ Ethon::Errors::MultiAdd ] If adding an easy failed.
       def add(easy)
-        return nil if easy_handles.include?(easy)
+        return nil if stack.include?(easy)
         unless easy.is_a?(Ethon::Easy)
           raise TypeError, "expected an Ethon::Easy, got #{easy.class}"
         end
@@ -44,7 +48,7 @@ module Ethon
         multi_handle = handle
         easy_handle = easy.handle
 
-        easy_handles << easy
+        stack << easy
         begin
           code = Curl.multi_add_handle(multi_handle, easy_handle)
         rescue Exception
@@ -55,7 +59,7 @@ module Ethon
         end
 
         unless code == :ok
-          easy_handles.delete(easy)
+          stack.delete(easy)
           raise Errors::MultiAdd.new(code, easy)
         end
 
@@ -86,16 +90,16 @@ module Ethon
       #
       # @raise [ Ethon::Errors::MultiRemove ] If removing an easy failed.
       def delete(easy)
-        if (index = easy_handles.index(easy))
-          easy_handles.delete_at(index)
+        if (index = stack.index(easy))
+          stack.delete_at(index)
           begin
             code = Curl.multi_remove_handle(handle, easy.handle)
           rescue Exception
-            easy_handles.insert(index, easy)
+            stack.insert(index, easy)
             raise
           end
           unless code == :ok
-            easy_handles.insert(index, easy)
+            stack.insert(index, easy)
             raise Errors::MultiRemove.new(code, easy)
           end
 
@@ -105,6 +109,12 @@ module Ethon
       end
 
       private
+
+      # The mutable stack. Only this Multi may change it; every native change
+      # has to go through #add and #delete.
+      def stack
+        @easy_handles ||= []
+      end
 
       # Undo a native add whose Easy could not be prepared for the transfer.
       def rollback_add(easy, multi_handle, easy_handle)
@@ -143,7 +153,7 @@ module Ethon
         if attached
           easy.instance_variable_set(:@multi, self)
         else
-          easy_handles.delete(easy)
+          stack.delete(easy)
           easy.instance_variable_set(:@multi, nil)
         end
       end

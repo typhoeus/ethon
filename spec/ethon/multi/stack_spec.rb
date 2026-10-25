@@ -6,6 +6,40 @@ describe Ethon::Multi::Stack do
   let(:multi) { Ethon::Multi.new }
   let(:easy) { Ethon::Easy.new }
 
+  describe "#easy_handles" do
+    after { multi.delete(easy) if multi.easy_handles.include?(easy) }
+
+    it "returns a frozen snapshot" do
+      multi.add(easy)
+
+      handles = multi.easy_handles
+
+      expect(handles).to eq([easy])
+      expect(handles).to be_frozen
+    end
+
+    it "does not change the multi when the snapshot is modified" do
+      multi.add(easy)
+      handles = multi.easy_handles
+
+      expect { handles << 1 }.to raise_error(FrozenError)
+      expect { handles.delete(easy) }.to raise_error(FrozenError)
+      expect(multi.easy_handles).to include(easy)
+    end
+
+    it "does not change when the multi changes" do
+      snapshot = multi.easy_handles
+      multi.add(easy)
+
+      expect(snapshot).to be_empty
+      expect(multi.easy_handles).to include(easy)
+    end
+
+    it "returns a new snapshot for every call" do
+      expect(multi.easy_handles).not_to be(multi.easy_handles)
+    end
+  end
+
   describe "#add" do
     context "when easy already added" do
       before { multi.add(easy) }
@@ -20,7 +54,7 @@ describe Ethon::Multi::Stack do
       it "adds easy to multi" do
         expect(Ethon::Curl).to receive(:multi_add_handle).and_return(:ok)
         multi.add(easy)
-        multi.easy_handles.delete(easy)
+        multi.delete(easy)
       end
 
       it "adds easy to easy_handles" do
@@ -336,18 +370,27 @@ describe Ethon::Multi::Stack do
     end
 
     context "when multi_remove_handle fails" do
-      before { multi.easy_handles << easy }
+      before { multi.add(easy) }
+
+      after do
+        allow(Ethon::Curl).to receive(:multi_remove_handle).and_call_original
+        multi.delete(easy) if multi.easy_handles.include?(easy)
+      end
 
       it "raises multi remove error" do
         expect(Ethon::Curl).to receive(:multi_remove_handle).and_return(:bad_easy_handle)
         expect{ multi.delete(easy) }.to raise_error(Ethon::Errors::MultiRemove)
         expect(multi.easy_handles).to include(easy)
-        multi.easy_handles.delete(easy)
       end
     end
 
     context "when a callback raises while removing" do
-      before { multi.easy_handles << easy }
+      before { multi.add(easy) }
+
+      after do
+        allow(Ethon::Curl).to receive(:multi_remove_handle).and_call_original
+        multi.delete(easy) if multi.easy_handles.include?(easy)
+      end
 
       it "keeps the easy tracked" do
         error = RuntimeError.new("callback failed")
@@ -358,7 +401,6 @@ describe Ethon::Multi::Stack do
 
         expect { multi.delete(easy) }.to raise_error(error)
         expect(multi.easy_handles).to include(easy)
-        multi.easy_handles.delete(easy)
       end
     end
   end

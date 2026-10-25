@@ -41,7 +41,7 @@ module Ethon
         @handle.check_pid! if @handle
 
         begin
-          easy_handles.dup.each { |easy| delete(easy) }
+          stack.dup.each { |easy| delete(easy) }
         ensure
           # Cleanup is terminal. Release the native handle even when detaching
           # one of the easy handles fails. Handles that could not be detached
@@ -49,7 +49,7 @@ module Ethon
           begin
             @handle.free if @handle
           ensure
-            easy_handles.each do |easy|
+            stack.each do |easy|
               begin
                 easy.finish_response_body_io
               rescue StandardError
@@ -57,7 +57,7 @@ module Ethon
                 # closing a streamed response fails.
               end
             end
-            easy_handles.clear
+            stack.clear
             @handle = nil
             @assigned_sockets = nil
             @procs = nil
@@ -245,7 +245,7 @@ module Ethon
       #
       # @return [ Boolean ] True if ongoing, else false.
       def ongoing?
-        easy_handles.size > 0 || (running_count || 0) > 0
+        stack.size > 0 || (running_count || 0) > 0
       end
 
       # Associate an arbitrary pointer with a socket in the multi handle.
@@ -382,7 +382,7 @@ module Ethon
           msg = Curl.multi_info_read(handle, msgs_left)
           break if msg.null?
           next if msg[:code] != :done
-          easy = easy_handles.find{ |e| e.handle == msg[:easy_handle] }
+          easy = stack.find{ |e| e.handle == msg[:easy_handle] }
           # The handle may have been removed between the transfer finishing and
           # the completion message being read.
           next unless easy
