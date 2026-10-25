@@ -30,4 +30,28 @@ describe Ethon::Curl do
       expect(described_class::WAIT_POLLOUT).to eq(0x0004)
     end
   end
+
+  describe ".select" do
+    it "releases the GVL while waiting" do
+      skip "libc select is not used on Windows" if described_class.windows?
+
+      timeout = described_class::Timeval.new
+      timeout[:sec] = 0
+      timeout[:usec] = 100_000
+
+      counter = 0
+      stop = false
+      worker = Thread.new do
+        sleep 0.02
+        counter += 1 until stop
+      end
+
+      described_class.select(0, nil, nil, nil, timeout)
+      ran_during_select = counter > 0
+      stop = true
+      worker.join
+
+      expect(ran_during_select).to be(true)
+    end
+  end
 end

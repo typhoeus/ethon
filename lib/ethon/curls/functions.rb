@@ -97,7 +97,9 @@ module Ethon
             base.ffi_lib ::FFI::Library::LIBC
         end
 
-        base.attach_function :select,                                            [:int, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::Timeval.ptr], :int
+        # select() blocks for the multi timeout. Release the GVL so other Ruby
+        # threads can run while the select fallback is waiting.
+        base.attach_function :select,                                            [:int, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::FDSet.ptr, Curl::Timeval.ptr], :int, blocking: true
       end
 
     end
