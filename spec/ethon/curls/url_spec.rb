@@ -260,6 +260,18 @@ describe Ethon::Easy, "with CURLOPT_CURLU" do
     expect(easy.response_body).to include('"PATH_INFO":"/"')
   end
 
+  it "keeps the URL handle when the replacement cannot be converted" do
+    easy.curlu = url
+    invalid = Object.new
+    def invalid.to_s
+      raise ArgumentError, "cannot convert"
+    end
+
+    expect { easy.url = invalid }.to raise_error(ArgumentError, /convert/)
+    expect(easy.curlu).to be(url)
+    expect(easy.perform).to eq(:ok)
+  end
+
   it "keeps the URL handle when the replacement string is rejected" do
     easy.curlu = url
 

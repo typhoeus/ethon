@@ -10,18 +10,20 @@ module Ethon
       attr_reader :url
 
       def url=(value)
+        # libcurl copies the URL, but the accessor must describe the exact
+        # string libcurl received. Snapshot it so later caller mutations cannot
+        # make #url disagree with the handle, and assign it only once libcurl
+        # accepts the value. Do this before touching the URL handle so a
+        # rejected value cannot leave it detached.
+        snapshot = value.nil? ? nil : value.to_s
+        snapshot = snapshot.dup.freeze if snapshot && !snapshot.frozen?
+
         previous_curlu = @curlu
         if previous_curlu
           Curl.set_option(:curlu, nil, handle)
           @curlu = nil
         end
 
-        # libcurl copies the URL, but the accessor must describe the exact
-        # string libcurl received. Snapshot it so later caller mutations cannot
-        # make #url disagree with the handle, and assign it only once libcurl
-        # accepts the value.
-        snapshot = value.nil? ? nil : value.to_s
-        snapshot = snapshot.dup.freeze if snapshot && !snapshot.frozen?
         begin
           Curl.set_option(:url, snapshot, handle)
         rescue Exception
