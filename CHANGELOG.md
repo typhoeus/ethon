@@ -25,6 +25,21 @@
   `Curl.supports_option?` and `Curl.version_at_least?` can be used to guard
   optional settings.
   ([#343](https://github.com/typhoeus/ethon/pull/343))
+* Assigning a new native handle to an `Easy`, including `Easy.new(handle: ...)`
+  and `Easy#handle = nil`, now installs Ethon's response callbacks and replays
+  the callbacks retained by the object. Constructor options are applied to a
+  supplied handle instead of the handle Ethon created and discarded.
+  ([#402](https://github.com/typhoeus/ethon/pull/402))
+* `Easy#postfields=` now sets `CURLOPT_POSTFIELDSIZE` from the retained bytes
+  and restores libcurl's default (`-1`) when the body is cleared. This keeps a
+  previous, larger body size from being applied to a shorter body. Set
+  `postfieldsize` after `postfields` when sending a prefix or another length.
+  ([#403](https://github.com/typhoeus/ethon/pull/403))
+* `Share#unlockfunction` callbacks now receive `(handle, data, userp)`, the
+  arguments defined by `curl_unlock_function`. They previously used the lock
+  callback signature, so the user pointer was read as an access mode and the
+  callback received a garbage fourth argument.
+  ([#405](https://github.com/typhoeus/ethon/pull/405))
 
 ### New libcurl bindings
 
@@ -166,6 +181,10 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * `Easy#perform`/`#reset`/`#cleanup`/`#dup` and `Multi#perform`/
   `#socket_action`/`#cleanup` now reject reentrant calls made from callbacks
   while the handle is still active.
+* `Easy#perform` now returns the result of the transfer it ran even when an
+  `on_complete` callback resets the Easy. Resetting clears `#return_code`, so
+  `perform` used to return `nil` after a successful transfer.
+  ([#404](https://github.com/typhoeus/ethon/pull/404))
 * Reading `#on_body` without a block, or after clearing the callback list, no
   longer disables response body buffering.
 * Multi no longer mutates the caller's options, validates `execution_mode`, and
@@ -176,6 +195,10 @@ is unavailable; introspection helpers return `nil` or an empty array.
   `CURLOPT_UPLOAD_FLAGS`, `CURLOPT_SSL_SIGNATURE_ALGORITHMS`, and the
   `CURLOPT_HTTPSIG_*` family), the newer `CURLINFO_*` entries, and
   `CURLUE_BACKSLASH`/`CURLU_GET_EMPTY`/`CURLU_NO_GUESS_SCHEME`.
+* `curl_global_sslset` results now use the `Curl::SslSetCode` enum. An unknown
+  backend is `:unknown_backend` instead of `:unsupported_protocol`, and a late
+  call is `:too_late` instead of `:failed_init`.
+  ([#406](https://github.com/typhoeus/ethon/pull/406))
 * Fixed the test server's keep-alive limits, cutting the suite from ~35s to
   ~5s, and added coverage for the option table, callbacks, reset behavior,
   Multi message handling, and libcurl info ownership.
