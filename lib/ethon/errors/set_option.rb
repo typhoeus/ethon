@@ -10,7 +10,9 @@ module Ethon
         rescue StandardError
           code.to_s
         end
-        super("libcurl failed to set the option: #{option}: #{message} (#{code})")
+        # Inspect so control characters in an untrusted option name cannot
+        # inject lines into logs that record the message.
+        super("libcurl failed to set the option: #{option.inspect}: #{message} (#{code})")
       end
 
       private

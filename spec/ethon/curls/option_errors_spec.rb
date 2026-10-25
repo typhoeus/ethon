@@ -14,7 +14,7 @@ describe "setting libcurl options" do
       allow(Ethon::Curl).to receive(:easy_setopt).and_return(:unknown_option)
 
       expect { Ethon::Curl.set_option(:tcp_keepcnt, 1, easy.handle) }.
-        to raise_error(Ethon::Errors::UnsupportedOption, /does not support the option: tcp_keepcnt/)
+        to raise_error(Ethon::Errors::UnsupportedOption, /does not support the option: :tcp_keepcnt/)
     end
 
     it "raises SetOption when libcurl rejects the value" do
