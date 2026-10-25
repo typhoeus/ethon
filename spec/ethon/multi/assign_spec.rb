@@ -45,6 +45,29 @@ describe Ethon::Multi do
         to raise_error(Ethon::Errors::InvalidValue)
     end
 
+    it "rejects a nil socket descriptor" do
+      expect(Ethon::Curl).not_to receive(:multi_assign)
+
+      expect { multi.assign(nil, pointer) }.
+        to raise_error(Ethon::Errors::InvalidValue, /assign/)
+      expect(multi.instance_variable_get(:@assigned_sockets)).to be_nil
+    end
+
+    it "rejects a socket descriptor that is not an integer" do
+      expect(Ethon::Curl).not_to receive(:multi_assign)
+
+      expect { multi.assign("42", pointer) }.
+        to raise_error(Ethon::Errors::InvalidValue, /assign/)
+    end
+
+    it "rejects an IO whose fileno is not an integer" do
+      io = double(:fileno => "7")
+      expect(Ethon::Curl).not_to receive(:multi_assign)
+
+      expect { multi.assign(io, pointer) }.
+        to raise_error(Ethon::Errors::InvalidValue, /assign/)
+    end
+
     it "rejects a freed owned pointer" do
       list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
       list.free
