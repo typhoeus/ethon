@@ -5,7 +5,9 @@ module Ethon
     # Raises when option is invalid.
     class InvalidValue < EthonError
       def initialize(option, value)
-        super("The value: #{value} is invalid for option: #{option}.")
+        # Inspect so control characters in a rejected value cannot inject
+        # lines into logs that record the message.
+        super("The value: #{value.inspect} is invalid for option: #{option}.")
       end
     end
   end
