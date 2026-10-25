@@ -135,6 +135,11 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * Corrected API annotations for the `Easy#perform` and `Easy#handle` return
   types, the `Multi` option setter parameter types, and `Multi#socket_action`.
   ([#445](https://github.com/typhoeus/ethon/pull/445))
+* Assigning a replacement handle now clears the Ruby-side URL, headers,
+  postfields, URL/MIME/slist/blob/share state, response, and return code,
+  because the new handle does not have them. `Easy#dup` keeps that state
+  because the native duplicate already carries it.
+  ([#448](https://github.com/typhoeus/ethon/pull/448))
 * `Ethon::Errors::InvalidValue` now escapes the value in its message, so a
   CR or LF in a rejected URL or request-line value can no longer be injected
   into logs that record the exception.
