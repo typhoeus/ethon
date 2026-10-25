@@ -35,6 +35,16 @@
   previous, larger body size from being applied to a shorter body. Set
   `postfieldsize` after `postfields` when sending a prefix or another length.
   ([#403](https://github.com/typhoeus/ethon/pull/403))
+* `Easy#postfields=` and `Easy#copypostfields=` now send binary bodies without
+  truncating them at the first NUL. A `postfieldsize` larger than the retained
+  body raises `Ethon::Errors::InvalidValue` instead of making libcurl read
+  past the buffer. Copying a new body without an explicit size sets the exact
+  byte length, and clearing the copied body clears the size as well.
+  ([#436](https://github.com/typhoeus/ethon/pull/436))
+* `Multi.new` now accepts `max_host_connections`, `max_pipeline_length`,
+  `content_length_penalty_size`, and `chunk_length_penalty_size`, which were
+  already in the multi option table but had no setters.
+  ([#444](https://github.com/typhoeus/ethon/pull/444))
 * `Share#unlockfunction` callbacks now receive `(handle, data, userp)`, the
   arguments defined by `curl_unlock_function`. They previously used the lock
   callback signature, so the user pointer was read as an access mode and the
@@ -97,6 +107,39 @@ is unavailable; introspection helpers return `nil` or an empty array.
   `curl_url_dup`, like `#dup`, instead of raising
   `cannot duplicate FFI::AutoPointer`.
   ([#433](https://github.com/typhoeus/ethon/pull/433))
+* Response bodies written to a Ruby IO now retry short writes. Wrapper and
+  nonblocking destinations could accept fewer bytes than a chunk without
+  raising, and the rest of the chunk was silently lost. A write that reports
+  zero progress now fails the transfer, while destinations returning `nil`
+  keep their previous behavior.
+  ([#443](https://github.com/typhoeus/ethon/pull/443))
+* `Easy#file=` now opens a new path before releasing the previous response
+  destination. A bad path raises without discarding the file that was already
+  configured, so the next `perform` still writes to it.
+  ([#439](https://github.com/typhoeus/ethon/pull/439))
+* A duplicated `Easy` keeps a configured response file path and opens its own
+  stream for the next transfer. A caller-owned IO is still dropped so the two
+  handles cannot write into the same object.
+  ([#435](https://github.com/typhoeus/ethon/pull/435))
+* Multipart forms no longer treat every `Array` value as a file upload. With
+  `params_encoding: :none`, ordinary arrays stay data, and file values are
+  marked by `Queryable::FileInfo`. Raw `String` bodies are rejected when
+  `multipart: true` is requested instead of producing an unnamed part or a
+  `NoMethodError`.
+  ([#441](https://github.com/typhoeus/ethon/pull/441),
+  [#438](https://github.com/typhoeus/ethon/pull/438))
+* `InvalidOption`, `UnsupportedOption`, and `SetOption` now inspect the option
+  name in their messages, so control characters in an untrusted option key
+  cannot inject lines into logs.
+  ([#442](https://github.com/typhoeus/ethon/pull/442))
+* Corrected API annotations for the `Easy#perform` and `Easy#handle` return
+  types, the `Multi` option setter parameter types, and `Multi#socket_action`.
+  ([#445](https://github.com/typhoeus/ethon/pull/445))
+* Assigning a replacement handle now clears the Ruby-side URL, headers,
+  postfields, URL/MIME/slist/blob/share state, response, and return code,
+  because the new handle does not have them. `Easy#dup` keeps that state
+  because the native duplicate already carries it.
+  ([#448](https://github.com/typhoeus/ethon/pull/448))
 * `Ethon::Errors::InvalidValue` now escapes the value in its message, so a
   CR or LF in a rejected URL or request-line value can no longer be injected
   into logs that record the exception.
