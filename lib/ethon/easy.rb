@@ -268,6 +268,8 @@ module Ethon
 
       @postfields = nil
       @postfields_pointer = nil
+      @postfield_body_size = nil
+      @postfieldsize_value = nil
       @url = nil
       @escape = nil
       @multipart = nil

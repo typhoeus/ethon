@@ -222,6 +222,8 @@ module Ethon
         @request_body_start = nil
         @postfields = nil
         @postfields_pointer = nil
+        @postfield_body_size = nil
+        @postfieldsize_value = nil
         @header_list = nil
         @multipart_form = nil
         @mime = nil
