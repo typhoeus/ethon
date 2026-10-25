@@ -11,20 +11,30 @@ module Ethon
         # up or fork-inherited handle must not touch the destination before the
         # error is raised.
         handle
-        clear_response_body_io
-        # Pathname-like objects may also implement #write. Prefer the path when
-        # the object is not an IO (File and Tempfile expose #fileno).
-        if destination.respond_to?(:to_path) && !destination.respond_to?(:fileno)
-          @response_body_path = destination.to_path
-          prepare_response_body_io
-        elsif destination.respond_to?(:write)
-          @response_body_io = destination
-          @owns_response_body_io = false
-        elsif destination
-          @response_body_path = destination.to_s
-          prepare_response_body_io
+
+        path, io, owned = response_body_destination(destination)
+        previous_io = @response_body_io
+        previous_owned = @owns_response_body_io
+
+        # Open the new destination before closing the previous one so a path
+        # that cannot be opened leaves the Easy with its previous stream.
+        begin
+          if previous_owned && previous_io && !previous_io.equal?(io) && !previous_io.closed?
+            previous_io.close
+          end
+        rescue Exception
+          begin
+            io.close if owned && io && !io.equal?(previous_io) && !io.closed?
+          rescue StandardError
+            # Keep the error from closing the previous destination.
+          end
+          raise
         end
-        @response_body = @response_body_io ? nil : String.new
+
+        @response_body_io = io
+        @response_body_path = path
+        @owns_response_body_io = owned
+        @response_body = io ? nil : String.new
         destination
       end
 
@@ -71,6 +81,26 @@ module Ethon
           close_response_body_io
         else
           flush_response_body_io
+        end
+      end
+
+      private
+
+      # Resolve a destination to [path, io, owned] without touching the Easy's
+      # current stream. Pathname-like objects may also implement #write. Prefer
+      # the path when the object is not an IO (File and File-like objects with
+      # #fileno).
+      def response_body_destination(destination)
+        if destination.respond_to?(:to_path) && !destination.respond_to?(:fileno)
+          path = destination.to_path
+          [path, File.open(path, "wb"), true]
+        elsif destination.respond_to?(:write)
+          [nil, destination, false]
+        elsif destination
+          path = destination.to_s
+          [path, File.open(path, "wb"), true]
+        else
+          [nil, nil, false]
         end
       end
     end

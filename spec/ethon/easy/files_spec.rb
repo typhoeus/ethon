@@ -171,6 +171,43 @@ describe Ethon::Easy::Files do
     expect(copy.response_body).to eq("")
   end
 
+  it "keeps the previous destination when the new path cannot be opened" do
+    Tempfile.create do |file|
+      file.close
+      easy.url = "http://localhost:3001/binary/16"
+      easy.file = file.path
+      previous_io = easy.instance_variable_get(:@response_body_io)
+      missing = File.join(File.dirname(file.path), "missing-#{Process.pid}", "body")
+
+      expect { easy.file = missing }.to raise_error(SystemCallError)
+
+      expect(easy.instance_variable_get(:@response_body_path)).to eq(file.path)
+      expect(easy.instance_variable_get(:@response_body_io)).to be(previous_io)
+      expect(previous_io).not_to be_closed
+
+      expect(easy.perform).to eq(:ok)
+      expect(File.binread(file.path).bytesize).to eq(16)
+    ensure
+      easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+    end
+  end
+
+  it "closes the owned destination it replaces" do
+    Dir.mktmpdir do |dir|
+      first = File.join(dir, "first")
+      second = File.join(dir, "second")
+      easy.file = first
+      previous_io = easy.instance_variable_get(:@response_body_io)
+
+      easy.file = second
+
+      expect(previous_io).to be_closed
+      expect(easy.instance_variable_get(:@response_body_path)).to eq(second)
+    ensure
+      easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+    end
+  end
+
   it "restores in-memory buffering when cleared" do
     easy.file = StringIO.new
 
