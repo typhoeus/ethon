@@ -196,12 +196,31 @@ describe Ethon::Easy::Files do
       good = File.join(dir, "good")
       missing = File.join(dir, "missing", "out")
       easy = Ethon::Easy.new(:url => "http://localhost:3001/binary/8", :file => good)
+      previous_io = easy.instance_variable_get(:@response_body_io)
 
       expect { easy.file = missing }.to raise_error(Errno::ENOENT)
       expect(easy.instance_variable_get(:@response_body_path)).to eq(good)
+      expect(easy.instance_variable_get(:@response_body_io)).to be(previous_io)
+      expect(previous_io).not_to be_closed
 
       expect(easy.perform).to eq(:ok)
       expect(File.binread(good).bytesize).to eq(8)
+    end
+  end
+
+  it "closes an owned destination that a new path replaces" do
+    Dir.mktmpdir do |dir|
+      first = File.join(dir, "first")
+      second = File.join(dir, "second")
+      easy.file = first
+      previous_io = easy.instance_variable_get(:@response_body_io)
+
+      easy.file = second
+
+      expect(previous_io).to be_closed
+      expect(easy.instance_variable_get(:@response_body_path)).to eq(second)
+    ensure
+      easy.file = nil
     end
   end
 
