@@ -61,6 +61,48 @@ describe "multipart forms" do
     expect(response["list"]).to eq("0" => "first", "1" => "second")
   end
 
+  it "sends untransformed arrays as fields instead of file parts" do
+    easy.http_request(
+      url,
+      :post,
+      :body => { :list => ["first", "second"] },
+      :multipart => true,
+      :params_encoding => :none
+    )
+
+    expect(easy.perform).to eq(:ok)
+    response = JSON.parse(easy.response_body)
+    expect(response["list"]).to eq(["first", "second"].to_s)
+  end
+
+  it "still uploads files with params_encoding :none" do
+    content = "binary\x00data"
+
+    Tempfile.create do |file|
+      file.binmode
+      file.write(content)
+      file.flush
+
+      File.open(file.path) do |upload|
+        easy.http_request(
+          url,
+          :post,
+          :body => { :file => upload, :note => "kept" },
+          :multipart => true,
+          :params_encoding => :none
+        )
+      end
+
+      expect(easy.perform).to eq(:ok)
+      response = JSON.parse(easy.response_body)
+      expect(response["note"]).to eq("kept")
+      expect(response["file"]).to include(
+        "filename" => File.basename(file.path),
+        "size" => content.bytesize
+      )
+    end
+  end
+
   it "uploads a binary file byte for byte" do
     content = (0..255).to_a.pack("C*") * 4
 

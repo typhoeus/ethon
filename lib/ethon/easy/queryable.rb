@@ -5,6 +5,13 @@ module Ethon
     # This module contains logic about building
     # query parameters for url or form.
     module Queryable
+      # Marker for the [filename, content type, path] triple produced for a
+      # file upload. It stays an Array for compatibility, but lets the form
+      # builders tell a file from an array value that was left untransformed
+      # by params_encoding :none.
+      class FileInfo < Array
+      end
+
       attr_reader :escape, :params_encoding
 
       def escape=(value)
@@ -110,11 +117,11 @@ module Ethon
       # @return [ Array ] Array of informations.
       def file_info(file)
         filename = File.basename(file.path)
-        [
+        FileInfo.new([
           filename,
           mime_type(filename),
           File.expand_path(file.path)
-        ]
+        ])
       end
 
       private

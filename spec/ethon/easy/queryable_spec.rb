@@ -124,6 +124,14 @@ describe Ethon::Easy::Queryable do
       params.params_encoding = :multi
       expect(params.query_pairs).to eq([[:a, 1], [:a, 2]])
     end
+
+    it "keeps an untransformed array distinct from file info" do
+      params.params_encoding = :none
+      pairs = params.query_pairs
+
+      expect(pairs).to eq([[:a, [1, 2]]])
+      expect(pairs.first.last).not_to be_a(Ethon::Easy::Queryable::FileInfo)
+    end
   end
 
   describe "#build_query_pairs" do
@@ -240,6 +248,11 @@ describe Ethon::Easy::Queryable do
 
         it "transforms" do
           expect(pairs).to eq([["a[b][0]", file_info]])
+        end
+
+        it "marks the file info so multipart does not confuse it with an array value" do
+          expect(file_info).to be_a(Ethon::Easy::Queryable::FileInfo)
+          expect(file_info).to eq(["spec_helper.rb", "application/x-ruby", File.expand_path("spec/spec_helper.rb")])
         end
 
         context "when MIME" do
