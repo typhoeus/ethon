@@ -14,6 +14,11 @@ describe "libcurl symbolic option values" do
     easy.proxytype = :https2
   end
 
+  it "supports CURLPROXY_HTTPS3" do
+    expect_long(8)
+    easy.proxytype = :https3
+  end
+
   it "keeps CURLPROXY_SOCKS4 at 4" do
     expect_long(4)
     easy.proxytype = :socks4
@@ -94,11 +99,17 @@ describe "libcurl symbolic option values" do
       :no_partialchain => 1 << 2,
       :revoke_best_effort => 1 << 3,
       :native_ca => 1 << 4,
-      :auto_client_cert => 1 << 5
+      :auto_client_cert => 1 << 5,
+      :earlydata => 1 << 6
     }.each do |name, value|
       expect_long(value)
       easy.ssl_options = name
     end
+  end
+
+  it "supports CURLSSLOPT_EARLYDATA for proxies" do
+    expect_long(1 << 6)
+    easy.proxy_ssl_options = :earlydata
   end
 
   it "combines SSL option bits" do

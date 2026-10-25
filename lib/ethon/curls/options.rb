@@ -387,7 +387,7 @@ module Ethon
       option :easy, :redir_protocols, :bitmask, 182, [nil, :http, :https, :ftp, :ftps, :scp, :sftp, :telnet, :ldap, :ldaps, :dict, :file, :tftp, :imap, :imaps, :pop3, :pop3s, :smtp, :smtps, :rtsp, :rtmp, :rtmpt, :rtmpe, :rtmpte, :rtmps, :rtmpts, :gopher, :smb, :smbs, :mqtt, :gophers]
       option :easy, :proxy, :string, 4
       option :easy, :proxyport, :int, 59
-      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, :https, :https2, :socks4, :socks5, :socks4a, :socks5_hostname]
+      option :easy, :proxytype, :enum, 101, [:http, :http_1_0, :https, :https2, :socks4, :socks5, :socks4a, :socks5_hostname, :https3]
       option :easy, :noproxy, :string, 177
       option :easy, :httpproxytunnel, :bool, 61
       option :easy, :socks5_gssapi_service, :string, 179
@@ -554,7 +554,7 @@ module Ethon
       option :easy, :egdsocket, :string, 77
       option :easy, :ssl_cipher_list, :string, 83
       option :easy, :ssl_sessionid_cache, :bool, 150
-      option :easy, :ssl_options, :bitmask, 216, [nil, :allow_beast, :no_revoke, :no_partialchain, :revoke_best_effort, :native_ca, :auto_client_cert]
+      option :easy, :ssl_options, :bitmask, 216, [nil, :allow_beast, :no_revoke, :no_partialchain, :revoke_best_effort, :native_ca, :auto_client_cert, :earlydata]
       option :easy, :krblevel, :string, 63
       option_alias :easy, :krblevel, :krb4level
       option :easy, :gssapi_delegation, :bitmask, 210, [:none, :policy_flag, :flag]
@@ -578,7 +578,7 @@ module Ethon
       option_alias :easy, :proxy_keypasswd, :proxy_sslkeypasswd
       option :easy, :proxy_ssl_cipher_list, :string, 259
       option :easy, :proxy_crlfile, :string, 260
-      option :easy, :proxy_ssl_options, :bitmask, 261, [nil, :allow_beast, :no_revoke, :no_partialchain, :revoke_best_effort, :native_ca, :auto_client_cert]
+      option :easy, :proxy_ssl_options, :bitmask, 261, [nil, :allow_beast, :no_revoke, :no_partialchain, :revoke_best_effort, :native_ca, :auto_client_cert, :earlydata]
       option :easy, :pre_proxy, :string, 262
       option :easy, :proxy_pinnedpublickey, :string, 263
       option_alias :easy, :proxy_pinnedpublickey, :proxy_pinned_public_key
