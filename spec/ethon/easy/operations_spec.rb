@@ -146,6 +146,43 @@ describe Ethon::Easy::Operations do
       expect { easy.handle = Object.new }.
         to raise_error(TypeError, /easy handle pointer/)
     end
+
+    it "refuses to replace the handle while performing" do
+      handle = easy.handle
+      easy.instance_variable_set(:@performing, true)
+
+      expect { easy.handle = handle }.
+        to raise_error(Ethon::Errors::EthonError, /performing/)
+    end
+
+    it "refuses to replace the handle while completing" do
+      handle = easy.handle
+      easy.instance_variable_set(:@completing, true)
+
+      expect { easy.handle = handle }.
+        to raise_error(Ethon::Errors::EthonError, /completing/)
+    end
+
+    it "refuses to replace the handle while attached to a Multi" do
+      handle = easy.handle
+      multi = Ethon::Multi.new
+      multi.add(easy)
+
+      expect { easy.handle = handle }.
+        to raise_error(Ethon::Errors::EthonError, /attached/)
+
+      multi.delete(easy)
+    ensure
+      multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
+    end
+
+    it "refuses to replace the handle after cleanup" do
+      handle = easy.handle
+      easy.cleanup
+
+      expect { easy.handle = handle }.
+        to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+    end
   end
 
   describe "#prepare" do

@@ -33,6 +33,11 @@ module Ethon
       # @param [ ::FFI::Pointer, Curl::EasyHandle, nil ] Easy handle that will
       #   be assigned.
       def handle=(h)
+        raise Errors::EthonError, "Easy has been cleaned up" if @cleaned_up
+
+        ensure_not_performing!
+        ensure_not_attached_to_multi!
+
         @handle =
           case h
           when nil
