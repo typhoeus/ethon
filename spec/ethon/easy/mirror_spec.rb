@@ -59,5 +59,27 @@ describe Ethon::Easy::Mirror do
     it "includes return code" do
       expect(mirror.log_informations).to include(options)
     end
+
+    context "when the effective URL contains credentials" do
+      let(:options) do
+        { :effective_url => "https://user:secret@example.com/path", :return_code => :ok }
+      end
+
+      it "redacts the userinfo" do
+        expect(mirror.log_informations[:effective_url]).
+          to eq("https://[REDACTED]@example.com/path")
+      end
+
+      it "keeps the rest of the options" do
+        expect(mirror.log_informations[:return_code]).to eq(:ok)
+      end
+    end
+
+    it "leaves URLs without credentials alone" do
+      mirror = described_class.new(:effective_url => "https://example.com/a@b")
+
+      expect(mirror.log_informations[:effective_url]).
+        to eq("https://example.com/a@b")
+    end
   end
 end

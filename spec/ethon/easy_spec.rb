@@ -442,6 +442,15 @@ describe Ethon::Easy do
         expect(easy.log_inspect).to match name.to_s
       end
     end
+
+    it "redacts credentials embedded in the URL" do
+      easy.url = "http://user:secret@localhost:3001/"
+      easy.perform
+
+      expect(easy.effective_url).to include("user:secret")
+      expect(easy.log_inspect).not_to include("secret")
+      expect(easy.log_inspect).to include("[REDACTED]@localhost")
+    end
   end
 
   # Prevent regression of #253
