@@ -191,6 +191,20 @@ describe Ethon::Easy::Files do
     end
   end
 
+  it "keeps the previous destination when a new path cannot be opened" do
+    Dir.mktmpdir do |dir|
+      good = File.join(dir, "good")
+      missing = File.join(dir, "missing", "out")
+      easy = Ethon::Easy.new(:url => "http://localhost:3001/binary/8", :file => good)
+
+      expect { easy.file = missing }.to raise_error(Errno::ENOENT)
+      expect(easy.instance_variable_get(:@response_body_path)).to eq(good)
+
+      expect(easy.perform).to eq(:ok)
+      expect(File.binread(good).bytesize).to eq(8)
+    end
+  end
+
   it "propagates write errors" do
     io = Object.new
     io.define_singleton_method(:write) { |_| raise IOError, "disk full" }

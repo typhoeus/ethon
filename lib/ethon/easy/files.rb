@@ -11,19 +11,23 @@ module Ethon
         # up or fork-inherited handle must not touch the destination before the
         # error is raised.
         handle
-        clear_response_body_io
+
+        # Install the new destination before releasing the old one. A failed
+        # open must leave the previous destination and its buffered response
+        # usable instead of leaving the Easy pointed at a path that cannot be
+        # opened.
         # Pathname-like objects may also implement #write. Prefer the path when
         # the object is not an IO (File and Tempfile expose #fileno).
         if destination.respond_to?(:to_path) && !destination.respond_to?(:fileno)
-          @response_body_path = destination.to_path
-          prepare_response_body_io
+          replace_response_body_path(destination.to_path)
         elsif destination.respond_to?(:write)
-          @response_body_io = destination
-          @owns_response_body_io = false
+          replace_response_body_io(destination)
         elsif destination
-          @response_body_path = destination.to_s
-          prepare_response_body_io
+          replace_response_body_path(destination.to_s)
+        else
+          clear_response_body_io
         end
+
         @response_body = @response_body_io ? nil : String.new
         destination
       end
@@ -72,6 +76,37 @@ module Ethon
         else
           flush_response_body_io
         end
+      end
+
+      private
+
+      # Open the new path first. If that fails, or if the old destination
+      # cannot be released, the previous state stays in place.
+      def replace_response_body_path(path)
+        io = File.open(path, "wb")
+        begin
+          clear_response_body_io
+        rescue Exception
+          close_quietly(io)
+          raise
+        end
+
+        @response_body_path = path
+        @response_body_io = io
+        @owns_response_body_io = true
+      end
+
+      def replace_response_body_io(io)
+        clear_response_body_io
+        @response_body_io = io
+        @owns_response_body_io = false
+      end
+
+      def close_quietly(io)
+        io.close unless io.closed?
+      rescue StandardError
+        # The caller is already handling the failure that kept us from
+        # installing the new destination.
       end
     end
   end
