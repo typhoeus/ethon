@@ -18,6 +18,9 @@ RSpec.configure do |config|
   config.order = :random
 
   config.before(:suite) do
+    # Initialize libcurl before any example can install a logger expectation;
+    # otherwise the one-time init debug message depends on example order.
+    Ethon::Curl.init
     LocalhostServer.new(TESTSERVER.new, 3001)
   end
 end

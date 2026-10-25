@@ -73,15 +73,26 @@ module Ethon
           raise Errors::EthonError, "Easy is already completing; wait for the callbacks to finish"
         end
 
+        error = nil
+        response_body_io = @response_body_io
         begin
           @completing = true
           headers unless @response_headers.empty?
           if defined?(@on_complete) and not @on_complete.nil?
             @on_complete.each{ |callback| callback.call(self) }
           end
+        rescue Exception => exception
+          error = exception
+          raise
         ensure
           @completing = false
-          finish_response_body_io
+          begin
+            finish_response_body_io(response_body_io)
+          rescue Exception
+            # A failed close or flush must not hide the error that caused the
+            # teardown, or a callback error that is about to be raised.
+            raise unless error || @callback_error
+          end
         end
       end
 
