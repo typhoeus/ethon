@@ -6,11 +6,18 @@ describe Ethon::Easy::Mirror do
   let(:mirror) { described_class.new(options) }
 
   describe "::INFORMATIONS_TO_LOG" do
+    it "contains the fields used by log_inspect" do
+      expect(described_class::INFORMATIONS_TO_LOG).
+        to eq([:effective_url, :response_code, :return_code, :total_time])
+    end
+  end
+
+  describe "::INFORMATIONS_TO_MIRROR" do
     [
       :return_code, :response_code, :response_body, :response_headers,
       :total_time, :starttransfer_time, :appconnect_time,
       :pretransfer_time, :connect_time, :namelookup_time, :redirect_time,
-      :size_upload, :size_download, :speed_upload, :speed_upload,
+      :size_upload, :size_download, :speed_upload, :speed_download,
       :effective_url, :primary_ip, :redirect_count, :redirect_url, :debug_info,
       :error_message
     ].each do |name|

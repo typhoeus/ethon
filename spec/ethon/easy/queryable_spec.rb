@@ -293,7 +293,7 @@ describe Ethon::Easy::Queryable do
       end
     end
 
-    context "when params key contains a null byte" do
+    context "when a params value contains a null byte" do
       let(:hash) { {:a => "1\0" } }
 
       it "preserves" do
@@ -301,7 +301,7 @@ describe Ethon::Easy::Queryable do
       end
     end
 
-    context "when params value contains a null byte" do
+    context "when a params key contains a null byte" do
       let(:hash) { {"a\0" => 1 } }
 
       it "preserves" do
