@@ -48,10 +48,23 @@ module Ethon
         @response_body_path = nil
       end
 
-      def finish_response_body_io
-        return unless @owns_response_body_io
+      # Flush buffered writes without closing a caller-owned IO. Response
+      # callbacks and readers should see the complete body before the transfer
+      # is treated as finished.
+      def flush_response_body_io
+        io = @response_body_io
+        return unless io
+        return if io.respond_to?(:closed?) && io.closed?
 
-        close_response_body_io
+        io.flush if io.respond_to?(:flush)
+      end
+
+      def finish_response_body_io
+        if @owns_response_body_io
+          close_response_body_io
+        else
+          flush_response_body_io
+        end
       end
     end
   end

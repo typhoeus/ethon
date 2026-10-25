@@ -31,6 +31,52 @@ describe Ethon::Easy::Files do
     end
   end
 
+  it "flushes a path destination before on_complete" do
+    Tempfile.create do |file|
+      file.close
+      seen = nil
+      easy.url = "http://localhost:3001/binary/1000"
+      easy.file = file.path
+      easy.on_complete { seen = File.binread(file.path).bytesize }
+
+      expect(easy.perform).to eq(:ok)
+      expect(seen).to eq(1000)
+    end
+  end
+
+  it "flushes a caller-owned file before on_complete" do
+    Tempfile.create do |file|
+      file.binmode
+      seen = nil
+      easy.url = "http://localhost:3001/binary/1000"
+      easy.file = file
+      easy.on_complete { seen = File.binread(file.path).bytesize }
+
+      expect(easy.perform).to eq(:ok)
+      expect(seen).to eq(1000)
+      expect(file).not_to be_closed
+      expect(File.binread(file.path).bytesize).to eq(1000)
+    end
+  end
+
+  it "flushes a caller-owned file before a Multi completion" do
+    Tempfile.create do |file|
+      file.binmode
+      seen = nil
+      easy.url = "http://localhost:3001/binary/1000"
+      easy.file = file
+      easy.on_complete { seen = File.binread(file.path).bytesize }
+      multi = Ethon::Multi.new
+      multi.add(easy)
+
+      expect { multi.perform }.not_to raise_error
+      expect(seen).to eq(1000)
+      expect(File.binread(file.path).bytesize).to eq(1000)
+    ensure
+      multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
+    end
+  end
+
   it "streams the response to a path-like object" do
     Tempfile.create do |file|
       file.close
