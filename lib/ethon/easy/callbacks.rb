@@ -20,9 +20,7 @@ module Ethon
       # @example Set callbacks.
       #   easy.set_callbacks
       def set_callbacks
-        Curl.set_option(:writefunction, body_write_callback, handle)
-        Curl.set_option(:headerfunction, header_write_callback, handle)
-        Curl.set_option(:debugfunction, debug_callback, handle)
+        install_callbacks(handle)
         reset_transfer_state
       end
 
@@ -224,6 +222,15 @@ module Ethon
       end
 
       private
+
+      # Install the callbacks that fill the Ruby-side response state. The
+      # handle is passed explicitly so callers do not have to go through
+      # #handle, which would create a handle as a side effect.
+      def install_callbacks(target)
+        Curl.set_option(:writefunction, body_write_callback, target)
+        Curl.set_option(:headerfunction, header_write_callback, target)
+        Curl.set_option(:debugfunction, debug_callback, target)
+      end
 
       # Log a libcurl debug message through Ethon.logger. The default level is
       # INFO, so applications opt in by lowering the logger level.

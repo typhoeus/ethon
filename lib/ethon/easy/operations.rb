@@ -13,14 +13,8 @@ module Ethon
       def handle
         raise Errors::EthonError, "Easy has been cleaned up" if @cleaned_up
 
-        handle = @handle ||= begin
-          # Enforce fork safety before creating a handle for an Easy whose
-          # native handle was released or never created.
-          Curl.check_pid!
-          pointer = Curl.easy_init
-          raise NoMemoryError, "curl_easy_init failed" if pointer.null?
-          Curl::EasyHandle.new(pointer)
-        end
+        @handle ||= create_handle
+        handle = @handle
         handle.check_pid!
         handle.owner ||= self
         handle
@@ -29,7 +23,10 @@ module Ethon
       # Sets a pointer to the curl easy handle.
       #
       # Raw pointers are wrapped in an owned {Curl::EasyHandle}, so the
-      # handle is registered for fork safety and freed by this Easy.
+      # handle is registered for fork safety and freed by this Easy. Assigning
+      # nil installs a fresh handle. Assigning a different handle installs
+      # Ethon's response callbacks on it and replays callbacks previously
+      # assigned to this Easy.
       #
       # @param [ ::FFI::Pointer, Curl::EasyHandle, nil ] Easy handle that will
       #   be assigned.
@@ -39,10 +36,13 @@ module Ethon
         ensure_not_performing!
         ensure_not_attached_to_multi!
 
+        previous = @handle
         @handle =
           case h
           when nil
-            nil
+            # Create the replacement now so it gets Ethon's callbacks even
+            # before an option setter or #perform touches it.
+            create_handle
           when Curl::EasyHandle
             h.check_pid!
             # Two Easies must not share one owned wrapper: whichever cleans up
@@ -61,6 +61,13 @@ module Ethon
             raise TypeError, "expected an easy handle pointer, got #{h.class}"
           end
         @handle.owner = self if @handle
+        if @handle && !@handle.equal?(previous)
+          # A replacement handle has no Ethon callbacks, so its response would
+          # otherwise not be collected. Retained user callbacks are replayed on
+          # top of the internal ones.
+          install_callbacks(@handle)
+          restore_callbacks_on(self)
+        end
         @handle
       end
 
@@ -144,6 +151,15 @@ module Ethon
       end
 
       private
+
+      # Allocate the native handle. Kept separate so #handle= can replace a
+      # handle and install the callbacks before the next option setter runs.
+      def create_handle
+        Curl.check_pid!
+        pointer = Curl.easy_init
+        raise NoMemoryError, "curl_easy_init failed" if pointer.null?
+        Curl::EasyHandle.new(pointer)
+      end
 
       # Drop references to native data and callbacks once the handle is gone.
       def clear_native_state
