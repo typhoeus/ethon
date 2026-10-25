@@ -66,6 +66,31 @@ describe "line-based libcurl options" do
       to raise_error(Ethon::Errors::InvalidValue, /encoding/)
   end
 
+  describe "the URL" do
+    it "rejects CR and LF before libcurl receives them" do
+      expect { easy.url = "http://localhost/\r\nX-Injected: yes" }.
+        to raise_error(Ethon::Errors::InvalidValue, /url/)
+
+      expect { Ethon::Curl.set_option(:url, "http://localhost/\n", easy.handle) }.
+        to raise_error(Ethon::Errors::InvalidValue, /url/)
+    end
+
+    it "keeps the previous URL when a new one is rejected" do
+      easy.url = "http://localhost/"
+
+      expect { easy.url = "http://localhost/?a=1\r\nX-Injected: yes" }.
+        to raise_error(Ethon::Errors::InvalidValue, /url/)
+
+      expect(easy.url).to eq("http://localhost/")
+      expect(easy.log_inspect).not_to include("X-Injected")
+    end
+
+    it "still accepts percent-encoded line breaks" do
+      expect { easy.url = "http://localhost/?a=1%0D%0AX-Injected:%20yes" }.
+        not_to raise_error
+    end
+  end
+
   it "still allows CR/LF in request bodies" do
     easy
 
