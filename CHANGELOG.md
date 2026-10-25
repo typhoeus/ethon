@@ -230,6 +230,36 @@ is unavailable; introspection helpers return `nil` or an empty array.
   the multi uses for its bookkeeping. Modifying the returned array previously
   desynchronized the Ruby-side stack from the handles libcurl had attached.
   ([#392](https://github.com/typhoeus/ethon/pull/392))
+* `Easy#reset` is allowed from an `on_complete` callback again, restoring
+  `Typhoeus::Pool.release`, and a callback error raised during the transfer is
+  still raised after the reset. Resets from body, header, and progress
+  callbacks stay rejected.
+  ([#393](https://github.com/typhoeus/ethon/pull/393))
+* MIME part names and filenames reject CR and LF, and the deprecated form API
+  validates its field name, filename, and content type, so they cannot inject
+  extra part headers on libcurl older than 7.81.
+  ([#394](https://github.com/typhoeus/ethon/pull/394))
+* `Easy#mirror` omits pointer-valued informations such as
+  `CURLINFO_TLS_SSL_PTR`, so mirrored options stay marshalable for cached
+  responses. `Easy#tls_ssl_ptr` remains available.
+  ([#395](https://github.com/typhoeus/ethon/pull/395))
+* The `select` fallback in `Multi#set_fds` releases the GVL while waiting, so
+  other Ruby threads can run during the wait.
+  ([#396](https://github.com/typhoeus/ethon/pull/396))
+* Added `:https3` to `proxytype` and `:earlydata` to `ssl_options` and
+  `proxy_ssl_options`.
+  ([#397](https://github.com/typhoeus/ethon/pull/397))
+* Duplicating an `Easy` keeps the progress callback that was effective on the
+  original: `on_progress` no longer disappears when a custom progress function
+  is also configured.
+  ([#398](https://github.com/typhoeus/ethon/pull/398))
+* `Easy#handle=` rejects assignment while the Easy is performing, completing,
+  attached to a `Multi`, or cleaned up.
+  ([#399](https://github.com/typhoeus/ethon/pull/399))
+* Wrapping a native pointer that another `Ethon::Curl` wrapper already owns
+  now raises instead of creating a second owner that can use the pointer after
+  it is freed. `Easy#handle=` also rejects a handle owned by another Easy.
+  ([#401](https://github.com/typhoeus/ethon/pull/401))
 
 ## 0.19.0
 
