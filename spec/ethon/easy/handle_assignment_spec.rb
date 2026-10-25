@@ -125,6 +125,21 @@ describe "assigning an Easy handle" do
       mime.free if mime && !mime.null?
     end
 
+    it "keeps the response destination" do
+      Tempfile.create do |file|
+        file.close
+        easy = Ethon::Easy.new(:file => file.path)
+        io = easy.instance_variable_get(:@response_body_io)
+
+        easy.handle = Ethon::Curl.easy_init
+
+        expect(easy.instance_variable_get(:@response_body_path)).to eq(file.path)
+        expect(easy.instance_variable_get(:@response_body_io)).to be(io)
+      ensure
+        easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+      end
+    end
+
     it "replays retained request callbacks" do
       received = String.new
       easy = Ethon::Easy.new
