@@ -295,8 +295,15 @@ module Ethon
 
     # Clones libcurl session handle. This means that all options that is set in
     #   the current handle will be set on duplicated handle.
+    #
+    # libcurl requires the source handle to be idle while it is cloned, and the
+    # copy can never be part of the same Multi. An Easy that a Multi owns must
+    # therefore be removed first.
+    #
+    # @raise [ Errors::EthonError ] If the Easy is still attached to a Multi.
     def dup
       ensure_not_performing!
+      ensure_not_attached_to_multi!
       unless Curl.respond_to?(:easy_duphandle)
         raise NotImplementedError, "curl_easy_duphandle is not supported by this libcurl"
       end
