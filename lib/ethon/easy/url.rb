@@ -8,9 +8,15 @@ module Ethon
       #
       # @param [ Ethon::Curl::Url, nil ] url The URL handle.
       #
+      # @raise [ TypeError ] If url is not a URL handle.
+      #
       # @return [ Ethon::Curl::Url, nil ] The URL handle.
       def curlu=(url)
-        url.check_pid! if url.respond_to?(:check_pid!)
+        unless url.nil? || url.is_a?(Curl::Url)
+          raise TypeError, "expected an Ethon::Curl::Url, got #{url.class}"
+        end
+
+        url.check_pid! if url
         Curl.set_option(:curlu, url, handle)
         if url
           Curl.set_option(:url, nil, handle)

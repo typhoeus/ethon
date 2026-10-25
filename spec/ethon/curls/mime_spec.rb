@@ -195,6 +195,35 @@ describe Ethon::Curl::Mime do
       expect(easy.mime).to be_nil
     end
 
+    it "rejects another owned pointer type" do
+      easy
+      list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+      expect(Ethon::Curl).not_to receive(:set_option)
+
+      expect { easy.mime = list }.
+        to raise_error(TypeError, /Ethon::Curl::Mime/)
+      expect(easy.mime).to be_nil
+    ensure
+      list.free if list
+    end
+
+    it "rejects a raw pointer" do
+      list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+
+      expect { easy.mime = FFI::Pointer.new(list.address) }.
+        to raise_error(TypeError, /Ethon::Curl::Mime/)
+    ensure
+      list.free if list
+    end
+
+    it "keeps the MIME structure when the replacement is rejected" do
+      easy.mime = mime
+
+      expect { easy.mime = "" }.
+        to raise_error(TypeError, /Ethon::Curl::Mime/)
+      expect(easy.mime).to be(mime)
+    end
+
     it "posts a file part" do
       Tempfile.create do |file|
         file.write("mime content")

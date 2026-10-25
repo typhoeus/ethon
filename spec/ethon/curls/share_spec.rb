@@ -209,6 +209,35 @@ describe Ethon::Easy do
     expect { easy.share = share }.to raise_error(Ethon::Errors::ForkSafety)
   end
 
+  it "rejects another owned pointer type" do
+    easy
+    list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+    expect(Ethon::Curl).not_to receive(:set_option)
+
+    expect { easy.share = list }.
+      to raise_error(TypeError, /Ethon::Curl::Share/)
+    expect(easy.share).to be_nil
+  ensure
+    list.free if list
+  end
+
+  it "rejects a raw pointer" do
+    list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+
+    expect { easy.share = FFI::Pointer.new(list.address) }.
+      to raise_error(TypeError, /Ethon::Curl::Share/)
+  ensure
+    list.free if list
+  end
+
+  it "keeps the share handle when the replacement is rejected" do
+    easy.share = share
+
+    expect { easy.share = "cookies" }.
+      to raise_error(TypeError, /Ethon::Curl::Share/)
+    expect(easy.share).to be(share)
+  end
+
   it "reattaches the share handle when duplicating an Easy" do
     shared = share.share(:cookie)
     first = Ethon::Easy.new
