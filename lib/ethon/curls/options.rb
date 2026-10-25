@@ -9,6 +9,10 @@ module Ethon
       # libcurl writes these values verbatim into an HTTP request line, a
       # protocol header, or a protocol command. A carriage return or newline
       # would let a caller inject another header or command into the request.
+      #
+      # The URL is parsed later, but libcurl only rejects CR/LF at transfer
+      # time. Accepting it here would store an invalid value in Easy#url and
+      # write it to the debug log before the transfer fails.
       LINE_BASED_OPTIONS = [
         :accept_encoding,
         :cookie,
@@ -26,6 +30,7 @@ module Ethon
         :rtsp_session_id,
         :rtsp_stream_uri,
         :rtsp_transport,
+        :url,
         :useragent,
         :xoauth2_bearer
       ].freeze
