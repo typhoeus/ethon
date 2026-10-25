@@ -259,6 +259,11 @@ module Ethon
         unless pointer.nil? || pointer.is_a?(::FFI::Pointer)
           raise Errors::InvalidValue.new(:assign, pointer)
         end
+        # A freed wrapper still looks like a pointer, but libcurl would keep
+        # the dangling address.
+        if pointer.is_a?(Ethon::Curl::OwnedPointer)
+          pointer.check_pid!
+        end
 
         socket = io.respond_to?(:fileno) ? io.fileno : io
         code = Curl.multi_assign(handle, socket, pointer)

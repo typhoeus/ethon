@@ -30,6 +30,17 @@ describe "curl_slist options" do
     expect(easy.instance_variable_get(:@slists)).not_to have_key(:resolve)
   end
 
+  it "rejects a freed slist" do
+    easy
+    list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["example.com:80:127.0.0.1"]))
+    list.free
+
+    expect(Ethon::Curl).not_to receive(:easy_setopt)
+    expect { easy.resolve = list }.
+      to raise_error(Ethon::Errors::EthonError, /freed/)
+    expect(easy.instance_variable_get(:@slists)).to be_nil
+  end
+
   it "shares retained slists with a duplicate" do
     easy.resolve = slist
 
