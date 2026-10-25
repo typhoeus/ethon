@@ -79,6 +79,14 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `Ethon::Errors::InvalidValue` now escapes the value in its message, so a
+  CR or LF in a rejected URL or request-line value can no longer be injected
+  into logs that record the exception.
+  ([#429](https://github.com/typhoeus/ethon/pull/429))
+* The `haproxy_client_ip` option now rejects whitespace. libcurl writes the
+  value into the space-separated PROXY protocol line without validating it, so
+  a value could add fields or lines to the header.
+  ([#428](https://github.com/typhoeus/ethon/pull/428))
 * URL values now reject CR and LF before libcurl stores them. libcurl's URL
   API wrote line breaks in paths and queries into the request line verbatim,
   so a URL handle attached with `Easy#curlu=` could inject headers. The string
@@ -106,8 +114,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
   needed an explicit flush after `perform`.
   ([#424](https://github.com/typhoeus/ethon/pull/424))
 * `Easy#log_inspect` redacts credentials in `effective_url` so debug logs do not
-  contain URL passwords. `Easy#effective_url` and `Mirror#options` still return
-  the exact URL.
+  contain URL passwords. The same redaction applies to
+  `Mirror#log_informations`; `Easy#effective_url` and `Mirror#options` still
+  return the exact URL.
   ([#423](https://github.com/typhoeus/ethon/pull/423))
 * Corrected the mirror and query-parameter specs so they assert the constants
   and null-byte cases they describe.
