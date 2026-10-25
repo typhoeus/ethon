@@ -23,6 +23,15 @@ module Ethon
       :rustls
     ])
 
+    # CURLsslset values returned by curl_global_sslset. These are not CURLcode
+    # values, even though both start at zero.
+    SslSetCode = enum(:ssl_set_code, [
+      :ok,
+      :unknown_backend,
+      :too_late,
+      :no_backends
+    ])
+
     # Flag. Initialize SSL.
     GLOBAL_SSL     = 0x01
     # Flag. Initialize win32 socket libraries.
