@@ -267,6 +267,7 @@ module Ethon
       clear_response_body_io
 
       @postfields = nil
+      @postfields_pointer = nil
       @url = nil
       @escape = nil
       @multipart = nil

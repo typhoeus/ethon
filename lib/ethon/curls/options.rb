@@ -98,6 +98,14 @@ module Ethon
             end
             value = string
           end
+        when :binary_string
+          # The caller owns the buffer and passes its length separately. Ethon
+          # uses this for CURLOPT_POSTFIELDS, whose custom setter retains the
+          # buffer and sets CURLOPT_POSTFIELDSIZE.
+          va_type=:pointer
+          unless value.nil? || value.is_a?(::FFI::Pointer)
+            raise Errors::InvalidValue.new(option, value)
+          end
         when :string_as_pointer
           va_type = :pointer
           unless value.nil?
@@ -241,6 +249,7 @@ module Ethon
                            #     (See :protocols)
                            # :all defaults to all bits set
         :string => :objectpoint,
+        :binary_string => :objectpoint,
         :string_escape_null => :objectpoint,
         :string_as_pointer => :objectpoint,
         :ffipointer => :objectpoint, # FFI::Pointer
@@ -454,7 +463,10 @@ module Ethon
       option_alias :easy, :postredir, :post301
       option :easy, :put, :bool, 54
       option :easy, :post, :bool, 47
-      option :easy, :postfields, :string, 15
+      # CURLOPT_POSTFIELDS is paired with CURLOPT_POSTFIELDSIZE, so the body
+      # may contain NUL bytes. The custom #postfields= setter always sets the
+      # length from the retained string.
+      option :easy, :postfields, :binary_string, 15
       option :easy, :postfieldsize, :int, 60
       option :easy, :postfieldsize_large, :off_t, 120
       option :easy, :copypostfields, :string_as_pointer, 165

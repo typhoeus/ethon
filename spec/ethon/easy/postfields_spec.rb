@@ -55,11 +55,38 @@ describe Ethon::Easy do
       expect(easy.instance_variable_get(:@postfields)).to be_nil
     end
 
+    it "sends embedded null bytes with the explicit body length" do
+      payload = "\x00binary\x00body".b
+      easy.url = "http://localhost:3001/echo"
+      easy.postfields = payload
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to eq(payload)
+    end
+
+    it "retains a binary body exactly as it was accepted" do
+      payload = "a\0b".b
+
+      easy.postfields = payload
+
+      retained = easy.instance_variable_get(:@postfields)
+      expect(retained).to eq(payload)
+      expect(retained.bytesize).to eq(3)
+    end
+
     it "sets the body size from the retained bytes" do
-      expect(Ethon::Curl).to receive(:set_option).with(:postfields, kind_of(String), easy.handle)
+      expect(Ethon::Curl).to receive(:set_option).with(:postfields, kind_of(::FFI::MemoryPointer), easy.handle)
       expect(Ethon::Curl).to receive(:set_option).with(:postfieldsize, 5, easy.handle)
 
       easy.postfields = "hello"
+    end
+
+    it "keeps the native body buffer alive" do
+      easy.postfields = "hello"
+
+      pointer = easy.instance_variable_get(:@postfields_pointer)
+      expect(pointer).to be_a(::FFI::MemoryPointer)
+      expect(pointer.read_string).to eq("hello")
     end
 
     it "does not reuse a previous request's body size" do

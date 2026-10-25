@@ -23,7 +23,7 @@ describe "Easy option state" do
   it "does not retain postfields that libcurl rejected" do
     allow(Ethon::Curl).to receive(:set_option).and_call_original
     allow(Ethon::Curl).to receive(:set_option).
-      with(:postfields, "invalid", anything).
+      with(:postfields, kind_of(::FFI::MemoryPointer), anything).
       and_raise(Ethon::Errors::InvalidValue.new(:postfields, "invalid"))
 
     expect { easy.postfields = "invalid" }.

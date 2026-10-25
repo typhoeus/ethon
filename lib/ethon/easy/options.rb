@@ -199,9 +199,11 @@ module Ethon
       end
 
       # libcurl does not copy CURLOPT_POSTFIELDS, so keep an immutable snapshot
-      # of the bytes alive for as long as the handle may reference it. Retain it
-      # only once the option was accepted. Mutating a caller's string afterwards
-      # may reallocate it, so libcurl must not point at that buffer.
+      # of the bytes alive for as long as the handle may reference it. The
+      # native option takes a pointer, which lets the body contain NUL bytes.
+      # Retain the buffer only once the option was accepted. Mutating a caller's
+      # string afterwards may reallocate it, so libcurl must not point at that
+      # buffer.
       #
       # CURLOPT_POSTFIELDSIZE survives between requests. Updating it here keeps
       # libcurl from reading an earlier, larger body length out of the new
@@ -210,13 +212,18 @@ module Ethon
         if value.nil?
           Curl.set_option(:postfields, nil, handle)
           @postfields = nil
+          @postfields_pointer = nil
           # -1 is libcurl's default: the body ends at the first NUL.
           Curl.set_option(:postfieldsize, -1, handle)
         else
           string = value.to_s
           string = string.dup.freeze unless string.frozen?
-          Curl.set_option(:postfields, string, handle)
+          pointer = FFI::MemoryPointer.new(:char, string.bytesize + 1)
+          pointer.put_bytes(0, string)
+          pointer.put_char(string.bytesize, 0)
+          Curl.set_option(:postfields, pointer, handle)
           @postfields = string
+          @postfields_pointer = pointer
           Curl.set_option(:postfieldsize, string.bytesize, handle)
         end
         value
