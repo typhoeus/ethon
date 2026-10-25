@@ -8,16 +8,16 @@ module Ethon
       # Return the request headers, return empty hash if none.
       #
       # The returned hash is an independent snapshot of the headers that were
-      # sent to libcurl. Mutating the hash passed to #headers= afterwards cannot
-      # change either the handle or this snapshot, and mutating the returned
-      # hash does not change the request.
+      # sent to libcurl. Mutating the hash or a value passed to #headers=
+      # afterwards cannot change either the handle or this snapshot, and
+      # mutating the returned hash or its values does not change the request.
       #
       # @example Return the request headers.
       #   easy.request_headers
       #
       # @return [ Hash ] The request headers.
       def request_headers
-        (@headers || {}).dup
+        copy_headers(@headers || {})
       end
 
       # Set the headers.
@@ -28,8 +28,10 @@ module Ethon
       # @param [ Hash ] headers The headers.
       def headers=(value)
         # Snapshot before building the list so the stored value is exactly the
-        # set that libcurl accepted.
-        headers = (value || {}).dup
+        # set that libcurl accepted. Copy the values too: mutating a
+        # caller-owned header value in place would otherwise change the
+        # snapshot.
+        headers = copy_headers(value || {})
         list = build_slist(headers)
         begin
           Curl.set_option(:httpheader, list, handle)
@@ -77,6 +79,19 @@ module Ethon
       end
 
       private
+
+      # Copy a header hash so callers and the Easy cannot change each other's
+      # header values in place. Values that cannot be copied are kept as they
+      # are; header values are normally strings.
+      def copy_headers(headers)
+        headers.each_with_object({}) do |(key, value), copy|
+          copy[key] = begin
+            value.dup
+          rescue TypeError
+            value
+          end
+        end
+      end
 
       # Build a curl_slist for the headers. Compose first so an invalid header
       # does not leave a partial native list behind.

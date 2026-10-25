@@ -44,10 +44,10 @@
   transfer (`request = -1`), so structured headers describe the response after
   a redirect instead of the first request. Pass `0` to read the first request.
   ([#409](https://github.com/typhoeus/ethon/pull/409))
-* `Easy#url=` now keeps a frozen snapshot of the string libcurl accepted, and
-  `Easy#request_headers` returns a fresh snapshot of the headers that were
-  accepted. Mutating the object passed to the setter no longer makes the
-  accessor describe a URL or header set the handle never received.
+* `Easy#url=` now stores a frozen snapshot of the string libcurl accepted, and
+  `Easy#request_headers` returns a fresh copy of the headers and header values
+  that were accepted. Mutating the object passed to a setter no longer makes
+  the accessor describe a URL or header set the handle never received.
   ([#413](https://github.com/typhoeus/ethon/pull/413))
 
 ### New libcurl bindings
