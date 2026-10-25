@@ -171,6 +171,27 @@ describe Ethon::Easy::Files do
     expect(copy.response_body).to eq("")
   end
 
+  it "keeps a path destination on a duplicate and opens its own stream" do
+    Tempfile.create do |file|
+      file.close
+      easy.url = "http://localhost:3001/binary/1000"
+      easy.file = file.path
+
+      copy = easy.dup
+
+      expect(copy.instance_variable_get(:@response_body_path)).to eq(file.path)
+      expect(copy.instance_variable_get(:@response_body_io)).to be_nil
+
+      expect(copy.perform).to eq(:ok)
+
+      expect(copy.response_body).to be_nil
+      expect(File.binread(file.path).bytesize).to eq(1000)
+    ensure
+      copy.cleanup if copy && !copy.instance_variable_get(:@cleaned_up)
+      easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+    end
+  end
+
   it "restores in-memory buffering when cleared" do
     easy.file = StringIO.new
 
