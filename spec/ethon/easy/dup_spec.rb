@@ -77,6 +77,51 @@ describe "duplicating an Easy handle" do
       expect(called).to be_empty
     end
 
+    it "keeps on_progress effective when a custom progress function was installed first" do
+      custom = 0
+      progress = 0
+      easy = Ethon::Easy.new
+      easy.url = url
+      easy.xferinfofunction = proc { |*| custom += 1; 0 }
+      easy.on_progress { progress += 1 }
+
+      copy = easy.dup
+      copy.perform
+
+      expect(progress).to be > 0
+      expect(custom).to eq(0)
+    end
+
+    it "keeps on_progress effective over a custom progress function" do
+      custom = 0
+      progress = 0
+      easy = Ethon::Easy.new
+      easy.url = url
+      easy.progressfunction = proc { |*| custom += 1; 0 }
+      easy.on_progress { progress += 1 }
+
+      copy = easy.dup
+      copy.perform
+
+      expect(progress).to be > 0
+      expect(custom).to eq(0)
+    end
+
+    it "keeps a custom progress function installed after on_progress" do
+      custom = 0
+      progress = 0
+      easy = Ethon::Easy.new
+      easy.url = url
+      easy.on_progress { progress += 1 }
+      easy.xferinfofunction = proc { |*| custom += 1; 0 }
+
+      copy = easy.dup
+      copy.perform
+
+      expect(custom).to be > 0
+      expect(progress).to eq(0)
+    end
+
     it "does not depend on the original handle staying alive" do
       calls = 0
       original = Ethon::Easy.new

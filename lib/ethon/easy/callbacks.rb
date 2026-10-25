@@ -113,11 +113,15 @@ module Ethon
 
       def set_progress_callback
         # CURLOPT_XFERINFOFUNCTION was added in libcurl 7.32.0.
-        if Curl.version_at_least?("7.32.0")
-          Curl.set_option(:xferinfofunction, progress_callback, handle)
+        option = if Curl.version_at_least?("7.32.0")
+          :xferinfofunction
         else
-          Curl.set_option(:progressfunction, progress_callback, handle)
+          :progressfunction
         end
+        Curl.set_option(option, progress_callback, handle)
+        # Remember which callback is effective so a duplicate can restore it.
+        @progress_source = :internal
+        @internal_progress_option = option
       end
 
       # Returns the progress callback.
