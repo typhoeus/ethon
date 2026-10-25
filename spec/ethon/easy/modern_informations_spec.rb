@@ -59,4 +59,16 @@ describe "modern libcurl informations" do
       :total_time_t, :size_download_t, :activesocket
     )
   end
+
+  it "keeps raw pointers out of the mirror" do
+    expect(easy.mirror.options).not_to have_key(:tls_ssl_ptr)
+    expect(easy.tls_ssl_ptr.nil? || easy.tls_ssl_ptr.is_a?(FFI::Pointer)).to be(true)
+  end
+
+  it "can be marshaled like a cached response" do
+    copy = Marshal.load(Marshal.dump(easy.mirror))
+
+    expect(copy.options).not_to have_key(:tls_ssl_ptr)
+    expect(copy.options[:response_code]).to eq(200)
+  end
 end
