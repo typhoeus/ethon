@@ -282,7 +282,8 @@ describe Ethon::Curl::Url do
       expect { base.set(:query, "a=1%0D%0AX-Injected:%20yes") }.
         not_to raise_error
 
-      expect(base.to_s).to include("a=1%0d%0aX-Injected:%20yes")
+      # libcurl 8.21.0 and newer normalize percent-encoded hex to uppercase
+      expect(base.to_s).to match(/a=1%0d%0aX-Injected:%20yes/i)
     end
 
     it "does not change the URL when a part is rejected" do
