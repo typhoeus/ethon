@@ -15,6 +15,7 @@ describe "line-based libcurl options" do
     :encoding,
     :ftp_account,
     :ftp_alternative_to_user,
+    :haproxy_client_ip,
     :krblevel,
     :login_options,
     :mail_auth,
@@ -42,6 +43,9 @@ describe "line-based libcurl options" do
       end
 
       it "accepts an ordinary value" do
+        # CURLOPT_HAPROXY_CLIENT_IP was added in libcurl 8.2.0.
+        skip "haproxy_client_ip requires libcurl 8.2.0" if
+          option == :haproxy_client_ip && !Ethon::Curl.version_at_least?("8.2.0")
         # libcurl removed the option in 8.17.0 and now reports not_built_in.
         skip "krblevel was removed in libcurl 8.17.0" if
           option == :krblevel && Ethon::Curl.version_at_least?("8.17.0")
@@ -88,6 +92,17 @@ describe "line-based libcurl options" do
     it "still accepts percent-encoded line breaks" do
       expect { easy.url = "http://localhost/?a=1%0D%0AX-Injected:%20yes" }.
         not_to raise_error
+    end
+  end
+
+  it "rejects whitespace in the HAProxy client IP" do
+    easy
+    expect(Ethon::Curl).not_to receive(:easy_setopt)
+
+    # The value is a single field in the space-separated PROXY protocol line.
+    [" ", "\t", "\v", "\f"].each do |space|
+      expect { easy.haproxy_client_ip = "1.2.3.4#{space}5.6.7.8" }.
+        to raise_error(Ethon::Errors::InvalidValue, /haproxy_client_ip/)
     end
   end
 

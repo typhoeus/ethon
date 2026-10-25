@@ -20,6 +20,7 @@ module Ethon
         :encoding,
         :ftp_account,
         :ftp_alternative_to_user,
+        :haproxy_client_ip,
         :krblevel,
         :login_options,
         :mail_auth,
@@ -87,6 +88,12 @@ module Ethon
             raise Errors::InvalidValue.new(option, value) if string.include?("\0")
             if LINE_BASED_OPTIONS.include?(option) &&
                (string.include?("\r") || string.include?("\n"))
+              raise Errors::InvalidValue.new(option, value)
+            end
+            # libcurl writes CURLOPT_HAPROXY_CLIENT_IP into the
+            # space-separated PROXY protocol line, so whitespace could add
+            # fields or lines to the header.
+            if option == :haproxy_client_ip && string.match?(/[[:space:]]/)
               raise Errors::InvalidValue.new(option, value)
             end
             value = string
