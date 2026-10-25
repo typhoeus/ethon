@@ -112,14 +112,19 @@ module Ethon
       end
 
       def form_add(name, content)
+        name = validate_header_line(:name, name.to_s)
         code = case content
         when Array
+          # The form API writes these into Content-Disposition headers. Older
+          # libcurl versions do not escape them.
+          filename = validate_header_line(:filename, content[0].to_s)
+          content_type = validate_header_line(:content_type, content[1].to_s)
           Curl.formadd(first, last,
                        :form_option, :copyname, :pointer, name,
                        :form_option, :namelength, :long, name.bytesize,
                        :form_option, :file, :string, content[2],
-                       :form_option, :filename, :string, content[0],
-                       :form_option, :contenttype, :string, content[1],
+                       :form_option, :filename, :string, filename,
+                       :form_option, :contenttype, :string, content_type,
                        :form_option, :end
                       )
         else

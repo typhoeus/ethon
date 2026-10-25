@@ -123,6 +123,39 @@ describe Ethon::Easy::Form do
       end
     end
 
+    context "when a field name contains CRLF" do
+      let(:pairs) { [["field\r\nX-Injected: yes", "value"]] }
+
+      it "rejects the field before building the form" do
+        expect(Ethon::Curl).not_to receive(:formadd)
+
+        expect { form.materialize }.
+          to raise_error(Ethon::Errors::InvalidValue, /name/)
+      end
+    end
+
+    context "when a filename contains CRLF" do
+      let(:pairs) { [['file', ["file\r\nX-Injected: yes", "text/plain", "path/file"]]] }
+
+      it "rejects the file before building the form" do
+        expect(Ethon::Curl).not_to receive(:formadd)
+
+        expect { form.materialize }.
+          to raise_error(Ethon::Errors::InvalidValue, /filename/)
+      end
+    end
+
+    context "when a content type contains CRLF" do
+      let(:pairs) { [['file', ["file", "text/plain\r\nX-Injected: yes", "path/file"]]] }
+
+      it "rejects the file before building the form" do
+        expect(Ethon::Curl).not_to receive(:formadd)
+
+        expect { form.materialize }.
+          to raise_error(Ethon::Errors::InvalidValue, /content_type/)
+      end
+    end
+
     context "when query_pairs contains file, string and int values" do
       let(:pairs) { [['a', ["file", "type", "path/file"]], ['b', '1'], ['c', 1]] }
 

@@ -51,12 +51,12 @@ module Ethon
       end
 
       def name=(value)
-        call(:mime_name, native_string(:name, value))
+        call(:mime_name, header_line(:name, value))
         value
       end
 
       def filename=(value)
-        call(:mime_filename, native_string(:filename, value))
+        call(:mime_filename, header_line(:filename, value))
         value
       end
 
