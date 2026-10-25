@@ -79,6 +79,39 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* URL values now reject CR and LF before libcurl stores them. libcurl's URL
+  API wrote line breaks in paths and queries into the request line verbatim,
+  so a URL handle attached with `Easy#curlu=` could inject headers. The string
+  setter accepted the same input into `Easy#url` and debug logs before the
+  transfer failed. Percent-encoded line breaks remain valid.
+  ([#419](https://github.com/typhoeus/ethon/pull/419),
+  [#425](https://github.com/typhoeus/ethon/pull/425))
+* `Curl::Url.new(existing_url)` now duplicates the handle instead of re-parsing
+  its string form. Partial handles can be copied, complete handles are not
+  normalized, and non-zero `CURLU_*` flags are rejected for a copy because
+  there is no parse step to apply them to.
+  ([#420](https://github.com/typhoeus/ethon/pull/420))
+* `Multi#delete` and `Multi#cleanup` now clear the running count when the stack
+  becomes empty, so `Multi#ongoing?` is false after the last handle is removed.
+  A handle that libcurl detached before a socket callback raised is no longer
+  put back on the stack, so it remains usable.
+  ([#421](https://github.com/typhoeus/ethon/pull/421))
+* `Easy#reset_transfer_state` clears `return_code`, so adding a used Easy to a
+  Multi no longer exposes the previous transfer's result until the new transfer
+  completes.
+  ([#422](https://github.com/typhoeus/ethon/pull/422))
+* Streamed response destinations are flushed before `on_complete`, and
+  caller-owned response IOs are flushed when the transfer finishes. Previously
+  completion callbacks could read a partial body, and caller-owned file writers
+  needed an explicit flush after `perform`.
+  ([#424](https://github.com/typhoeus/ethon/pull/424))
+* `Easy#log_inspect` redacts credentials in `effective_url` so debug logs do not
+  contain URL passwords. `Easy#effective_url` and `Mirror#options` still return
+  the exact URL.
+  ([#423](https://github.com/typhoeus/ethon/pull/423))
+* Corrected the mirror and query-parameter specs so they assert the constants
+  and null-byte cases they describe.
+  ([#426](https://github.com/typhoeus/ethon/pull/426))
 * Clearing `writefunction`, `headerfunction`, or `debugfunction` now restores
   Ethon's internal callback. libcurl's default callback previously wrote
   response bodies to stdout, stopped collecting response headers, or sent
