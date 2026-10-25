@@ -122,8 +122,7 @@ describe Ethon::Multi::Options do
         expect { multi.delete(easy) }.to raise_error(ArgumentError)
       ensure
         multi.socketfunction = proc { 0 }
-        Ethon::Curl.multi_remove_handle(multi.handle, easy.handle)
-        multi.easy_handles.delete(easy)
+        multi.delete(easy) if multi.easy_handles.include?(easy)
       end
     end
 
@@ -171,7 +170,6 @@ describe Ethon::Multi::Options do
       ensure
         multi.timerfunction = proc { 0 }
         Ethon::Curl.multi_remove_handle(multi.handle, easy.handle)
-        multi.easy_handles.delete(easy)
       end
     end
   end
