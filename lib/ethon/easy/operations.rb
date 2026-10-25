@@ -22,6 +22,7 @@ module Ethon
           Curl::EasyHandle.new(pointer)
         end
         handle.check_pid!
+        handle.owner ||= self
         handle
       end
 
@@ -43,6 +44,12 @@ module Ethon
           when nil
             nil
           when Curl::EasyHandle
+            h.check_pid!
+            # Two Easies must not share one owned wrapper: whichever cleans up
+            # first invalidates the handle for the other.
+            if h.owner && !h.owner.equal?(self)
+              raise ArgumentError, "easy handle is already owned by another Ethon handle"
+            end
             h
           when Curl::OwnedPointer
             raise TypeError, "expected an easy handle, got #{h.class}"
@@ -53,6 +60,8 @@ module Ethon
           else
             raise TypeError, "expected an easy handle pointer, got #{h.class}"
           end
+        @handle.owner = self if @handle
+        @handle
       end
 
       # Perform the easy request.

@@ -25,6 +25,68 @@ describe Ethon::Curl::Slist do
   end
 end
 
+describe "native pointer ownership" do
+  it "rejects wrapping the same easy pointer twice" do
+    easy = Ethon::Easy.new
+
+    expect { Ethon::Curl::EasyHandle.new(FFI::Pointer.new(easy.handle.address)) }.
+      to raise_error(ArgumentError, /already owned/)
+  ensure
+    easy.cleanup if easy
+  end
+
+  it "rejects assigning another Easy's raw handle" do
+    owner = Ethon::Easy.new
+    other = Ethon::Easy.new
+
+    own_handle = other.handle
+    expect { other.handle = FFI::Pointer.new(owner.handle.address) }.
+      to raise_error(ArgumentError, /already owned/)
+    expect(other.handle).to be(own_handle)
+  ensure
+    owner.cleanup if owner
+    other.cleanup if other
+  end
+
+  it "rejects assigning another Easy's owned wrapper" do
+    owner = Ethon::Easy.new
+    other = Ethon::Easy.new
+
+    own_handle = other.handle
+    expect { other.handle = owner.handle }.
+      to raise_error(ArgumentError, /already owned/)
+    expect(other.handle).to be(own_handle)
+  ensure
+    owner.cleanup if owner
+    other.cleanup if other
+  end
+
+  it "rejects wrapping an owned slist pointer twice" do
+    list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+
+    expect { Ethon::Curl::Slist.new(FFI::Pointer.new(list.address)) }.
+      to raise_error(ArgumentError, /already owned/)
+  ensure
+    list.free if list
+  end
+
+  it "rejects wrapping an owned URL pointer twice" do
+    url = Ethon::Curl::Url.new("https://example.com/")
+
+    expect { Ethon::Curl::Url.new(FFI::Pointer.new(url.address)) }.
+      to raise_error(ArgumentError, /already owned/)
+  ensure
+    url.free if url
+  end
+
+  it "does not reserve an address when wrapping fails" do
+    pointer = FFI::MemoryPointer.new(:int)
+
+    expect { Ethon::Curl::EasyHandle.new(pointer) }.to raise_error(TypeError)
+    expect(Ethon::Curl::OwnedPointer.owners).not_to have_key(pointer.address)
+  end
+end
+
 describe "explicitly freed owned pointers" do
   def freed_error
     Ethon::Errors::EthonError
