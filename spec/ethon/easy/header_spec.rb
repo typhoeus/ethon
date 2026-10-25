@@ -216,6 +216,44 @@ describe Ethon::Easy::Header do
       expect(easy.request_headers).to eq('X-Test' => 'yes')
     end
 
+    it "does not track in-place mutations of the caller's header values" do
+      value = String.new("yes")
+      easy.headers = { 'X-Test' => value }
+
+      value << "-changed"
+
+      expect(easy.request_headers).to eq('X-Test' => 'yes')
+    end
+
+    it "does not share header values with the returned snapshot" do
+      easy.headers = { 'X-Test' => 'yes' }
+
+      easy.request_headers['X-Test'] << "-changed"
+
+      expect(easy.request_headers).to eq('X-Test' => 'yes')
+    end
+
+    it "returns mutable copies of frozen header values" do
+      easy.headers = { 'X-Test' => 'yes'.freeze }
+
+      snapshot = easy.request_headers
+      snapshot['X-Test'] << "-changed"
+
+      expect(snapshot).to eq('X-Test' => 'yes-changed')
+      expect(easy.request_headers).to eq('X-Test' => 'yes')
+    end
+
+    it "sends the original value when the caller mutates it in place" do
+      value = String.new("yes")
+      easy.headers = { 'X-Test' => value }
+      value << "-changed"
+      easy.url = "http://localhost:3001/"
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to include('"HTTP_X_TEST":"yes"')
+      expect(easy.response_body).not_to include('"HTTP_X_TEST":"yes-changed"')
+    end
+
     it "sends the snapshot taken when the headers were assigned" do
       headers = { 'X-Test' => 'yes' }
       easy.headers = headers
