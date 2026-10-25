@@ -330,8 +330,11 @@ module Ethon
       e.instance_variable_set(:@debug_callback, nil)
       e.instance_variable_set(:@progress_callback, nil)
       e.instance_variable_set(:@user_debug_callback, @user_debug_callback)
+      # Do not share an open response stream with the original. A path
+      # destination stays configured so the copy opens its own stream for the
+      # next transfer; a caller-owned IO is dropped because both handles would
+      # write into the same object.
       e.instance_variable_set(:@response_body_io, nil)
-      e.instance_variable_set(:@response_body_path, nil)
       e.instance_variable_set(:@owns_response_body_io, false)
       e.instance_variable_set(:@multi, nil)
       e.handle = Curl::EasyHandle.new(duplicated_handle)
