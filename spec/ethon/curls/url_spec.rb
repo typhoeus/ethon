@@ -210,6 +210,50 @@ describe Ethon::Curl::Url do
     expect(Ethon::Curl::OwnedPointer.owners).not_to have_key(pointer.address)
   end
 
+  describe "request injection through URL parts" do
+    let(:base) { described_class.new }
+
+    before do
+      base.set(:scheme, "https")
+      base.set(:host, "example.com")
+      base.set(:path, "/")
+    end
+
+    [:url, :path, :query, :fragment, :user, :password, :options].each do |part|
+      ["\r", "\n", "\r\n"].each do |newline|
+        it "rejects #{newline.inspect} in #{part}" do
+          expect {
+            base.set(part, "value#{newline}X-Injected: yes")
+          }.to raise_error(Ethon::Errors::InvalidValue, /url_value/)
+        end
+      end
+    end
+
+    it "rejects a request line injected through the initial URL" do
+      expect { described_class.new("https://example.com/valid\r\nX-Injected: yes") }.
+        to raise_error(Ethon::Errors::InvalidValue, /url_value/)
+    end
+
+    it "does not let URLENCODE bypass the check" do
+      expect { base.set(:query, "a=1\r\nX-Injected: yes", :urlencode) }.
+        to raise_error(Ethon::Errors::InvalidValue, /url_value/)
+    end
+
+    it "still accepts percent-encoded line breaks" do
+      expect { base.set(:query, "a=1%0D%0AX-Injected:%20yes") }.
+        not_to raise_error
+
+      expect(base.to_s).to include("a=1%0d%0aX-Injected:%20yes")
+    end
+
+    it "does not change the URL when a part is rejected" do
+      expect { base.set(:path, "/changed\r\n") }.
+        to raise_error(Ethon::Errors::InvalidValue)
+
+      expect(base.get(:path)).to eq("/")
+    end
+  end
+
 end
 
 describe Ethon::Easy, "with CURLOPT_CURLU" do

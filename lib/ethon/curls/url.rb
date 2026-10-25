@@ -116,11 +116,19 @@ module Ethon
 
       # libcurl takes a C string, so an embedded NUL would silently truncate
       # the value. nil clears the part.
+      #
+      # The URL API also accepts CR and LF, which libcurl writes verbatim into
+      # the request line or query. A path or query containing CRLF can add
+      # attackers' headers to the request, so reject them here just like the
+      # string URL parser does. Callers that need such bytes in a URL must
+      # percent-encode them.
       def normalize_value(value)
         return if value.nil?
 
         string = value.to_s
-        raise Errors::InvalidValue.new(:url_value, value) if string.include?("\0")
+        if string.include?("\0") || string.include?("\r") || string.include?("\n")
+          raise Errors::InvalidValue.new(:url_value, value)
+        end
 
         string
       end
