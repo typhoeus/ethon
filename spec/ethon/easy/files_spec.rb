@@ -377,6 +377,16 @@ describe Ethon::Easy::Files do
       end
     end
 
+    it "keeps the body callback error when flushing the response IO fails" do
+      io = Object.new
+      io.define_singleton_method(:write) { |_| }
+      io.define_singleton_method(:flush) { raise IOError, "flush failed" }
+      easy.file = io
+      easy.on_body { raise "callback failed" }
+
+      expect { easy.perform }.to raise_error("callback failed")
+    end
+
     it "raises a close error after a successful transfer" do
       Tempfile.create do |file|
         file.close

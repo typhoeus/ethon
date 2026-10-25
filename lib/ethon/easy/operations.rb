@@ -105,7 +105,14 @@ module Ethon
           end
           # Make the complete response visible before on_complete runs. An
           # owned file is closed by the ensure below after the callbacks.
-          flush_response_body_io
+          begin
+            flush_response_body_io
+          rescue Exception
+            # A callback error already failed this transfer; a flush error is
+            # secondary and must not hide it.
+            raise_callback_error
+            raise
+          end
           complete
           raise_callback_error
           # on_complete may reset the Easy, which clears @return_code. Return
