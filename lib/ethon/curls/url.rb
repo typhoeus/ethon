@@ -15,15 +15,23 @@ module Ethon
       #
       # @param [ String, Url, FFI::Pointer, nil ] url The URL, a URL handle
       #   to copy, or a native handle.
-      # @param [ Integer, Symbol, Array ] flags CURLU_* flags.
+      # @param [ Integer, Symbol, Array ] flags CURLU_* flags. These are only
+      #   applied when parsing a String; a copied handle already has its parts.
       def initialize(url = nil, flags = 0)
         Curl.init
         unless Curl.respond_to?(:url)
           raise NotImplementedError, "curl_url is not supported by this libcurl"
         end
 
-        if url.is_a?(Ethon::Curl::Url)
+        copying = url.is_a?(Ethon::Curl::Url)
+        if copying
           url.check_pid!
+          if normalize_flags(flags) != 0
+            raise ArgumentError, "flags cannot be applied when copying an Ethon::Curl::Url"
+          end
+          # Parsing the copied handle's string form would fail for partial
+          # handles and could normalize a complete one. Duplicate the parts
+          # instead.
           pointer = Curl.url_dup(url)
           raise NoMemoryError, "curl_url_dup failed" if pointer.null?
         elsif url.is_a?(::FFI::Pointer)
@@ -35,7 +43,7 @@ module Ethon
 
         super(pointer)
         begin
-          set(:url, url, flags) if url && !url.is_a?(::FFI::Pointer)
+          set(:url, url, flags) if url && !url.is_a?(::FFI::Pointer) && !copying
         rescue Exception
           # A rejected URL must not leave the native handle to the finalizer.
           free

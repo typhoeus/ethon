@@ -87,6 +87,45 @@ describe Ethon::Curl::Url do
     expect(copy.get(:path)).to eq("/wrapped")
   end
 
+  it "copies a partial URL handle instead of parsing its string form" do
+    partial = described_class.new
+    partial.set(:scheme, "https")
+    partial.set(:host, "example.com")
+    partial.set(:path, "/partial")
+
+    copy = described_class.new(partial)
+
+    expect(copy.get(:scheme)).to eq("https")
+    expect(copy.get(:host)).to eq("example.com")
+    expect(copy.get(:path)).to eq("/partial")
+  end
+
+  it "copies a handle that does not have a complete URL yet" do
+    partial = described_class.new
+    partial.set(:path, "/only")
+
+    copy = described_class.new(partial)
+
+    expect(copy.get(:path)).to eq("/only")
+  end
+
+  it "does not re-parse a URL handle" do
+    url
+    expect(Ethon::Curl).not_to receive(:url_set)
+
+    described_class.new(url)
+  end
+
+  it "applies CURLU flags only when parsing a string" do
+    expect {
+      described_class.new(url, :default_port)
+    }.to raise_error(ArgumentError, /flags cannot be applied/)
+
+    expect { described_class.new(url, 0) }.not_to raise_error
+    expect { described_class.new(url, []) }.not_to raise_error
+    expect { described_class.new(url, nil) }.not_to raise_error
+  end
+
   it "rejects a URL handle created before fork" do
     allow(url).to receive(:check_pid!).and_raise(Ethon::Errors::ForkSafety.new)
 
