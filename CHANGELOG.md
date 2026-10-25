@@ -116,7 +116,7 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * `Easy#file=` now opens a new path before releasing the previous response
   destination. A bad path raises without discarding the file that was already
   configured, so the next `perform` still writes to it.
-  ([#437](https://github.com/typhoeus/ethon/pull/437))
+  ([#439](https://github.com/typhoeus/ethon/pull/439))
 * A duplicated `Easy` keeps a configured response file path and opens its own
   stream for the next transfer. A caller-owned IO is still dropped so the two
   handles cannot write into the same object.
@@ -126,7 +126,7 @@ is unavailable; introspection helpers return `nil` or an empty array.
   marked by `Queryable::FileInfo`. Raw `String` bodies are rejected when
   `multipart: true` is requested instead of producing an unnamed part or a
   `NoMethodError`.
-  ([#440](https://github.com/typhoeus/ethon/pull/440),
+  ([#441](https://github.com/typhoeus/ethon/pull/441),
   [#438](https://github.com/typhoeus/ethon/pull/438))
 * `InvalidOption`, `UnsupportedOption`, and `SetOption` now inspect the option
   name in their messages, so control characters in an untrusted option key
