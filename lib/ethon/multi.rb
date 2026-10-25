@@ -95,7 +95,7 @@ module Ethon
     # is 1 will not be treated as unlimited. Instead it will open only 1 
     # connection and try to pipeline on it.
     # (Added in 7.30.0)
-    # @option options :execution_mode [Boolean]
+    # @option options :execution_mode [Symbol]
     #  Either :perform (default) or :socket_action, specifies the usage
     #  method that will be used on this multi object. The default :perform
     #  mode provides a #perform function that uses curl_multi_perform

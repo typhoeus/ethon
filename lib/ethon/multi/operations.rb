@@ -223,6 +223,11 @@ module Ethon
       # @example When a socket is readable and writable
       #   multi.socket_action(io_object, [:in, :out])
       #
+      # @param [ IO, Integer, nil ] io The socket to act on, or nil for the
+      #   timeout case.
+      # @param [ Integer, Symbol, Array ] readiness CURL_CSELECT_* readiness
+      #   bits, either as a number or as symbols such as :in and :out.
+      #
       # @return [ Symbol ] The Curl.multi_socket_action return code.
       def socket_action(io = nil, readiness = 0)
         ensure_execution_mode(:socket_action)
