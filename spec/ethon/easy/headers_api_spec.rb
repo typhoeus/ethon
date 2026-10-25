@@ -42,6 +42,21 @@ describe Ethon::Easy::HeadersApi do
       expect(easy.header("Content-Type", 0, [:header]).value).to eq("text/plain")
     end
 
+    it "asks libcurl for the last request by default" do
+      expect(Ethon::Curl).to receive(:easy_header).
+        with(
+          easy.handle,
+          "Content-Type",
+          0,
+          Ethon::Curl::HeaderOrigin[:header],
+          Ethon::Easy::HeadersApi::LAST_REQUEST,
+          anything
+        ).
+        and_call_original
+
+      expect(easy.header("Content-Type").value).to eq("text/plain")
+    end
+
     it "accepts a symbol origin" do
       expect(easy.header("Content-Type", 0, :header).value).to eq("text/plain")
     end
@@ -69,6 +84,35 @@ describe Ethon::Easy::HeadersApi do
       expect(easy.each_header([:header]).to_a).not_to be_empty
     end
 
+  end
+
+  describe "request selection after following redirects" do
+    let(:easy) do
+      Ethon::Easy.new(
+        :url => "http://localhost:3001/redirect_with_headers",
+        :followlocation => true
+      ).tap(&:perform)
+    end
+
+    def stage_values(headers = easy.each_header)
+      headers.select { |header| header.name.casecmp?("X-Request-Stage") }.map(&:value)
+    end
+
+    it "reads the final response by default" do
+      expect(easy.header("X-Request-Stage").value).to eq("target")
+    end
+
+    it "reads the first response when request 0 is passed explicitly" do
+      expect(easy.header("X-Request-Stage", 0, :header, 0).value).to eq("redirect")
+    end
+
+    it "enumerates the final response by default" do
+      expect(stage_values).to eq(["target"])
+    end
+
+    it "enumerates the first response when request 0 is passed explicitly" do
+      expect(stage_values(easy.each_header(:header, 0))).to eq(["redirect"])
+    end
   end
 end
 

@@ -3,15 +3,20 @@ module Ethon
   class Easy
     # Structured access to response headers via curl_easy_header.
     module HeadersApi
+      # libcurl's request number for the last request in a transfer. Redirects
+      # and multi-state authentication can produce several requests, and the
+      # response the caller sees comes from the last one.
+      LAST_REQUEST = -1
+
       # Return a parsed response header.
       #
       # @param [ String ] name The header name.
       # @param [ Integer ] index The instance index for repeated headers.
       # @param [ Integer, Symbol, Array ] origin CURLH_* origin bits.
-      # @param [ Integer ] request The request number, 0 for the last one.
+      # @param [ Integer ] request The request number, -1 for the last request.
       #
       # @return [ Ethon::Curl::Header ] The header.
-      def header(name, index = 0, origin = Curl::HeaderOrigin[:header], request = 0)
+      def header(name, index = 0, origin = Curl::HeaderOrigin[:header], request = LAST_REQUEST)
         unless Curl.respond_to?(:easy_header)
           raise NotImplementedError, "curl_easy_header is not supported by this libcurl"
         end
@@ -26,10 +31,10 @@ module Ethon
       # Enumerate response headers.
       #
       # @param [ Integer, Symbol, Array ] origin CURLH_* origin bits.
-      # @param [ Integer ] request The request number, 0 for the last one.
+      # @param [ Integer ] request The request number, -1 for the last request.
       #
       # @return [ Enumerator, self ] The headers.
-      def each_header(origin = Curl::HeaderOrigin[:header], request = 0)
+      def each_header(origin = Curl::HeaderOrigin[:header], request = LAST_REQUEST)
         unless Curl.respond_to?(:easy_nextheader)
           raise NotImplementedError, "curl_easy_nextheader is not supported by this libcurl"
         end
