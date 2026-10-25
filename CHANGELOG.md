@@ -2,7 +2,7 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...master)
 
 ### Behavior changes
 
