@@ -4,6 +4,33 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...master)
 
+These are the unreleased changes since `v0.18.0`. Before 1.0, a minor release
+may include incompatible API changes; review the breaking changes before
+upgrading.
+
+### Breaking changes
+
+* Unsupported libcurl callback ABIs now raise `NotImplementedError` instead of
+  being registered with the generic read/write callback signature. This affects
+  low-level setters such as `ioctlfunction=`, `seekfunction=`, and
+  `opensocketfunction=`. ([#281](https://github.com/typhoeus/ethon/pull/281))
+* Fatal errors returned by `curl_multi_perform` now raise
+  `Ethon::Errors::MultiPerform` instead of allowing Multi execution to continue
+  with invalid state. ([#286](https://github.com/typhoeus/ethon/pull/286))
+* Easy and Multi handles created before a `fork` can no longer be used or
+  cleaned up in the child process. Ethon now raises
+  `Ethon::Errors::ForkSafety`; if libcurl was initialized before forking, use
+  `fork` plus `exec`, otherwise create handles after forking.
+  ([#295](https://github.com/typhoeus/ethon/pull/295))
+* Unknown named enum and bitmask option values now raise
+  `Ethon::Errors::InvalidValue` instead of silently becoming `0`. Strings and
+  symbols are accepted equivalently, and direct integer values remain
+  supported. ([#300](https://github.com/typhoeus/ethon/pull/300))
+* Exceptions raised by `on_body` callbacks are now consistently re-raised for
+  both Easy and Multi transfers, including when verbose mode is enabled.
+  Applications that relied on these exceptions being swallowed must handle
+  them explicitly. ([#294](https://github.com/typhoeus/ethon/pull/294))
+
 ### Behavior changes
 
 * Verbose debug output is written through `Ethon.logger` at the debug level
@@ -59,6 +86,46 @@
   that were accepted. Mutating the object passed to a setter no longer makes
   the accessor describe a URL or header set the handle never received.
   ([#413](https://github.com/typhoeus/ethon/pull/413))
+* Empty HTTP header values now follow libcurl semantics: `"Accept" => ""`
+  suppresses libcurl's default header, while `"X-Empty;" => ""` sends an empty
+  header. ([gonubana](https://github.com/gonubana),
+  [#225](https://github.com/typhoeus/ethon/pull/225))
+
+### Enhancements
+
+* Added opt-in `CURLOPT_ERRORBUFFER` support through `Easy#errorbuffer=` and
+  `Easy#error_message`, including reset, duplication, Multi, and Mirror support.
+  ([Adrien Rey-Jarthon](https://github.com/jarthod),
+  [#277](https://github.com/typhoeus/ethon/pull/277))
+* Added `Easy#file=` and `Easy#writedata=` to stream response bodies to a path
+  or writable Ruby object without accumulating the body in memory. The original
+  implementation and authorship were preserved from PR #100.
+  ([Seth Madison](https://github.com/baconz),
+  [#298](https://github.com/typhoeus/ethon/pull/298))
+* Added block-based `Easy#debugfunction` observers while preserving Ethon's
+  internal debug collection and safely propagating callback errors.
+  ([Kai Lieth](https://github.com/klieth),
+  [#154](https://github.com/typhoeus/ethon/pull/154))
+* Added `Easy#ssl_engines`, `Easy#cookielist`, and `Easy#certinfo`. Slist
+  results are copied and freed according to libcurl ownership rules, while
+  certificate lists are copied without freeing libcurl-owned memory. The
+  relevant implementation and authorship were preserved from PR #74.
+  ([Jethro Beekman](https://github.com/jethrogb),
+  [#299](https://github.com/typhoeus/ethon/pull/299))
+* Added multipart PUT support. ([#292](https://github.com/typhoeus/ethon/pull/292))
+* Released the Ruby GVL around `curl_multi_perform` and native handle cleanup.
+  ([Vladimir Shteinman](https://github.com/Bobochka),
+  [#278](https://github.com/typhoeus/ethon/pull/278))
+* Added libcurl error codes 89 through 101.
+  ([Adrien Rey-Jarthon](https://github.com/jarthod),
+  [#276](https://github.com/typhoeus/ethon/pull/276))
+* Added support for current Windows libcurl DLL names: `libcurl-4`,
+  `libcurl-x64`, and `libcurl-arm64`.
+  ([Shizuo Fujita](https://github.com/Watson1978),
+  [#271](https://github.com/typhoeus/ethon/pull/271))
+* Added `ETHON_CURL_LIBS` to override the native libcurl library names.
+  ([Sergey Tarasov](https://github.com/dzirtusss),
+  [#235](https://github.com/typhoeus/ethon/pull/235))
 
 ### New libcurl bindings
 
@@ -427,83 +494,6 @@ is unavailable; introspection helpers return `nil` or an empty array.
   now raises instead of creating a second owner that can use the pointer after
   it is freed. `Easy#handle=` also rejects a handle owned by another Easy.
   ([#401](https://github.com/typhoeus/ethon/pull/401))
-
-## 0.19.0
-
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...v0.19.0)
-
-This is a minor release under Semantic Versioning. Before 1.0, a minor release
-may include incompatible API changes. Review the breaking changes before
-upgrading.
-
-### Breaking changes
-
-* Unsupported libcurl callback ABIs now raise `NotImplementedError` instead of
-  being registered with the generic read/write callback signature. This affects
-  low-level setters such as `ioctlfunction=`, `seekfunction=`, and
-  `opensocketfunction=`. ([#281](https://github.com/typhoeus/ethon/pull/281))
-* Fatal errors returned by `curl_multi_perform` now raise
-  `Ethon::Errors::MultiPerform` instead of allowing Multi execution to continue
-  with invalid state. ([#286](https://github.com/typhoeus/ethon/pull/286))
-* Easy and Multi handles created before a `fork` can no longer be used or
-  cleaned up in the child process. Ethon now raises
-  `Ethon::Errors::ForkSafety`; if libcurl was initialized before forking, use
-  `fork` plus `exec`, otherwise create handles after forking.
-  ([#295](https://github.com/typhoeus/ethon/pull/295))
-* Unknown named enum and bitmask option values now raise
-  `Ethon::Errors::InvalidValue` instead of silently becoming `0`. Strings and
-  symbols are accepted equivalently, and direct integer values remain
-  supported. ([#300](https://github.com/typhoeus/ethon/pull/300))
-* Exceptions raised by `on_body` callbacks are now consistently re-raised for
-  both Easy and Multi transfers, including when verbose mode is enabled.
-  Applications that relied on these exceptions being swallowed must handle
-  them explicitly. ([#294](https://github.com/typhoeus/ethon/pull/294))
-
-### Behavior changes
-
-* Empty HTTP header values now follow libcurl semantics: `"Accept" => ""`
-  suppresses libcurl's default header, while `"X-Empty;" => ""` sends an empty
-  header. ([gonubana](https://github.com/gonubana),
-  [#225](https://github.com/typhoeus/ethon/pull/225))
-
-### Enhancements
-
-* Added opt-in `CURLOPT_ERRORBUFFER` support through `Easy#errorbuffer=` and
-  `Easy#error_message`, including reset, duplication, Multi, and Mirror support.
-  ([Adrien Rey-Jarthon](https://github.com/jarthod),
-  [#277](https://github.com/typhoeus/ethon/pull/277))
-* Added `Easy#file=` and `Easy#writedata=` to stream response bodies to a path
-  or writable Ruby object without accumulating the body in memory. The original
-  implementation and authorship were preserved from PR #100.
-  ([Seth Madison](https://github.com/baconz),
-  [#298](https://github.com/typhoeus/ethon/pull/298))
-* Added block-based `Easy#debugfunction` observers while preserving Ethon's
-  internal debug collection and safely propagating callback errors.
-  ([Kai Lieth](https://github.com/klieth),
-  [#154](https://github.com/typhoeus/ethon/pull/154))
-* Added `Easy#ssl_engines`, `Easy#cookielist`, and `Easy#certinfo`. Slist
-  results are copied and freed according to libcurl ownership rules, while
-  certificate lists are copied without freeing libcurl-owned memory. The
-  relevant implementation and authorship were preserved from PR #74.
-  ([Jethro Beekman](https://github.com/jethrogb),
-  [#299](https://github.com/typhoeus/ethon/pull/299))
-* Added multipart PUT support. ([#292](https://github.com/typhoeus/ethon/pull/292))
-* Released the Ruby GVL around `curl_multi_perform` and native handle cleanup.
-  ([Vladimir Shteinman](https://github.com/Bobochka),
-  [#278](https://github.com/typhoeus/ethon/pull/278))
-* Added libcurl error codes 89 through 101.
-  ([Adrien Rey-Jarthon](https://github.com/jarthod),
-  [#276](https://github.com/typhoeus/ethon/pull/276))
-* Added support for current Windows libcurl DLL names: `libcurl-4`,
-  `libcurl-x64`, and `libcurl-arm64`.
-  ([Shizuo Fujita](https://github.com/Watson1978),
-  [#271](https://github.com/typhoeus/ethon/pull/271))
-* Added `ETHON_CURL_LIBS` to override the native libcurl library names.
-  ([Sergey Tarasov](https://github.com/dzirtusss),
-  [#235](https://github.com/typhoeus/ethon/pull/235))
-
-### Fixes and hardening
-
 * Reworked Easy, Multi, slist, and multipart native ownership around typed,
   PID-aware pointers; removed unsafe Ruby finalizers and prevented inherited
   native cleanup after forks. ([#280](https://github.com/typhoeus/ethon/pull/280),
