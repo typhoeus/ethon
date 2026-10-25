@@ -188,5 +188,43 @@ describe Ethon::Easy::Header do
 
       expect(easy.request_headers).to eq('X-Test' => 'yes')
     end
+
+    it "returns an independent snapshot" do
+      easy.headers = { 'X-Test' => 'yes' }
+      snapshot = easy.request_headers
+
+      snapshot['X-Test'] = 'no'
+
+      expect(easy.request_headers).to eq('X-Test' => 'yes')
+      expect(snapshot).not_to be(easy.request_headers)
+    end
+
+    it "returns a new empty hash by default" do
+      first = easy.request_headers
+      first['X-Test'] = 'yes'
+
+      expect(easy.request_headers).to eq({})
+    end
+
+    it "does not track later mutations of the caller's hash" do
+      headers = { 'X-Test' => 'yes' }
+      easy.headers = headers
+
+      headers['X-Test'] = 'no'
+      headers['X-Other'] = 'yes'
+
+      expect(easy.request_headers).to eq('X-Test' => 'yes')
+    end
+
+    it "sends the snapshot taken when the headers were assigned" do
+      headers = { 'X-Test' => 'yes' }
+      easy.headers = headers
+      headers['X-Test'] = 'no'
+      easy.url = "http://localhost:3001/"
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to include('"HTTP_X_TEST":"yes"')
+      expect(easy.response_body).not_to include('"HTTP_X_TEST":"no"')
+    end
   end
 end

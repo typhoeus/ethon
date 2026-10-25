@@ -7,12 +7,17 @@ module Ethon
     module Header
       # Return the request headers, return empty hash if none.
       #
+      # The returned hash is an independent snapshot of the headers that were
+      # sent to libcurl. Mutating the hash passed to #headers= afterwards cannot
+      # change either the handle or this snapshot, and mutating the returned
+      # hash does not change the request.
+      #
       # @example Return the request headers.
       #   easy.request_headers
       #
       # @return [ Hash ] The request headers.
       def request_headers
-        @headers ||= {}
+        (@headers || {}).dup
       end
 
       # Set the headers.
@@ -22,7 +27,10 @@ module Ethon
       #
       # @param [ Hash ] headers The headers.
       def headers=(value)
-        list = build_slist(value || {})
+        # Snapshot before building the list so the stored value is exactly the
+        # set that libcurl accepted.
+        headers = (value || {}).dup
+        list = build_slist(headers)
         begin
           Curl.set_option(:httpheader, list, handle)
         rescue Exception
@@ -30,7 +38,7 @@ module Ethon
           raise
         end
 
-        @headers = value || {}
+        @headers = headers.freeze
         @header_list = list && Curl::Slist.new(list)
       end
       alias request_headers= headers=

@@ -47,4 +47,26 @@ describe "Easy option state" do
     expect(easy.perform).to eq(:ok)
     expect(easy.response_body).to eq("payload")
   end
+
+  it "keeps the URL libcurl received when the caller mutates the string" do
+    source = String.new("http://localhost:3001/first")
+    fresh = Ethon::Easy.new
+    fresh.url = source
+
+    source.replace("http://localhost:3001/second")
+
+    expect(fresh.url).to eq("http://localhost:3001/first")
+    expect(fresh.url).to be_frozen
+    expect(fresh.perform).to eq(:ok)
+    expect(fresh.effective_url).to eq("http://localhost:3001/first")
+  end
+
+  it "stores the string representation of a non-string URL" do
+    fresh = Ethon::Easy.new
+    fresh.url = :"http://localhost:3001/symbol"
+
+    expect(fresh.url).to eq("http://localhost:3001/symbol")
+    expect(fresh.perform).to eq(:ok)
+    expect(fresh.effective_url).to eq("http://localhost:3001/symbol")
+  end
 end
