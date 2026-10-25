@@ -152,6 +152,8 @@ module Ethon
         @on_headers = nil
         @on_body = nil
         @on_progress = nil
+        @progress_source = nil
+        @internal_progress_option = nil
         @user_debug_callback = nil
         @share = nil
         @error_buffer = nil

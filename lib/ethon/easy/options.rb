@@ -220,6 +220,12 @@ module Ethon
           @read_callback = callback
         end
 
+        # Setting the option that backs on_progress replaces or clears the
+        # internal callback. Other progress options lose to XFERINFOFUNCTION.
+        if option == @internal_progress_option
+          @progress_source = callback ? :custom : nil
+        end
+
         if callback.nil?
           @procs.delete(option) if @procs
         else

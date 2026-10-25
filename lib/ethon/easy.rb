@@ -274,6 +274,8 @@ module Ethon
       @on_headers = nil
       @on_body = nil
       @on_progress = nil
+      @progress_source = nil
+      @internal_progress_option = nil
       @user_debug_callback = nil
       @procs = nil
       @blobs = nil
@@ -355,16 +357,16 @@ module Ethon
         copy.instance_variable_set(:@request_body_start, @request_body_start)
       end
 
-      progress_handled = @procs &&
-        (@procs.key?(:progressfunction) || @procs.key?(:xferinfofunction))
-      if defined?(@on_progress) && @on_progress && @progress_callback && !progress_handled
-        copy.set_progress_callback
-      end
-
       (@procs || {}).each do |option, callback|
         next if option == :readfunction && defined?(@request_body) && @request_body
 
         copy.public_send("#{option}=", callback)
+      end
+
+      # Replay custom progress functions first: on_progress installs its
+      # internal callback on top of them, so it has to win in the same order.
+      if @progress_source == :internal && defined?(@on_progress) && @on_progress && @progress_callback
+        copy.set_progress_callback
       end
     end
     private :restore_callbacks_on
