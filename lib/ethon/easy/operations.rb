@@ -9,7 +9,8 @@ module Ethon
       # @example Return the handle.
       #   easy.handle
       #
-      # @return [ FFI::Pointer ] A pointer to the curl easy handle.
+      # @return [ Ethon::Curl::EasyHandle ] The owned wrapper around the curl
+      #   easy handle. It is an FFI::Pointer subclass.
       def handle
         raise Errors::EthonError, "Easy has been cleaned up" if @cleaned_up
 
@@ -78,7 +79,7 @@ module Ethon
       # @example Perform the request.
       #   easy.perform
       #
-      # @return [ Integer ] The return code.
+      # @return [ Symbol ] The return code.
       def perform
         ensure_not_performing!
         # curl_easy_perform must not drive a handle that is owned by a multi.

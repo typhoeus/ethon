@@ -9,9 +9,9 @@ module Ethon
       # Sets max_total_connections option.
       #
       # @example Set max_total_connections option.
-      #   multi.max_total_conections = $value
+      #   multi.max_total_connections = $value
       #
-      # @param [ String ] value The value to set.
+      # @param [ Integer ] value The value to set.
       #
       # @return [ void ]
       def max_total_connections=(value)
@@ -35,7 +35,7 @@ module Ethon
       # @example Set maxconnects option.
       #   multi.maxconnects = $value
       #
-      # @param [ String ] value The value to set.
+      # @param [ Integer ] value The value to set.
       #
       # @return [ void ]
       def maxconnects=(value)
@@ -47,7 +47,7 @@ module Ethon
       # @example Set pipelining option.
       #   multi.pipelining = $value
       #
-      # @param [ String ] value The value to set.
+      # @param [ Integer ] value The value to set.
       #
       # @return [ void ]
       def pipelining=(value)
@@ -59,7 +59,7 @@ module Ethon
       # @example Set socketdata option.
       #   multi.socketdata = $value
       #
-      # @param [ String ] value The value to set.
+      # @param [ FFI::Pointer, nil ] value The value to set.
       #
       # @return [ void ]
       def socketdata=(value)
@@ -71,7 +71,7 @@ module Ethon
       # @example Set socketfunction option.
       #   multi.socketfunction = $value
       #
-      # @param [ String ] value The value to set.
+      # @param [ Proc, nil ] value The value to set.
       #
       # @return [ void ]
       def socketfunction=(value)
@@ -85,7 +85,7 @@ module Ethon
       # @example Set timerdata option.
       #   multi.timerdata = $value
       #
-      # @param [ String ] value The value to set.
+      # @param [ FFI::Pointer, nil ] value The value to set.
       #
       # @return [ void ]
       def timerdata=(value)
@@ -97,7 +97,7 @@ module Ethon
       # @example Set timerfunction option.
       #   multi.timerfunction = $value
       #
-      # @param [ String ] value The value to set.
+      # @param [ Proc, nil ] value The value to set.
       #
       # @return [ void ]
       def timerfunction=(value)
