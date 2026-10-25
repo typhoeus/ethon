@@ -100,6 +100,10 @@ is unavailable; introspection helpers return `nil` or an empty array.
   could crash the process. Assigning `nil` to a MIME part field now clears it
   instead of setting an empty value or raising.
   ([#414](https://github.com/typhoeus/ethon/pull/414))
+* `Curl::Header#origin` now masks every undocumented origin bit, not only the
+  single reserved bit current libcurl sets, so the value only contains the
+  documented `CURLH_*` bits.
+  ([#417](https://github.com/typhoeus/ethon/pull/417))
 * `Curl::Slist.build` now rejects CR, LF, and NUL in list lines, so lists used
   for FTP quotes, SMTP recipients, and other verbatim protocol commands cannot
   inject additional commands.
