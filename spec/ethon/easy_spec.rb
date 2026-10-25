@@ -447,9 +447,9 @@ describe Ethon::Easy do
       easy.url = "http://user:secret@localhost:3001/"
       easy.perform
 
-      expect(easy.effective_url).to include("user:secret")
+      # libcurl 8.23.0 no longer returns credentials in CURLINFO_EFFECTIVE_URL,
+      # the redaction itself is covered by the Mirror specs.
       expect(easy.log_inspect).not_to include("secret")
-      expect(easy.log_inspect).to include("[REDACTED]@localhost")
     end
   end
 
