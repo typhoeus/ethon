@@ -62,6 +62,18 @@ describe Ethon::Multi::Stack do
         expect(multi.easy_handles).to include(easy)
         multi.delete(easy)
       end
+
+      it "does not expose the previous transfer's return code" do
+        easy.url = "http://127.0.0.1:3001/"
+        expect(easy.perform).to eq(:ok)
+        expect(easy.return_code).to eq(:ok)
+
+        multi.add(easy)
+
+        expect(easy.return_code).to be_nil
+      ensure
+        multi.delete(easy) if multi.easy_handles.include?(easy)
+      end
     end
 
     context "when multi_add_handle fails" do

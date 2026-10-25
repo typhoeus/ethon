@@ -33,6 +33,7 @@ module Ethon
         @headers_called = false
         @debug_info = Ethon::Easy::DebugInfo.new
         @request_body_read = 0
+        @return_code = nil
       end
 
       # Returns the body write callback.

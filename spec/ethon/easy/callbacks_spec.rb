@@ -29,6 +29,14 @@ describe Ethon::Easy::Callbacks do
       expect(easy.instance_variable_get(:@debug_info).to_a).to eq([])
     end
 
+    it "clears the previous transfer's return code" do
+      easy.return_code = :ok
+
+      easy.set_callbacks
+
+      expect(easy.return_code).to be_nil
+    end
+
     it "keeps the response body unbuffered when streaming to an IO" do
       easy.file = StringIO.new
 
