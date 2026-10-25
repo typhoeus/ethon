@@ -114,6 +114,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
   `Ethon::Errors::EthonError` when used afterwards, instead of dereferencing
   the freed native pointer. This covers Easy and Multi handles, URL, MIME,
   share, and slist wrappers.
+* Option setters, MIME part header assignment, and `Multi#assign` reject freed
+  owned pointers instead of handing libcurl a dangling address.
+  ([#408](https://github.com/typhoeus/ethon/pull/408))
 * MIME part and request header lists detect a failed `curl_slist_append`
   allocation (FFI reports a NULL pointer, not `nil`) and free the partially
   built list before installing it.
