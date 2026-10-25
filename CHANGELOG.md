@@ -132,6 +132,9 @@ is unavailable; introspection helpers return `nil` or an empty array.
   name in their messages, so control characters in an untrusted option key
   cannot inject lines into logs.
   ([#442](https://github.com/typhoeus/ethon/pull/442))
+* Corrected API annotations for the `Easy#perform` and `Easy#handle` return
+  types, the `Multi` option setter parameter types, and `Multi#socket_action`.
+  ([#445](https://github.com/typhoeus/ethon/pull/445))
 * `Ethon::Errors::InvalidValue` now escapes the value in its message, so a
   CR or LF in a rejected URL or request-line value can no longer be injected
   into logs that record the exception.
