@@ -56,6 +56,21 @@ describe "resetting an Easy from on_complete" do
     multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
   end
 
+  it "returns the transfer result after the completion callback resets" do
+    easy = Ethon::Easy.new(:url => url)
+    easy.on_complete { |e| e.reset }
+
+    expect(easy.perform).to eq(:ok)
+    expect(easy.return_code).to be_nil
+  end
+
+  it "returns an error result after the completion callback resets" do
+    easy = Ethon::Easy.new(:url => "http://127.0.0.1:1/")
+    easy.on_complete { |e| e.reset }
+
+    expect(easy.perform).to eq(:couldnt_connect)
+  end
+
   it "still raises callback errors when the completion callback resets" do
     easy = Ethon::Easy.new(:url => url)
     easy.on_body { raise "body callback failed" }

@@ -92,13 +92,16 @@ module Ethon
         @performing = true
 
         begin
-          @return_code = Curl.easy_perform(handle)
+          code = Curl.easy_perform(handle)
+          @return_code = code
           if Ethon.logger.debug?
             Ethon.logger.debug { "ETHON: performed #{log_inspect}" }
           end
           complete
           raise_callback_error
-          @return_code
+          # on_complete may reset the Easy, which clears @return_code. Return
+          # the result of the transfer that just ran.
+          code
         ensure
           @performing = false
           finish_response_body_io
