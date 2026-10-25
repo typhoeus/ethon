@@ -50,7 +50,7 @@ module Ethon
       # @param [ Integer, Symbol, Array ] flags CURLU_* flags.
       #
       # @raise [ Errors::InvalidValue ] If the part or a flag is unknown, or
-      #   the value contains a NUL byte.
+      #   the value contains a NUL byte, CR, or LF.
       #
       # @return [ Url ] self
       def set(part, value, flags = 0)
