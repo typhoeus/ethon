@@ -14,6 +14,31 @@ describe Ethon::Curl::Slist do
         to eq(["X-First: 1", "X-Second: 2"])
     end
 
+    it "rejects CR and LF before calling libcurl" do
+      expect(Ethon::Curl).not_to receive(:slist_append)
+
+      ["one\r", "one\n", "one\r\ntwo"].each do |line|
+        expect { described_class.build([line]) }.
+          to raise_error(Ethon::Errors::InvalidValue, /slist/)
+      end
+    end
+
+    it "rejects NUL before calling libcurl" do
+      expect(Ethon::Curl).not_to receive(:slist_append)
+
+      expect { described_class.build(["one\0two"]) }.
+        to raise_error(Ethon::Errors::InvalidValue, /slist/)
+    end
+
+    it "frees a partially built list when a later line is invalid" do
+      first = FFI::MemoryPointer.new(:pointer)
+      allow(Ethon::Curl).to receive(:slist_append).and_return(first)
+      expect(Ethon::Curl).to receive(:slist_free_all).with(first)
+
+      expect { described_class.build(["valid", "injected\r\ncommand"]) }.
+        to raise_error(Ethon::Errors::InvalidValue, /slist/)
+    end
+
     it "frees the previous list and raises when an append fails" do
       first = FFI::MemoryPointer.new(:pointer)
       allow(Ethon::Curl).to receive(:slist_append).and_return(first, FFI::Pointer::NULL)
