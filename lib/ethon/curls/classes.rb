@@ -6,9 +6,32 @@ module Ethon
       OWNERS = {}
 
       def initialize(pointer)
-        super
         @pid = Process.pid
-        OWNERS_MUTEX.synchronize { self.class.owners[pointer.address] = @pid }
+        registered = false
+        # Wrapping the same pointer twice would give two finalizers ownership
+        # of one native allocation. The first free marks it freed only for its
+        # own wrapper, so the other can still be used after free.
+        if pointer && !pointer.null?
+          OWNERS_MUTEX.synchronize do
+            if owner_pid = self.class.owners[pointer.address]
+              raise Errors::ForkSafety.new if owner_pid != @pid
+
+              raise ArgumentError, "native pointer is already owned by an Ethon handle"
+            end
+            self.class.owners[pointer.address] = @pid
+            registered = true
+          end
+        end
+
+        super
+      rescue Exception
+        # Do not reserve an address for a wrapper that never got created.
+        if registered
+          OWNERS_MUTEX.synchronize do
+            self.class.owners.delete(pointer.address) if self.class.owners[pointer.address] == @pid
+          end
+        end
+        raise
       end
 
       # Explicitly free the native pointer. The wrapper must not be used
@@ -44,7 +67,7 @@ module Ethon
     end
 
     class EasyHandle < OwnedPointer
-      attr_accessor :error_buffer
+      attr_accessor :error_buffer, :owner
 
       def self.native_release(pointer)
         Curl.easy_cleanup(pointer)
