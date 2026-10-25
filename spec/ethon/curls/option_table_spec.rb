@@ -12,6 +12,7 @@ module OptionTableSpecHelpers
     :bitmask => [:long, :values],
     :off_t => [:off_t],
     :string => [:string, :object],
+    :binary_string => [:string, :object],
     :string_escape_null => [:string, :object],
     :string_as_pointer => [:string, :object],
     :ffipointer => [:object, :cbptr],

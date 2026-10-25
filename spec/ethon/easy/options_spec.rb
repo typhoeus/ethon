@@ -221,6 +221,8 @@ describe Ethon::Easy::Options do
       it "sets option" do
         expect_any_instance_of(Ethon::Easy).to receive(:set_callbacks)
         expect(Ethon::Curl).to receive(:set_option).with(name, anything, anything)
+        # copypostfields also records the exact body length before copying.
+        expect(Ethon::Curl).to receive(:set_option).with(:postfieldsize, anything, anything) if name == :copypostfields
         value = case name
         when :http_version
           :httpv1_0

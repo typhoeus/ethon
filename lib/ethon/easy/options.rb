@@ -145,9 +145,14 @@ module Ethon
         value
       end
 
+      # Options whose value is used to bound a retained body. Their setters
+      # have to keep the body length and the native size in sync.
+      POSTFIELD_OPTIONS = [:postfields, :postfieldsize, :postfieldsize_large, :copypostfields].freeze
+
       Curl.easy_options(nil).each do |opt, props|
-        # postfields= is defined below because libcurl does not copy the string.
-        next if opt == :postfields
+        # These setters are defined below because libcurl does not copy the
+        # CURLOPT_POSTFIELDS string and the size must stay inside its buffer.
+        next if POSTFIELD_OPTIONS.include?(opt)
 
         method_name = "#{opt}=".freeze
         unless method_defined? method_name
@@ -199,9 +204,11 @@ module Ethon
       end
 
       # libcurl does not copy CURLOPT_POSTFIELDS, so keep an immutable snapshot
-      # of the bytes alive for as long as the handle may reference it. Retain it
-      # only once the option was accepted. Mutating a caller's string afterwards
-      # may reallocate it, so libcurl must not point at that buffer.
+      # of the bytes alive for as long as the handle may reference it. The
+      # native option takes a pointer, which lets the body contain NUL bytes.
+      # Retain the buffer only once the option was accepted. Mutating a caller's
+      # string afterwards may reallocate it, so libcurl must not point at that
+      # buffer.
       #
       # CURLOPT_POSTFIELDSIZE survives between requests. Updating it here keeps
       # libcurl from reading an earlier, larger body length out of the new
@@ -210,16 +217,77 @@ module Ethon
         if value.nil?
           Curl.set_option(:postfields, nil, handle)
           @postfields = nil
+          @postfields_pointer = nil
+          @postfield_body_size = nil
           # -1 is libcurl's default: the body ends at the first NUL.
           Curl.set_option(:postfieldsize, -1, handle)
+          @postfieldsize_value = -1
         else
           string = value.to_s
           string = string.dup.freeze unless string.frozen?
-          Curl.set_option(:postfields, string, handle)
+          pointer = FFI::MemoryPointer.new(:char, string.bytesize + 1)
+          pointer.put_bytes(0, string)
+          pointer.put_char(string.bytesize, 0)
+          Curl.set_option(:postfields, pointer, handle)
           @postfields = string
+          @postfields_pointer = pointer
+          @postfield_body_size = string.bytesize
           Curl.set_option(:postfieldsize, string.bytesize, handle)
+          @postfieldsize_value = string.bytesize
         end
         value
+      end
+
+      # libcurl copies CURLOPT_COPYPOSTFIELDS, so the Ruby string does not have
+      # to stay alive. An explicit, smaller CURLOPT_POSTFIELDSIZE still selects
+      # a prefix. A larger size would make libcurl read past the copied buffer,
+      # which is how a stale size from a previous body leaked memory into the
+      # request.
+      def copypostfields=(value)
+        if value.nil?
+          Curl.set_option(:copypostfields, nil, handle)
+          @postfields = nil
+          @postfields_pointer = nil
+          @postfield_body_size = nil
+          # Clear the size too: libcurl fails the request when a non-zero size
+          # is paired with the NULL body left by COPYPOSTFIELDS.
+          Curl.set_option(:postfieldsize, -1, handle)
+          @postfieldsize_value = -1
+          return value
+        end
+
+        string = value.to_s
+        size = @postfieldsize_value
+        if size && size >= 0
+          if @postfield_body_size == size
+            # The size still describes the body that is being replaced. Keeping
+            # it would truncate a longer copy or read past a shorter one.
+            size = nil
+          elsif size > string.bytesize
+            raise Errors::InvalidValue.new(:copypostfields, value)
+          end
+        end
+
+        if size.nil? || size < 0
+          Curl.set_option(:postfieldsize, string.bytesize, handle)
+          @postfieldsize_value = string.bytesize
+        end
+        Curl.set_option(:copypostfields, string, handle)
+        @postfields = nil
+        @postfields_pointer = nil
+        @postfield_body_size = string.bytesize
+        value
+      end
+
+      # CURLOPT_POSTFIELDSIZE and CURLOPT_POSTFIELDSIZE_LARGE bound the bytes
+      # libcurl reads from CURLOPT_POSTFIELDS. Letting them exceed the retained
+      # buffer makes libcurl send adjacent process memory.
+      def postfieldsize=(value)
+        set_postfieldsize(:postfieldsize, value)
+      end
+
+      def postfieldsize_large=(value)
+        set_postfieldsize(:postfieldsize_large, value)
       end
 
       # Observe libcurl debug messages without replacing Ethon's internal
@@ -236,6 +304,19 @@ module Ethon
       end
 
       private
+
+      # Validate the size against the body Ethon currently knows about before
+      # handing it to libcurl.
+      def set_postfieldsize(option, value)
+        size = value.nil? ? nil : Ethon::Curls::Options.integer_value(option, value)
+        if @postfield_body_size && size && size > @postfield_body_size
+          raise Errors::InvalidValue.new(option, value)
+        end
+
+        Curl.set_option(option, value, handle)
+        @postfieldsize_value = size unless value.nil?
+        value
+      end
 
       def initialize_copy(other)
         super
