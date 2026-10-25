@@ -167,6 +167,15 @@ module Ethon
         end
       end
 
+      # Resetting is safe from a completion callback: the transfer has already
+      # finished and the handle no longer belongs to a Multi. A reset from a
+      # body, header, or progress callback still runs inside libcurl.
+      def ensure_not_in_transfer!
+        return if @completing
+
+        ensure_not_performing!
+      end
+
       def ensure_not_attached_to_multi!
         return unless defined?(@multi) && @multi
 
