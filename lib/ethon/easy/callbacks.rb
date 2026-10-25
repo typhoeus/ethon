@@ -48,7 +48,7 @@ module Ethon
             headers_user_callback_result = headers
             result = body(chunk = stream.read_string(size * num))
             if @response_body_io && result != :abort && headers_user_callback_result != :abort
-              @response_body_io.write(chunk)
+              write_response_body(@response_body_io, chunk)
             elsif result == :unyielded && !@response_body_io && headers_user_callback_result != :abort
               @response_body << chunk
             end
@@ -228,6 +228,23 @@ module Ethon
       end
 
       private
+
+      # IO#write may accept fewer bytes than it was given, especially for
+      # nonblocking or wrapper IOs. libcurl must only see the chunk as handled
+      # once every byte reached the destination. IOs that return nil (or a
+      # non-integer) keep the historical "wrote everything" behavior.
+      def write_response_body(io, chunk)
+        offset = 0
+        total = chunk.bytesize
+        while offset < total
+          pending = offset.zero? ? chunk : chunk.byteslice(offset, total - offset)
+          written = io.write(pending)
+          return unless written.is_a?(Integer)
+
+          raise IOError, "response body write made no progress" if written <= 0
+          offset += written
+        end
+      end
 
       # Install the callbacks that fill the Ruby-side response state. The
       # handle is passed explicitly so callers do not have to go through
