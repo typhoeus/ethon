@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'ethon/easy/util'
+
 module Ethon
   module Curl
     class OwnedPointer < ::FFI::AutoPointer
@@ -114,7 +116,11 @@ module Ethon
         list = nil
         begin
           lines.each do |line|
-            appended = Curl.slist_append(list, line.to_s)
+            # libcurl writes slist entries verbatim. For list options such as
+            # FTP quotes and SMTP recipients, CR or LF would inject another
+            # protocol command, so reject them at the Ethon helper boundary.
+            value = Ethon::Easy::Util.validate_header_line(:slist, line.to_s)
+            appended = Curl.slist_append(list, value)
             # libcurl returns NULL (not nil) and leaves the old list intact.
             if appended.nil? || appended.null?
               raise NoMemoryError, "curl_slist_append failed"
