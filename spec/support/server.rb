@@ -106,6 +106,18 @@ TESTSERVER = Sinatra.new do
     redirect '/'
   end
 
+  # Two requests with distinct headers so structured-header request selection
+  # can be tested across a redirect.
+  get '/redirect_with_headers' do
+    response['X-Request-Stage'] = 'redirect'
+    redirect '/request_headers_target'
+  end
+
+  get '/request_headers_target' do
+    response['X-Request-Stage'] = 'target'
+    'ok'
+  end
+
   post '/redirect' do
     redirect '/'
   end
