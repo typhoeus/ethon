@@ -14,7 +14,9 @@ module Ethon
           nil
         end
         version = Ethon::Curl.version if version.nil?
-        super("libcurl #{version} does not support the option: #{option}")
+        # Inspect so control characters in an untrusted option name cannot
+        # inject lines into logs that record the message.
+        super("libcurl #{version} does not support the option: #{option.inspect}")
       end
     end
   end
