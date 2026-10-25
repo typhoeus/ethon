@@ -165,4 +165,20 @@ describe Ethon::Easy::Form do
       end
     end
   end
+
+  describe "when a multipart body is a raw String" do
+    let(:raw_form) { described_class.new(easy, "raw", true) }
+
+    it "rejects a MIME body without field names" do
+      expect { raw_form.mime }.
+        to raise_error(ArgumentError, /multipart bodies require a Hash of fields/)
+    end
+
+    it "rejects a form API body without field names" do
+      skip "curl_formadd is unavailable" unless Ethon::Curl.respond_to?(:formadd)
+
+      expect { raw_form.materialize }.
+        to raise_error(ArgumentError, /multipart bodies require a Hash of fields/)
+    end
+  end
 end
