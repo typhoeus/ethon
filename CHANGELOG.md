@@ -39,7 +39,7 @@
   truncating them at the first NUL. A `postfieldsize` larger than the retained
   body raises `Ethon::Errors::InvalidValue` instead of making libcurl read
   past the buffer. Copying a new body without an explicit size sets the exact
-  byte length.
+  byte length, and clearing the copied body clears the size as well.
   ([#436](https://github.com/typhoeus/ethon/pull/436))
 * `Multi.new` now accepts `max_host_connections`, `max_pipeline_length`,
   `content_length_penalty_size`, and `chunk_length_penalty_size`, which were
