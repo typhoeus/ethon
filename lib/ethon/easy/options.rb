@@ -163,11 +163,23 @@ module Ethon
       # of the bytes alive for as long as the handle may reference it. Retain it
       # only once the option was accepted. Mutating a caller's string afterwards
       # may reallocate it, so libcurl must not point at that buffer.
+      #
+      # CURLOPT_POSTFIELDSIZE survives between requests. Updating it here keeps
+      # libcurl from reading an earlier, larger body length out of the new
+      # buffer.
       def postfields=(value)
-        string = value.nil? ? nil : value.to_s
-        string = string.dup.freeze if string && !string.frozen?
-        Curl.set_option(:postfields, string, handle)
-        @postfields = string
+        if value.nil?
+          Curl.set_option(:postfields, nil, handle)
+          @postfields = nil
+          # -1 is libcurl's default: the body ends at the first NUL.
+          Curl.set_option(:postfieldsize, -1, handle)
+        else
+          string = value.to_s
+          string = string.dup.freeze unless string.frozen?
+          Curl.set_option(:postfields, string, handle)
+          @postfields = string
+          Curl.set_option(:postfieldsize, string.bytesize, handle)
+        end
         value
       end
 

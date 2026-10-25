@@ -54,5 +54,33 @@ describe Ethon::Easy do
 
       expect(easy.instance_variable_get(:@postfields)).to be_nil
     end
+
+    it "sets the body size from the retained bytes" do
+      expect(Ethon::Curl).to receive(:set_option).with(:postfields, kind_of(String), easy.handle)
+      expect(Ethon::Curl).to receive(:set_option).with(:postfieldsize, 5, easy.handle)
+
+      easy.postfields = "hello"
+    end
+
+    it "does not reuse a previous request's body size" do
+      easy.http_request("http://localhost:3001/echo", :post, :body => "0123456789")
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to eq("0123456789")
+
+      easy.postfields = "hi"
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to eq("hi")
+    end
+
+    it "clears a previous form body size" do
+      easy.http_request("http://localhost:3001/echo", :post, :body => "0123456789")
+
+      easy.postfields = nil
+      easy.copypostfields = "hi"
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to eq("hi")
+    end
   end
 end
