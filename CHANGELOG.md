@@ -79,6 +79,12 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `Easy#handle=` now clears the Ruby-side request options that the replacement
+  handle does not receive, so `#url`, `#request_headers`, `#curlu`, `#mime`,
+  `#share`, retained slists/blobs, and the previous response no longer describe
+  the old handle. Callbacks, the error buffer, the progress setting, and the
+  response destination stay in place.
+  ([#448](https://github.com/typhoeus/ethon/pull/448))
 * `Easy#dup` keeps a path destination configured with `Easy#file=`. The
   duplicate opens its own response stream for the next transfer instead of
   buffering the body in memory; a caller-owned IO is still not shared between
