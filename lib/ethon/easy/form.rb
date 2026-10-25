@@ -70,6 +70,7 @@ module Ethon
             "curl_formadd is not supported by this libcurl; use the MIME API instead"
         end
 
+        ensure_named_fields!
         query_pairs.each { |pair| form_add(pair.first.to_s, pair.last) }
       end
 
@@ -81,6 +82,7 @@ module Ethon
       # @return [ Ethon::Curl::Mime ] The MIME structure.
       def mime
         @mime ||= begin
+          ensure_named_fields!
           structure = Ethon::Curl::Mime.new(@easy)
           query_pairs.each do |pair|
             part = structure.addpart
@@ -99,6 +101,15 @@ module Ethon
       end
 
       private
+
+      # A multipart part needs a field name. A raw String body is one pair and
+      # has no name, which used to produce an unnamed part through the MIME API
+      # and a NoMethodError through the form API.
+      def ensure_named_fields!
+        return unless query_pairs.any? { |pair| pair.is_a?(String) }
+
+        raise ArgumentError, "multipart bodies require a Hash of fields"
+      end
 
       def contains_file?(value)
         case value

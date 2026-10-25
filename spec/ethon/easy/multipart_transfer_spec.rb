@@ -8,6 +8,24 @@ describe "multipart forms" do
   let(:easy) { Ethon::Easy.new }
   let(:url) { "http://localhost:3001/multipart" }
 
+  it "rejects a raw String body for POST" do
+    expect {
+      easy.http_request(url, :post, :body => "raw", :multipart => true)
+    }.to raise_error(ArgumentError, /multipart bodies require a Hash of fields/)
+  end
+
+  it "rejects a raw String body for PUT" do
+    expect {
+      easy.http_request(url, :put, :body => "raw", :multipart => true)
+    }.to raise_error(ArgumentError, /multipart bodies require a Hash of fields/)
+  end
+
+  it "still accepts a raw String body without multipart" do
+    expect {
+      easy.http_request(url, :post, :body => "raw")
+    }.not_to raise_error
+  end
+
   it "round-trips values that need escaping" do
     fields = {
       :alpha => "one",
