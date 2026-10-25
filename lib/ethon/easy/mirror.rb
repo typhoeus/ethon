@@ -5,7 +5,11 @@ module Ethon
       attr_reader :options
       alias_method :to_hash, :options
 
-      INFORMATIONS_TO_MIRROR = Informations::AVAILABLE_INFORMATIONS.keys +
+      # Raw pointers cannot be marshaled and point into native state that can
+      # go away when the handle is reset. Applications serialize a mirror (for
+      # example as a cached Typhoeus response), so leave them on the Easy.
+      INFORMATIONS_TO_MIRROR = Informations::AVAILABLE_INFORMATIONS.
+          reject { |_, type| type == :ptr }.keys +
           [:return_code, :response_headers, :response_body, :debug_info, :error_message]
 
       INFORMATIONS_TO_LOG = [:effective_url, :response_code, :return_code, :total_time]
