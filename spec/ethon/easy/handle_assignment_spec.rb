@@ -114,5 +114,79 @@ describe "assigning an Easy handle" do
 
       expect(easy.handle).to be(handle)
     end
+
+    it "frees the handle it replaces" do
+      easy = Ethon::Easy.new
+      old_handle = easy.handle
+      address = old_handle.address
+
+      easy.handle = Ethon::Curl.easy_init
+
+      expect { old_handle.check_pid! }.
+        to raise_error(Ethon::Errors::EthonError, /freed/)
+      expect(Ethon::Curl::OwnedPointer.owners).not_to have_key(address)
+    end
+
+    it "frees the handle when assigning nil" do
+      easy = Ethon::Easy.new
+      old_handle = easy.handle
+
+      easy.handle = nil
+
+      expect { old_handle.check_pid! }.
+        to raise_error(Ethon::Errors::EthonError, /freed/)
+    end
+
+    it "does not free a handle owned by another Easy" do
+      easy = Ethon::Easy.new(:url => url)
+      copy = easy.dup
+
+      expect { easy.perform }.not_to raise_error
+      expect(easy.return_code).to eq(:ok)
+      expect(copy.perform).to eq(:ok)
+    end
+
+    it "reattaches the error buffer to the replacement" do
+      easy = Ethon::Easy.new
+      easy.errorbuffer = true
+      buffer = easy.instance_variable_get(:@error_buffer)
+      old_handle = easy.handle
+
+      easy.handle = Ethon::Curl.easy_init
+      easy.url = "#{url}redirect"
+      easy.followlocation = true
+      easy.maxredirs = 0
+
+      expect(easy.handle.error_buffer).to be(buffer)
+      expect(easy.perform).to eq(:too_many_redirects)
+      expect(easy.error_message).to match(/redirect/i)
+      expect { old_handle.check_pid! }.
+        to raise_error(Ethon::Errors::EthonError, /freed/)
+    end
+
+    it "keeps on_progress callbacks firing after replacing the handle" do
+      easy = Ethon::Easy.new
+      calls = 0
+      easy.on_progress { calls += 1 }
+
+      easy.handle = Ethon::Curl.easy_init
+      easy.url = "#{url}binary/16384"
+
+      expect(easy.perform).to eq(:ok)
+      expect(calls).to be > 0
+    end
+
+    it "keeps an explicitly enabled progress callback working" do
+      easy = Ethon::Easy.new
+      calls = 0
+      easy.noprogress = 0
+      easy.xferinfofunction = proc { |*| calls += 1; 0 }
+
+      easy.handle = Ethon::Curl.easy_init
+      easy.url = "#{url}binary/16384"
+
+      expect(easy.perform).to eq(:ok)
+      expect(calls).to be > 0
+    end
   end
 end

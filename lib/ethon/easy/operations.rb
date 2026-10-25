@@ -25,8 +25,8 @@ module Ethon
       # Raw pointers are wrapped in an owned {Curl::EasyHandle}, so the
       # handle is registered for fork safety and freed by this Easy. Assigning
       # nil installs a fresh handle. Assigning a different handle installs
-      # Ethon's response callbacks on it and replays callbacks previously
-      # assigned to this Easy.
+      # Ethon's response callbacks and replays callbacks previously assigned to
+      # this Easy, then frees the handle it replaces when this Easy owned it.
       #
       # @param [ ::FFI::Pointer, Curl::EasyHandle, nil ] Easy handle that will
       #   be assigned.
@@ -62,12 +62,14 @@ module Ethon
           end
         @handle.owner = self if @handle
         if @handle && !@handle.equal?(previous)
-          # A replacement handle has no Ethon callbacks, so its response would
-          # otherwise not be collected. Retained user callbacks are replayed on
-          # top of the internal ones.
+          # A replacement handle has no Ethon callbacks or Ethon-managed
+          # options, so its response would otherwise not be collected. Retained
+          # user callbacks are replayed on top of the internal ones.
           install_callbacks(@handle)
+          restore_handle_options
           restore_callbacks_on(self)
         end
+        release_replaced_handle(previous)
         @handle
       end
 
@@ -164,6 +166,29 @@ module Ethon
         Curl::EasyHandle.new(pointer)
       end
 
+      # Reapply options Ethon installed on the old handle. These are not user
+      # request options: without them #error_message and progress callbacks
+      # silently stop working on the replacement.
+      def restore_handle_options
+        if @error_buffer_enabled && @error_buffer
+          Curl.set_option(:errorbuffer, @error_buffer, @handle)
+          @handle.error_buffer = @error_buffer
+          # Do not report the previous transfer's error from the new handle.
+          @error_buffer.put_char(0, 0)
+        end
+        self.noprogress = @noprogress_value unless @noprogress_value.nil?
+      end
+
+      # Free the handle this Easy owned before the replacement. A handle owned
+      # by another Easy (the source of #dup) must stay alive for its owner.
+      def release_replaced_handle(previous)
+        return unless previous
+        return if previous.equal?(@handle)
+        return unless previous.owner.equal?(self)
+
+        previous.free
+      end
+
       # Drop references to native data and callbacks once the handle is gone.
       def clear_native_state
         @body_write_callback = nil
@@ -191,6 +216,7 @@ module Ethon
         @share = nil
         @error_buffer = nil
         @error_buffer_enabled = nil
+        @noprogress_value = nil
       end
 
       def ensure_not_performing!

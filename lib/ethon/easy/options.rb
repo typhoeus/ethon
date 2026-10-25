@@ -98,6 +98,23 @@ module Ethon
         message unless message.empty?
       end
 
+      # Enables or disables libcurl's progress callback invocation. libcurl
+      # requires CURLOPT_NOPROGRESS to be 0 before it calls a progress
+      # callback, so remember the value to restore it when the native handle
+      # is replaced.
+      #
+      # @example Enable progress callbacks.
+      #   easy.noprogress = 0
+      #
+      # @param [ Boolean, Integer ] value The value to set.
+      #
+      # @return [ Boolean, Integer ] The value.
+      def noprogress=(value)
+        Curl.set_option(:noprogress, value, handle)
+        @noprogress_value = value
+        value
+      end
+
       # CURLOPT_TLSAUTH_TYPE and CURLOPT_PROXY_TLSAUTH_TYPE take a string, not
       # an enum. Normalize the historical symbol API and libcurl's required
       # "SRP" spelling.
