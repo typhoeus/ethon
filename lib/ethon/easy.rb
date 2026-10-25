@@ -219,6 +219,11 @@ module Ethon
     # @see https://curl.se/libcurl/c/curl_easy_setopt.html
     def initialize(options = {})
       Curl.init
+      options = options.dup
+      # Apply a supplied handle before the other options so they are set on
+      # that handle instead of the one Ethon would otherwise create.
+      handle_key = options.keys.find { |key| key.to_s == "handle" }
+      self.handle = options.delete(handle_key) if handle_key
       # Install Ethon's internal callbacks first so callback options passed to
       # the constructor override them instead of being overwritten here.
       set_callbacks
@@ -316,7 +321,9 @@ module Ethon
       duplicated_handle = Curl.easy_duphandle(handle)
       raise NoMemoryError, "curl_easy_duphandle failed" if duplicated_handle.null?
 
-      e.handle = Curl::EasyHandle.new(duplicated_handle)
+      # The copied callback closures still reference the original Easy. Clear
+      # them before installing callbacks on the duplicate so the new native
+      # handle never points at the original.
       e.instance_variable_set(:@body_write_callback, nil)
       e.instance_variable_set(:@header_write_callback, nil)
       e.instance_variable_set(:@debug_callback, nil)
@@ -326,6 +333,7 @@ module Ethon
       e.instance_variable_set(:@response_body_path, nil)
       e.instance_variable_set(:@owns_response_body_io, false)
       e.instance_variable_set(:@multi, nil)
+      e.handle = Curl::EasyHandle.new(duplicated_handle)
       # curl_easy_duphandle copies the native MIME structure, but there is no
       # way to wrap that copy. Keeping the original wrapper would make both
       # handles appear to share a structure they do not actually share.
