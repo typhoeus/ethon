@@ -65,6 +65,23 @@ module Ethon
     #  This option is for the multi handle's use only, when using the easy
     #  interface you should instead use the CURLOPT_MAXCONNECTS option.
     #  (Added in 7.16.3)
+    # @option options :max_host_connections [Integer]
+    # Pass a long. The set number will be used as the maximum amount of
+    # simultaneously open connections to a single host.
+    # (Added in 7.30.0)
+    # @option options :max_pipeline_length [Integer]
+    # Pass a long. The set number will be used as the maximum amount of
+    # requests in a pipeline. This option is obsolete in libcurl 7.62.0 and
+    # later, where HTTP/1 pipelining has no effect.
+    # (Added in 7.16.0)
+    # @option options :content_length_penalty_size [Integer]
+    # Pass a curl_off_t. This option sets the size of the content length
+    # penalty in bytes. It is used by the pipelining code.
+    # (Added in 7.16.0)
+    # @option options :chunk_length_penalty_size [Integer]
+    # Pass a curl_off_t. This option sets the size of the chunk length penalty
+    # in bytes. It is used by the pipelining code.
+    # (Added in 7.16.0)
     # @option options :max_total_connections [Integer]
     # Pass a long. The set number will be used as the maximum amount of 
     # simultaneously open connections in total. For each new session, 
