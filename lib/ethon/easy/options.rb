@@ -7,6 +7,16 @@ module Ethon
     module Options
       CALLBACK_TYPES = [:callback, :debug_callback, :progress_callback, :xferinfo_callback].freeze
 
+      # Ethon installs these callbacks on every handle. Clearing the option must
+      # restore Ethon's callback instead of leaving libcurl's default writer
+      # active, which would send response bytes to the process's stdout or
+      # stderr.
+      CALLBACK_DEFAULTS = {
+        :writefunction => :body_write_callback,
+        :headerfunction => :header_write_callback,
+        :debugfunction => :debug_callback
+      }.freeze
+
       attr_reader :url
 
       def url=(value)
@@ -118,8 +128,13 @@ module Ethon
         method_name = "#{opt}=".freeze
         unless method_defined? method_name
           if CALLBACK_TYPES.include?(props[:type])
+            default_callback = CALLBACK_DEFAULTS[opt]
             define_method(method_name) do |value|
-              Curl.set_option(opt, value, handle)
+              native_value = value
+              native_value = send(default_callback) if value.nil? && default_callback
+              Curl.set_option(opt, native_value, handle)
+              # Do not retain Ethon's internal callback as if the caller had
+              # assigned it; a duplicate must install its own callback.
               retain_callback(opt, value)
               value
             end
