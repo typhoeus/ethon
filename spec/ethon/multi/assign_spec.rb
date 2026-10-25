@@ -45,6 +45,16 @@ describe Ethon::Multi do
         to raise_error(Ethon::Errors::InvalidValue)
     end
 
+    it "rejects a freed owned pointer" do
+      list = Ethon::Curl::Slist.new(Ethon::Curl::Slist.build(["X-Test: 1"]))
+      list.free
+
+      expect(Ethon::Curl).not_to receive(:multi_assign)
+      expect { multi.assign(42, list) }.
+        to raise_error(Ethon::Errors::EthonError, /freed/)
+      expect(multi.instance_variable_get(:@assigned_sockets)).to be_nil
+    end
+
     it "raises on errors" do
       allow(Ethon::Curl).to receive(:multi_assign).and_return(:bad_socket)
 

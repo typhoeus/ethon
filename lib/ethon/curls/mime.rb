@@ -97,6 +97,7 @@ module Ethon
         if value.nil?
           # Clear the headers.
         elsif value.is_a?(Curl::Slist)
+          value.check_pid!
           list = value
           retained = value
         else

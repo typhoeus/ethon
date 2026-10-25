@@ -196,6 +196,16 @@ describe Ethon::Curl::Mime do
         to raise_error(Ethon::Errors::Mime)
       expect(part.instance_variable_get(:@headers_list)).to be(list)
     end
+
+    it "rejects a freed caller-owned header list" do
+      list = Ethon::Curl::Slist.new(Ethon::Curl.slist_append(nil, "X-Test: 1"))
+      list.free
+
+      expect(Ethon::Curl).not_to receive(:mime_headers)
+      expect { part.headers = list }.
+        to raise_error(Ethon::Errors::EthonError, /freed/)
+      expect(part.instance_variable_get(:@headers_list)).to be_nil
+    end
   end
 
   describe "#initialize" do

@@ -40,6 +40,13 @@ module Ethon
         opthash=send(OPTION_STRINGS[type], nil)
         raise Errors::InvalidOption.new(option) unless opthash.include?(option)
 
+        # A freed wrapper still looks like a pointer, but libcurl would keep
+        # the dangling address. Reject it before the option reaches native
+        # state.
+        if defined?(Ethon::Curl::OwnedPointer) && value.is_a?(Ethon::Curl::OwnedPointer)
+          value.check_pid!
+        end
+
         case opthash[option][:type]
         when :none
           # These options take no value; false means "do not enable".
