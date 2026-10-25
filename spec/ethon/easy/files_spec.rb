@@ -191,6 +191,62 @@ describe Ethon::Easy::Files do
     end
   end
 
+  it "keeps the previous destination when a new path cannot be opened" do
+    Dir.mktmpdir do |dir|
+      good = File.join(dir, "good")
+      missing = File.join(dir, "missing", "out")
+      easy = Ethon::Easy.new(:url => "http://localhost:3001/binary/8", :file => good)
+      previous_io = easy.instance_variable_get(:@response_body_io)
+
+      expect { easy.file = missing }.to raise_error(Errno::ENOENT)
+      expect(easy.instance_variable_get(:@response_body_path)).to eq(good)
+      expect(easy.instance_variable_get(:@response_body_io)).to be(previous_io)
+      expect(previous_io).not_to be_closed
+
+      expect(easy.perform).to eq(:ok)
+      expect(File.binread(good).bytesize).to eq(8)
+    end
+  end
+
+  it "closes an owned destination that a new path replaces" do
+    Dir.mktmpdir do |dir|
+      first = File.join(dir, "first")
+      second = File.join(dir, "second")
+      easy.file = first
+      previous_io = easy.instance_variable_get(:@response_body_io)
+
+      easy.file = second
+
+      expect(previous_io).to be_closed
+      expect(easy.instance_variable_get(:@response_body_path)).to eq(second)
+    ensure
+      easy.file = nil
+    end
+  end
+
+  it "closes the new file when the previous destination cannot be released" do
+    Dir.mktmpdir do |dir|
+      first = File.join(dir, "first")
+      second = File.join(dir, "second")
+      easy.file = first
+      previous_io = easy.instance_variable_get(:@response_body_io)
+      allow(previous_io).to receive(:close).and_raise(IOError, "close failed")
+      opened = nil
+      allow(File).to receive(:open).and_wrap_original do |original, *args|
+        opened = original.call(*args)
+      end
+
+      expect { easy.file = second }.to raise_error(IOError, "close failed")
+      expect(easy.instance_variable_get(:@response_body_path)).to eq(first)
+      expect(easy.instance_variable_get(:@response_body_io)).to be(previous_io)
+      expect(opened).to be_closed
+    ensure
+      allow(previous_io).to receive(:close).and_call_original if previous_io
+      allow(File).to receive(:open).and_call_original
+      easy.file = nil
+    end
+  end
+
   it "propagates write errors" do
     io = Object.new
     io.define_singleton_method(:write) { |_| raise IOError, "disk full" }
