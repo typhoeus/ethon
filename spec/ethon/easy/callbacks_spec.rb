@@ -135,23 +135,53 @@ describe Ethon::Easy::Callbacks do
   describe "#debug_callback" do
     let(:callback) { easy.send(:debug_callback) }
     let(:data) { double(:read_string => "message") }
+    let(:log_io) { StringIO.new }
+    let(:logger) { Logger.new(log_io).tap { |log| log.level = Logger::DEBUG } }
 
-    it "prints SSL data as a byte count" do
-      expect {
-        callback.call(easy.handle, :ssl_data_in, data, 7, nil)
-      }.to output("[7 bytes data]\n").to_stdout
+    around do |example|
+      original = Ethon.logger
+      Ethon.logger = logger
+      example.run
+    ensure
+      Ethon.logger = original
     end
 
-    it "does not print raw data transfers" do
+    it "logs SSL data as a byte count" do
+      callback.call(easy.handle, :ssl_data_in, data, 7, nil)
+
+      expect(log_io.string).to include("[7 bytes data]")
+    end
+
+    it "does not log raw data transfers" do
+      callback.call(easy.handle, :data_in, data, 7, nil)
+
+      expect(log_io.string).to be_empty
+    end
+
+    it "logs all other debug messages" do
+      callback.call(easy.handle, :text, data, 7, nil)
+
+      expect(log_io.string).to include("message")
+    end
+
+    it "writes to the logger instead of stdout" do
       expect {
-        callback.call(easy.handle, :data_in, data, 7, nil)
+        callback.call(easy.handle, :text, data, 7, nil)
       }.not_to output.to_stdout
     end
 
-    it "prints all other debug messages" do
-      expect {
-        callback.call(easy.handle, :text, data, 7, nil)
-      }.to output("message").to_stdout
+    it "does not log above the debug level" do
+      logger.level = Logger::INFO
+
+      callback.call(easy.handle, :text, data, 7, nil)
+
+      expect(log_io.string).to be_empty
+    end
+
+    it "still collects the message" do
+      callback.call(easy.handle, :text, data, 7, nil)
+
+      expect(easy.debug_info.text).to eq(["message"])
     end
   end
 
