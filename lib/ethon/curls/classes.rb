@@ -260,10 +260,10 @@ module Ethon
     # Immutable copy of a curl_header. libcurl reuses the backing struct
     # between curl_easy_nextheader calls, so values must be copied eagerly.
     class Header
-      # libcurl ORs a reserved bit into origin to discourage applications from
-      # comparing the field directly. Hide it so callers see the documented
-      # CURLH_* bits that HeaderOrigin describes.
-      RESERVED_ORIGIN_BIT = 1 << 27
+      # libcurl documents the five low origin bits and reserves the rest. Mask
+      # the whole reserved range so callers see exactly the CURLH_* bits that
+      # HeaderOrigin describes, including bits libcurl might set later.
+      DOCUMENTED_ORIGIN_BITS = (1 << 5) - 1
 
       attr_reader :name, :value, :amount, :index, :origin
 
@@ -272,7 +272,7 @@ module Ethon
         @value = data.value
         @amount = data.amount
         @index = data.index
-        @origin = data.origin & ~RESERVED_ORIGIN_BIT
+        @origin = data.origin & DOCUMENTED_ORIGIN_BITS
       end
     end
 

@@ -24,6 +24,34 @@ describe "Ethon::Curl::HeaderOrigin" do
   end
 end
 
+describe Ethon::Curl::Header do
+  def header_with_origin(origin)
+    data = double(
+      :name => "X-Test",
+      :value => "1",
+      :amount => 1,
+      :index => 0,
+      :origin => origin
+    )
+    described_class.new(data)
+  end
+
+  it "keeps the documented origin bits" do
+    origin = Ethon::Curl::HeaderOrigin[:header] |
+             Ethon::Curl::HeaderOrigin[:trailer] |
+             Ethon::Curl::HeaderOrigin[:pseudo]
+
+    expect(header_with_origin(origin).origin).to eq(origin)
+  end
+
+  it "masks every undocumented origin bit" do
+    origin = Ethon::Curl::HeaderOrigin[:header] | (1 << 5) | (1 << 10) | (1 << 27)
+
+    expect(header_with_origin(origin).origin).
+      to eq(Ethon::Curl::HeaderOrigin[:header])
+  end
+end
+
 describe "Ethon::Curl::EasyType" do
   let(:described_class) { Ethon::Curl::EasyType }
 
