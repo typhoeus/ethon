@@ -61,7 +61,7 @@ module Ethon
         base.attach_function :multi_assign,               :curl_multi_assign,        [:pointer, :curl_socket_t, :pointer], :multi_code
 
         Ethon::Curls::Optional.attach(base, :multi_get_handles, :curl_multi_get_handles, [:pointer], :pointer, blocking: false)
-        Ethon::Curls::Optional.attach(base, :global_sslset, :curl_global_sslset, [:ssl_backend, :string, :pointer], :easy_code, blocking: false)
+        Ethon::Curls::Optional.attach(base, :global_sslset, :curl_global_sslset, [:ssl_backend, :string, :pointer], :ssl_set_code, blocking: false)
         Ethon::Curls::Optional.attach(base, :global_trace, :curl_global_trace, [:string], :easy_code, blocking: false)
 
         base.attach_function :version,                    :curl_version,             [],                             :string
