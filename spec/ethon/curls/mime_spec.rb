@@ -53,6 +53,54 @@ describe Ethon::Curl::Mime do
       part.encoder = "base64"
     end
 
+    {
+      :name => [:mime_name, [nil]],
+      :filename => [:mime_filename, [nil]],
+      :type => [:mime_type, [nil]],
+      :encoder => [:mime_encoder, [nil]],
+      :file => [:mime_filedata, [nil]],
+      :data => [:mime_data, [nil, 0]]
+    }.each do |setter, (function, arguments)|
+      it "clears #{setter} with nil" do
+        expect(Ethon::Curl).to receive(function).
+          with(part.handle, *arguments).and_return(:ok)
+
+        part.public_send("#{setter}=", nil)
+      end
+    end
+
+    it "clears every part field without a libcurl error" do
+      Tempfile.create do |file|
+        part.name = "field"
+        part.filename = "file.txt"
+        part.type = "text/plain"
+        part.encoder = "base64"
+        part.file = file.path
+        part.data = "value"
+
+        expect {
+          part.name = nil
+          part.filename = nil
+          part.type = nil
+          part.encoder = nil
+          part.file = nil
+          part.data = nil
+        }.not_to raise_error
+      end
+    end
+
+    it "accepts a new value after a field was cleared" do
+      part.name = "first"
+      part.name = nil
+      part.name = "second"
+
+      part.data = "first"
+      part.data = nil
+      part.data = "second"
+
+      expect { easy.mime = mime }.not_to raise_error
+    end
+
     it "raises when a curl_mime_* call fails" do
       allow(Ethon::Curl).to receive(:mime_name).and_return(:out_of_memory)
 
@@ -215,6 +263,60 @@ describe Ethon::Curl::Mime do
 
       expect { described_class.new(easy) }.
         to raise_error(NotImplementedError, /curl_mime_init/)
+    end
+
+    it "rejects an Ethon::Multi" do
+      multi = Ethon::Multi.new
+      expect(Ethon::Curl).not_to receive(:mime_init)
+
+      expect { described_class.new(multi) }.
+        to raise_error(TypeError, /Ethon::Easy/)
+    ensure
+      multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
+    end
+
+    it "rejects a nil handle" do
+      expect(Ethon::Curl).not_to receive(:mime_init)
+
+      expect { described_class.new(nil) }.to raise_error(TypeError, /Ethon::Easy/)
+    end
+
+    it "rejects another object with a handle method" do
+      handle_owner = Object.new
+      def handle_owner.handle
+        FFI::Pointer.new(1)
+      end
+
+      expect(Ethon::Curl).not_to receive(:mime_init)
+
+      expect { described_class.new(handle_owner) }.
+        to raise_error(TypeError, /Ethon::Easy/)
+    end
+
+    it "rejects a null easy handle pointer" do
+      expect(Ethon::Curl).not_to receive(:mime_init)
+
+      expect { described_class.new(FFI::Pointer::NULL) }.
+        to raise_error(ArgumentError, /null easy handle/)
+    end
+
+    it "accepts a raw easy handle" do
+      handle = Ethon::Curl.easy_init
+      mime = described_class.new(handle)
+
+      expect(mime).to be_a(described_class)
+    ensure
+      mime.free if mime
+      Ethon::Curl.easy_cleanup(handle) if handle
+    end
+
+    it "accepts an owned easy handle" do
+      mime = described_class.new(easy.handle)
+
+      expect(mime).to be_a(described_class)
+    ensure
+      mime.free if mime
+      easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
     end
   end
 
