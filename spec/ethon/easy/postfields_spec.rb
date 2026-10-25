@@ -142,6 +142,24 @@ describe Ethon::Easy do
       expect(easy.response_body).to eq("xy")
     end
 
+    it "replaces an inherited size when the copied body is longer" do
+      easy.url = "http://localhost:3001/echo"
+      easy.postfields = "abc"
+      easy.copypostfields = "abcdef"
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to eq("abcdef")
+    end
+
+    it "clears the copied body size" do
+      easy.url = "http://localhost:3001/echo"
+      easy.copypostfields = "abc"
+      easy.copypostfields = nil
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to eq("")
+    end
+
     it "rejects a copied body that is larger than an explicit size" do
       easy.postfieldsize = 5
 

@@ -249,18 +249,21 @@ module Ethon
           @postfields = nil
           @postfields_pointer = nil
           @postfield_body_size = nil
-          @postfieldsize_value = nil
+          # Clear the size too: libcurl fails the request when a non-zero size
+          # is paired with the NULL body left by COPYPOSTFIELDS.
+          Curl.set_option(:postfieldsize, -1, handle)
+          @postfieldsize_value = -1
           return value
         end
 
         string = value.to_s
         size = @postfieldsize_value
-        if size && size >= 0 && size > string.bytesize
+        if size && size >= 0
           if @postfield_body_size == size
-            # The size still describes the body that is being replaced. Using
-            # it for the shorter copy would read past the new buffer.
+            # The size still describes the body that is being replaced. Keeping
+            # it would truncate a longer copy or read past a shorter one.
             size = nil
-          else
+          elsif size > string.bytesize
             raise Errors::InvalidValue.new(:copypostfields, value)
           end
         end
