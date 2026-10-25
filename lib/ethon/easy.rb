@@ -334,7 +334,9 @@ module Ethon
       e.instance_variable_set(:@response_body_path, nil)
       e.instance_variable_set(:@owns_response_body_io, false)
       e.instance_variable_set(:@multi, nil)
-      e.handle = Curl::EasyHandle.new(duplicated_handle)
+      # The duplicated native handle already carries the request options, so
+      # keep the Ruby-side request state that describes them.
+      e.send(:assign_handle, Curl::EasyHandle.new(duplicated_handle), false)
       # curl_easy_duphandle copies the native MIME structure, but there is no
       # way to wrap that copy. Keeping the original wrapper would make both
       # handles appear to share a structure they do not actually share.
