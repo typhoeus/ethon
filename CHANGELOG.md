@@ -79,6 +79,33 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* `Easy#dup` keeps a path destination configured with `Easy#file=`. The
+  duplicate opens its own response stream for the next transfer instead of
+  buffering the body in memory; a caller-owned IO is still not shared between
+  the two handles.
+  ([#435](https://github.com/typhoeus/ethon/pull/435))
+* Assigning a response destination that cannot be opened no longer discards the
+  previous one. `Easy#file=` opens the new path before releasing the old
+  stream, so a failed replacement leaves the previous path, IO, and ownership
+  intact, and a successful replacement still closes the owned stream it
+  replaces.
+  ([#439](https://github.com/typhoeus/ethon/pull/439))
+* A multipart form with a raw `String` body now raises `ArgumentError` instead
+  of sending an unnamed MIME part or raising `NoMethodError` through the form
+  API. Multipart bodies must be a `Hash` of fields.
+  ([#438](https://github.com/typhoeus/ethon/pull/438))
+* Multipart forms no longer treat every `Array` value as a file tuple.
+  `Queryable#file_info` returns a `FileInfo` marker (still an `Array`), so
+  ordinary arrays kept intact by `params_encoding: :none` are sent as data
+  while file uploads keep working.
+  ([#441](https://github.com/typhoeus/ethon/pull/441))
+* `InvalidOption`, `UnsupportedOption`, and `SetOption` now inspect the option
+  name in their messages, so control characters in an untrusted options hash
+  cannot inject log lines. This matches the existing `InvalidValue` escaping.
+  ([#442](https://github.com/typhoeus/ethon/pull/442))
+* Corrected API annotations for the `Easy#perform` and `Easy#handle` return
+  types, the `Multi` option setter parameter types, and `Multi#socket_action`.
+  ([#445](https://github.com/typhoeus/ethon/pull/445))
 * Response stream teardown now only finishes the destination that the completed
   transfer wrote to. A completion callback can schedule the next transfer on
   the same `Easy` (including adding it to a `Multi` with a new or reused
