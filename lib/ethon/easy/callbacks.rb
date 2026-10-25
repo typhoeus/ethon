@@ -141,8 +141,11 @@ module Ethon
         end
       end
 
+      # A completion callback may start the next transfer on this Easy. Keep
+      # the finished transfer's callback error so the caller still sees it;
+      # the next transfer starts without it once the error is raised.
       def clear_callback_error
-        @callback_error = nil
+        @callback_error = nil unless @completing
       end
 
       # The transfer teardown in #perform, #complete, and Multi#check already

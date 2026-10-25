@@ -291,6 +291,59 @@ describe Ethon::Easy::Files do
         easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
       end
     end
+
+    it "reopens the same response file when on_complete schedules the next transfer" do
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "body")
+        multi = Ethon::Multi.new
+        easy = Ethon::Easy.new(:url => "http://localhost:3001/first", :file => path)
+        scheduled = false
+        easy.on_complete do |e|
+          next if scheduled
+
+          scheduled = true
+          e.url = "http://localhost:3001/second"
+          multi.add(e)
+        end
+
+        expect(easy.perform).to eq(:ok)
+        expect { multi.perform }.not_to raise_error
+        expect(File.binread(path)).to include('"PATH_INFO":"/second"')
+      ensure
+        multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
+        easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+      end
+    end
+
+    it "raises a callback error before running a transfer scheduled by on_complete" do
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "body")
+        multi = Ethon::Multi.new
+        easy = Ethon::Easy.new(:url => "http://localhost:3001/first", :file => path)
+        raised = false
+        easy.on_body do |_chunk|
+          next if raised
+
+          raised = true
+          raise "callback failed"
+        end
+        scheduled = false
+        easy.on_complete do |e|
+          next if scheduled
+
+          scheduled = true
+          e.url = "http://localhost:3001/second"
+          multi.add(e)
+        end
+
+        expect { easy.perform }.to raise_error("callback failed")
+        expect { multi.perform }.not_to raise_error
+        expect(File.binread(path)).to include('"PATH_INFO":"/second"')
+      ensure
+        multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
+        easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+      end
+    end
   end
 
   describe "failing response stream teardown" do

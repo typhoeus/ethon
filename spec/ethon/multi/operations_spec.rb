@@ -431,6 +431,35 @@ describe Ethon::Multi::Operations do
         end
       end
 
+      it "raises a callback error before running a transfer scheduled by on_complete" do
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "body")
+          easy.url = "http://localhost:3001/first"
+          easy.file = path
+          raised = false
+          easy.on_body do |_chunk|
+            next if raised
+
+            raised = true
+            raise "callback failed"
+          end
+          scheduled = false
+          easy.on_complete do |e|
+            next if scheduled
+
+            scheduled = true
+            e.url = "http://localhost:3001/second"
+            multi.add(e)
+          end
+
+          expect { multi.perform }.to raise_error("callback failed")
+          expect { multi.perform }.not_to raise_error
+          expect(File.binread(path)).to include('"PATH_INFO":"/second"')
+        ensure
+          easy.file = nil
+        end
+      end
+
       it "streams the response to a caller-owned IO" do
         io = StringIO.new
         easy.file = io

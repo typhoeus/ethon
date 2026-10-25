@@ -71,6 +71,10 @@ module Ethon
         # handle would make a failed add discard the response body and truncate
         # a streamed response file.
         begin
+          # A completion callback can add the Easy to this Multi before the
+          # previous transfer's destination is finished. Close or flush it
+          # first so prepare opens a fresh destination for this transfer.
+          easy.finish_response_body_io
           easy.prepare_response_body_io
           easy.reset_transfer_state
           easy.clear_callback_error
