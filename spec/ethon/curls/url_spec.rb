@@ -79,6 +79,22 @@ describe Ethon::Curl::Url do
     expect(copy.get(:path)).to eq("/copy")
   end
 
+  it "clones a copy instead of sharing the native handle" do
+    copy = url.clone
+
+    copy.set(:path, "/copy")
+
+    expect(url.get(:path)).to eq("/a/b")
+    expect(copy.get(:path)).to eq("/copy")
+  end
+
+  it "honors clone's freeze option" do
+    url.freeze
+
+    expect(url.clone).to be_frozen
+    expect(url.clone(freeze: false)).not_to be_frozen
+  end
+
   it "copies an existing URL handle" do
     copy = described_class.new(url)
     copy.set(:path, "/wrapped")

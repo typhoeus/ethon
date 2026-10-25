@@ -103,6 +103,13 @@ module Ethon
         self.class.new(pointer)
       end
 
+      # Cloning shares the native handle in Ruby, so route it through #dup.
+      def clone(freeze: true)
+        copy = dup
+        copy.freeze if freeze && frozen?
+        copy
+      end
+
       def to_s
         get(:url)
       end
