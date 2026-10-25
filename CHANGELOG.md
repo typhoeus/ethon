@@ -2,7 +2,7 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...master)
 
 ### Behavior changes
 
@@ -79,6 +79,24 @@ is unavailable; introspection helpers return `nil` or an empty array.
 
 ### Fixes and hardening
 
+* Response stream teardown now only finishes the destination that the completed
+  transfer wrote to. A completion callback can schedule the next transfer on
+  the same `Easy` (including adding it to a `Multi` with a new or reused
+  response file); that destination is no longer closed before the next transfer
+  runs. `Multi#add` finishes the previous transfer's stream before preparing
+  the next one, and no longer clears a pending callback error while the Easy is
+  completing, so the error from the finished transfer is still raised. A
+  failing close or flush also no longer replaces the callback or completion
+  error, and `Multi#perform` runs `on_complete` before raising a teardown error
+  for a handle libcurl already detached.
+  ([#431](https://github.com/typhoeus/ethon/pull/431))
+* `Multi#assign` rejects a nil or non-integer socket descriptor with
+  `Ethon::Errors::InvalidValue` instead of letting FFI raise `TypeError`.
+  ([#432](https://github.com/typhoeus/ethon/pull/432))
+* `Curl::Url#clone` now duplicates the native URL handle through
+  `curl_url_dup`, like `#dup`, instead of raising
+  `cannot duplicate FFI::AutoPointer`.
+  ([#433](https://github.com/typhoeus/ethon/pull/433))
 * `Ethon::Errors::InvalidValue` now escapes the value in its message, so a
   CR or LF in a rejected URL or request-line value can no longer be injected
   into logs that record the exception.
