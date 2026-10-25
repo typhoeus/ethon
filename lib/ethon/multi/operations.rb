@@ -405,9 +405,20 @@ module Ethon
           next unless easy
           easy.return_code = msg[:data][:code]
           Ethon.logger.debug { "ETHON:         performed #{easy.log_inspect}" }
-          delete(easy)
+          # delete finishes the transfer's response stream. A failed close or
+          # flush must not keep on_complete from running; raise it afterwards.
+          teardown_error = nil
+          begin
+            delete(easy)
+          rescue Exception => exception
+            # A handle that libcurl still owns must stay tracked for cleanup.
+            raise if stack.include?(easy)
+
+            teardown_error = exception
+          end
           easy.complete
           easy.raise_callback_error
+          raise teardown_error if teardown_error
         end
       end
 

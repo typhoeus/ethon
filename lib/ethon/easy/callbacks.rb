@@ -145,14 +145,16 @@ module Ethon
         @callback_error = nil
       end
 
+      # The transfer teardown in #perform, #complete, and Multi#check already
+      # finishes the response stream. Finishing it here again could close a
+      # stream a completion callback installed for the next transfer, or
+      # replace the callback error with a teardown error.
       def raise_callback_error
         return unless @callback_error
 
         error = @callback_error
         @callback_error = nil
         raise error
-      ensure
-        finish_response_body_io if error
       end
 
       # Set the read callback. This callback is used by libcurl to

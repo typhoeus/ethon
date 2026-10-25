@@ -91,8 +91,12 @@ module Ethon
         prepare_response_body_io
         reset_transfer_state
         clear_callback_error
+        # Only the destination that belongs to this transfer may be finished.
+        # A completion callback can install the next transfer's destination.
+        response_body_io = @response_body_io
         @performing = true
 
+        error = nil
         begin
           code = Curl.easy_perform(handle)
           @return_code = code
@@ -107,9 +111,17 @@ module Ethon
           # on_complete may reset the Easy, which clears @return_code. Return
           # the result of the transfer that just ran.
           code
+        rescue Exception => exception
+          error = exception
+          raise
         ensure
           @performing = false
-          finish_response_body_io
+          begin
+            finish_response_body_io(response_body_io)
+          rescue Exception
+            # Keep the exception that interrupted the transfer or completion.
+            raise unless error
+          end
         end
       end
 

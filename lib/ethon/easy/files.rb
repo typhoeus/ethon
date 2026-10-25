@@ -59,7 +59,14 @@ module Ethon
         io.flush if io.respond_to?(:flush)
       end
 
-      def finish_response_body_io
+      # Finish the destination used by one transfer. A completion callback may
+      # already have installed the destination for the next transfer; only the
+      # stream this transfer wrote to belongs to it.
+      #
+      # @param [ IO, nil ] io The destination that transfer used.
+      def finish_response_body_io(io = @response_body_io)
+        return unless @response_body_io && @response_body_io.equal?(io)
+
         if @owns_response_body_io
           close_response_body_io
         else

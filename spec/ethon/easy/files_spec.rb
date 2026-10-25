@@ -3,6 +3,7 @@ require 'spec_helper'
 require 'stringio'
 require 'tempfile'
 require 'pathname'
+require 'tmpdir'
 
 describe Ethon::Easy::Files do
   let(:easy) { Ethon::Easy.new(url: "http://localhost:3001/") }
@@ -222,6 +223,119 @@ describe Ethon::Easy::Files do
 
       expect { easy.file = path }.to raise_error(Ethon::Errors::ForkSafety)
       expect(File.read(path)).to eq("existing content")
+    end
+  end
+
+  describe "completion callbacks" do
+    it "does not finish a destination installed by on_complete" do
+      Tempfile.create do |file|
+        file.close
+        easy.file = file.path
+        next_io = Object.new
+        next_io.define_singleton_method(:write) { |_| }
+        next_io.define_singleton_method(:flush) { raise IOError, "must not flush" }
+        easy.on_complete { |e| e.file = next_io }
+
+        expect(easy.perform).to eq(:ok)
+      ensure
+        easy.file = nil
+      end
+    end
+
+    it "keeps a response file scheduled from on_complete open for a new Multi" do
+      Dir.mktmpdir do |dir|
+        first = File.join(dir, "first")
+        second = File.join(dir, "second")
+        multi = Ethon::Multi.new
+        easy = Ethon::Easy.new(:url => "http://localhost:3001/first", :file => first)
+        scheduled = false
+        easy.on_complete do |e|
+          next if scheduled
+
+          scheduled = true
+          e.url = "http://localhost:3001/second"
+          e.file = second
+          multi.add(e)
+        end
+
+        expect(easy.perform).to eq(:ok)
+        expect { multi.perform }.not_to raise_error
+        expect(File.binread(second)).to include('"PATH_INFO":"/second"')
+      ensure
+        multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
+        easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+      end
+    end
+
+    it "keeps a response file scheduled from on_complete open for the same Multi" do
+      Dir.mktmpdir do |dir|
+        first = File.join(dir, "first")
+        second = File.join(dir, "second")
+        multi = Ethon::Multi.new
+        easy = Ethon::Easy.new(:url => "http://localhost:3001/first", :file => first)
+        multi.add(easy)
+        scheduled = false
+        easy.on_complete do |e|
+          next if scheduled
+
+          scheduled = true
+          e.url = "http://localhost:3001/second"
+          e.file = second
+          multi.add(e)
+        end
+
+        expect { multi.perform }.not_to raise_error
+        expect(File.binread(second)).to include('"PATH_INFO":"/second"')
+      ensure
+        multi.cleanup if multi && !multi.instance_variable_get(:@cleaned_up)
+        easy.cleanup if easy && !easy.instance_variable_get(:@cleaned_up)
+      end
+    end
+  end
+
+  describe "failing response stream teardown" do
+    it "keeps the body callback error when closing the response file fails" do
+      Tempfile.create do |file|
+        file.close
+        easy.file = file.path
+        io = easy.instance_variable_get(:@response_body_io)
+        allow(io).to receive(:close).and_raise(IOError, "close failed")
+        easy.on_body { raise "callback failed" }
+
+        expect { easy.perform }.to raise_error("callback failed")
+      ensure
+        allow(io).to receive(:close).and_call_original if io
+        easy.file = nil
+      end
+    end
+
+    it "keeps the on_complete error when closing the response file fails" do
+      Tempfile.create do |file|
+        file.close
+        easy.file = file.path
+        io = easy.instance_variable_get(:@response_body_io)
+        allow(io).to receive(:close).and_raise(IOError, "close failed")
+        easy.on_complete { raise "complete failed" }
+
+        expect { easy.perform }.to raise_error("complete failed")
+      ensure
+        allow(io).to receive(:close).and_call_original if io
+        easy.file = nil
+      end
+    end
+
+    it "raises a close error after a successful transfer" do
+      Tempfile.create do |file|
+        file.close
+        easy.file = file.path
+        io = easy.instance_variable_get(:@response_body_io)
+        allow(io).to receive(:close).and_raise(IOError, "close failed")
+
+        expect { easy.perform }.to raise_error(IOError, "close failed")
+      ensure
+        allow(io).to receive(:close).and_call_original if io
+        easy.file = nil
+      end
     end
   end
 end
