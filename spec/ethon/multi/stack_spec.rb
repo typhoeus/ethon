@@ -402,6 +402,41 @@ describe Ethon::Multi::Stack do
         expect { multi.delete(easy) }.to raise_error(error)
         expect(multi.easy_handles).to include(easy)
       end
+
+      it "forgets an easy that libcurl detached before the callback raised" do
+        skip "curl_multi_get_handles is unavailable" unless
+          Ethon::Curl.respond_to?(:multi_get_handles)
+
+        local_multi = Ethon::Multi.new(:execution_mode => :socket_action)
+        local_multi.socketfunction = proc do |handle, sock, what, userp, socketp|
+          raise "socket callback failed" if what == :remove
+          :ok
+        end
+        local_easy = Ethon::Easy.new(:url => "http://127.0.0.1:3001/?delay=0.2")
+        local_multi.add(local_easy)
+        local_multi.socket_action
+
+        expect { local_multi.delete(local_easy) }.
+          to raise_error("socket callback failed")
+
+        expect(local_multi.easy_handles).not_to include(local_easy)
+        expect(local_easy.instance_variable_get(:@multi)).to be_nil
+        expect(local_multi.native_handles).to be_empty
+        expect { local_easy.reset }.not_to raise_error
+      ensure
+        local_multi.socketfunction = proc { 0 } if local_multi
+        local_multi.cleanup if local_multi && !local_multi.instance_variable_get(:@cleaned_up)
+        local_easy.cleanup if local_easy && !local_easy.instance_variable_get(:@cleaned_up)
+      end
+    end
+
+    it "is not ongoing after the last handle is removed" do
+      multi.add(easy)
+      multi.instance_variable_set(:@running_count, 1)
+
+      multi.delete(easy)
+
+      expect(multi.ongoing?).to be(false)
     end
   end
 end

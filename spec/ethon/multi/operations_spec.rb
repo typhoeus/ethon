@@ -114,6 +114,16 @@ describe Ethon::Multi::Operations do
       expect { multi.cleanup }.to raise_error(Ethon::Errors::EthonError, /cleaned up/)
     end
 
+    it "is not ongoing after cleanup" do
+      easy.url = "http://127.0.0.1:3001/"
+      multi.add(easy)
+      multi.instance_variable_set(:@running_count, 1)
+
+      multi.cleanup
+
+      expect(multi.ongoing?).to be(false)
+    end
+
     it "rejects cleaning up a handle inherited across a fork" do
       multi.handle
       reader, writer = IO.pipe

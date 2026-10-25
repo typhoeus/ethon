@@ -91,11 +91,24 @@ module Ethon
       # @raise [ Ethon::Errors::MultiRemove ] If removing an easy failed.
       def delete(easy)
         if (index = stack.index(easy))
+          easy_handle = nil
           stack.delete_at(index)
           begin
-            code = Curl.multi_remove_handle(handle, easy.handle)
+            easy_handle = easy.handle
+            code = Curl.multi_remove_handle(handle, easy_handle)
           rescue Exception
-            stack.insert(index, easy)
+            # A socket callback can raise after libcurl has already detached
+            # the handle. Keep the stack in sync with the native multi instead
+            # of tracking a handle libcurl no longer owns.
+            if native_detached?(easy_handle)
+              begin
+                finish_removed_easy(easy)
+              rescue StandardError
+                # Keep the original remove error.
+              end
+            else
+              stack.insert(index, easy)
+            end
             raise
           end
           unless code == :ok
@@ -103,8 +116,7 @@ module Ethon
             raise Errors::MultiRemove.new(code, easy)
           end
 
-          easy.instance_variable_set(:@multi, nil) if easy.instance_variable_get(:@multi).equal?(self)
-          easy.finish_response_body_io
+          finish_removed_easy(easy)
         end
       end
 
@@ -114,6 +126,31 @@ module Ethon
       # has to go through #add and #delete.
       def stack
         @easy_handles ||= []
+      end
+
+      # Finish an Easy that is no longer attached to this Multi.
+      def finish_removed_easy(easy)
+        if easy.instance_variable_get(:@multi).equal?(self)
+          easy.instance_variable_set(:@multi, nil)
+        end
+
+        begin
+          easy.finish_response_body_io
+        ensure
+          @running_count = nil if stack.empty?
+        end
+      end
+
+      # Whether libcurl detached the handle before a callback raised. Older
+      # libcurl cannot answer, so assume it is still attached and keep it
+      # tracked.
+      def native_detached?(easy_handle)
+        return false unless easy_handle
+        return false unless Curl.respond_to?(:multi_get_handles)
+
+        !native_handle?(easy_handle)
+      rescue StandardError
+        false
       end
 
       # Undo a native add whose Easy could not be prepared for the transfer.

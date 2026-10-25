@@ -69,6 +69,7 @@ module Ethon
             end
             stack.clear
             @handle = nil
+            @running_count = nil
             @assigned_sockets = nil
             @procs = nil
             @cleaned_up = true
