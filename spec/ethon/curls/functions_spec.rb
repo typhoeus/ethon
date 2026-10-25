@@ -37,14 +37,19 @@ describe Ethon::Curl do
 
       timeout = described_class::Timeval.new
       timeout[:sec] = 0
-      timeout[:usec] = 100_000
+      timeout[:usec] = 500_000
 
       counter = 0
       stop = false
+      started = Queue.new
       worker = Thread.new do
+        started << true
         sleep 0.02
         counter += 1 until stop
       end
+      # Wait for the thread before entering select, so a delayed thread start
+      # cannot be mistaken for a held GVL.
+      started.pop
 
       described_class.select(0, nil, nil, nil, timeout)
       ran_during_select = counter > 0
