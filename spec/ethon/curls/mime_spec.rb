@@ -386,16 +386,18 @@ describe Ethon::Curl::Mime do
     end
 
     it "rejects a form filename containing CRLF" do
-      Dir.mktmpdir do |dir|
-        path = File.join(dir, "file\r\nX-Injected: yes")
-        File.write(path, "mime content")
+      Tempfile.create("mime") do |file|
+        form = Ethon::Easy::Form.new(easy, { :file => file })
+        allow(form).to receive(:file_info).and_return(
+          Ethon::Easy::Queryable::FileInfo.new(
+            "file\r\nX-Injected: true",
+            "text/plain",
+            file.path
+          )
+        )
 
-        File.open(path) do |file|
-          form = Ethon::Easy::Form.new(easy, { :file => file })
-
-          expect { form.mime }.
-            to raise_error(Ethon::Errors::InvalidValue, /filename/)
-        end
+        expect { form.mime }.
+          to raise_error(Ethon::Errors::InvalidValue, /filename/)
       end
     end
 

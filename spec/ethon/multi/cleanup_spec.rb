@@ -49,6 +49,10 @@ describe "Ethon::Multi#cleanup failures" do
         expect(first.instance_variable_get(:@multi)).to be_nil
         expect(second.instance_variable_get(:@multi)).to be_nil
         expect(second.instance_variable_get(:@response_body_io)).to be_nil
+      ensure
+        # The stubbed teardown leaves the first stream open. Windows cannot
+        # delete a file while it is still open.
+        first.clear_response_body_io
       end
     end
   end

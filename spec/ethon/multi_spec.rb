@@ -181,7 +181,7 @@ describe Ethon::Multi do
       end
     end
 
-    it "supports an end-to-end request" do
+    it "supports an end-to-end request", :unless => Ethon::Curl.windows? do
       easy = Ethon::Easy.new
       easy.url = "http://127.0.0.1:3001/"
       multi.add(easy)
@@ -191,7 +191,7 @@ describe Ethon::Multi do
       expect(multi.ongoing?).to eq(false)
     end
 
-    it "supports multiple concurrent requests" do
+    it "supports multiple concurrent requests", :unless => Ethon::Curl.windows? do
       handles = []
       10.times do
         easy = Ethon::Easy.new

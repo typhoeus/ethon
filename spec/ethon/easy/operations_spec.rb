@@ -17,6 +17,7 @@ describe Ethon::Easy::Operations do
     end
 
     it "rejects a handle inherited across a fork" do
+      skip_on_windows "fork is not supported on Windows"
       easy.handle
       reader, writer = IO.pipe
       pid = fork do
@@ -43,6 +44,7 @@ describe Ethon::Easy::Operations do
     end
 
     it "rejects cleanup of a handle inherited across a fork" do
+      skip_on_windows "fork is not supported on Windows"
       easy.handle
       reader, writer = IO.pipe
       pid = fork do
@@ -67,6 +69,7 @@ describe Ethon::Easy::Operations do
     end
 
     it "rejects creating a new handle after a fork when libcurl was initialized" do
+      skip_on_windows "fork is not supported on Windows"
       easy.handle
       reader, writer = IO.pipe
       pid = fork do

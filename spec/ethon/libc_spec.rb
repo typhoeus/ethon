@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe Ethon::Libc do
-  describe ".open_max" do
+  describe ".open_max", :unless => Ethon::Curl.windows? do
     it "returns an integer" do
       expect(Ethon::Libc.open_max).to be_a(Integer)
     end
