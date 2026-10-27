@@ -1,36 +1,40 @@
 [![Gem Version](https://badge.fury.io/rb/ethon.svg)](https://badge.fury.io/rb/ethon)
 [![Build Status](https://github.com/typhoeus/ethon/workflows/Ruby/badge.svg)](https://github.com/typhoeus/ethon/actions/workflows/ruby.yml)
 
-#  Ethon
+# Ethon
 
-In Greek mythology, Ethon, the son of Typhoeus and Echidna, is a gigantic eagle. So much for the history.
-In the modern world, Ethon is a very basic libcurl wrapper using ffi.
+Ethon is a lightweight Ruby wrapper around [libcurl](https://curl.se/libcurl/),
+built with [FFI](https://github.com/ffi/ffi). It exposes:
 
-* [Documentation](http://rubydoc.info/github/typhoeus/ethon/frames/Ethon)
-* [Website](http://typhoeus.github.com/)
-* [Mailing list](http://groups.google.com/group/typhoeus)
+- `Ethon::Easy` for a single transfer.
+- `Ethon::Multi` for concurrent transfers.
+- libcurl options, callbacks, response streaming, debug output, and optional
+  lower-level URL, MIME, share, and header APIs.
+
+The name comes from Greek mythology: Ethon was a gigantic eagle and the son of
+Typhoeus and Echidna.
+
+* [API documentation](https://rubydoc.info/github/typhoeus/ethon)
+* [Changelog](https://github.com/typhoeus/ethon/blob/master/CHANGELOG.md)
 
 ## Installation
 
-With bundler:
+Add the gem to your bundle:
 
-    gem "ethon"
+```sh
+bundle add ethon
+```
 
-With rubygems:
+Or install it directly:
 
-    gem install ethon
+```sh
+gem install ethon
+```
 
 ## Usage
 
-Making the first request is simple:
-
-```ruby
-easy = Ethon::Easy.new(url: "www.example.com")
-easy.perform
-#=> :ok
-```
-
-You have access to various options, such as following redirects:
+Create an `Easy` handle for a single transfer. The constructor accepts libcurl
+options such as `followlocation`:
 
 ```ruby
 easy = Ethon::Easy.new(url: "www.example.com", followlocation: true)
@@ -38,24 +42,22 @@ easy.perform
 #=> :ok
 ```
 
-Once you're done you can inspect the response code and body:
+After `perform` returns, read the response:
 
 ```ruby
-easy = Ethon::Easy.new(url: "www.example.com", followlocation: true)
-easy.perform
 easy.response_code
 #=> 200
 easy.response_body
 #=> "<!doctype html><html ..."
 ```
 
-## Http
+## HTTP helpers
 
-In order to make life easier, there are some helpers for making HTTP requests:
+`http_request` configures the URL, method, query parameters, and body:
 
 ```ruby
 easy = Ethon::Easy.new
-easy.http_request("www.example.com", :get, { params: {a: 1} })
+easy.http_request("www.example.com", :get, { params: { a: 1 } })
 easy.perform
 #=> :ok
 ```
@@ -67,12 +69,22 @@ easy.perform
 #=> :ok
 ```
 
-This is really handy when making requests since you don't have to care about setting
-everything up correctly.
-
 File values in a `:body` hash are sent as `multipart/form-data`. Ethon loads
 the optional `mime-types` gem on the first upload to detect each part's content
 type; without it, parts use `application/octet-stream`.
+
+## Parallel requests
+
+Add `Easy` handles to a `Multi` and call `perform`:
+
+```ruby
+multi = Ethon::Multi.new
+2.times do
+  easy = Ethon::Easy.new(url: "www.example.com")
+  multi.add(easy)
+end
+multi.perform
+```
 
 ## HTTP/2
 
@@ -141,16 +153,16 @@ access to the shared data.
 
 ## Older libcurl versions
 
-Ethon attaches functions that may not exist in the loaded libcurl conditionally.
+Ethon attaches some functions only when the loaded libcurl exports them.
 Wrappers that check for a missing function raise `NotImplementedError`; the
 introspection helpers return `nil` or `[]`. This keeps the gem loadable with
 libcurl versions that predate the URL, MIME, share, or structured-header APIs.
 
-libcurl silently ignores options it does not know, which would make a request
-run with a different configuration than requested. Ethon therefore raises
+libcurl silently ignores unknown options, which can make a request run with a
+different configuration than intended. Ethon therefore raises
 `Ethon::Errors::UnsupportedOption` when `curl_easy_setopt` reports
 `CURLE_UNKNOWN_OPTION`, and `Ethon::Errors::SetOption` for other rejected
-values. Guard optional settings when you support old runtimes:
+values. Guard optional settings when supporting older runtimes:
 
 ```ruby
 easy.tcp_keepcnt = 30 if Ethon::Curl.supports_option?(:tcp_keepcnt)
@@ -167,7 +179,7 @@ The deprecated form API is attached only when the loaded libcurl exports it,
 because libcurl can be built with `--disable-form-api`. Multipart bodies use the
 MIME API when available and fall back to the form API otherwise.
 
-Point `ETHON_CURL_LIBS` at a specific build to test against it:
+Point `ETHON_CURL_LIBS` at a specific libcurl build to test against it:
 
 ```sh
 ETHON_CURL_LIBS=/opt/curl/lib/libcurl.so bundle exec rake
@@ -179,7 +191,7 @@ accidental use of newer symbols and options. The 8.23 build uses
 
 ## Debugging
 
-Set `verbose: true` on an Easy to collect libcurl's debug messages.
+Set `verbose: true` on an `Easy` to collect libcurl's debug messages.
 `Easy#debug_info` returns a `DebugInfo` object; use `#to_a` for every message
 or `#to_h` to group them by type (such as `:text`, `:header_in`, and
 `:header_out`). `Easy#debugfunction` registers an observer. The messages are
@@ -220,7 +232,7 @@ all `Easy` and `Multi` instances after the fork. Ethon raises
 `Ethon::Errors::ForkSafety` when a child process tries to use inherited libcurl
 state.
 
-##  LICENSE
+## License
 
 (The MIT License)
 
