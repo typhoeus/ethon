@@ -70,24 +70,31 @@ easy.perform
 This is really handy when making requests since you don't have to care about setting
 everything up correctly.
 
-## Http2
-Standard http2 servers require the client to connect once and create a session (multi) and then add simple requests to the multi handler.
-The `perform` method then takes all the requests in the multi handler and sends them to the server.
+File values in a `:body` hash are sent as `multipart/form-data`. Ethon loads
+the optional `mime-types` gem on the first upload to detect each part's content
+type; without it, parts use `application/octet-stream`.
 
-See the following example
+## HTTP/2
+
+Use `:http_version` to request HTTP/2. `:httpv2_tls` negotiates HTTP/2 over
+TLS and uses HTTP/1.1 for plain HTTP. `:httpv2_0` also attempts the HTTP/2
+Upgrade handshake on plain HTTP, which many older servers do not support.
+`:httpv2_prior_knowledge` starts HTTP/2 without negotiation. See
+[the libcurl documentation](https://everything.curl.dev/http/http2) for
+details.
+
+HTTP/2 works with a single easy handle. A multi handle lets several requests
+share the connection and multiplex them:
+
 ```ruby
 multi = Ethon::Multi.new
 easy = Ethon::Easy.new
 
-easy.http_request("www.example.com/get", :get, { http_version: :httpv2_0 })
-
-# Sending a request with http version 2 will send an Upgrade header to the server, which many older servers will not support
-# See below for more info: https://everything.curl.dev/http/http2
-# If this is a problem, send the below:
-easy.http_request("www.example.com/get", :get, { http_version: :httpv2_prior_knowledge })
-
-# To set the server to use http2 with https and http1 with http, send the following:
-easy.http_request("www.example.com/get", :get, { http_version: :httpv2_tls })
+easy.http_request(
+  "https://www.example.com/get",
+  :get,
+  { http_version: :httpv2_tls }
+)
 
 multi.add(easy)
 multi.perform
@@ -173,9 +180,11 @@ accidental use of newer symbols and options. The 8.23 build uses
 ## Debugging
 
 Set `verbose: true` on an Easy to collect libcurl's debug messages.
-`Easy#debug_info` returns the collected text and header lines, and
-`Easy#debugfunction` registers an observer. The messages are written through
-`Ethon.logger` at the debug level, so configure it to see them:
+`Easy#debug_info` returns a `DebugInfo` object; use `#to_a` for every message
+or `#to_h` to group them by type (such as `:text`, `:header_in`, and
+`:header_out`). `Easy#debugfunction` registers an observer. The messages are
+also written through `Ethon.logger` at the debug level, so configure it to see
+them:
 
 ```ruby
 Ethon.logger.level = Logger::DEBUG
