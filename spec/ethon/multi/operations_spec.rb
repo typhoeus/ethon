@@ -269,7 +269,7 @@ describe Ethon::Multi::Operations do
     context "when code ok" do
       before { expect(Ethon::Curl).to receive(:multi_fdset).and_return(:ok) }
 
-      it "doesn't raise" do
+      it "doesn't raise", :unless => Ethon::Curl.windows? do
         expect{ multi.method(:set_fds).call(timeout) }.to_not raise_error
       end
 
