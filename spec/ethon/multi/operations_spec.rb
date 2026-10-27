@@ -25,6 +25,7 @@ describe Ethon::Multi::Operations do
     end
 
     it "rejects a handle inherited across a fork" do
+      skip_on_windows "fork is not supported on Windows"
       multi.handle
       reader, writer = IO.pipe
       pid = fork do
@@ -49,6 +50,7 @@ describe Ethon::Multi::Operations do
     end
 
     it "rejects creating a handle after a fork" do
+      skip_on_windows "fork is not supported on Windows"
       # Creating the Multi initializes libcurl in the parent, but this Multi
       # does not allocate its native handle until #handle is called.
       expect(multi.instance_variable_get(:@handle)).to be_nil
@@ -126,6 +128,7 @@ describe Ethon::Multi::Operations do
     end
 
     it "rejects cleaning up a handle inherited across a fork" do
+      skip_on_windows "fork is not supported on Windows"
       multi.handle
       reader, writer = IO.pipe
       pid = fork do
@@ -507,6 +510,7 @@ describe Ethon::Multi::Operations do
       # A file:// read of a FIFO blocks in open() until the writer shows up. A resolver thread stuck
       # in getaddrinfo blocks curl_multi_perform the same way when libcurl joins it on timeout.
       it "lets other threads run" do
+        skip_on_windows "File.mkfifo is not supported on Windows"
         Dir.mktmpdir do |dir|
           fifo = File.join(dir, "fifo")
           File.mkfifo(fifo)

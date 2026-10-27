@@ -76,6 +76,7 @@ describe Ethon::Curl do
 
   describe ".check_pid!" do
     it "resets process state after a fork when libcurl is not initialized" do
+      skip_on_windows "fork is not supported on Windows"
       Ethon::Curl.send(:class_variable_set, :@@initialized, false)
       reader, writer = IO.pipe
       pid = fork do

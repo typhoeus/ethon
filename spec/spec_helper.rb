@@ -14,7 +14,14 @@ require_relative 'support/server'
 #   log.level = Logger::DEBUG
 # end
 
+module EthonSpecHelpers
+  def skip_on_windows(reason = "not supported on Windows")
+    skip reason if Gem.win_platform?
+  end
+end
+
 RSpec.configure do |config|
+  config.include EthonSpecHelpers
   config.order = :random
 
   config.before(:suite) do
