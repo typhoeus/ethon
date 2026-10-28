@@ -329,14 +329,20 @@ describe Ethon::Easy::Operations do
       easy.cleanup
     end
 
-    it "refuses to clean up from an on_complete callback" do
+    it "allows cleanup from an on_complete callback" do
       easy.url = "http://localhost:3001/"
       easy.on_complete { easy.cleanup }
 
-      expect { easy.perform }.
-        to raise_error(Ethon::Errors::EthonError, /completing/)
-    ensure
-      easy.cleanup
+      expect { easy.perform }.not_to raise_error
+      expect { easy.url = "http://localhost:3001/" }.
+        to raise_error(Ethon::Errors::EthonError, /cleaned up/)
+    end
+
+    it "returns the transfer result after the completion callback cleans up" do
+      easy.url = "http://localhost:3001/"
+      easy.on_complete { easy.cleanup }
+
+      expect(easy.perform).to eq(:ok)
     end
   end
 

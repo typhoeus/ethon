@@ -103,12 +103,17 @@ module Ethon
       # Cleanup is terminal: the native handle is freed and the Easy cannot be
       # used again. Reusing it raises Ethon::Errors::EthonError.
       #
+      # Cleanup is allowed from an on_complete callback: the transfer has
+      # finished and a Multi detaches the handle before running its callbacks.
+      # Cleanup from body, header, and progress callbacks is rejected because
+      # those run inside libcurl.
+      #
       # @example Perform clean up.
       #   easy.cleanup
       #
       # @return the result of the free which is nil
       def cleanup
-        ensure_not_performing!
+        ensure_not_in_transfer!
         ensure_not_attached_to_multi!
 
         # Resolve the handle first: cleanup must not clear the response body if

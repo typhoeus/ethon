@@ -4,6 +4,15 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...master)
 
+### Fixes and hardening
+
+* Allow `Easy#cleanup` from an `on_complete` callback. The transfer has
+  finished and a Multi detaches the handle before its callbacks run, so freeing
+  it is safe. Cleanup from body, header, and progress callbacks is still
+  rejected. This fixes `:resolve` requests in Typhoeus 1.7.0, which clean up
+  instead of pooling to avoid leaking `CURLOPT_RESOLVE` entries.
+  ([typhoeus#824](https://github.com/typhoeus/typhoeus/issues/824))
+
 ## 0.19.0
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...v0.19.0)
