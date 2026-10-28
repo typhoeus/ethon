@@ -48,6 +48,12 @@ module Ethon
         multi_handle = handle
         easy_handle = easy.handle
 
+        # Pin libcurl's default connection cache size before the handle is
+        # attached. Finished handles are detached immediately, which would
+        # otherwise make the default shrink during a run and close reusable
+        # connections.
+        raise_default_maxconnects(stack.size + 1)
+
         stack << easy
         begin
           code = Curl.multi_add_handle(multi_handle, easy_handle)

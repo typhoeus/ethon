@@ -32,6 +32,9 @@ module Ethon
 
       # Sets maxconnects option.
       #
+      # An explicit value also disables the automatic sizing described in
+      # #raise_default_maxconnects.
+      #
       # @example Set maxconnects option.
       #   multi.maxconnects = $value
       #
@@ -39,7 +42,8 @@ module Ethon
       #
       # @return [ void ]
       def maxconnects=(value)
-        Curl.set_option(:maxconnects, value_for(value, :int, :maxconnects), handle, :multi)
+        @maxconnects_configured = true unless value.nil?
+        set_maxconnects(value)
       end
 
       # Sets max_host_connections option.
@@ -155,6 +159,30 @@ module Ethon
       end
 
       private
+
+      # Raise the default connection cache size to twice the largest number
+      # of easy handles ever attached at once.
+      #
+      # libcurl derives its default from the number of handles attached when
+      # a connection is returned. Ethon detaches each handle as soon as its
+      # transfer finishes, so that number falls during a run and libcurl
+      # closes connections that later requests could have reused.
+      #
+      # @param [ Integer ] count The number of attached handles after the
+      #   pending add.
+      #
+      # @return [ void ]
+      def raise_default_maxconnects(count)
+        return if @maxconnects_configured
+        return if count <= (@maxconnects_high_water ||= 0)
+
+        @maxconnects_high_water = count
+        set_maxconnects(2 * count)
+      end
+
+      def set_maxconnects(value)
+        Curl.set_option(:maxconnects, value_for(value, :int, :maxconnects), handle, :multi)
+      end
 
       def retain_callback(option, callback)
         if callback.nil?

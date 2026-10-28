@@ -194,6 +194,58 @@ describe Ethon::Multi::Options do
     end
   end
 
+  describe "default maxconnects" do
+    let(:easies) { Array.new(2) { Ethon::Easy.new } }
+
+    after do
+      multi.easy_handles.each { |easy| multi.delete(easy) }
+      multi.cleanup
+    end
+
+    def track_maxconnects
+      values = []
+      allow(Ethon::Curl).to receive(:set_option).and_wrap_original do |original, option, value, *rest|
+        values << value if option == :maxconnects
+        original.call(option, value, *rest)
+      end
+      values
+    end
+
+    it "uses twice the high-water mark of attached handles" do
+      values = track_maxconnects
+
+      easies.each { |easy| multi.add(easy) }
+      easies.each { |easy| multi.delete(easy) }
+
+      expect(values).to eq([2, 4])
+    end
+
+    it "does not shrink when handles are detached" do
+      values = track_maxconnects
+      third = Ethon::Easy.new
+
+      easies.each { |easy| multi.add(easy) }
+      multi.delete(easies.first)
+      multi.add(third)
+
+      expect(values).to eq([2, 4])
+    ensure
+      multi.delete(third) if third && multi.easy_handles.include?(third)
+    end
+
+    it "does not override an explicit maxconnects" do
+      explicit = Ethon::Multi.new(:maxconnects => 7)
+      easy = Ethon::Easy.new
+
+      expect(Ethon::Curl).not_to receive(:set_option).with(:maxconnects, anything, anything, :multi)
+
+      explicit.add(easy)
+    ensure
+      explicit.delete(easy) if explicit && explicit.easy_handles.include?(easy)
+      explicit.cleanup
+    end
+  end
+
   describe "#value_for" do
     context "when option in bool" do
       context "when value true" do
