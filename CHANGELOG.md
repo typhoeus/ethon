@@ -4,6 +4,15 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...master)
 
+### Behavior changes
+
+* Size a Multi's connection cache to twice the largest number of easy handles
+  attached at once. libcurl derives its default `CURLMOPT_MAXCONNECTS` from the
+  number of handles attached when a connection is returned, but Ethon detaches
+  finished handles immediately, which made the default shrink during a run and
+  close connections that later requests could have reused. An explicit
+  `maxconnects:` still takes precedence.
+
 ### Fixes and hardening
 
 * Allow `Easy#cleanup` from an `on_complete` callback. The transfer has

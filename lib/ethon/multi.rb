@@ -55,9 +55,13 @@ module Ethon
     #  as the Multi may invoke the callback. (Added in 7.16.0)
     # @option options :maxconnects [Integer]
     #  Pass a long. The set number will be used as the maximum amount of
-    #  simultaneously open connections that libcurl may cache. Default is
-    #  10, and libcurl will enlarge the size for each added easy handle to
-    #  make it fit 4 times the number of added easy handles.
+    #  simultaneously open connections that libcurl may cache. When this is
+    #  not set, Ethon sizes the cache to twice the largest number of easy
+    #  handles attached to this Multi at once. libcurl derives its own default
+    #  from the handles attached when a connection is returned, but Ethon
+    #  detaches finished handles, which would otherwise shrink the cache during
+    #  a run. Pass an explicit value to cap the cache yourself, or 0 to use
+    #  libcurl's dynamic default.
     #  By setting this option, you can prevent the cache size from growing
     #  beyond the limit set by you.
     #  When the cache is full, curl closes the oldest one in the cache to
