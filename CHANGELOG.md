@@ -2,11 +2,14 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...master)
 
-These are the unreleased changes since `v0.18.0`. Before 1.0, a minor release
-may include incompatible API changes; review the breaking changes before
-upgrading.
+## 0.19.0
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.18.0...v0.19.0)
+
+Before 1.0, a minor release may include incompatible API changes; review the
+breaking changes before upgrading.
 
 ### Breaking changes
 
@@ -638,10 +641,12 @@ is unavailable; introspection helpers return `nil` or an empty array.
 * Documented thread, callback, signal, and fork safety requirements.
   ([#297](https://github.com/typhoeus/ethon/pull/297),
   [#303](https://github.com/typhoeus/ethon/pull/303))
-* Documented the URL, MIME, share, header, and introspection APIs, and
-  rewrote the README overview and usage sections.
+* Documented the URL, MIME, share, header, and introspection APIs, rewrote the
+  README overview and usage sections, and fixed a stale documentation link and
+  parameter names.
   ([#317](https://github.com/typhoeus/ethon/pull/317),
-  [#451](https://github.com/typhoeus/ethon/pull/451))
+  [#451](https://github.com/typhoeus/ethon/pull/451),
+  [#453](https://github.com/typhoeus/ethon/pull/453))
 * Corrected `CURLMOPT_PIPELINING` documentation to describe its integer bitmask
   values. ([Bernard Mak](https://github.com/b2mak),
   [#239](https://github.com/typhoeus/ethon/pull/239))
