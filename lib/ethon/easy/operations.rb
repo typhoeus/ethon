@@ -33,7 +33,7 @@ module Ethon
       # replacement handle does not have them. Read them before replacing the
       # handle if they are needed again.
       #
-      # @param [ ::FFI::Pointer, Curl::EasyHandle, nil ] Easy handle that will
+      # @param [ ::FFI::Pointer, Curl::EasyHandle, nil ] h Easy handle that will
       #   be assigned.
       def handle=(h)
         assign_handle(h, true)

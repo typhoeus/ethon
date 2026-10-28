@@ -25,7 +25,7 @@ module Ethon
       # @example Set the headers.
       #   easy.headers = {'User-Agent' => 'ethon'}
       #
-      # @param [ Hash ] headers The headers.
+      # @param [ Hash ] value The headers.
       def headers=(value)
         # Snapshot before building the list so the stored value is exactly the
         # set that libcurl accepted. Copy the values too: mutating a
