@@ -31,6 +31,10 @@ Or install it directly:
 gem install ethon
 ```
 
+Ethon requires Ruby 2.6 or newer and a libcurl shared library. Install libcurl
+with your system package manager, or point `ETHON_CURL_LIBS` at a specific
+build (see [Older libcurl versions](#older-libcurl-versions)).
+
 ## Usage
 
 Create an `Easy` handle for a single transfer. The constructor accepts libcurl
@@ -91,9 +95,9 @@ multi.perform
 Use `:http_version` to request HTTP/2. `:httpv2_tls` negotiates HTTP/2 over
 TLS and uses HTTP/1.1 for plain HTTP. `:httpv2_0` also attempts the HTTP/2
 Upgrade handshake on plain HTTP, which many older servers do not support.
-`:httpv2_prior_knowledge` starts HTTP/2 without negotiation. See
-[the libcurl documentation](https://everything.curl.dev/http/http2) for
-details.
+`:httpv2_prior_knowledge` starts HTTP/2 without negotiation. See the
+[libcurl HTTP/2 documentation](https://everything.curl.dev/http/versions/http2.html)
+for details.
 
 HTTP/2 works with a single easy handle. A multi handle lets several requests
 share the connection and multiplex them:
