@@ -2,7 +2,11 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.1...master)
+
+## 0.19.1
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...v0.19.1)
 
 ### Behavior changes
 
@@ -12,6 +16,7 @@
   finished handles immediately, which made the default shrink during a run and
   close connections that later requests could have reused. An explicit
   `maxconnects:` still takes precedence.
+  ([#455](https://github.com/typhoeus/ethon/pull/455))
 
 ### Fixes and hardening
 
@@ -20,7 +25,8 @@
   it is safe. Cleanup from body, header, and progress callbacks is still
   rejected. This fixes `:resolve` requests in Typhoeus 1.7.0, which clean up
   instead of pooling to avoid leaking `CURLOPT_RESOLVE` entries.
-  ([typhoeus#824](https://github.com/typhoeus/typhoeus/issues/824))
+  ([#456](https://github.com/typhoeus/ethon/pull/456),
+  [typhoeus#824](https://github.com/typhoeus/typhoeus/issues/824))
 
 ## 0.19.0
 
