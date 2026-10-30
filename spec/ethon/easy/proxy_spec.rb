@@ -19,8 +19,16 @@ describe "proxying" do
 
     expect(easy.return_code).to eq(:ok)
     expect(easy.response_code).to eq(200)
-    expect(easy.used_proxy).to eq(1)
     expect(easy.proxy_error).to eq(0)
+  end
+
+  it "reports when a proxy was used" do
+    easy.proxyuserpwd = credentials
+    easy.perform
+
+    skip "CURLINFO_USED_PROXY is unavailable in this libcurl" if easy.used_proxy.nil?
+
+    expect(easy.used_proxy).to eq(1)
   end
 
   it "returns the proxy authentication challenge without credentials" do
@@ -28,7 +36,6 @@ describe "proxying" do
 
     expect(easy.return_code).to eq(:ok)
     expect(easy.response_code).to eq(407)
-    expect(easy.used_proxy).to eq(1)
   end
 
   it "tunnels HTTPS through the proxy" do
@@ -39,6 +46,5 @@ describe "proxying" do
 
     expect(easy.return_code).to eq(:ok)
     expect(easy.response_code).to eq(200)
-    expect(easy.used_proxy).to eq(1)
   end
 end
