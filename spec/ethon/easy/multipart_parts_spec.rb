@@ -23,6 +23,20 @@ describe "multipart parts" do
       expect(one.hash).to eq(two.hash)
       expect(one).not_to eq(described_class.new("data", :content_type => "text/plain"))
     end
+
+    it "compares files by path" do
+      Tempfile.create do |file|
+        File.open(file.path) do |first|
+          File.open(file.path) do |second|
+            one = described_class.new(first)
+            two = described_class.new(second)
+
+            expect(one).to eq(two)
+            expect(one.hash).to eq(two.hash)
+          end
+        end
+      end
+    end
   end
 
   it "sends a content type for a non-file part" do

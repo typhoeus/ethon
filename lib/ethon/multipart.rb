@@ -89,14 +89,22 @@ module Ethon
 
       def ==(other)
         other.is_a?(Part) &&
-          value == other.value &&
+          value_key == other.value_key &&
           filename == other.filename &&
           content_type == other.content_type
       end
       alias eql? ==
 
       def hash
-        [Part, value, filename, content_type].hash
+        [Part, value_key, filename, content_type].hash
+      end
+
+      # The value used by #== and #hash. Files compare by path because File
+      # itself compares by identity.
+      #
+      # @api private
+      def value_key
+        file? ? value.path : value
       end
 
       def inspect

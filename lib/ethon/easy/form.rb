@@ -50,8 +50,8 @@ module Ethon
 
       # Return if form is multipart. The form is multipart when the multipart
       # option is set, when it contains a file, or when a value is wrapped in a
-      # Multipart::Part (even a plain value needs multipart to carry a content
-      # type).
+      # Multipart::Part that carries a content type or a filename. A wrapped
+      # plain value is encoded like an unwrapped one.
       #
       # @example Return if form is multipart.
       #   form.multipart?
@@ -110,7 +110,7 @@ module Ethon
       def contains_multipart_part?(value)
         case value
         when Multipart::Part
-          true
+          value.upload? || !value.content_type.nil?
         when Hash
           value.values.any? { |item| contains_multipart_part?(item) }
         when Array
@@ -140,8 +140,8 @@ module Ethon
           return
         end
 
-        filename = content.filename || File.basename(content.value.path)
-        content_type = content.content_type || mime_type(filename)
+        filename = part_filename(content)
+        content_type = part_content_type(content, filename)
 
         if content.file?
           part.file = File.expand_path(content.value.path)
@@ -194,8 +194,8 @@ module Ethon
           return
         end
 
-        filename = content.filename || File.basename(content.value.path)
-        content_type = content.content_type || mime_type(filename)
+        filename = part_filename(content)
+        content_type = part_content_type(content, filename)
 
         if content.file?
           add_form_file_options(
@@ -207,6 +207,14 @@ module Ethon
         else
           add_form_buffer_options(options, content.value.to_s, filename, content_type)
         end
+      end
+
+      def part_filename(part)
+        part.filename || File.basename(part.value.path)
+      end
+
+      def part_content_type(part, filename)
+        part.content_type || mime_type(filename)
       end
 
       def add_form_file_options(options, path, filename, content_type)
