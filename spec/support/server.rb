@@ -44,6 +44,11 @@ TESTSERVER = Sinatra.new do
     [200, { 'Set-Cookie' => %w[ foo bar ], 'Content-Type' => 'text/plain' }, ['']]
   end
 
+  get '/set-cookie' do
+    response['Set-Cookie'] = 'name=value; Path=/'
+    'ok'
+  end
+
   # Deterministic binary payload for byte-exact transfer tests.
   get '/binary/:size' do
     size = params[:size].to_i
