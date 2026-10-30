@@ -2,6 +2,7 @@
 require 'rack'
 require 'webrick'
 require 'net/http'
+require 'openssl'
 require 'rackup' if Gem.ruby_version >= Gem::Version.new("3.0.0")
 require 'timeout'
 
@@ -34,10 +35,11 @@ class LocalhostServer
 
   attr_reader :port
 
-  def initialize(rack_app, port = nil)
+  def initialize(rack_app, port = nil, options = {})
     @port = port || find_available_port
     ensure_port_available! unless port.nil?
     @rack_app = rack_app
+    @options = options
     concurrently { boot }
     wait_until(10, "Boot failed.") { booted? }
   end
@@ -64,23 +66,28 @@ class LocalhostServer
     # default MaxClients (100) and RequestTimeout (30) the server eventually
     # stops accepting connections until an idle one times out. Close idle
     # connections quickly and leave plenty of room for concurrent tests.
-    options = {
+    server_options = {
       :Port => port,
       :Host => 'localhost',
       :MaxClients => 1000,
       :RequestTimeout => 5
-    }
+    }.merge(@options)
     # Use WEBrick for tests since it supports all HTTP methods including custom ones like PURGE
     # Puma is stricter about HTTP methods and rejects custom methods with 501 "method not supported"
     app = Identify.new(@rack_app)
 
-    options.merge!(:AccessLog => [], :Logger => WEBrick::BasicLog.new(StringIO.new)) unless ENV['VERBOSE_SERVER']
+    server_options.merge!(:AccessLog => [], :Logger => WEBrick::BasicLog.new(StringIO.new)) unless ENV['VERBOSE_SERVER']
 
-    RACKUP_HANDLER.run(app, **options)
+    RACKUP_HANDLER.run(app, **server_options)
   end
 
   def booted?
-    res = ::Net::HTTP.get_response("127.0.0.1", '/__identify__', port)
+    http = ::Net::HTTP.new("127.0.0.1", port)
+    if @options[:SSLEnable]
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+    res = http.start { |client| client.get('/__identify__') }
     if res.is_a?(::Net::HTTPSuccess) or res.is_a?(::Net::HTTPRedirection)
       return res.body == READY_MESSAGE
     end
