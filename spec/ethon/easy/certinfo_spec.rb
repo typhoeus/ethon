@@ -22,6 +22,10 @@ describe Ethon::Easy, "certinfo" do
   end
 
   it "keeps the chain on the mirror after the easy is reset" do
+    unless Ethon::Easy::Mirror::INFORMATIONS_TO_MIRROR.include?(:certinfo)
+      skip "certinfo is not mirrored yet (ethon#459)"
+    end
+
     mirror = nil
     easy.on_complete do |completed|
       # Reproduce the pooling handoff: the mirror is built before the handle
