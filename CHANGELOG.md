@@ -4,6 +4,16 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.1...master)
 
+* Expose the remaining scalar getinfo values: `Easy#primary_port`,
+  `Easy#local_ip`, `Easy#local_port`, `Easy#ssl_verifyresult`,
+  `Easy#num_connects`, `Easy#lastsocket`, `Easy#os_errno`,
+  `Easy#http_connectcode`, `Easy#proxyauth_avail`, `Easy#condition_unmet`,
+  `Easy#header_size`, `Easy#content_type`, `Easy#ftp_entry_path`,
+  `Easy#filetime`, `Easy#content_length_download`,
+  `Easy#content_length_upload`, and the RTSP informations. They are also
+  included in the mirror, so they survive the handle reset and show up in
+  response options.
+
 ## 0.19.1
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...v0.19.1)
