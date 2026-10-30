@@ -10,7 +10,7 @@ module Ethon
       # example as a cached Typhoeus response), so leave them on the Easy.
       INFORMATIONS_TO_MIRROR = Informations::AVAILABLE_INFORMATIONS.
           reject { |_, type| type == :ptr }.keys +
-          [:return_code, :response_headers, :response_body, :debug_info, :error_message]
+          [:return_code, :response_headers, :response_body, :debug_info, :error_message, :certinfo]
 
       INFORMATIONS_TO_LOG = [:effective_url, :response_code, :return_code, :total_time]
 
