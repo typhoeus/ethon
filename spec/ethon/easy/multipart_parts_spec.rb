@@ -241,5 +241,22 @@ describe "multipart parts" do
         expect(response["content"]).to eq("file contents")
       end
     end
+
+    it "keeps the bytes the part was created with" do
+      value = +"original"
+
+      easy.http_request(
+        url,
+        :post,
+        :body => {
+          :note => Ethon::Multipart::Part.new(value, :filename => "note.txt")
+        }
+      )
+      value.replace("changed!")
+
+      expect(easy.perform).to eq(:ok)
+      expect(easy.response_body).to include("\r\n\r\noriginal\r\n")
+      expect(easy.response_body).not_to include("changed!")
+    end
   end
 end

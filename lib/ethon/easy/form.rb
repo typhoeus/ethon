@@ -233,13 +233,15 @@ module Ethon
         filename = validate_header_line(:filename, filename.to_s)
         content_type = validate_header_line(:content_type, content_type.to_s)
 
-        # CURLFORM_BUFFERPTR does not copy the data, so keep it alive until
-        # libcurl has read the form during perform.
-        (@form_buffers ||= []) << data
+        # CURLFORM_BUFFERPTR does not copy the data, so keep a stable copy
+        # alive until libcurl has read the form during perform. The caller's
+        # String can be changed after setup, and the GC can move it.
+        buffer = FFI::MemoryPointer.from_string(data)
+        (@form_buffers ||= []) << buffer
 
         options.concat([
           :form_option, :buffer, :string, filename,
-          :form_option, :bufferptr, :pointer, data,
+          :form_option, :bufferptr, :pointer, buffer,
           :form_option, :bufferlength, :long, data.bytesize,
           :form_option, :contenttype, :string, content_type
         ])
