@@ -75,7 +75,29 @@ easy.perform
 
 File values in a `:body` hash are sent as `multipart/form-data`. Ethon loads
 the optional `mime-types` gem on the first upload to detect each part's content
-type; without it, parts use `application/octet-stream`.
+type; with it absent, files fall back to `application/octet-stream`.
+
+Wrap a value in `Ethon::Multipart::Part` to set the content type for that part,
+and optionally the filename. A String with a filename is sent as an in-memory
+upload.
+
+```ruby
+easy.http_request(
+  "www.example.com",
+  :post,
+  body: {
+    metadata: Ethon::Multipart::Part.new(
+      '{"a":1}',
+      content_type: "application/json"
+    ),
+    file: Ethon::Multipart::Part.new(
+      File.open("photo.jpg"),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+  }
+)
+```
 
 ## Parallel requests
 
