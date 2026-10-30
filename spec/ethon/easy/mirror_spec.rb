@@ -19,7 +19,7 @@ describe Ethon::Easy::Mirror do
       :pretransfer_time, :connect_time, :namelookup_time, :redirect_time,
       :size_upload, :size_download, :speed_upload, :speed_download,
       :effective_url, :primary_ip, :redirect_count, :redirect_url, :debug_info,
-      :error_message
+      :error_message, :certinfo
     ].each do |name|
       it "contains #{name}" do
         expect(described_class::INFORMATIONS_TO_MIRROR).to include(name)
@@ -39,6 +39,23 @@ describe Ethon::Easy::Mirror do
       described_class::INFORMATIONS_TO_MIRROR.each do |name|
         expect(mirror.public_send(name)).to eq(name.to_s)
       end
+    end
+  end
+
+  describe ".from_easy" do
+    let(:easy) { Ethon::Easy.new }
+    let(:certificates) { [["Subject:CN = example.com", "Issuer:CN = Example CA"]] }
+
+    before { allow(easy).to receive(:certinfo).and_return(certificates) }
+
+    it "copies the certificate chain" do
+      expect(described_class.from_easy(easy).certinfo).to eq(certificates)
+    end
+
+    it "keeps the copy marshalable" do
+      mirror = described_class.from_easy(easy)
+
+      expect(Marshal.load(Marshal.dump(mirror.options))[:certinfo]).to eq(certificates)
     end
   end
 
