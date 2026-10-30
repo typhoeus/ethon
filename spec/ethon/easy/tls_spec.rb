@@ -28,4 +28,12 @@ describe "TLS verification" do
     expect(easy.return_code).to eq(:peer_failed_verification)
     expect(easy.response_code).to eq(0)
   end
+
+  it "rejects a certificate for another hostname" do
+    easy.url = "https://127.0.0.1:#{TEST_HTTPS_PORT}/"
+    easy.cainfo = TEST_TLS_CA_FILE
+    easy.perform
+
+    expect(easy.return_code).to eq(:peer_failed_verification)
+  end
 end

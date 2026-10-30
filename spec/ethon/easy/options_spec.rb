@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'spec_helper'
+require 'json'
 
 describe Ethon::Easy::Options do
   let(:easy) { Ethon::Easy.new }
@@ -453,6 +454,8 @@ describe Ethon::Easy::Options do
     let(:connecttimeout) { nil }
     let(:connecttimeout_ms) { nil }
     let(:userpwd) { nil }
+    let(:failonerror) { nil }
+    let(:accept_encoding) { nil }
 
     before do
       easy.url = url
@@ -461,6 +464,8 @@ describe Ethon::Easy::Options do
       easy.connecttimeout = connecttimeout
       easy.connecttimeout_ms = connecttimeout_ms
       easy.userpwd = userpwd
+      easy.failonerror = failonerror
+      easy.accept_encoding = accept_encoding
       easy.perform
     end
 
@@ -511,6 +516,37 @@ describe Ethon::Easy::Options do
             expect([:couldnt_connect, :operation_timedout]).to include(easy.return_code)
           end
         end
+      end
+    end
+
+    context "when failonerror" do
+      let(:url) { "http://localhost:3001/fail_forever" }
+
+      context "when enabled" do
+        let(:failonerror) { true }
+
+        it "returns the HTTP error" do
+          expect(easy.return_code).to eq(:http_returned_error)
+          expect(easy.response_code).to eq(500)
+        end
+      end
+
+      context "when disabled" do
+        it "returns successfully" do
+          expect(easy.return_code).to eq(:ok)
+          expect(easy.response_code).to eq(500)
+        end
+      end
+    end
+
+    context "when accept_encoding" do
+      let(:url) { "http://localhost:3001/gzipped" }
+      let(:accept_encoding) { "" }
+
+      it "decodes the response" do
+        expect(easy.return_code).to eq(:ok)
+        expect(easy.response_headers).to include("Content-Encoding: gzip")
+        expect(JSON.parse(easy.response_body)["PATH_INFO"]).to eq("/gzipped")
       end
     end
   end
