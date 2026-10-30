@@ -9,6 +9,7 @@ describe "connection reuse" do
   it "reuses the connection for the next request" do
     easy.perform
     first = easy.conn_id
+    skip "CURLINFO_CONN_ID is unavailable in this libcurl" if first.nil?
 
     easy.perform
 
@@ -18,6 +19,7 @@ describe "connection reuse" do
   it "opens a new connection with fresh_connect" do
     easy.perform
     first = easy.conn_id
+    skip "CURLINFO_CONN_ID is unavailable in this libcurl" if first.nil?
 
     easy.fresh_connect = true
     easy.perform

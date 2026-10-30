@@ -23,6 +23,8 @@ describe "Multi connection reuse" do
 
   it "reuses pooled connections for a later batch" do
     first = request_batch(8)
+    skip "CURLINFO_CONN_ID is unavailable in this libcurl" if first.any?(&:nil?)
+
     second = request_batch(8)
 
     expect(first.uniq.length).to eq(8)
