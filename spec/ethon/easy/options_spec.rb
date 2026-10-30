@@ -456,6 +456,7 @@ describe Ethon::Easy::Options do
     let(:userpwd) { nil }
     let(:failonerror) { nil }
     let(:accept_encoding) { nil }
+    let(:http_content_decoding) { nil }
 
     before do
       easy.url = url
@@ -466,6 +467,7 @@ describe Ethon::Easy::Options do
       easy.userpwd = userpwd
       easy.failonerror = failonerror
       easy.accept_encoding = accept_encoding
+      easy.http_content_decoding = http_content_decoding
       easy.perform
     end
 
@@ -547,6 +549,14 @@ describe Ethon::Easy::Options do
         expect(easy.return_code).to eq(:ok)
         expect(easy.response_headers).to include("Content-Encoding: gzip")
         expect(JSON.parse(easy.response_body)["PATH_INFO"]).to eq("/gzipped")
+      end
+
+      context "when content decoding is disabled" do
+        let(:http_content_decoding) { false }
+
+        it "leaves the body compressed" do
+          expect(easy.response_body.byteslice(0, 2)).to eq("\x1f\x8b".b)
+        end
       end
     end
   end

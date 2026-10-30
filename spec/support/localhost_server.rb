@@ -82,6 +82,12 @@ class LocalhostServer
   end
 
   def booted?
+    # The mTLS server rejects the readiness probe without a client
+    # certificate, so only the listening socket can be checked there.
+    if @options[:SSLVerifyClient].to_i != OpenSSL::SSL::VERIFY_NONE
+      return tcp_booted?
+    end
+
     http = ::Net::HTTP.new("127.0.0.1", port)
     if @options[:SSLEnable]
       http.use_ssl = true
@@ -93,6 +99,13 @@ class LocalhostServer
     end
   rescue Errno::ECONNREFUSED, Errno::EBADF
     return false
+  end
+
+  def tcp_booted?
+    TCPSocket.new("127.0.0.1", port).close
+    true
+  rescue Errno::ECONNREFUSED, Errno::EBADF
+    false
   end
 
   def concurrently

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'digest'
 require 'json'
+require 'time'
 require 'zlib'
 require 'sinatra/base'
 
@@ -57,6 +58,32 @@ TESTSERVER = Sinatra.new do
 
     content_type 'application/octet-stream'
     body
+  end
+
+  get '/range' do
+    content = "0123456789"
+    range = request.env['HTTP_RANGE']
+
+    if range && (match = /\Abytes=(\d+)-(\d*)\z/.match(range))
+      first = match[1].to_i
+      last = match[2].empty? ? content.bytesize - 1 : match[2].to_i
+      status 206
+      headers 'Content-Range' => "bytes #{first}-#{last}/#{content.bytesize}"
+      content[first..last]
+    else
+      content
+    end
+  end
+
+  get '/modified' do
+    modified = Time.utc(2020, 1, 1)
+    response['Last-Modified'] = modified.httpdate
+
+    if (since = request.env['HTTP_IF_MODIFIED_SINCE'])
+      halt 304 if Time.httpdate(since) >= modified
+    end
+
+    'body'
   end
 
   # Echo the raw request body so uploads can be compared byte for byte.
