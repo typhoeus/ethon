@@ -19,7 +19,12 @@ describe Ethon::Easy::Mirror do
       :pretransfer_time, :connect_time, :namelookup_time, :redirect_time,
       :size_upload, :size_download, :speed_upload, :speed_download,
       :effective_url, :primary_ip, :redirect_count, :redirect_url, :debug_info,
-      :error_message
+      :error_message, :local_ip, :primary_port, :ssl_verifyresult,
+      :local_port, :num_connects, :lastsocket, :os_errno, :http_connectcode,
+      :proxyauth_avail, :condition_unmet, :header_size, :content_type,
+      :ftp_entry_path, :rtsp_client_cseq, :rtsp_server_cseq, :rtsp_cseq_recv,
+      :rtsp_session_id, :filetime, :content_length_download,
+      :content_length_upload
     ].each do |name|
       it "contains #{name}" do
         expect(described_class::INFORMATIONS_TO_MIRROR).to include(name)

@@ -43,6 +43,29 @@ describe "modern libcurl informations" do
     expect(easy.queue_time_t.nil? || easy.queue_time_t.is_a?(Integer)).to be(true)
   end
 
+  it "exposes every non-pointer information" do
+    Ethon::Easy::Informations::AVAILABLE_INFORMATIONS.each do |name, type|
+      expect(easy).to respond_to(name)
+      expect(easy.mirror).to respond_to(name) unless type == :ptr
+    end
+  end
+
+  it "exposes the connection addresses and ports" do
+    expect(easy.local_ip).to match(/::1|127\.0\.0\.1/)
+    expect(easy.local_port).to be > 0
+    expect(easy.primary_port).to eq(3001)
+    expect(easy.ssl_verifyresult).to eq(0)
+  end
+
+  it "exposes connection and transfer metadata" do
+    expect(easy.num_connects).to be >= 1
+    expect(easy.header_size).to be > 0
+    expect(easy.os_errno).to eq(0)
+    expect(easy.http_connectcode).to eq(0)
+    expect(easy.content_type).to be_a(String)
+    expect(easy.content_length_download).to eq(easy.response_body.bytesize)
+  end
+
   it "exposes the active socket" do
     expect(easy.activesocket).to be_a(Integer)
   end
@@ -56,7 +79,8 @@ describe "modern libcurl informations" do
   it "includes the new values in the mirror" do
     expect(easy.mirror.options).to include(
       :http_version, :scheme, :effective_method, :conn_id, :xfer_id,
-      :total_time_t, :size_download_t, :activesocket
+      :total_time_t, :size_download_t, :activesocket, :primary_port,
+      :local_ip, :ssl_verifyresult
     )
   end
 
