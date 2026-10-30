@@ -47,6 +47,17 @@ describe Ethon::Easy::Form do
       end
     end
 
+    context "when params contain a multipart part without a file" do
+      let(:pairs) { nil }
+      let(:hash) {
+        { :field => Ethon::Multipart::Part.new("value", :content_type => "text/plain") }
+      }
+
+      it "returns true" do
+        expect(form.multipart?).to be_truthy
+      end
+    end
+
     context "when options contains multipart=true" do
       before { form.instance_variable_set(:@multipart, true) }
       let(:pairs) { [['a', '1'], ['b', '2']] }

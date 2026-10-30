@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'ethon/multipart'
+
 module Ethon
   class Easy
 
@@ -186,6 +188,9 @@ module Ethon
 
       def pairs_for(v, key, pairs)
         case v
+        when Multipart::Part
+          # The form builders need the metadata, so keep the part intact.
+          pairs << [key, v]
         when Hash, Array
           recursively_generate_pairs(v, key, pairs)
         when File, Tempfile

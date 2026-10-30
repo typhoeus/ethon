@@ -48,8 +48,10 @@ module Ethon
         @last ||= FFI::MemoryPointer.new(:pointer)
       end
 
-      # Return if form is multipart. The form is multipart
-      # when it contains a file or multipart option is set on the form during creation.
+      # Return if form is multipart. The form is multipart when the multipart
+      # option is set, when it contains a file, or when a value is wrapped in a
+      # Multipart::Part (even a plain value needs multipart to carry a content
+      # type).
       #
       # @example Return if form is multipart.
       #   form.multipart?
@@ -57,7 +59,7 @@ module Ethon
       # @return [ Boolean ] True if form is multipart, else false.
       def multipart?
         return true if @multipart
-        contains_file?(@params)
+        contains_multipart_part?(@params)
       end
 
       # Add form elements to libcurl.
@@ -88,13 +90,7 @@ module Ethon
             part = structure.addpart
             name, content = pair
             part.name = name.to_s
-            if content.is_a?(Queryable::FileInfo)
-              part.file = content[2]
-              part.filename = content[0]
-              part.type = content[1]
-            else
-              part.data = content.to_s
-            end
+            add_mime_part(part, content)
           end
           structure
         end
@@ -111,46 +107,134 @@ module Ethon
         raise ArgumentError, "multipart bodies require a Hash of fields"
       end
 
-      def contains_file?(value)
+      def contains_multipart_part?(value)
         case value
+        when Multipart::Part
+          true
         when Hash
-          value.values.any? { |item| contains_file?(item) }
+          value.values.any? { |item| contains_multipart_part?(item) }
         when Array
-          value.any? { |item| contains_file?(item) }
+          value.any? { |item| contains_multipart_part?(item) }
         else
-          value.is_a?(File) || (defined?(Tempfile) && value.is_a?(Tempfile))
+          Multipart::Part.file?(value)
         end
+      end
+
+      def add_mime_part(part, content)
+        case content
+        when Multipart::Part
+          add_mime_part_from_part(part, content)
+        when Queryable::FileInfo
+          part.file = content[2]
+          part.filename = content[0]
+          part.type = content[1]
+        else
+          part.data = content.to_s
+        end
+      end
+
+      def add_mime_part_from_part(part, content)
+        unless content.upload?
+          part.data = content.value.to_s
+          part.type = content.content_type unless content.content_type.nil?
+          return
+        end
+
+        filename = content.filename || File.basename(content.value.path)
+        content_type = content.content_type || mime_type(filename)
+
+        if content.file?
+          part.file = File.expand_path(content.value.path)
+        else
+          part.data = content.value.to_s
+        end
+        part.filename = filename
+        part.type = content_type
       end
 
       def form_add(name, content)
         name = validate_header_line(:name, name.to_s)
-        code = case content
+        options = [
+          :form_option, :copyname, :pointer, name,
+          :form_option, :namelength, :long, name.bytesize
+        ]
+
+        case content
+        when Multipart::Part
+          add_form_options_for_part(options, content)
         when Queryable::FileInfo
-          # The form API writes these into Content-Disposition headers. Older
-          # libcurl versions do not escape them.
-          filename = validate_header_line(:filename, content[0].to_s)
-          content_type = validate_header_line(:content_type, content[1].to_s)
-          Curl.formadd(first, last,
-                       :form_option, :copyname, :pointer, name,
-                       :form_option, :namelength, :long, name.bytesize,
-                       :form_option, :file, :string, content[2],
-                       :form_option, :filename, :string, filename,
-                       :form_option, :contenttype, :string, content_type,
-                       :form_option, :end
-                      )
+          add_form_file_options(options, content[2], content[0], content[1])
         else
-          Curl.formadd(first, last,
-                       :form_option, :copyname, :pointer, name,
-                       :form_option, :namelength, :long, name.bytesize,
-                       :form_option, :copycontents, :pointer, content.to_s,
-                       :form_option, :contentslength, :long, content ? content.to_s.bytesize : 0,
-                       :form_option, :end
-                      )
+          data = content.to_s
+          options.concat([
+            :form_option, :copycontents, :pointer, data,
+            :form_option, :contentslength, :long, data.bytesize
+          ])
         end
+
+        options << :form_option << :end
+        code = Curl.formadd(first, last, *options)
 
         raise Errors::FormAdd.new(code) unless code == 0
 
         setup_garbage_collection
+      end
+
+      def add_form_options_for_part(options, content)
+        unless content.upload?
+          data = content.value.to_s
+          options.concat([
+            :form_option, :copycontents, :pointer, data,
+            :form_option, :contentslength, :long, data.bytesize
+          ])
+          return if content.content_type.nil?
+
+          content_type = validate_header_line(:content_type, content.content_type.to_s)
+          options.concat([:form_option, :contenttype, :string, content_type])
+          return
+        end
+
+        filename = content.filename || File.basename(content.value.path)
+        content_type = content.content_type || mime_type(filename)
+
+        if content.file?
+          add_form_file_options(
+            options,
+            File.expand_path(content.value.path),
+            filename,
+            content_type
+          )
+        else
+          add_form_buffer_options(options, content.value.to_s, filename, content_type)
+        end
+      end
+
+      def add_form_file_options(options, path, filename, content_type)
+        # The form API writes these into Content-Disposition headers. Older
+        # libcurl versions do not escape them.
+        filename = validate_header_line(:filename, filename.to_s)
+        content_type = validate_header_line(:content_type, content_type.to_s)
+        options.concat([
+          :form_option, :file, :string, path,
+          :form_option, :filename, :string, filename,
+          :form_option, :contenttype, :string, content_type
+        ])
+      end
+
+      def add_form_buffer_options(options, data, filename, content_type)
+        filename = validate_header_line(:filename, filename.to_s)
+        content_type = validate_header_line(:content_type, content_type.to_s)
+
+        # CURLFORM_BUFFERPTR does not copy the data, so keep it alive until
+        # libcurl has read the form during perform.
+        (@form_buffers ||= []) << data
+
+        options.concat([
+          :form_option, :buffer, :string, filename,
+          :form_option, :bufferptr, :pointer, data,
+          :form_option, :bufferlength, :long, data.bytesize,
+          :form_option, :contenttype, :string, content_type
+        ])
       end
 
       def setup_garbage_collection
