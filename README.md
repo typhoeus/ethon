@@ -228,13 +228,37 @@ With libcurl older than 7.84.0, create an Ethon handle before starting other
 application threads so libcurl's global initialization happens while the
 process is still single-threaded.
 
-Ethon handles and initialized libcurl state must not be inherited across a
-`fork`. If any `Easy` or `Multi` was created before forking, libcurl is already
-initialized and the child cannot create new handles either; use `fork` followed
-by `exec` in that case. If libcurl was not initialized before forking, create
-all `Easy` and `Multi` instances after the fork. Ethon raises
-`Ethon::Errors::ForkSafety` when a child process tries to use inherited libcurl
-state.
+Ethon handles and, by default, initialized libcurl state must not be inherited
+across a `fork`. If any `Easy` or `Multi` was created before forking, libcurl
+is already initialized and the child cannot create new handles either; use
+`fork` followed by `exec` in that case, or opt in as described below. If
+libcurl was not initialized before forking, create all `Easy` and `Multi`
+instances after the fork. Ethon raises `Ethon::Errors::ForkSafety` when a child
+process tries to use an inherited handle, or to use inherited libcurl state
+without opting in.
+
+A server that forks workers from a process that has already used libcurl, such
+as Pitchfork with reforking or Puma with `fork_worker`, cannot `exec` without
+losing the memory its workers share with that process. Instead, each worker can
+opt in to creating new handles on the libcurl state it inherited. Call
+`Ethon::Curl.allow_handles_after_fork!` in the worker before it creates its
+first handle and before any other thread uses Ethon, for example from
+Pitchfork's `after_worker_fork` hook:
+
+```ruby
+after_worker_fork do |_server, _worker|
+  Ethon::Curl.allow_handles_after_fork!
+end
+```
+
+Puma's equivalent hook is `before_worker_boot` (`on_worker_boot` before
+Puma 7). Repeat calls in the same worker do nothing. The worker does not
+initialize libcurl again, and handles created before the fork still raise
+`Ethon::Errors::ForkSafety`. On macOS, system frameworks are not safe to use
+after `fork` without `exec`, and libcurl can use them, for example for TLS. The
+opt-in is not supported there and raises `Ethon::Errors::ForkSafety` in a
+worker whose parent initialized libcurl, so use `fork` followed by `exec` on
+macOS.
 
 ## License
 

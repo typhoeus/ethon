@@ -68,6 +68,41 @@ describe Ethon::Easy::Operations do
       Process.wait(pid) if pid
     end
 
+    it "rejects a handle inherited across a fork after the child opts in" do
+      skip_on_windows "fork is not supported on Windows"
+      skip_on_macos "allow_handles_after_fork! is not supported on macOS"
+      easy.handle
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Curl.allow_handles_after_fork!
+          results = [proc { easy.perform }, proc { easy.cleanup }, proc { Ethon::Easy.new.handle }].map do |operation|
+            begin
+              operation.call
+              "ok"
+            rescue Ethon::Errors::ForkSafety => e
+              e.class.name
+            end
+          end
+          writer.write(results.join(" "))
+        rescue Exception => e
+          writer.write("#{e.class}: #{e.message}")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("Ethon::Errors::ForkSafety Ethon::Errors::ForkSafety ok")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
     it "rejects creating a new handle after a fork when libcurl was initialized" do
       skip_on_windows "fork is not supported on Windows"
       easy.handle

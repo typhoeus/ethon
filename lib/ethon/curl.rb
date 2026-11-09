@@ -26,6 +26,11 @@ module Ethon
       Libc.windows?
     end
 
+    # :nodoc:
+    def self.macos?
+      Libc.macos?
+    end
+
     require 'ethon/curls/constants'
     require 'ethon/curls/introspection_constants'
     require 'ethon/curls/settings'
@@ -103,6 +108,33 @@ module Ethon
 
         @@loaded_pid = Process.pid
         @@curl_mutex = Mutex.new
+      end
+
+      # Let a forked child create new handles on the libcurl state it
+      # inherited. Call it in the child before its first handle; repeat calls
+      # do nothing. Handles created before the fork still raise ForkSafety.
+      #
+      # @example Opt in from a Pitchfork worker's after_worker_fork hook.
+      #   Ethon::Curl.allow_handles_after_fork!
+      #
+      # @raise [ Ethon::Errors::ForkSafety ] On macOS, in a child whose parent
+      #   initialized libcurl.
+      #
+      # @api public
+      def allow_handles_after_fork!
+        return if @@loaded_pid == Process.pid
+
+        if @@initialized && macos?
+          raise Errors::ForkSafety.new(
+            "Ethon::Curl.allow_handles_after_fork! is not supported on macOS; use fork+exec"
+          )
+        end
+
+        # Leave @@initialized set: the child inherited the parent's libcurl
+        # global state, so it must not run curl_global_init again.
+        @@loaded_pid = Process.pid
+        @@curl_mutex = Mutex.new
+        nil
       end
 
     end
