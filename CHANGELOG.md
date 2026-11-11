@@ -4,6 +4,14 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.1...master)
 
+### Bug fixes
+
+* Clear `CURLOPT_POSTFIELDSIZE` to 0 instead of -1 when `Easy#postfields=` or
+  `Easy#copypostfields=` clears the body. With a size of -1 libcurl treats the
+  body as indeterminate, sends the POST chunked, and reads it from the default
+  read callback, which is stdin, so the request waited until stdin was closed.
+  ([#463](https://github.com/typhoeus/ethon/issues/463))
+
 ## 0.19.1
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...v0.19.1)
