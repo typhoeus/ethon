@@ -144,7 +144,7 @@ module Ethon
         content_type = part_content_type(content, filename)
 
         if content.file?
-          part.file = File.expand_path(content.value.path)
+          part.file = part_path(content)
         else
           part.data = content.value.to_s
         end
@@ -198,15 +198,16 @@ module Ethon
         content_type = part_content_type(content, filename)
 
         if content.file?
-          add_form_file_options(
-            options,
-            File.expand_path(content.value.path),
-            filename,
-            content_type
-          )
+          add_form_file_options(options, part_path(content), filename, content_type)
         else
           add_form_buffer_options(options, content.value.to_s, filename, content_type)
         end
+      end
+
+      # libcurl keeps the path and opens the file when the form is sent, so
+      # make it absolute in case the process changes directory in between.
+      def part_path(part)
+        File.expand_path(part.value.path)
       end
 
       def part_filename(part)
