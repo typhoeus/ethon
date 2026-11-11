@@ -50,6 +50,19 @@ describe "modern libcurl informations" do
     end
   end
 
+  it "leaves the deprecated and protocol specific informations out" do
+    # Each one here costs a curl_easy_getinfo call per mirrored response, so
+    # they are only exposed when they earn it. See AVAILABLE_INFORMATIONS.
+    %i[
+      filetime lastsocket content_length_download content_length_upload
+      ftp_entry_path rtsp_client_cseq rtsp_server_cseq rtsp_cseq_recv
+      rtsp_session_id
+    ].each do |name|
+      expect(Ethon::Easy::Informations::AVAILABLE_INFORMATIONS).not_to have_key(name)
+      expect(easy).not_to respond_to(name)
+    end
+  end
+
   it "exposes the connection addresses and ports" do
     expect(easy.local_ip).to match(/::1|127\.0\.0\.1/)
     expect(easy.local_port).to be > 0
@@ -63,7 +76,6 @@ describe "modern libcurl informations" do
     expect(easy.os_errno).to eq(0)
     expect(easy.http_connectcode).to eq(0)
     expect(easy.content_type).to be_a(String)
-    expect(easy.content_length_download).to eq(easy.response_body.bytesize)
   end
 
   it "exposes the active socket" do

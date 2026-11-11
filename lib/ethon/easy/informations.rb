@@ -9,6 +9,19 @@ module Ethon
 
       # Holds available informations and their type, which is needed to
       # request the informations from libcurl.
+      #
+      # Everything listed here is read for every response that builds a
+      # Mirror, so it stays limited to values that are cheap, not deprecated,
+      # and not tied to a single protocol. Deliberately left out:
+      #
+      # * CURLINFO_PRIVATE returns the pointer set with CURLOPT_PRIVATE, not a
+      #   C string, so a string getter would read freed memory.
+      # * CURLINFO_FILETIME, CURLINFO_CONTENT_LENGTH_DOWNLOAD,
+      #   CURLINFO_CONTENT_LENGTH_UPLOAD and CURLINFO_LASTSOCKET are superseded
+      #   by filetime_t, content_length_*_t and activesocket, which are listed
+      #   above.
+      # * The RTSP informations and CURLINFO_FTP_ENTRY_PATH are only set for
+      #   those protocols.
       AVAILABLE_INFORMATIONS = {
         # The _T variants use curl_off_t and do not lose precision for large
         # values or long-running transfers.
@@ -33,7 +46,6 @@ module Ethon
         :posttransfer_time_t => :off_t,
         :earlydata_sent_t => :off_t,
         :size_delivered => :off_t,
-        :filetime => :long,
 
         # Connection/request metadata.
         :http_version => :long,
@@ -47,23 +59,17 @@ module Ethon
         :used_proxy => :long,
         :local_port => :long,
         :num_connects => :long,
-        :lastsocket => :long,
         :os_errno => :long,
         :http_connectcode => :long,
         :proxyauth_avail => :long,
         :condition_unmet => :long,
         :header_size => :long,
-        :rtsp_client_cseq => :long,
-        :rtsp_server_cseq => :long,
-        :rtsp_cseq_recv => :long,
         :scheme => :string,
         :effective_method => :string,
         :referer => :string,
         :cainfo => :string,
         :capath => :string,
         :content_type => :string,
-        :ftp_entry_path => :string,
-        :rtsp_session_id => :string,
         :activesocket => :socket,
         :tls_ssl_ptr => :ptr,
 
@@ -148,10 +154,6 @@ module Ethon
         # also commonly called body. All meta and header data are excluded
         # and will not be counted in this number.
         :size_download => :double,
-
-        # Return the content length of the download or upload.
-        :content_length_download => :double,
-        :content_length_upload => :double,
 
         # Return the bytes/second, the average upload speed that curl
         # measured for the complete upload
