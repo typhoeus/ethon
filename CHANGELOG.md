@@ -12,6 +12,12 @@
   read callback, which is stdin, so the request waited until stdin was closed.
   ([#463](https://github.com/typhoeus/ethon/issues/463))
 
+### Added
+
+* Mirror `certinfo`, so the certificate chain read with `certinfo: true`
+  survives the handle reset and reaches Typhoeus responses
+  ([typhoeus/typhoeus#427](https://github.com/typhoeus/typhoeus/issues/427)).
+
 ## 0.19.1
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...v0.19.1)
