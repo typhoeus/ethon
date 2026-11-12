@@ -4,6 +4,20 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.1...master)
 
+### Bug fixes
+
+* Clear `CURLOPT_POSTFIELDSIZE` to 0 instead of -1 when `Easy#postfields=` or
+  `Easy#copypostfields=` clears the body. With a size of -1 libcurl treats the
+  body as indeterminate, sends the POST chunked, and reads it from the default
+  read callback, which is stdin, so the request waited until stdin was closed.
+  ([#463](https://github.com/typhoeus/ethon/issues/463))
+
+### Added
+
+* Mirror `certinfo`, so the certificate chain read with `certinfo: true`
+  survives the handle reset and reaches Typhoeus responses
+  ([typhoeus/typhoeus#427](https://github.com/typhoeus/typhoeus/issues/427)).
+
 * Expose `Easy#primary_port`, `Easy#local_ip`, `Easy#local_port`,
   `Easy#ssl_verifyresult`, `Easy#num_connects`, `Easy#os_errno`,
   `Easy#http_connectcode`, `Easy#proxyauth_avail`, `Easy#condition_unmet`,

@@ -474,6 +474,8 @@ describe Ethon::Easy::Operations do
         it "follows" do
           expect(easy.response_code).to eq(200)
           expect(easy.redirect_url).to eq(nil)
+          expect(easy.redirect_count).to eq(1)
+          expect(easy.effective_url).to eq("http://localhost:3001/")
         end
 
         context "when infinite redirect loop" do
