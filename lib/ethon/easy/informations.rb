@@ -9,6 +9,19 @@ module Ethon
 
       # Holds available informations and their type, which is needed to
       # request the informations from libcurl.
+      #
+      # Everything listed here is read for every response that builds a
+      # Mirror, so it stays limited to values that are cheap, not deprecated,
+      # and not tied to a single protocol. Deliberately left out:
+      #
+      # * CURLINFO_PRIVATE returns the pointer set with CURLOPT_PRIVATE, not a
+      #   C string, so a string getter would read freed memory.
+      # * CURLINFO_FILETIME, CURLINFO_CONTENT_LENGTH_DOWNLOAD,
+      #   CURLINFO_CONTENT_LENGTH_UPLOAD and CURLINFO_LASTSOCKET are superseded
+      #   by filetime_t, content_length_*_t and activesocket, which are listed
+      #   above.
+      # * The RTSP informations and CURLINFO_FTP_ENTRY_PATH are only set for
+      #   those protocols.
       AVAILABLE_INFORMATIONS = {
         # The _T variants use curl_off_t and do not lose precision for large
         # values or long-running transfers.
@@ -39,13 +52,24 @@ module Ethon
         :httpauth_used => :long,
         :proxyauth_used => :long,
         :proxy_ssl_verifyresult => :long,
+        # Result of the SSL peer certificate verification. Zero means the
+        # certificate was verified successfully. (Added in 7.19.0)
+        :ssl_verifyresult => :long,
         :proxy_error => :long,
         :used_proxy => :long,
+        :local_port => :long,
+        :num_connects => :long,
+        :os_errno => :long,
+        :http_connectcode => :long,
+        :proxyauth_avail => :long,
+        :condition_unmet => :long,
+        :header_size => :long,
         :scheme => :string,
         :effective_method => :string,
         :referer => :string,
         :cainfo => :string,
         :capath => :string,
+        :content_type => :string,
         :activesocket => :socket,
         :tls_ssl_ptr => :ptr,
 
@@ -99,6 +123,12 @@ module Ethon
         # connection done with this curl handle. This string
         # may be IPv6 if that's enabled.
         :primary_ip => :string,
+
+        # Return the local IP address of the most recent connection.
+        :local_ip => :string,
+
+        # Return the destination port of the most recent connection.
+        :primary_port => :long,
 
         # Return the last received HTTP, FTP or SMTP response code.
         # The value will be zero if no server response code has

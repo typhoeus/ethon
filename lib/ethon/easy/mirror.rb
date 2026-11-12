@@ -8,9 +8,15 @@ module Ethon
       # Raw pointers cannot be marshaled and point into native state that can
       # go away when the handle is reset. Applications serialize a mirror (for
       # example as a cached Typhoeus response), so leave them on the Easy.
+      #
+      # certinfo is appended by hand because libcurl returns a list of lists
+      # for it rather than a scalar, so it is not part of
+      # AVAILABLE_INFORMATIONS. It is read on every mirror like the rest,
+      # which costs one getinfo call that returns NULL when the Easy was not
+      # asked for the chain.
       INFORMATIONS_TO_MIRROR = Informations::AVAILABLE_INFORMATIONS.
           reject { |_, type| type == :ptr }.keys +
-          [:return_code, :response_headers, :response_body, :debug_info, :error_message]
+          [:return_code, :response_headers, :response_body, :debug_info, :error_message, :certinfo]
 
       INFORMATIONS_TO_LOG = [:effective_url, :response_code, :return_code, :total_time]
 
