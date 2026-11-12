@@ -275,12 +275,13 @@ end
 
 Puma's equivalent hook is `before_worker_boot` (`on_worker_boot` before
 Puma 7). Repeat calls in the same worker do nothing. The worker does not
-initialize libcurl again, and handles created before the fork still raise
-`Ethon::Errors::ForkSafety`. On macOS, system frameworks are not safe to use
-after `fork` without `exec`, and libcurl can use them, for example for TLS. The
-opt-in is not supported there and raises `Ethon::Errors::ForkSafety` in a
-worker whose parent initialized libcurl, so use `fork` followed by `exec` on
-macOS.
+initialize libcurl again, and it cannot clean up the libcurl state it
+inherited: `Ethon::Curl.cleanup` raises `Ethon::Errors::ForkSafety` there, as
+handles created before the fork still do. On macOS, system frameworks are not
+safe to use after `fork` without `exec`, and libcurl can use them, for example
+for TLS. The opt-in is not supported there and raises
+`Ethon::Errors::ForkSafety` in a worker whose parent initialized libcurl, so
+use `fork` followed by `exec` on macOS.
 
 ## License
 

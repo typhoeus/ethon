@@ -41,6 +41,7 @@ module Ethon
     @blocking = true
 
     @@initialized = false
+    @@initialized_pid = nil
     @@loaded_pid = Process.pid
     @@curl_mutex = Mutex.new
 
@@ -75,6 +76,7 @@ module Ethon
           if not @@initialized
             raise Errors::GlobalInit.new if Curl.global_init(GLOBAL_ALL) != 0
             @@initialized = true
+            @@initialized_pid = Process.pid
             Ethon.logger.debug("ETHON: Libcurl initialized") if Ethon.logger
           end
         }
@@ -90,10 +92,19 @@ module Ethon
       # any other thread that uses these other libraries.
       # See the description in libcurl of global environment requirements
       # for details of how to use this function.
+      #
+      # @raise [ Ethon::Errors::ForkSafety ] In a child that opted in with
+      #   allow_handles_after_fork! and inherited libcurl initialized by its
+      #   parent.
       def cleanup
         check_pid!
         @@curl_mutex.synchronize {
           if @@initialized
+            if @@initialized_pid != Process.pid
+              raise Errors::ForkSafety.new(
+                "Ethon cannot clean up libcurl initialized before a fork; clean it up in the process that initialized it"
+              )
+            end
             Curl.global_cleanup()
             @@initialized = false
             Ethon.logger.debug("ETHON: Libcurl cleanup") if Ethon.logger
@@ -112,7 +123,8 @@ module Ethon
 
       # Let a forked child create new handles on the libcurl state it
       # inherited. Call it in the child before its first handle; repeat calls
-      # do nothing. Handles created before the fork still raise ForkSafety.
+      # do nothing. Handles created before the fork still raise ForkSafety,
+      # and so does cleanup, because the child did not initialize libcurl.
       #
       # @example Opt in from a Pitchfork worker's after_worker_fork hook.
       #   Ethon::Curl.allow_handles_after_fork!
@@ -126,7 +138,7 @@ module Ethon
 
         if @@initialized && macos?
           raise Errors::ForkSafety.new(
-            "Ethon::Curl.allow_handles_after_fork! is not supported on macOS; use fork+exec"
+            "Ethon cannot use libcurl inherited across a fork on macOS; use fork+exec"
           )
         end
 
