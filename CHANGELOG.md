@@ -28,6 +28,10 @@
   entry informations are left out in favour of the `_t` and `activesocket`
   variants that are already exposed.
 
+* Add `Ethon::Multipart::Part` for setting the content type and, optionally,
+  the filename of a single `multipart/form-data` part. Plain body values keep
+  their existing behavior.
+
 ## 0.19.1
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...v0.19.1)

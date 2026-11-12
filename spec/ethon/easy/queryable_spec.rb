@@ -297,6 +297,27 @@ describe Ethon::Easy::Queryable do
       end
     end
 
+    context "when params contains a multipart part" do
+      let(:part) {
+        Ethon::Multipart::Part.new("value", :content_type => "application/json")
+      }
+      let(:hash) { {:a => 1, :b => part, :nested => { :c => part }} }
+
+      it "keeps the part intact" do
+        expect(pairs).to include([:a, 1])
+        expect(pairs).to include([:b, part])
+        expect(pairs).to include(["nested[c]", part])
+      end
+
+      context "when params_encoding is :none" do
+        before { params.params_encoding = :none }
+
+        it "keeps the part intact" do
+          expect(pairs).to include([:b, part])
+        end
+      end
+    end
+
     context "when a params value contains a null byte" do
       let(:hash) { {:a => "1\0" } }
 
