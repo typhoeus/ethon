@@ -363,9 +363,7 @@ describe Ethon::Curl do
     end
 
     context "when the child cleans up" do
-      # Stub the platform check so the opt-in succeeds on macOS too. These
-      # examples create no handles in the child, and the stubbed libcurl
-      # calls below keep it from touching libcurl's global state.
+      # Safe on macOS: the child creates no handles and libcurl calls are stubbed.
       before { allow(Ethon::Curl).to receive(:macos?).and_return(false) }
 
       it "raises when the parent initialized libcurl and leaves it initialized" do
