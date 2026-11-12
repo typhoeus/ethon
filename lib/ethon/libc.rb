@@ -15,6 +15,11 @@ module Ethon
       Gem.win_platform?
     end
 
+    # :nodoc:
+    def self.macos?
+      FFI::Platform.mac?
+    end
+
     def self.open_max
       value = Etc.sysconf(Etc::SC_OPEN_MAX)
       return value if value && value > 0

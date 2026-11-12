@@ -98,6 +98,437 @@ describe Ethon::Curl do
       writer.close if writer && !writer.closed?
       Process.wait(pid) if pid
     end
+
+    it "raises after a fork when libcurl is initialized and the child has not opted in" do
+      skip_on_windows "fork is not supported on Windows"
+      Ethon::Curl.init
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          results = [proc { Ethon::Easy.new }, proc { Ethon::Multi.new }].map do |operation|
+            begin
+              operation.call
+              "ok"
+            rescue Ethon::Errors::ForkSafety => e
+              e.message
+            end
+          end
+          writer.write(Marshal.dump(results))
+        rescue Exception => e
+          writer.write(Marshal.dump(["#{e.class}: #{e.message}"]))
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(Marshal.load(reader.read)).to eq([Ethon::Errors::ForkSafety.new.message] * 2)
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+  end
+
+  describe ".allow_handles_after_fork!" do
+    it "lets a child create new handles on libcurl initialized before the fork" do
+      skip_on_windows "fork is not supported on Windows"
+      skip_on_macos "allow_handles_after_fork! is not supported on macOS"
+      Ethon::Curl.init
+      expect(Ethon::Curl).not_to receive(:global_init)
+      expect(Ethon::Curl).not_to receive(:global_cleanup)
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Curl.allow_handles_after_fork!
+          Ethon::Easy.new.handle
+          Ethon::Multi.new.handle
+          writer.write("ok")
+        rescue Exception => e
+          writer.write("#{e.class}: #{e.message}")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("ok")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "lets a child perform a request after opting in" do
+      skip_on_windows "fork is not supported on Windows"
+      skip_on_macos "allow_handles_after_fork! is not supported on macOS"
+      Ethon::Curl.init
+      expect(Ethon::Curl).not_to receive(:global_init)
+      expect(Ethon::Curl).not_to receive(:global_cleanup)
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Curl.allow_handles_after_fork!
+          easy = Ethon::Easy.new(:url => "http://127.0.0.1:3001/")
+          writer.write("#{easy.perform} #{easy.response_code}")
+        rescue Exception => e
+          writer.write("#{e.class}: #{e.message}")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(IO.select([reader], nil, nil, 30)).not_to be_nil
+      expect(reader.read).to eq("ok 200")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      if pid && !Process.waitpid(pid, Process::WNOHANG)
+        Process.kill(:KILL, pid)
+        Process.wait(pid)
+      end
+    end
+
+    it "lets a child perform a request through a Multi after opting in" do
+      skip_on_windows "fork is not supported on Windows"
+      skip_on_macos "allow_handles_after_fork! is not supported on macOS"
+      Ethon::Curl.init
+      expect(Ethon::Curl).not_to receive(:global_init)
+      expect(Ethon::Curl).not_to receive(:global_cleanup)
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Curl.allow_handles_after_fork!
+          easy = Ethon::Easy.new(:url => "http://127.0.0.1:3001/")
+          multi = Ethon::Multi.new
+          multi.add(easy)
+          multi.perform
+          writer.write("#{easy.return_code} #{easy.response_code}")
+        rescue Exception => e
+          writer.write("#{e.class}: #{e.message}")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(IO.select([reader], nil, nil, 30)).not_to be_nil
+      expect(reader.read).to eq("ok 200")
+      Process.wait(pid)
+      pid = nil
+      expect($?).to be_success
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      if pid && !Process.waitpid(pid, Process::WNOHANG)
+        Process.kill(:KILL, pid)
+        Process.wait(pid)
+      end
+    end
+
+    it "does nothing when the child calls it again" do
+      skip_on_windows "fork is not supported on Windows"
+      skip_on_macos "allow_handles_after_fork! is not supported on macOS"
+      Ethon::Curl.init
+      parent_mutex = Ethon::Curl.class_variable_get(:@@curl_mutex)
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Curl.allow_handles_after_fork!
+          mutex = Ethon::Curl.class_variable_get(:@@curl_mutex)
+          Ethon::Curl.allow_handles_after_fork!
+          Ethon::Easy.new.handle
+          writer.write([
+            mutex.equal?(parent_mutex) ? "parent mutex" : "new mutex",
+            Ethon::Curl.class_variable_get(:@@curl_mutex).equal?(mutex) ? "kept" : "replaced"
+          ].join(", "))
+        rescue Exception => e
+          writer.write("#{e.class}: #{e.message}")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("new mutex, kept")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "applies only to the process that calls it" do
+      skip_on_windows "fork is not supported on Windows"
+      skip_on_macos "allow_handles_after_fork! is not supported on macOS"
+      Ethon::Curl.init
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Curl.allow_handles_after_fork!
+          Ethon::Easy.new
+          grandchild = fork do
+            begin
+              Ethon::Easy.new
+              writer.write("ok")
+            rescue Exception => e
+              writer.write(e.class.name)
+            ensure
+              writer.close
+            end
+          end
+          Process.wait(grandchild)
+        rescue Exception => e
+          writer.write("#{e.class}: #{e.message}")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("Ethon::Errors::ForkSafety")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "lets a process forked from a child that opted in opt in again" do
+      skip_on_windows "fork is not supported on Windows"
+      skip_on_macos "allow_handles_after_fork! is not supported on macOS"
+      Ethon::Curl.init
+      reader, writer = IO.pipe
+      pid = fork do
+        reader.close
+        begin
+          Ethon::Curl.allow_handles_after_fork!
+          Ethon::Easy.new
+          grandchild = fork do
+            begin
+              Ethon::Curl.allow_handles_after_fork!
+              Ethon::Easy.new
+              writer.write("ok")
+            rescue Exception => e
+              writer.write(e.class.name)
+            ensure
+              writer.close
+            end
+          end
+          Process.wait(grandchild)
+        rescue Exception => e
+          writer.write("#{e.class}: #{e.message}")
+        ensure
+          writer.close
+        end
+      end
+      writer.close
+
+      expect(reader.read).to eq("ok")
+      Process.wait(pid)
+      pid = nil
+    ensure
+      reader.close if reader && !reader.closed?
+      writer.close if writer && !writer.closed?
+      Process.wait(pid) if pid
+    end
+
+    it "does not change the process that initialized libcurl" do
+      Ethon::Curl.init
+      mutex = Ethon::Curl.class_variable_get(:@@curl_mutex)
+      expect(Ethon::Curl).not_to receive(:global_init)
+      expect(Ethon::Curl).not_to receive(:global_cleanup)
+
+      Ethon::Curl.allow_handles_after_fork!
+
+      expect(Ethon::Curl.class_variable_get(:@@curl_mutex)).to be(mutex)
+      expect(Ethon::Easy.new(:url => "http://127.0.0.1:3001/").perform).to eq(:ok)
+    end
+
+    context "when the child cleans up" do
+      # Safe on macOS: the child creates no handles and libcurl calls are stubbed.
+      before { allow(Ethon::Curl).to receive(:macos?).and_return(false) }
+
+      it "raises when the parent initialized libcurl and leaves it initialized" do
+        skip_on_windows "fork is not supported on Windows"
+        Ethon::Curl.init
+        expect(Ethon::Curl).not_to receive(:global_init)
+        expect(Ethon::Curl).not_to receive(:global_cleanup)
+        reader, writer = IO.pipe
+        pid = fork do
+          reader.close
+          begin
+            Ethon::Curl.allow_handles_after_fork!
+            error = begin
+              Ethon::Curl.cleanup
+              nil
+            rescue Ethon::Errors::ForkSafety => e
+              e.message
+            end
+            writer.write(Marshal.dump(
+              :error => error,
+              :initialized => Ethon::Curl.class_variable_get(:@@initialized)
+            ))
+          rescue Exception => e
+            writer.write(Marshal.dump(:error => "#{e.class}: #{e.message}"))
+          ensure
+            writer.close
+          end
+        end
+        writer.close
+
+        result = Marshal.load(reader.read)
+        Process.wait(pid)
+        pid = nil
+
+        expect(result).to eq(
+          :error => "Ethon cannot clean up libcurl initialized before a fork; " \
+            "clean it up in the process that initialized it",
+          :initialized => true
+        )
+      ensure
+        reader.close if reader && !reader.closed?
+        writer.close if writer && !writer.closed?
+        Process.wait(pid) if pid
+      end
+
+      it "cleans up libcurl the child initialized itself" do
+        skip_on_windows "fork is not supported on Windows"
+        Ethon::Curl.send(:class_variable_set, :@@initialized, false)
+        calls = []
+        allow(Ethon::Curl).to receive(:global_init) { calls << :global_init; 0 }
+        allow(Ethon::Curl).to receive(:global_cleanup) { calls << :global_cleanup }
+        reader, writer = IO.pipe
+        pid = fork do
+          reader.close
+          begin
+            Ethon::Curl.allow_handles_after_fork!
+            Ethon::Curl.init
+            Ethon::Curl.cleanup
+            writer.write(Marshal.dump(calls))
+          rescue Exception => e
+            writer.write(Marshal.dump(["#{e.class}: #{e.message}"]))
+          ensure
+            writer.close
+          end
+        end
+        writer.close
+
+        result = Marshal.load(reader.read)
+        Process.wait(pid)
+        pid = nil
+
+        expect(result).to eq([:global_init, :global_cleanup])
+      ensure
+        reader.close if reader && !reader.closed?
+        writer.close if writer && !writer.closed?
+        Process.wait(pid) if pid
+      end
+    end
+
+    context "on macOS" do
+      before { allow(Ethon::Curl).to receive(:macos?).and_return(true) }
+
+      it "raises in a child whose parent initialized libcurl and leaves its state alone" do
+        skip_on_windows "fork is not supported on Windows"
+        Ethon::Curl.init
+        mutex = Ethon::Curl.class_variable_get(:@@curl_mutex)
+        reader, writer = IO.pipe
+        pid = fork do
+          reader.close
+          begin
+            error = begin
+              Ethon::Curl.allow_handles_after_fork!
+              nil
+            rescue Ethon::Errors::ForkSafety => e
+              e.message
+            end
+            writer.write(Marshal.dump(
+              :error => error,
+              :loaded_pid => Ethon::Curl.class_variable_get(:@@loaded_pid),
+              :same_mutex => Ethon::Curl.class_variable_get(:@@curl_mutex).equal?(mutex)
+            ))
+          rescue Exception => e
+            writer.write(Marshal.dump(:error => "#{e.class}: #{e.message}"))
+          ensure
+            writer.close
+          end
+        end
+        writer.close
+
+        result = Marshal.load(reader.read)
+        Process.wait(pid)
+        pid = nil
+
+        expect(result[:error]).to eq("Ethon cannot use libcurl inherited across a fork on macOS; use fork+exec")
+        expect(result[:loaded_pid]).to eq(Process.pid)
+        expect(result[:same_mutex]).to be(true)
+      ensure
+        reader.close if reader && !reader.closed?
+        writer.close if writer && !writer.closed?
+        Process.wait(pid) if pid
+      end
+
+      it "sets up a child as check_pid! does when libcurl was not initialized before the fork" do
+        skip_on_windows "fork is not supported on Windows"
+        Ethon::Curl.send(:class_variable_set, :@@initialized, false)
+        mutex = Ethon::Curl.class_variable_get(:@@curl_mutex)
+        reader, writer = IO.pipe
+        pid = fork do
+          reader.close
+          begin
+            Ethon::Curl.allow_handles_after_fork!
+            writer.write(Marshal.dump(
+              :loaded_pid => Ethon::Curl.class_variable_get(:@@loaded_pid),
+              :same_mutex => Ethon::Curl.class_variable_get(:@@curl_mutex).equal?(mutex)
+            ))
+          rescue Exception => e
+            writer.write(Marshal.dump(:error => "#{e.class}: #{e.message}"))
+          ensure
+            writer.close
+          end
+        end
+        writer.close
+
+        result = Marshal.load(reader.read)
+        child_pid = pid
+        Process.wait(pid)
+        pid = nil
+
+        expect(result).to eq(:loaded_pid => child_pid, :same_mutex => false)
+      ensure
+        reader.close if reader && !reader.closed?
+        writer.close if writer && !writer.closed?
+        Process.wait(pid) if pid
+      end
+
+      it "does not change the process that initialized libcurl" do
+        Ethon::Curl.init
+        mutex = Ethon::Curl.class_variable_get(:@@curl_mutex)
+
+        Ethon::Curl.allow_handles_after_fork!
+
+        expect(Ethon::Curl.class_variable_get(:@@curl_mutex)).to be(mutex)
+        expect(Ethon::Easy.new(:url => "http://127.0.0.1:3001/").perform).to eq(:ok)
+      end
+    end
   end
 
   describe ".get_info_slist" do

@@ -60,6 +60,10 @@ module EthonSpecHelpers
   def skip_on_windows(reason = "not supported on Windows")
     skip reason if Gem.win_platform?
   end
+
+  def skip_on_macos(reason = "not supported on macOS")
+    skip reason if FFI::Platform.mac?
+  end
 end
 
 RSpec.configure do |config|

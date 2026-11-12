@@ -32,6 +32,16 @@
   the filename of a single `multipart/form-data` part. Plain body values keep
   their existing behavior.
 
+* Add `Ethon::Curl.allow_handles_after_fork!`, an opt-in for servers that fork
+  workers from a process that has already used libcurl and cannot `exec`.
+  Called in the child before its first handle, it lets the child create new
+  handles on the libcurl state it inherited instead of raising
+  `Ethon::Errors::ForkSafety`. Handles created before the fork are still
+  rejected, as is `Ethon::Curl.cleanup` in the child, and the default is
+  unchanged. The opt-in is not supported on macOS, where it raises
+  `Ethon::Errors::ForkSafety` in a child whose parent initialized libcurl.
+  ([#462](https://github.com/typhoeus/ethon/issues/462))
+
 ## 0.19.1
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.0...v0.19.1)
