@@ -219,9 +219,12 @@ module Ethon
           @postfields = nil
           @postfields_pointer = nil
           @postfield_body_size = nil
-          # -1 is libcurl's default: the body ends at the first NUL.
-          Curl.set_option(:postfieldsize, -1, handle)
-          @postfieldsize_value = -1
+          # A zero size keeps libcurl on the null reader, which sends
+          # Content-Length: 0. With the size left at -1 libcurl treats the
+          # body as indeterminate, sends it chunked, and reads it from the
+          # default read callback, which is stdin.
+          Curl.set_option(:postfieldsize, 0, handle)
+          @postfieldsize_value = nil
         else
           string = value.to_s
           string = string.dup.freeze unless string.frozen?
@@ -249,10 +252,11 @@ module Ethon
           @postfields = nil
           @postfields_pointer = nil
           @postfield_body_size = nil
-          # Clear the size too: libcurl fails the request when a non-zero size
-          # is paired with the NULL body left by COPYPOSTFIELDS.
-          Curl.set_option(:postfieldsize, -1, handle)
-          @postfieldsize_value = -1
+          # Clear the size too, otherwise libcurl keeps describing the copy
+          # that is being removed. Zero rather than -1 for the same reason as
+          # in #postfields=.
+          Curl.set_option(:postfieldsize, 0, handle)
+          @postfieldsize_value = nil
           return value
         end
 
