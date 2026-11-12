@@ -174,6 +174,14 @@ describe "multipart parts" do
     before do
       skip "curl_formadd is unavailable" unless Ethon::Curl.respond_to?(:formadd)
 
+      # A libcurl built with --disable-form-api still exports curl_formadd,
+      # but it only returns CURL_FORMADD_DISABLED (7). The latest-curl CI job
+      # builds exactly that, so the legacy backend cannot run there.
+      first = FFI::MemoryPointer.new(:pointer)
+      last = FFI::MemoryPointer.new(:pointer)
+      skip "the form API is disabled in this libcurl" if
+        Ethon::Curl.formadd(first, last, :form_option, :end) == 7
+
       allow(Ethon::Curl).to receive(:respond_to?).and_call_original
       allow(Ethon::Curl).to receive(:respond_to?).with(:mime_init).and_return(false)
     end
