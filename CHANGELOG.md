@@ -4,7 +4,29 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.1...master)
 
+### Bug fixes
+
+* Clear `CURLOPT_POSTFIELDSIZE` to 0 instead of -1 when `Easy#postfields=` or
+  `Easy#copypostfields=` clears the body. With a size of -1 libcurl treats the
+  body as indeterminate, sends the POST chunked, and reads it from the default
+  read callback, which is stdin, so the request waited until stdin was closed.
+  ([#463](https://github.com/typhoeus/ethon/issues/463))
+
 ### Added
+
+* Mirror `certinfo`, so the certificate chain read with `certinfo: true`
+  survives the handle reset and reaches Typhoeus responses
+  ([typhoeus/typhoeus#427](https://github.com/typhoeus/typhoeus/issues/427)).
+
+* Expose `Easy#primary_port`, `Easy#local_ip`, `Easy#local_port`,
+  `Easy#ssl_verifyresult`, `Easy#num_connects`, `Easy#os_errno`,
+  `Easy#http_connectcode`, `Easy#proxyauth_avail`, `Easy#condition_unmet`,
+  `Easy#header_size` and `Easy#content_type`. They are also included in the
+  mirror, so they survive the handle reset and show up in response options.
+  Everything in the mirror is read for every response, so the deprecated
+  `filetime`, `lastsocket` and `content_length_*` values and the RTSP and FTP
+  entry informations are left out in favour of the `_t` and `activesocket`
+  variants that are already exposed.
 
 * Add `Ethon::Multipart::Part` for setting the content type and, optionally,
   the filename of a single `multipart/form-data` part. Plain body values keep

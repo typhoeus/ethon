@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'digest'
 require 'json'
+require 'time'
 require 'zlib'
 require 'sinatra/base'
 
@@ -44,6 +45,11 @@ TESTSERVER = Sinatra.new do
     [200, { 'Set-Cookie' => %w[ foo bar ], 'Content-Type' => 'text/plain' }, ['']]
   end
 
+  get '/set-cookie' do
+    response['Set-Cookie'] = 'name=value; Path=/'
+    'ok'
+  end
+
   # Deterministic binary payload for byte-exact transfer tests.
   get '/binary/:size' do
     size = params[:size].to_i
@@ -52,6 +58,32 @@ TESTSERVER = Sinatra.new do
 
     content_type 'application/octet-stream'
     body
+  end
+
+  get '/range' do
+    content = "0123456789"
+    range = request.env['HTTP_RANGE']
+
+    if range && (match = /\Abytes=(\d+)-(\d*)\z/.match(range))
+      first = match[1].to_i
+      last = match[2].empty? ? content.bytesize - 1 : match[2].to_i
+      status 206
+      headers 'Content-Range' => "bytes #{first}-#{last}/#{content.bytesize}"
+      content[first..last]
+    else
+      content
+    end
+  end
+
+  get '/modified' do
+    modified = Time.utc(2020, 1, 1)
+    response['Last-Modified'] = modified.httpdate
+
+    if (since = request.env['HTTP_IF_MODIFIED_SINCE'])
+      halt 304 if Time.httpdate(since) >= modified
+    end
+
+    'body'
   end
 
   # Echo the raw request body so uploads can be compared byte for byte.
@@ -151,12 +183,8 @@ TESTSERVER = Sinatra.new do
   end
 
   get '/gzipped' do
-    req_env = request.env.to_json
-    z = Zlib::Deflate.new
-    gzipped_env = z.deflate(req_env, Zlib::FINISH)
-    z.close
     response['Content-Encoding'] = 'gzip'
-    gzipped_env
+    Zlib.gzip(request.env.to_json)
   end
 
   get '/**' do
