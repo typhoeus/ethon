@@ -4,7 +4,7 @@
 
 [Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.1...master)
 
-### Bug fixes
+### Fixes and hardening
 
 * Clear `CURLOPT_POSTFIELDSIZE` to 0 instead of -1 when `Easy#postfields=` or
   `Easy#copypostfields=` clears the body. With a size of -1 libcurl treats the
@@ -12,11 +12,11 @@
   read callback, which is stdin, so the request waited until stdin was closed.
   ([#463](https://github.com/typhoeus/ethon/issues/463))
 
-### Added
+### Enhancements
 
 * Mirror `certinfo`, so the certificate chain read with `certinfo: true`
   survives the handle reset and reaches Typhoeus responses
-  ([typhoeus/typhoeus#427](https://github.com/typhoeus/typhoeus/issues/427)).
+  ([typhoeus/typhoeus#427](https://github.com/typhoeus/typhoeus/issues/427))
 
 * Expose `Easy#primary_port`, `Easy#local_ip`, `Easy#local_port`,
   `Easy#ssl_verifyresult`, `Easy#num_connects`, `Easy#os_errno`,
@@ -27,10 +27,12 @@
   `filetime`, `lastsocket` and `content_length_*` values and the RTSP and FTP
   entry informations are left out in favour of the `_t` and `activesocket`
   variants that are already exposed.
+  ([#460](https://github.com/typhoeus/ethon/pull/460))
 
 * Add `Ethon::Multipart::Part` for setting the content type and, optionally,
   the filename of a single `multipart/form-data` part. Plain body values keep
   their existing behavior.
+  ([typhoeus/typhoeus#494](https://github.com/typhoeus/typhoeus/issues/494))
 
 * Add `Ethon::Curl.allow_handles_after_fork!`, an opt-in for servers that fork
   workers from a process that has already used libcurl and cannot `exec`.
