@@ -2,7 +2,11 @@
 
 ## Master
 
-[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.1...master)
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.2...master)
+
+## 0.19.2
+
+[Full Changelog](https://github.com/typhoeus/ethon/compare/v0.19.1...v0.19.2)
 
 ### Fixes and hardening
 
